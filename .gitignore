@@ -1,0 +1,14 @@
+*.pyc
+*.json
+*~
+.idea
+media
+
+gunicorn.log
+gunicorn-error.log
+gunicorn-access.log
+
+app/local_settings.py
+
+*.sqlite3
+*.~*
