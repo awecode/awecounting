@@ -28,12 +28,12 @@ class Party(models.Model):
     def __unicode__(self):
         return self.name
 
-class Product(models.Model):
+class Purchase(models.Model):
     party = models.ForeignKey(Party)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     data = models.DateField(default=datetime.datetime.today)
 
-class ProductRow(models.Model):
+class PurchaseRow(models.Model):
 	item = models.ForeignKey(Item)
 	quantity = models.FloatField()
 	rate = models.FloatField()
