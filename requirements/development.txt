@@ -1,0 +1,18 @@
+# Development only
+pyinotify
+git-pylint-commit-hook
+django-debug-toolbar
+
+# Development and Production
+Django
+psycopg2
+django-mptt
+-e git+https://github.com/zyga/django-pagination.git@master#egg=linaro-django-pagination
+webstack-django-sorting
+djangorestframework
+Pillow
+-e git+https://github.com/helber/django-dbsettings.git@master#egg=django-dbsettings
+django-modeltranslation
+sorl-thumbnail==11.12.1b
+jsonfield
+openpyxl
