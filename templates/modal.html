@@ -1,0 +1,27 @@
+{#<div class="modal-header">#}
+{#    <a class="close" data-dismiss="modal">&times;</a>#}
+{##}
+<div class="modal fade" id="item_modal" tabindex="-1" role="dialog" aria-labelledby="Item">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h3>{% block title %}{% endblock %}</h3>
+			</div>
+			<div class="modal-body">
+			{% block content %}
+
+			{% endblock %}
+      		</div>
+		</div>	
+	</div>    
+</div>
+{#</div>#}
+{#<div class="modal-footer">#}
+{#    <a href="#" class="btn" data-dismiss="modal">Cancel</a>#}
+{#</div>#}
+<script>
+$('#form').submit(function(event) {
+	$('.modal').modal('hide');
+});
+</script>

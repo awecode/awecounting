@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from inventory.models import Purchase
 
 def create_purchase(request):
 	import ipdb; ipdb.set_trace()

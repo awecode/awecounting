@@ -23,6 +23,7 @@ INSTALLED_APPS = (
 
     # apps
     'inventory',
+    'modeltranslation',
 )
 
 MIDDLEWARE_CLASSES = (

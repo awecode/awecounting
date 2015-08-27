@@ -1,0 +1,48 @@
+{% load filters %}
+<script>
+    var obj = {{ obj|jsonify }};
+    var no_of_modals = $('.reveal-modal').length;
+    $('#reveal-modal' + $('.reveal-modal').length).find($('.close-reveal-modal')).click();
+    $select = window.last_active_select.pop();
+
+    if ($select.$input.data('bind')) {
+        var matches = $select.$input.data('bind').match(/selectize: \$root\.([a-z_]+)/);
+        if ($select.$input.data('to')) {
+            {#        if (typeof vm[el.data('add-to')] == 'function')#}
+            {#            vm[el.data('add-to')]().push(obj);#}
+            {#        else#}
+            {#        vm[$select.$input.data('to')].push(obj);#}
+            {#        $select.$input.select2('data', obj);#}
+            {#        $('.select2-offscreen').trigger('change');#}
+        }
+        else if (matches) {
+            var match = matches[1];
+            if (typeof vm[match] == 'function')
+                vm[match].push(obj);
+            else
+                vm[match].push(obj);
+            {#        el.select2('data', obj);#}
+            {#        el.trigger('change');#}
+
+            $select.addItem(obj.id);
+            $select.$wrapper.find('> .appended-link').remove();
+        }
+    }
+    else {
+        $select.$input.append("<option value='" + obj.id + "'>" + obj.name + "</option>");
+        $select.addOption({
+            text: obj.name,
+            value: obj.id
+        });
+        $select.addItem(obj.id);
+        $select.refreshItems();
+        {#        $select.$wrapper.find('> .appended-link').remove();#}
+        {#        el.trigger('change');#}
+        {#        el.select2('val', obj.id);#}
+    }
+    {#    el.select2('close');#}
+    if ($select.$input.closest('.reveal-modal').length) {
+        $select.$input.closest('.reveal-modal').foundation('reveal', 'close');
+        $select.$input.closest('.reveal-modal').foundation('reveal', 'open');
+    }
+</script>
