@@ -24,6 +24,7 @@ INSTALLED_APPS = (
 
     # apps
     'inventory',
+    'rest_framework',
 )
 
 MIDDLEWARE_CLASSES = (
