@@ -1,5 +1,6 @@
 from django.db import models
 import datetime
+from jsonfield import JSONField
 
 class Unit(models.Model):
     name = models.CharField(max_length=50)
@@ -14,7 +15,7 @@ class Item(models.Model):
     image = models.ImageField(upload_to='items', blank=True, null=True)
     size = models.CharField(max_length=250, blank=True, null=True)
     unit = models.ForeignKey(Unit)
-    # other_properties = JSONField(blank=True, null=True)
+    other_properties = JSONField(blank=True, null=True)
 
     def __unicode__(self):
         return self.name
@@ -37,8 +38,8 @@ class PurchaseRow(models.Model):
 	item = models.ForeignKey(Item)
 	quantity = models.FloatField()
 	rate = models.FloatField()
-    unit = models.ForeignKey(Unit)
-	product = models.ForeignKey(Product, related_name='rows')
+	unit = models.ForeignKey(Unit)
+	purchase = models.ForeignKey(Purchase, related_name='rows')
 
 
 
