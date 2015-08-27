@@ -7,7 +7,15 @@ SECRET_KEY = '=s0$)ng6s4x@tt=e+v3hygikjuwn3d_m1ihz$m07e(g#bhj)pp'
 
 DEBUG = True
 
+STATIC_ROOT = os.path.join(BASE_DIR, "..", "static")
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+)
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "..", "media")
+MEDIA_URL = "/media/"
 
 TEMPLATES = [
     {
