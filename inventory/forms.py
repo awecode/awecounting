@@ -1,4 +1,6 @@
 from django import forms
+from modeltranslation.forms import TranslationModelForm
+from inventory.models import Item
 
 class KOModelForm(forms.ModelForm):
     class EmailTypeInput(forms.widgets.TextInput):
@@ -30,3 +32,8 @@ class KOModelForm(forms.ModelForm):
                 field.widget.attrs['required'] = 'required'
             field.widget.attrs['data-bind'] = 'value: ' + name
             field.widget.attrs['class'] = 'form-control'
+
+class ItemForm(KOModelForm):
+    class Meta:
+        model = Item
+        fields = '__all__'

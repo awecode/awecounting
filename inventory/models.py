@@ -35,7 +35,7 @@ class Party(models.Model):
 class Purchase(models.Model):
     party = models.ForeignKey(Party)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
-    data = models.DateField(default=datetime.datetime.today)
+    date = models.DateField(default=datetime.datetime.today)
 
 class PurchaseRow(models.Model):
 	item = models.ForeignKey(Item)

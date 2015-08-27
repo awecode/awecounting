@@ -1,10 +1,21 @@
 {% extends "base.html" %}
+{% load staticfiles  %}
+{% load filters %}
 
 {% block title %}
 	Create Purchase
 {% endblock %}
 
+{% block head_end %}
+    <script src="{% static 'js/inventory/create-purchase.js' %}"></script>
+    <script>
+        ko_data = {{data|jsonify}};
+    </script>
+{% endblock %}
 
 {% block content %}
 <h1>Create purchase</h1>
+<form action="">
+	{% csrf_token %}
+</form>
 {% endblock %}

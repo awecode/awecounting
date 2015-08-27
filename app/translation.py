@@ -1,7 +1,5 @@
-from modeltranslation.translator import TranslationOptions, register
-from inventory.models import Unit
+from modeltranslation.translator import TranslationOptions
 
-# @register(Unit)
 class NameTranslationOptions(TranslationOptions):
 	fields = ('name',)
 
