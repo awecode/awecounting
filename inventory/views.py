@@ -1,5 +1,5 @@
 import json
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from inventory.models import Item, Purchase, PurchaseRow, Party, Unit
 from inventory.forms import ItemForm
 from django.http import JsonResponse, HttpResponse
@@ -23,7 +23,11 @@ def invalid(row, required_fields):
         return False
     return invalid_attrs
 
-def create_purchase(request, id=None):
+def purchase_list(request):
+	obj = Purchase.objects.all()
+	return render(request, 'purchase_list.html', {'objects': obj})
+
+def purchase(request, id=None):
     if id:
         purchase = get_object_or_404(Purchase, id=id)
         scenario = 'Update'

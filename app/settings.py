@@ -25,6 +25,8 @@ INSTALLED_APPS = (
     # apps
     'inventory',
     'rest_framework',
+    'linaro_django_pagination',
+    'webstack_django_sorting',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -36,6 +38,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'linaro_django_pagination.middleware.PaginationMiddleware',
+    'webstack_django_sorting.middleware.SortingMiddleware',
 )
 
 ROOT_URLCONF = 'app.urls'
