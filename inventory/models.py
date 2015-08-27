@@ -38,11 +38,12 @@ class Purchase(models.Model):
     date = models.DateField(default=datetime.datetime.today)
 
 class PurchaseRow(models.Model):
-	item = models.ForeignKey(Item)
-	quantity = models.FloatField()
-	rate = models.FloatField()
-	unit = models.ForeignKey(Unit)
-	purchase = models.ForeignKey(Purchase, related_name='rows')
+    sn = models.PositiveIntegerField()
+    item = models.ForeignKey(Item)
+    quantity = models.FloatField()
+    rate = models.FloatField()
+    unit = models.ForeignKey(Unit)
+    purchase = models.ForeignKey(Purchase, related_name='rows')
 
 
 

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from inventory.models import Purchase, PurchaseRow, Item, Party
+from inventory.models import Purchase, PurchaseRow, Item, Party, Unit
 
 class ItemSerializer(serializers.ModelSerializer):
 	unit_id = serializers.ReadOnlyField(source='unit.id')
@@ -7,6 +7,11 @@ class ItemSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Item
 		exclude = ['unit']
+
+class UnitSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = Unit
 
 class PartySerializer(serializers.ModelSerializer):
 
@@ -23,7 +28,8 @@ class PurchaseRowSerializer(serializers.ModelSerializer):
         
 class PurchaseSerializer(serializers.ModelSerializer):
     rows = PurchaseRowSerializer(many=True)
+    date = serializers.DateField(format=None)
 
     class Meta:
         model = Purchase
-        exclude = ['date']
+        # exclude = ['date']

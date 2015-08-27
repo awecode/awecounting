@@ -1426,15 +1426,15 @@ alert.clear = function () {
 }
 
 alert.warning = function (message) {
-    $('#alert_placeholder').html('<div data-alert class="alert-box warning radius">' + message + '<a href="#" class="close">&times;</a></div>')
+    $('#alert_placeholder').html('<div data-alert class="alert alert-warning radius">' + message + '<a href="#" class="close">&times;</a></div>')
 }
 
 alert.success = function (message) {
-    $('#alert_placeholder').html('<div data-alert class="alert-box success radius">' + message + '<a href="#" class="close">&times;</a></div>')
+    $('#alert_placeholder').html('<div data-alert class="alert alert-success radius">' + message + '<a href="#" class="close">&times;</a></div>')
 }
 
 alert.info = function (message) {
-    $('#alert_placeholder').html('<div data-alert class="alert-box info radius">' + message + '<a href="#" class="close">&times;</a></div>')
+    $('#alert_placeholder').html('<div data-alert class="alert alert-info radius">' + message + '<a href="#" class="close">&times;</a></div>')
 }
 
 alert.error = alert.warning;
