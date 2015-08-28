@@ -8,6 +8,10 @@ urlpatterns = patterns('',
                        url(r'^purchase/list/$', views.purchase_list, name='purchase-list'),
                        url(r'^purchase/detail/(?P<id>[0-9]+)/$', views.purchase, name='purchase-detail'),
 
+                       url(r'^sale/create/$', views.sale, name='sale-create'),
+                       url(r'^save/sale/$', views.save_sale, name='sale-save'),
+                       url(r'^sale/list/$', views.sale_list, name='sale-list'),
+                       url(r'^sale/detail/(?P<id>[0-9]+)/$', views.sale, name='sale-detail'),
 
                        # rest_framework api
                        url(r'^api/items/$', views.ItemList.as_view()),

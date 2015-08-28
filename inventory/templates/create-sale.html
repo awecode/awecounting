@@ -3,11 +3,11 @@
 {% load filters %}
 
 {% block title %}
-	Create Purchase
+	Create Sale
 {% endblock %}
 
 {% block head_end %}
-    <script src="{% static 'js/inventory/create-purchase.js' %}"></script>
+    <script src="{% static 'js/inventory/create-sale.js' %}"></script>
     <script>
         ko_data = {{data|jsonify}};
     </script>
@@ -17,7 +17,7 @@
 <div class='container'>
 	<div class="row">
 		<div class="col-12-lg col-12-md col-12-sm col-12-xs">
-			<h2>Purchases</h2>
+			<h2>Sales</h2>
 		</div>
 	</div>
 	<div class="row">
@@ -77,12 +77,8 @@
 				</div>
 				<br>
 		       <input type="submit" class="btn btn-default btn-lg" value="{% trans 'Save' %}">
-
 			</form>
-
 		</div>
 	</div>
-
-	
 </div>
 {% endblock %}
