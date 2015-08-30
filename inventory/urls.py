@@ -3,6 +3,8 @@ import views
 from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = patterns('',
+                       url(r'^item/add/$', views.item, name='add-item'),
+
                        url(r'^purchase/create/$', views.purchase, name='purchase-create'),
                        url(r'^save/purchase/$', views.save_purchase, name='purchase-save'),
                        url(r'^purchase/list/$', views.purchase_list, name='purchase-list'),

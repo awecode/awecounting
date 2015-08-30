@@ -1,5 +1,5 @@
 import json
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from inventory.models import Item, Purchase, PurchaseRow, Party, Unit, Sale, SaleRow
 from inventory.forms import ItemForm
 from django.http import JsonResponse, HttpResponse
@@ -9,6 +9,29 @@ from rest_framework import generics
 
 def index(request):
     return render(request, 'index.html')
+
+def item(request, id=None):
+    if id:
+        item = get_object_or_404(Item, id=id)
+        scenario = 'Update'
+    else:
+        item = Item()
+        scenario = 'Create'
+    if request.POST:
+        form = ItemForm(data=request.POST, instance=item)
+        if form.is_valid():
+            item = form.save(commit=False)
+            property_name = request.POST.getlist('property_name')
+            item_property = request.POST.getlist('property')
+            other_properties = {}
+            for key, value in zip(property_name, item_property):
+                other_properties[key] = value
+            item.other_properties = other_properties
+            item.save()
+            return redirect('/')
+    else:
+        form = ItemForm(instance=item)
+    return render(request, 'item-form.html', {'form': form, 'scenario': scenario, 'item_data': item.other_properties})
 
 def save_model(model, values):
     for key, value in values.items():

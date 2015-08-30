@@ -33,7 +33,8 @@ class KOModelForm(forms.ModelForm):
             field.widget.attrs['data-bind'] = 'value: ' + name
             field.widget.attrs['class'] = 'form-control'
 
-class ItemForm(KOModelForm):
+class ItemForm(KOModelForm, TranslationModelForm):
     class Meta:
         model = Item
         fields = '__all__'
+        exclude = ['other_properties']
