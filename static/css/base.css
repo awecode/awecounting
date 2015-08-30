@@ -369,3 +369,16 @@ form {
 #add_party {
     margin-top: -24px;
 }
+
+#nav-icon {
+    border: 4px solid #20806F;
+    margin: 5px;
+    width: 8em;
+    height: 10em;
+    text-align: center;
+    padding-top: 22px;
+}
+
+#nav-icon i {
+    color: #206E5E
+}

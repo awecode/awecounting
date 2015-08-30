@@ -16,8 +16,8 @@
 {% block content %}
 <div class='container'>
 	<div class="row">
-		<div class="col-12-lg col-12-md col-12-sm col-12-xs">
-			<h2>Purchases</h2>
+		<div style="border-bottom: 2px solid #333" class="col-12-lg col-12-md col-12-sm col-12-xs">
+			<h2>Purchase</h2>
 		</div>
 	</div>
 	<div class="row">
@@ -26,12 +26,14 @@
 			<form method="post" data-bind="submit: save">
 				{% csrf_token %}
 				<div>
-					Party: <select data-bind="selectize: $root.parties, value: party, event: {change: $root.party_changed}"
-                         class="change-on-ready"></select>
+					Voucher No.: <input type="text" data-bind="value: voucher_no" class='form-control'>
+				</div>
+				<div class="pull-right">
+					Date: <input type="text" data-bind="value: date" class='form-control'>
 				</div>
 				<div>
-					Voucher No.: <input type="text" data-bind="value: voucher_no" class='form-control'>
-					Date: <input type="text" data-bind="value: date" class='form-control'>
+					Party: <select data-bind="selectize: $root.parties, value: party, event: {change: $root.party_changed}"
+                         class="change-on-ready"></select>
 				</div>
 				<br>
 
@@ -45,6 +47,8 @@
 								<td>{% trans "Quantity" %}</td>
 								<td>{% trans "Rate" %}</td>
 								<td>{% trans "Unit" %}</td>
+								<td>{% trans 'Discount' %}</td>
+								<td>{% trans 'Total' %}</td>
 							</tr>
 						</thead>
 
@@ -62,6 +66,8 @@
 			                    <td>
 			                    	<select data-bind="selectize: units, value: unit_id"></select>
 			                    </td>
+			                    <td data-bind="editableText: discount"></td>
+			                    <td data-bind="editableText: total"></td>
 			                    <td class="hide-on-print">
 			                    	<a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
 			                    </td>

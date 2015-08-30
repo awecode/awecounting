@@ -42,6 +42,7 @@ class PurchaseRow(models.Model):
     item = models.ForeignKey(Item)
     quantity = models.FloatField()
     rate = models.FloatField()
+    discount = models.FloatField(default=0)
     unit = models.ForeignKey(Unit)
     purchase = models.ForeignKey(Purchase, related_name='rows')
 
@@ -55,6 +56,7 @@ class SaleRow(models.Model):
     item = models.ForeignKey(Item)
     quantity = models.FloatField()
     rate = models.FloatField()
+    discount = models.FloatField(default=0)
     unit = models.ForeignKey(Unit)
     sale = models.ForeignKey(Sale, related_name='rows')
 

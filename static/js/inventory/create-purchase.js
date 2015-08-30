@@ -93,7 +93,7 @@ function PurchaseRow(row) {
 	self.item_id = ko.observable()
 	self.quantity = ko.observable()
 	self.rate = ko.observable()
-
+    self.discount = ko.observable()
     $.ajax({
         url: '/inventory/api/units.json',
         dataType: 'json',
@@ -107,5 +107,14 @@ function PurchaseRow(row) {
 
     for (var k in row)
         self[k] = ko.observable(row[k]);
+
+    self.total = ko.computed(function () {
+        if (self.discount() > 0 ) {
+            var total = self.quantity() * self.rate()
+            return total - self.discount()
+        } else {
+            return self.quantity() * self.rate()
+        }
+    })
 
 }

@@ -7,6 +7,9 @@ from inventory.serializer import PurchaseSerializer, ItemSerializer, PartySerial
 import datetime
 from rest_framework import generics
 
+def index(request):
+    return render(request, 'index.html')
+
 def save_model(model, values):
     for key, value in values.items():
         setattr(model, key, value)
@@ -59,7 +62,7 @@ def save_purchase(request):
                 return JsonResponse(dct)
             else:
                 values = {'sn': index+1, 'item_id': row.get('item_id'), 'quantity': row.get('quantity'),
-                    'rate': row.get('rate'), 'unit_id': row.get('unit_id'), 'purchase': obj }
+                    'rate': row.get('rate'), 'unit_id': row.get('unit_id'), 'discount': row.get('discount'), 'purchase': obj }
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
@@ -107,7 +110,7 @@ def save_sale(request):
                 return JsonResponse(dct)
             else:
                 values = {'sn': index+1, 'item_id': row.get('item_id'), 'quantity': row.get('quantity'),
-                    'rate': row.get('rate'), 'unit_id': row.get('unit_id'), 'sale': obj }
+                    'rate': row.get('rate'), 'unit_id': row.get('unit_id'), 'discount': row.get('discount'), 'sale': obj }
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
