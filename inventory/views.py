@@ -1,7 +1,8 @@
 import json
+from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404, redirect
 from inventory.models import Item, Purchase, PurchaseRow, Party, Unit, Sale, SaleRow
-from inventory.forms import ItemForm
+from inventory.forms import ItemForm, PartyForm, UnitForm
 from django.http import JsonResponse, HttpResponse
 from inventory.serializer import PurchaseSerializer, ItemSerializer, PartySerializer, UnitSerializer, SaleSerializer
 import datetime
@@ -23,15 +24,27 @@ def item(request, id=None):
             item = form.save(commit=False)
             property_name = request.POST.getlist('property_name')
             item_property = request.POST.getlist('property')
+            if request.FILES != {}:
+                item.image = request.FILES.get['image']
             other_properties = {}
             for key, value in zip(property_name, item_property):
                 other_properties[key] = value
             item.other_properties = other_properties
             item.save()
-            return redirect('/')
+            if request.is_ajax():
+                return render(request, 'callback.html', {'obj': ItemSerializer(item).data})
+            return redirect('/inventory/item')
     else:
         form = ItemForm(instance=item)
-    return render(request, 'item-form.html', {'form': form, 'scenario': scenario, 'item_data': item.other_properties})
+    if request.is_ajax():
+        base_template = 'modal.html'
+    else:
+        base_template = 'base.html'
+    return render(request, 'item-form.html', {'form': form, 'base_template': base_template, 'scenario': scenario, 'item_data': item.other_properties})
+
+def item_list(request):
+    obj = Item.objects.all()
+    return render(request, 'item_list.html', {'objects': obj})
 
 def save_model(model, values):
     for key, value in values.items():
@@ -152,6 +165,70 @@ def save_sale(request):
 def sale_list(request):
     obj = Sale.objects.all()
     return render(request, 'sale_list.html', {'objects': obj})
+
+def party_form(request, id=None):
+    if id:
+        obj = get_object_or_404(Party, id=id)
+        scenario = 'Update'
+    else:
+        obj = Party()
+        scenario = 'Create'
+    if request.POST:
+        form = PartyForm(data=request.POST, instance=obj)
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.save()
+            if request.is_ajax():
+                return render(request, 'callback.html', {'obj': PartySerializer(obj).data})
+            return redirect(reverse('list_parties'))
+    else:
+        form = PartyForm(instance=obj)
+    if request.is_ajax():
+        base_template = 'modal.html'
+    else:
+        base_template = 'base.html'
+    return render(request, 'party_form.html', {
+        'scenario': scenario,
+        'form': form,
+        'base_template': base_template,
+    })
+
+def parties_list(request):
+    obj = Party.objects.all()
+    return render(request, 'parties_list.html', {'objects': obj})
+
+
+def unit_form(request, id=None):
+    if id:
+        obj = get_object_or_404(Unit, id=id)
+        scenario = 'Update'
+    else:
+        obj = Unit()
+        scenario = 'Create'
+    if request.POST:
+        form = UnitForm(data=request.POST, instance=obj)
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.save()
+            if request.is_ajax():
+                return render(request, 'callback.html', {'obj': UnitSerializer(obj).data})
+            return redirect(reverse('list_units'))
+    else:
+        form = UnitForm(instance=obj)
+    if request.is_ajax():
+        base_template = 'modal.html'
+    else:
+        base_template = 'base.html'
+    return render(request, 'unit_form.html', {
+        'scenario': scenario,
+        'form': form,
+        'base_template': base_template,
+    })
+
+def unit_list(request):
+    obj = Unit.objects.all()
+    return render(request, 'unit_list.html', {'objects': obj})
+
 
 
 # djangorestframework API

@@ -4,6 +4,17 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = patterns('',
                        url(r'^item/add/$', views.item, name='add-item'),
+                       url(r'^item/$', views.item_list, name='item-list'),
+                       url(r'^item/detail/(?P<id>[0-9]+)/$', views.item, name='item-detail'),
+
+                       url(r'^party/add$', views.party_form, name='add-party'),
+                       url(r'^party/$', views.parties_list, name='list_parties'),
+                       url(r'^party/detail/(?P<id>[0-9]+)/$', views.party_form, name='party-detail'),
+
+                       url(r'^unit/add$', views.unit_form, name='add-unit'),
+                       url(r'^unit/$', views.unit_list, name='list_units'),
+                       url(r'^unit/detail/(?P<id>[0-9]+)/$', views.unit_form, name='unit-detail'),
+
 
                        url(r'^purchase/create/$', views.purchase, name='purchase-create'),
                        url(r'^save/purchase/$', views.save_purchase, name='purchase-save'),

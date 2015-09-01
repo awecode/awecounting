@@ -33,7 +33,7 @@
 				</div>
 				<div>
 					Party: <select data-bind="selectize: $root.parties, value: party, event: {change: $root.party_changed}"
-                         class="change-on-ready"></select>
+                        data-url="{% url 'add-party' %}" class="change-on-ready"></select>
 				</div>
 				<br>
 
@@ -59,12 +59,13 @@
 			                        <span class="wid-pad pull-left" data-bind="text:  $index()+1, localize: 1"> </span>
 			                    </td>
 			                    <td>
-			                    	<select data-bind="selectize: $root.items, value: item_id, event: {change: $root.item_changed}"></select>
+			                    	<select data-bind="selectize: $root.items, value: item_id, event: {change: $root.item_changed}"
+			                    	data-url="{% url 'add-item' %}" data-script="/static/js/inventory/item.js"></select>
 			                    </td>
 			                    <td data-bind="editableText: quantity, numeric: true"></td>
 			                    <td data-bind="editableText: rate, numeric: true"></td>
 			                    <td>
-			                    	<select data-bind="selectize: units, value: unit_id"></select>
+			                    	<select data-bind="selectize: $root.units, value: unit_id, event: {change: $root.unit_changed}" data-url="{% url 'add-unit' %}"></select>
 			                    </td>
 			                    <td data-bind="editableText: discount"></td>
 			                    <td data-bind="editableText: total"></td>
