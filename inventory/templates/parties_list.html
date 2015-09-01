@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load i18n staticfiles %}
+{% load filters %}
+
+{% block title %}{% trans 'Purchase' %}{% endblock %}
+
+{% block content %}
+<div class='container'>
+    <div class="row">
+
+        <h1>Party List</h1>
+
+            {% load pagination_tags %}
+            {% load sorting_tags %}
+            {% load filters %}
+
+            {% autosort objects as sorted_objects %}
+            {% autopaginate sorted_objects 25 as paginated_objects %}
+
+            <table class="table table-striped table-bordered">
+                <thead>
+                <th>{% anchor release_no _('ID') %}</th>
+                <th>{% anchor name _('Name') %}</th>
+                </thead>
+                <tbody>
+                {% for party in paginated_objects %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'party-detail' party.pk %}">{{ party.id }}</a>
+                        </td>
+                        <td>
+                            {{ party.name }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            {% paginate %}
+
+
+        <a class="btn btn-default btn-lg"
+               href="{% url 'add-party' %}">{% trans 'New' %} {% trans 'Item' %}</a>
+
+    </div>
+</div>
+{% endblock %}
