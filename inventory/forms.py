@@ -1,6 +1,8 @@
 from django import forms
 from modeltranslation.forms import TranslationModelForm
-from inventory.models import Item
+from inventory.models import Item, Party, Unit
+from django.utils.translation import ugettext_lazy as _
+
 
 class KOModelForm(forms.ModelForm):
     class EmailTypeInput(forms.widgets.TextInput):
@@ -38,3 +40,17 @@ class ItemForm(KOModelForm, TranslationModelForm):
         model = Item
         fields = '__all__'
         exclude = ['other_properties']
+
+class PartyForm(KOModelForm):
+    address = forms.CharField(label=_('Address'), required=False)
+    phone_no = forms.CharField(label=_('Phone No.'), required=False)
+    pan_no = forms.CharField(label=_('PAN No.'), required=False)
+
+    class Meta:
+        model = Party
+        fields = '__all__'
+
+class UnitForm(KOModelForm):
+    class Meta:
+        model = Unit
+        fields = '__all__'
