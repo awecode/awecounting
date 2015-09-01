@@ -14,9 +14,6 @@
 {% endblock %}
 
 {% block content %}
-<div class='container'>
-	<div class="row">
-		<div  class="col-12-lg col-12-md col-12-sm col-12-xs">
 			<h1 style="border-bottom: 2px solid #333">Item</h1>
 			<form method="POST" id='form' enctype="multipart/form-data">
 				{% csrf_token %}
@@ -38,7 +35,4 @@
 				</p>
 				<input type="submit" id='submit' class="btn btn-default">
 			</form>
-		</div>
-	</div>
-</div>
 {% endblock %}
