@@ -1,10 +1,10 @@
 import json
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404, redirect
-from inventory.models import Item, Purchase, PurchaseRow, Party, Unit, Sale, SaleRow, JournalEntry, Transaction, alter, set_transactions
+from inventory.models import Item, Purchase, PurchaseRow, Party, Unit, Sale, SaleRow, JournalEntry, Transaction, alter, set_transactions, InventoryAccount, none_for_zero, zero_for_none
 from inventory.forms import ItemForm, PartyForm, UnitForm
 from django.http import JsonResponse, HttpResponse
-from inventory.serializer import PurchaseSerializer, ItemSerializer, PartySerializer, UnitSerializer, SaleSerializer
+from inventory.serializer import PurchaseSerializer, ItemSerializer, PartySerializer, UnitSerializer, SaleSerializer, InventoryAccountRowSerializer
 import datetime
 from rest_framework import generics
 
@@ -235,7 +235,16 @@ def unit_list(request):
     obj = Unit.objects.all()
     return render(request, 'unit_list.html', {'objects': obj})
 
+def list_inventory_accounts(request):
+    objects = InventoryAccount.objects.all()
+    return render(request, 'list_inventory_accounts.html', {'objects': objects})
 
+def view_inventory_account(request, id):
+    obj = get_object_or_404(InventoryAccount, id=id)
+    journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
+        .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
+    data = InventoryAccountRowSerializer(journal_entries, many=True).data
+    return render(request, 'view_inventory_account.html', {'obj': obj, 'entries': journal_entries, 'data': data})
 
 # djangorestframework API
 

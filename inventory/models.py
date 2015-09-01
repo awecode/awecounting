@@ -81,7 +81,6 @@ class Item(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        import ipdb; ipdb.set_trace()
         account_no = kwargs.pop('account_no')
         if account_no:
             if self.account:
