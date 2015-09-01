@@ -1,7 +1,7 @@
 import json
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404, redirect
-from inventory.models import Item, Purchase, PurchaseRow, Party, Unit, Sale, SaleRow
+from inventory.models import Item, Purchase, PurchaseRow, Party, Unit, Sale, SaleRow, JournalEntry, Transaction, alter, set_transactions
 from inventory.forms import ItemForm, PartyForm, UnitForm
 from django.http import JsonResponse, HttpResponse
 from inventory.serializer import PurchaseSerializer, ItemSerializer, PartySerializer, UnitSerializer, SaleSerializer
@@ -30,7 +30,7 @@ def item(request, id=None):
             for key, value in zip(property_name, item_property):
                 other_properties[key] = value
             item.other_properties = other_properties
-            item.save()
+            item.save(account_no=form.cleaned_data['account_no'])
             if request.is_ajax():
                 return render(request, 'callback.html', {'obj': ItemSerializer(item).data})
             return redirect('/inventory/item')
@@ -103,6 +103,9 @@ def save_purchase(request):
                 if not created:
                     submodel = save_model(submodel, values)
                 dct['rows'][index] = submodel.id
+                set_transactions(submodel, obj.date,
+                         ['dr', submodel.item.account, submodel.quantity],
+                         )
         # delete_rows(params.get('table_view').get('deleted_rows'), model)
 
     except Exception as e:
@@ -151,6 +154,9 @@ def save_sale(request):
                 if not created:
                     submodel = save_model(submodel, values)
                 dct['rows'][index] = submodel.id
+                set_transactions(submodel, obj.date,
+                         ['cr', submodel.item.account, submodel.quantity],
+                         )
         # delete_rows(params.get('table_view').get('deleted_rows'), model)
 
     except Exception as e:
