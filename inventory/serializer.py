@@ -51,6 +51,7 @@ class SaleSerializer(serializers.ModelSerializer):
 
 class InventoryAccountRowSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
+    voucher_no = serializers.ReadOnlyField(source='creator.get_voucher_no')
     # voucher_no = serializers.ReadOnlyField()
     # specification = serializers.ReadOnlyField(source='creator.specification')
     # country_or_company = serializers.SerializerMethodField()
@@ -61,7 +62,7 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
     income_rate = serializers.SerializerMethodField()
     # income_total = serializers.SerializerMethodField()
     expense_quantity = serializers.SerializerMethodField()
-    expense_rate = serializers.SerializerMethodField()
+    # expense_rate = serializers.SerializerMethodField()
     # expense_total_cost_price = serializers.SerializerMethodField()
     # remaining_total_cost_price = serializers.SerializerMethodField()
     # remarks = serializers.SerializerMethodField()
