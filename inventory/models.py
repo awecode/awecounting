@@ -209,10 +209,14 @@ class PurchaseRow(models.Model):
     unit = models.ForeignKey(Unit)
     purchase = models.ForeignKey(Purchase, related_name='rows')
 
+    def get_voucher_no(self):
+        return self.purchase.voucher_no
+
 class Sale(models.Model):
     party = models.ForeignKey(Party, blank=True, null=True)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     date = models.DateField(default=datetime.datetime.today)
+
 
 class SaleRow(models.Model):
     sn = models.PositiveIntegerField()
@@ -223,6 +227,8 @@ class SaleRow(models.Model):
     unit = models.ForeignKey(Unit)
     sale = models.ForeignKey(Sale, related_name='rows')
 
+    def get_voucher_no(self):
+        return self.sale.voucher_no
 # class InventroyAccount(models.Model):
 #     item = models.ForeignKey(Item)
 #     dr_amount = models.FloatField(null=True, blank=True)
