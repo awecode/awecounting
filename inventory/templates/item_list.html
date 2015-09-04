@@ -21,6 +21,8 @@
                 <thead>
                 <th>{% anchor release_no _('ID') %}</th>
                 <th>{% anchor demandee _('Name') %}</th>
+                <th>{% anchor demandee _('Other Properties') %}</th>
+
                 </thead>
                 <tbody>
                 {% for item in paginated_objects %}
@@ -30,6 +32,9 @@
                         </td>
                         <td>
                             {{ item.name }}
+                        </td>
+                        <td>
+                            {{ item.other_properties }}
                         </td>
                     </tr>
                 {% endfor %}

@@ -25,8 +25,9 @@
         <thead>
         <tr>
             <th rowspan="2">{% trans 'Date' %}</th>
-            <th colspan="2">{% trans 'Debit' %}</th>
-            <th colspan="2">{% trans 'Credit' %}</th>
+            <th rowspan="2">{% trans 'Voucher No.' %}</th>
+            <th colspan="2">{% trans 'Purchases' %}</th>
+            <th colspan="2">{% trans 'Sales' %}</th>
             <th rowspan="2">{% trans 'Current Balance' %}</th>
 
         </tr>
@@ -41,12 +42,14 @@
         <!-- ko foreach:rows -->
         <tr>
             <td data-bind="text: date(), localize: 1"></td>
+            <td data-bind="text: voucher_no(), localize: 1"></td>
             <td data-bind="text: income_quantity(), localize: 1"></td>
             <td data-bind="text: income_rate(), localize: 1"></td>
 
             <td data-bind="text: expense_quantity(), localize: 1"></td>
             <td data-bind="text: expense_rate(), localize: 1"></td>
             <td data-bind="text: current_balance(), localize: 1"></td>
+            <td data-bind="visible:expense_flag">(<span data-bind="text:e1">a</span>:<span data-bind="text:r1">a</span>) (<span data-bind="text:e2">a</span>:<span data-bind="text:r2">a</span>)</td>
 
         </tr>
         <!-- /ko -->

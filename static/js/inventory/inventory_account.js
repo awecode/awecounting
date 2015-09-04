@@ -7,6 +7,15 @@ $(document).ready(function () {
 function InventoryAccountVM(data) {
 
     var self = this;
+    arr = []
+
+    for ( d in data ) {
+      var value = data[d].income_quantity;
+      for ( var i=0 ; i< value ; i++){
+        arr.push(data[d].income_rate)
+        }
+
+    }
 
     self.table_vm = new TableViewModel({rows: data, auto_add_first: false}, InventoryAccountRow);
 
@@ -33,13 +42,67 @@ function InventoryAccountVM(data) {
 
 function InventoryAccountRow(data){
     var self = this;
+    self.expense_rate = ko.observable()
+    
+    // counts = {}
+    // for (var i = 0; i < arr.length; i++) {
+    // counts[arr[i]] = 1 + (counts[arr[i]] || 0);
+    // }
+
+    self.e1 = ko.observable()
+    self.e2 = ko.observable()
+    self.r1 = ko.observable()
+    self.r2 = ko.observable()
+    self.expense_flag = ko.observable(false)
 
     for (var i in data){
         self[i] = ko.observable(data[i]);
     }
 
-    self.remaining_quantity= function(){
-        return 12;
+    if ( self.expense_quantity() ) {
+        var arry = arr
+        var count = 0
+        for ( var i = 0; i < self.expense_quantity(); i++ ) {
+        //   if (typeof(arry[1]) != 'undefined') {
+              if (arry[0] != arry[1]) {
+                expense_second_value = 0
+                if ((count+1) != self.expense_quantity()){
+                    var diff = self.expense_quantity() - (count+1)
+                    self.e1(count+1)
+                    // self.r1(self.expense_rate())
+                    self.r1(arry[0])
+                    expense_first_value = count + 1
+
+                    for ( var i = 0; i < diff ; i++ ){
+                        self.r2(arry.shift())
+                        self.e2(diff)
+                        expense_second_value++
+                        if ( expense_second_value == diff ) {
+                            break;
+                        }
+                        // debugger;
+
+                    }
+                    // debugger;
+                    if (arry[0] != arry[1]) {
+                        arry.shift()
+                        // debugger;
+                        self.expense_flag(true)
+                        count=0
+
+                        break;
+                    };
+                }
+        }
+        // debugger;
+        if( typeof(expense_first_value) != 'undefined' && typeof(expense_second_value) != 'undefined') {
+            delete expense_first_value
+            delete expense_second_value 
+            debugger;
+        }
+        self.expense_rate(arry.shift())
+        count++;
+        }    
     }
 
 }
