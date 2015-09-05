@@ -58,7 +58,7 @@ function InventoryAccountRow(data){
     for (var i in data){
         self[i] = ko.observable(data[i]);
     }
-
+    
     if ( self.expense_quantity() ) {
         var arry = arr
         var count = 0
@@ -72,19 +72,21 @@ function InventoryAccountRow(data){
                     // self.r1(self.expense_rate())
                     self.r1(arry[0])
                     expense_first_value = count + 1
-
+                    // debugger;
                     for ( var i = 0; i < diff ; i++ ){
                         self.r2(arry.shift())
                         self.e2(diff)
                         expense_second_value++
-                        if ( expense_second_value == diff ) {
+                        if ( (i+1) == diff ) {
+                            // debugger;
+                            // arry.shift()
                             break;
                         }
                         // debugger;
 
                     }
                     // debugger;
-                    if (arry[0] != arry[1]) {
+                    if (expense_first_value + expense_second_value == self.expense_quantity()) {
                         arry.shift()
                         // debugger;
                         self.expense_flag(true)
@@ -98,7 +100,7 @@ function InventoryAccountRow(data){
         if( typeof(expense_first_value) != 'undefined' && typeof(expense_second_value) != 'undefined') {
             delete expense_first_value
             delete expense_second_value 
-            debugger;
+            // debugger;
         }
         self.expense_rate(arry.shift())
         count++;
