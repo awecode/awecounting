@@ -71,47 +71,35 @@ function InventoryAccountRow(data){
         var arry = arr
         var count = 0
         for ( var i = 0; i < self.expense_quantity(); i++ ) {
-        //   if (typeof(arry[1]) != 'undefined') {
-              if (arry[0] != arry[1]) {
+            if (arry[0] != arry[1]) {
                 expense_second_value = 0
                 if ((count+1) != self.expense_quantity()){
                     var diff = self.expense_quantity() - (count+1)
                     self.e1(count+1)
-                    // self.r1(self.expense_rate())
                     self.r1(arry[0])
                     expense_first_value = count + 1
-                    // debugger;
                     for ( var i = 0; i < diff ; i++ ){
                         self.r2(arry.shift())
                         self.e2(diff)
                         expense_second_value++
                         if ( (i+1) == diff ) {
-                            // debugger;
-                            // arry.shift()
                             break;
                         }
-                        // debugger;
-
                     }
-                    // debugger;
                     if (expense_first_value + expense_second_value == self.expense_quantity()) {
                         arry.shift()
-                        // debugger;
                         self.expense_flag(true)
                         count=0
-
                         break;
                     };
                 }
-        }
-        // debugger;
-        if( typeof(expense_first_value) != 'undefined' && typeof(expense_second_value) != 'undefined') {
-            delete expense_first_value
-            delete expense_second_value 
-            // debugger;
-        }
-        self.expense_rate(arry.shift())
-        count++;
+            }
+            if( typeof(expense_first_value) != 'undefined' && typeof(expense_second_value) != 'undefined') {
+                delete expense_first_value
+                delete expense_second_value 
+            }
+            self.expense_rate(arry.shift())
+            count++;
         }    
     }
 

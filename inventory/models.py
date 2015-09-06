@@ -30,7 +30,6 @@ class InventoryAccount(models.Model):
     name = models.CharField(max_length=100)
     account_no = models.PositiveIntegerField()
     current_balance = models.FloatField(default=0)
-    # opening_balance = models.FloatField(default=0)
 
     def __str__(self):
         return str(self.account_no) + ' [' + self.name + ']'
@@ -47,26 +46,6 @@ class InventoryAccount(models.Model):
             return max_voucher_no + 1
         else:
             return 1
-
-    # def get_category(self):
-    #     try:
-    #         item = self.item
-    #     except:
-    #         return None
-    #     try:
-    #         category = item.category
-    #     except:
-    #         return None
-    #     return category
-
-    # def add_category(self, category):
-    #     category_instance, created = Category.objects.get_or_create(name=category)
-    #     self.category = category_instance
-
-    # def get_all_categories(self):
-    #     return self.category.get_ancestors(include_self=True)
-
-    # categories = property(get_all_categories)
 
 class Item(models.Model):
     name = models.CharField(max_length=254)
@@ -87,8 +66,6 @@ class Item(models.Model):
                 account = self.account
                 account.account_no = account_no
             else:
-                # account = InventoryAccount(name=self.name, account_no=account_no,
-                #                            opening_balance=opening_balance, current_balance=opening_balance)
                 account = InventoryAccount(name=self.name, account_no=account_no)
                 account.save()
                 self.account = account
@@ -99,10 +76,6 @@ class JournalEntry(models.Model):
     content_type = models.ForeignKey(ContentType, related_name='inventory_journal_entries')
     model_id = models.PositiveIntegerField()
     creator = GenericForeignKey('content_type', 'model_id')
-    # country_of_production = models.CharField(max_length=50, blank=True, null=True)
-    # size = models.CharField(max_length=100, blank=True, null=True)
-    # expected_life = models.CharField(max_length=100, blank=True, null=True)
-    # source = models.CharField(max_length=100, blank=True, null=True)
 
     @staticmethod
     def get_for(source):
@@ -128,26 +101,9 @@ class Transaction(models.Model):
     def __str__(self):
         return str(self.account) + ' [' + str(self.dr_amount) + ' / ' + str(self.cr_amount) + ']'
 
-    # def total_dr_amount(self):
-    #     dr_transctions = Transaction.objects.filter(account__name=self.account.name, cr_amount=None,
-    #                                                 journal_entry__journal__rate=self.journal_entry.creator.rate)
-    #     total = 0
-    #     for transaction in dr_transctions:
-    #         total += transaction.dr_amount
-    #     return total
-
-    # def total_dr_amount_without_rate(self):
-    #     dr_transctions = Transaction.objects.filter(account__name=self.account.name, cr_amount=None)
-    #     total = 0
-    #     for transaction in dr_transctions:
-    #         total += transaction.dr_amount
-    #     return total
-
-
 def alter(account, date, diff):
     Transaction.objects.filter(journal_entry__date__gt=date, account=account).update(
         current_balance=none_for_zero(zero_for_none(F('current_balance')) + zero_for_none(diff)))
-
 
 def set_transactions(model, date, *args):
     args = [arg for arg in args if arg is not None]
@@ -229,17 +185,6 @@ class SaleRow(models.Model):
 
     def get_voucher_no(self):
         return self.sale.voucher_no
-# class InventroyAccount(models.Model):
-#     item = models.ForeignKey(Item)
-#     dr_amount = models.FloatField(null=True, blank=True)
-#     cr_amount = models.FloatField(null=True, blank=True)
-#     current_balance = models.FloatField(null=True, blank=True)
-
-# class Transaction(models.Model):
-#     date = models.DateField()
-#     item = models.ForeignKey(Item)
-#     dr_amount = models.FloatField(null=True, blank=True)
-#     cr_amount = models.FloatField(null=True, blank=True)
 
 
 

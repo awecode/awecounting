@@ -39,22 +39,13 @@ class ItemForm(KOModelForm, TranslationModelForm):
     account_no = forms.Field(widget=forms.TextInput(), label=_('Inventory Account No.'))
 
     def __init__(self, *args, **kwargs):
-        # self.user = kwargs.pop('user')
         super(ItemForm, self).__init__(*args, **kwargs)
-        # self.fields['vattable'].label = _('Vattable')
-        # self.fields['type'].label = _('Type')
-        # self.fields['vattable'].label = _('Vattable')
-        
+
         if self.instance.account:
             self.fields['account_no'].initial = self.instance.account.account_no
         else:
             self.fields['account_no'].initial = InventoryAccount.get_next_account_no()
-        # if not self.user.in_group('Store Keeper'):
-        #     self.fields['account_no'].widget = forms.HiddenInput()
-        #     self.fields['opening_balance'].widget = forms.HiddenInput()
-        #     self.fields['property_classification_reference_number'].widget = forms.HiddenInput()
         if self.instance.id:
-        #     self.fields['opening_balance'].widget = forms.HiddenInput()
             self.fields['account_no'].widget = forms.HiddenInput()
     
     def clean_account_no(self):
