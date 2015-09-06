@@ -22,8 +22,13 @@
 {#</div>#}
 <script>
 $(document).ready(function() {
-	$('#submit').click(function(event) {
-		$('.modal').modal('hide');
+	$('#form').submit(function() {
+		// console.log($('#form'))
+		$('#item_modal').modal('hide');
+		// console.log($('.modal'));
 	});
 });
+$('#item_modal').on('hidden.bs.modal', function () {
+	$('.modal').remove();
+})
 </script>

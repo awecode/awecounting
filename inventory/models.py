@@ -17,6 +17,11 @@ def zero_for_none(obj):
     else:
         return obj
 
+class UnitConverter(models.Model):
+    item_unit = models.CharField(max_length=250)
+    to = models.CharField(max_length=250)
+    multiple = models.FloatField()
+
 
 class Unit(models.Model):
     name = models.CharField(max_length=50)
