@@ -58,7 +58,15 @@ function InventoryAccountRow(data){
     for (var i in data){
         self[i] = ko.observable(data[i]);
     }
-    
+
+    self.income_total = ko.computed(function() {
+        if ( self.income_quantity() ) {
+            return self.income_quantity() * self.income_rate()
+        } else {
+            return ''
+        }
+    });
+
     if ( self.expense_quantity() ) {
         var arry = arr
         var count = 0
@@ -106,5 +114,17 @@ function InventoryAccountRow(data){
         count++;
         }    
     }
+
+    self.expense_total = ko.computed(function() {
+        if ( self.expense_quantity() ) {
+            if (self.expense_flag()) {
+                return (self.e1() * self.r1()) + (self.e2() * self.r2())
+            } else {
+                return self.expense_quantity() * self.expense_rate()
+            };
+        } else {
+            return ''
+        }
+    });
 
 }
