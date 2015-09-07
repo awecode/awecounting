@@ -388,7 +388,7 @@ div #nav-icon:hover, #nav-icon-no-list:hover {
 #nav-icon i, #nav-icon-no-list i {
     color: #206E5E;
     font-size: 9em;
-    /*margin-top: 3px;*/
+    /*max-resolution: res;n-top: 3px;*/
     transition: font-size .5s;
 }
 
