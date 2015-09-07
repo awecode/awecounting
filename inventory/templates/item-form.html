@@ -7,13 +7,13 @@
 {% endblock %}
 
 {% block head_end %}
+{% endblock %}
+
+{% block content %}
     <script src="{% static 'js/inventory/item.js' %}"></script>
     <script>
         item_data = {{ item_data| jsonify }};
     </script>
-{% endblock %}
-
-{% block content %}
 			<h1 style="border-bottom: 2px solid #333">Item</h1>
 			<form method="POST" id='form' enctype="multipart/form-data">
 				{% csrf_token %}

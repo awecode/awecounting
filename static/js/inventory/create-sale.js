@@ -49,6 +49,21 @@ function SaleViewModel(data) {
         obj.party_pan_no(selected_obj.pan_no);
     }
 
+    $.ajax({
+        url: '/inventory/api/units.json',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            self.units = ko.observableArray(data);
+        }
+    });
+
+    self.unit_changed = function (row) {
+        var selected_item = $.grep(self.units(), function (i) {
+            return i.id == row.unit_id();
+        })[0];
+        if (!selected_item) return;
+    }
     self.table_view = new TableViewModel({rows: data.rows}, SaleRow);
 
 
@@ -89,16 +104,7 @@ function SaleRow(row) {
 	self.item_id = ko.observable()
 	self.quantity = ko.observable()
 	self.rate = ko.observable()
-    self.discount = ko.observable()
-
-    $.ajax({
-        url: '/inventory/api/units.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.units = ko.observableArray(data);
-        }
-    });
+    self.discount = ko.observable(0)
 
 	self.unit_id = ko.observable()
 

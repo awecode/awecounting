@@ -21,7 +21,12 @@
 {#    <a href="#" class="btn" data-dismiss="modal">Cancel</a>#}
 {#</div>#}
 <script>
-$('#form').submit(function(event) {
-	$('.modal').modal('hide');
+$(document).ready(function() {
+	$('#form').submit(function() {
+		$('#item_modal').modal('hide');
+	});
 });
+$('#item_modal').on('hidden.bs.modal', function () {
+	$('.modal').remove();
+})
 </script>

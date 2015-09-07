@@ -15,6 +15,9 @@ urlpatterns = patterns('',
                        url(r'^unit/$', views.unit_list, name='list_units'),
                        url(r'^unit/detail/(?P<id>[0-9]+)/$', views.unit_form, name='unit-detail'),
 
+                       url(r'^accounts/$', views.list_inventory_accounts, name='list_inventory_accounts'),
+                       url(r'^account/(?P<id>[0-9]+)/$', views.view_inventory_account, name='view_inventory_account'),
+
 
                        url(r'^purchase/create/$', views.purchase, name='purchase-create'),
                        url(r'^save/purchase/$', views.save_purchase, name='purchase-save'),

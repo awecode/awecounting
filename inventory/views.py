@@ -1,10 +1,10 @@
 import json
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404, redirect
-from inventory.models import Item, Purchase, PurchaseRow, Party, Unit, Sale, SaleRow
+from inventory.models import Item, Purchase, PurchaseRow, Party, Unit, Sale, SaleRow, JournalEntry, Transaction, alter, set_transactions, InventoryAccount, none_for_zero, zero_for_none
 from inventory.forms import ItemForm, PartyForm, UnitForm
 from django.http import JsonResponse, HttpResponse
-from inventory.serializer import PurchaseSerializer, ItemSerializer, PartySerializer, UnitSerializer, SaleSerializer
+from inventory.serializer import PurchaseSerializer, ItemSerializer, PartySerializer, UnitSerializer, SaleSerializer, InventoryAccountRowSerializer
 import datetime
 from rest_framework import generics
 
@@ -30,7 +30,7 @@ def item(request, id=None):
             for key, value in zip(property_name, item_property):
                 other_properties[key] = value
             item.other_properties = other_properties
-            item.save()
+            item.save(account_no=form.cleaned_data['account_no'])
             if request.is_ajax():
                 return render(request, 'callback.html', {'obj': ItemSerializer(item).data})
             return redirect('/inventory/item')
@@ -103,6 +103,9 @@ def save_purchase(request):
                 if not created:
                     submodel = save_model(submodel, values)
                 dct['rows'][index] = submodel.id
+                set_transactions(submodel, obj.date,
+                         ['dr', submodel.item.account, submodel.quantity],
+                         )
         # delete_rows(params.get('table_view').get('deleted_rows'), model)
 
     except Exception as e:
@@ -151,6 +154,9 @@ def save_sale(request):
                 if not created:
                     submodel = save_model(submodel, values)
                 dct['rows'][index] = submodel.id
+                set_transactions(submodel, obj.date,
+                         ['cr', submodel.item.account, submodel.quantity],
+                         )
         # delete_rows(params.get('table_view').get('deleted_rows'), model)
 
     except Exception as e:
@@ -229,7 +235,16 @@ def unit_list(request):
     obj = Unit.objects.all()
     return render(request, 'unit_list.html', {'objects': obj})
 
+def list_inventory_accounts(request):
+    objects = InventoryAccount.objects.all()
+    return render(request, 'list_inventory_accounts.html', {'objects': objects})
 
+def view_inventory_account(request, id):
+    obj = get_object_or_404(InventoryAccount, id=id)
+    journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
+        .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
+    data = InventoryAccountRowSerializer(journal_entries, many=True).data
+    return render(request, 'view_inventory_account.html', {'obj': obj, 'entries': journal_entries, 'data': data})
 
 # djangorestframework API
 
