@@ -371,7 +371,7 @@ form {
 }
 
 /*Hover effect*/
-#nav-icon {
+#nav-icon, #nav-icon-no-list {
     border: 4px solid #20806F;
     margin: 5px;
     width: 13em;
@@ -380,12 +380,12 @@ form {
     padding-top: 22px;
 }
 
-div #nav-icon:hover {
+div #nav-icon:hover, #nav-icon-no-list:hover {
     background-color: rgba(224, 241, 231, 0.84);
     
 }
 
-#nav-icon i {
+#nav-icon i, #nav-icon-no-list i {
     color: #206E5E;
     font-size: 9em;
     /*margin-top: 3px;*/
@@ -405,7 +405,7 @@ div #nav-icon:hover i {
     margin-top: 10px;
 }
 
-#nav-icon h2 {
+#nav-icon h2, #nav-icon-no-list h2 {
     margin-top: -3px;
     /*display: none;*/
     color: #20806F;
