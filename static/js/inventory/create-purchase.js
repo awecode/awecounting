@@ -123,6 +123,8 @@ function PurchaseRow(row) {
 
 	self.unit_id = ko.observable()
 
+    for (var k in row)
+        self[k] = ko.observable(row[k]);
 
     self.total = ko.computed(function () {
         if (self.discount() > 0 ) {
@@ -133,7 +135,5 @@ function PurchaseRow(row) {
         }
     })
 
-    for (var k in row)
-        self[k] = ko.observable(row[k]);
 
 }
