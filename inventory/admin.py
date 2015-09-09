@@ -1,5 +1,5 @@
 from django.contrib import admin
-from inventory.models import Unit, Item, Purchase, PurchaseRow, Party, Sale, SaleRow, InventoryAccount, Transaction, JournalEntry
+from inventory.models import Unit, Item, Purchase, PurchaseRow, Party, Sale, SaleRow, InventoryAccount, Transaction, JournalEntry, UnitConverter
 from modeltranslation.admin import TranslationAdmin
 
 admin.site.register(Unit, TranslationAdmin)
@@ -12,6 +12,7 @@ admin.site.register(SaleRow)
 admin.site.register(InventoryAccount)
 admin.site.register(Transaction)
 admin.site.register(JournalEntry)
+admin.site.register(UnitConverter)
 
 
 
