@@ -91,7 +91,7 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
                 multiple = unit_converter.multiple
                 if self.context.get('unit_multiple'):
                     unit_multiple = self.context.get('unit_multiple')
-                    return (obj.creator.rate * multiple ) / unit_multiple
+                    return (obj.creator.rate * unit_multiple ) / multiple
                 else:
                     return obj.creator.rate / multiple
             else:

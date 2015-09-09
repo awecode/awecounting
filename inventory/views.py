@@ -265,16 +265,11 @@ def view_inventory_account(request, id):
                 .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
             data = InventoryAccountRowSerializer(journal_entries, many=True, context={'unit_multiple': multiple, 'default_unit': obj.item.unit.name }).data
             current_unit = unit.name
-        else:
-            journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
-                .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
-            data = InventoryAccountRowSerializer(journal_entries, many=True, context={'default_unit': obj.item.unit.name}).data
-            current_unit = obj.item.unit
-    else:
-        journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
-            .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
-        data = InventoryAccountRowSerializer(journal_entries, many=True, context={'default_unit': obj.item.unit.name}).data
-        current_unit = obj.item.unit
+            return render(request, 'view_inventory_account.html', {'obj': obj, 'entries': journal_entries, 'data': data, 'units': units, 'current_unit': current_unit})
+    journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
+        .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
+    data = InventoryAccountRowSerializer(journal_entries, many=True, context={'default_unit': obj.item.unit.name}).data
+    current_unit = obj.item.unit
     return render(request, 'view_inventory_account.html', {'obj': obj, 'entries': journal_entries, 'data': data, 'units': units, 'current_unit': current_unit})
 
 # djangorestframework API
