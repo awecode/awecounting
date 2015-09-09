@@ -1,7 +1,7 @@
 import json
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404, redirect
-from inventory.models import Item, Purchase, PurchaseRow, Party, Unit, Sale, SaleRow, JournalEntry, Transaction, alter, set_transactions, InventoryAccount, none_for_zero, zero_for_none
+from inventory.models import Item, UnitConverter, Purchase, PurchaseRow, Party, Unit, Sale, SaleRow, JournalEntry, Transaction, alter, set_transactions, InventoryAccount, none_for_zero, zero_for_none
 from inventory.forms import ItemForm, PartyForm, UnitForm
 from django.http import JsonResponse, HttpResponse
 from inventory.serializer import PurchaseSerializer, ItemSerializer, PartySerializer, UnitSerializer, SaleSerializer, InventoryAccountRowSerializer
@@ -97,8 +97,21 @@ def save_purchase(request):
                 dct['error_message'] = 'These feilds must be filled: ' + ', '.join(invalid_check)
                 return JsonResponse(dct)
             else:
-                values = {'sn': index+1, 'item_id': row.get('item_id'), 'quantity': row.get('quantity'),
-                    'rate': row.get('rate'), 'unit_id': row.get('unit_id'), 'discount': row.get('discount'), 'purchase': obj }
+                item = Item.objects.get(pk=row.get('item_id'))
+                unit = Unit.objects.get(pk=row.get('unit_id'))
+                if item.unit.name != unit.name:
+                    try:
+                        unit_converter = UnitConverter.objects.get(base_unit__name=item.unit.name, unit_to_convert__name=unit.name)
+                    except:
+                        dct['error_message'] = "Unit doesn't match"
+                        return JsonResponse(dct)
+                    new_quantity = int(row.get('quantity')) * unit_converter.multiple
+                    new_rate = int(row.get('rate')) / unit_converter.multiple
+                    values = {'sn': index+1, 'item_id': row.get('item_id'), 'quantity': new_quantity,
+                        'rate': new_rate, 'unit_id': item.unit.id, 'discount': row.get('discount'), 'purchase': obj }
+                else:
+                    values = {'sn': index+1, 'item_id': row.get('item_id'), 'quantity': row.get('quantity'),
+                        'rate': row.get('rate'), 'unit_id': row.get('unit_id'), 'discount': row.get('discount'), 'purchase': obj }
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
