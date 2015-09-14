@@ -1,17 +1,13 @@
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 gettext = lambda s: s
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+)
 
-ALLOWED_HOSTS = []
-
-
-# Application definition
 
 INSTALLED_APPS = (
     'modeltranslation',
@@ -27,7 +23,6 @@ INSTALLED_APPS = (
     'rest_framework',
     'linaro_django_pagination',
     'webstack_django_sorting',
-    'debug_toolbar',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -46,7 +41,6 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'app.urls'
 
 WSGI_APPLICATION = 'app.wsgi.application'
-
 
 LANGUAGE_CODE = 'en'
 
@@ -69,4 +63,3 @@ try:
     from .local_settings import *  # noqa
 except ImportError:
     pass
-

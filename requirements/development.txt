@@ -13,6 +13,6 @@ djangorestframework
 Pillow
 -e git+https://github.com/helber/django-dbsettings.git@master#egg=django-dbsettings
 django-modeltranslation
-sorl-thumbnail==11.12.1b
+sorl-thumbnail
 jsonfield
 openpyxl
