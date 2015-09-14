@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from inventory.models import Purchase, PurchaseRow, Item, Party, Unit, Sale, SaleRow, JournalEntry, none_for_zero, zero_for_none
+from inventory.models import Purchase, PurchaseRow, Item, Party, Unit, Sale, SaleRow, JournalEntry, none_for_zero, zero_for_none, UnitConverter
 
 class ItemSerializer(serializers.ModelSerializer):
 	unit_id = serializers.ReadOnlyField(source='unit.id')
@@ -64,17 +64,62 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
     def get_income_quantity(self, obj):
         if obj.creator.__class__ == SaleRow:
             return ''
-        return obj.creator.quantity
+        else:
+            default_unit = self.context.get('default_unit')
+            if obj.creator.unit.name != default_unit:
+                unit_converter = UnitConverter.objects.get(base_unit__name=default_unit, unit_to_convert__name=obj.creator.unit.name)
+                multiple = unit_converter.multiple
+                if self.context.get('unit_multiple'):
+                    unit_multiple = self.context.get('unit_multiple')
+                    return (obj.creator.quantity * multiple ) / unit_multiple
+                else:
+                    return obj.creator.quantity * multiple
+            else:
+                if self.context.get('unit_multiple'):
+                    unit_multiple = self.context.get('unit_multiple')
+                    return obj.creator.quantity / unit_multiple
+                else:
+                    return obj.creator.quantity
 
     def get_income_rate(self, obj):
         if obj.creator.__class__ == SaleRow:
             return ''
-        return obj.creator.rate
+        else:
+            default_unit = self.context.get('default_unit')
+            if obj.creator.unit.name != default_unit:
+                unit_converter = UnitConverter.objects.get(base_unit__name=default_unit, unit_to_convert__name=obj.creator.unit.name)
+                multiple = unit_converter.multiple
+                if self.context.get('unit_multiple'):
+                    unit_multiple = self.context.get('unit_multiple')
+                    return (obj.creator.rate * unit_multiple ) / multiple
+                else:
+                    return obj.creator.rate / multiple
+            else:
+                if self.context.get('unit_multiple'):
+                    unit_multiple = self.context.get('unit_multiple')
+                    return obj.creator.rate * unit_multiple
+                else:
+                    return obj.creator.rate
 
     def get_expense_quantity(self, obj):
         if obj.creator.__class__ == PurchaseRow:
             return ''
-        return obj.creator.quantity
+        else:
+            default_unit = self.context.get('default_unit')
+            if obj.creator.unit.name != default_unit:
+                unit_converter = UnitConverter.objects.get(base_unit__name=default_unit, unit_to_convert__name=obj.creator.unit.name)
+                multiple = unit_converter.multiple
+                if self.context.get('unit_multiple'):
+                    unit_multiple = self.context.get('unit_multiple')
+                    return (obj.creator.quantity * multiple ) / unit_multiple
+                else:
+                    return obj.creator.quantity * multiple
+            else:
+                if self.context.get('unit_multiple'):
+                    unit_multiple = self.context.get('unit_multiple')
+                    return obj.creator.quantity / unit_multiple
+                else:
+                    return obj.creator.quantity
 
     def get_expense_rate(self, obj):
         if obj.creator.__class__ == PurchaseRow:

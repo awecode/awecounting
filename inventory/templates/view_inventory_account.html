@@ -17,8 +17,18 @@
 
     {% trans "Inventory Item's Name" %} : {{ obj.item.name }}
     <br>
-    {% trans 'Unit' %} : {{ obj.item.unit }}
+    {% trans 'Unit' %} : {{ current_unit }}
     <br>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="unit-convert">Convert to:</label>
+        <select name="unit-convert-option" id="unit-convert">
+            {% for unit in units %}
+            <option value="{{ unit.id }}">{{ unit.name }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit">
+    </form>
     <br><br>
 
     <table class="table table-striped table-bordered">

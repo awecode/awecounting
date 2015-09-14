@@ -17,18 +17,21 @@ def zero_for_none(obj):
     else:
         return obj
 
-class UnitConverter(models.Model):
-    item_unit = models.CharField(max_length=250)
-    to = models.CharField(max_length=250)
-    multiple = models.FloatField()
-
-
 class Unit(models.Model):
     name = models.CharField(max_length=50)
     short_name = models.CharField(max_length=10)
 
     def __unicode__(self):
         return self.name
+
+class UnitConverter(models.Model):
+    base_unit = models.ForeignKey(Unit, null=True, related_name='base_unit')
+    unit_to_convert = models.ForeignKey(Unit, null=True)
+    multiple = models.FloatField()
+
+    def __unicode__(self):
+        return self.unit_to_convert.name + ' ' + '[' + str(self.multiple) + ':' + self.base_unit.name + ']'
+
 
 class InventoryAccount(models.Model):
     # code = models.CharField(max_length=10, blank=True, null=True)

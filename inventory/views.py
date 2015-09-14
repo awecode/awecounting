@@ -1,7 +1,7 @@
 import json
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404, redirect
-from inventory.models import Item, Purchase, PurchaseRow, Party, Unit, Sale, SaleRow, JournalEntry, Transaction, alter, set_transactions, InventoryAccount, none_for_zero, zero_for_none
+from inventory.models import Item, UnitConverter, Purchase, PurchaseRow, Party, Unit, Sale, SaleRow, JournalEntry, Transaction, alter, set_transactions, InventoryAccount, none_for_zero, zero_for_none
 from inventory.forms import ItemForm, PartyForm, UnitForm
 from django.http import JsonResponse, HttpResponse
 from inventory.serializer import PurchaseSerializer, ItemSerializer, PartySerializer, UnitSerializer, SaleSerializer, InventoryAccountRowSerializer
@@ -97,6 +97,19 @@ def save_purchase(request):
                 dct['error_message'] = 'These feilds must be filled: ' + ', '.join(invalid_check)
                 return JsonResponse(dct)
             else:
+                item = Item.objects.get(pk=row.get('item_id'))
+                unit = Unit.objects.get(pk=row.get('unit_id'))
+                # if item.unit.name != unit.name:
+                #     try:
+                #         unit_converter = UnitConverter.objects.get(base_unit__name=item.unit.name, unit_to_convert__name=unit.name)
+                #     except:
+                #         dct['error_message'] = "Unit doesn't match"
+                #         return JsonResponse(dct)
+                #     new_quantity = int(row.get('quantity')) * unit_converter.multiple
+                #     new_rate = int(row.get('rate')) / unit_converter.multiple
+                #     values = {'sn': index+1, 'item_id': row.get('item_id'), 'quantity': new_quantity,
+                #         'rate': new_rate, 'unit_id': item.unit.id, 'discount': row.get('discount'), 'purchase': obj }
+                # else:
                 values = {'sn': index+1, 'item_id': row.get('item_id'), 'quantity': row.get('quantity'),
                     'rate': row.get('rate'), 'unit_id': row.get('unit_id'), 'discount': row.get('discount'), 'purchase': obj }
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
@@ -241,10 +254,27 @@ def list_inventory_accounts(request):
 
 def view_inventory_account(request, id):
     obj = get_object_or_404(InventoryAccount, id=id)
+    # units = Unit.objects.all()
+    units_to_convert = UnitConverter.objects.filter(base_unit__name=obj.item.unit.name).values_list('unit_to_convert__pk', flat=True)
+    units_to_convert_list = Unit.objects.filter(pk__in=units_to_convert)
+    units_list = [o for o in units_to_convert_list]
+    units_list.append(Unit.objects.get(pk=obj.item.unit.pk))
+    if request.POST:
+        unit_id = request.POST.get('unit-convert-option')
+        unit = Unit.objects.get(pk=unit_id)
+        if unit.name != obj.item.unit.name:
+            unit_convert = UnitConverter.objects.get(base_unit__name=obj.item.unit.name, unit_to_convert__name=unit.name)
+            multiple = unit_convert.multiple
+            journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
+                .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
+            data = InventoryAccountRowSerializer(journal_entries, many=True, context={'unit_multiple': multiple, 'default_unit': obj.item.unit.name }).data
+            current_unit = unit.name
+            return render(request, 'view_inventory_account.html', {'obj': obj, 'entries': journal_entries, 'data': data, 'units': units_list, 'current_unit': current_unit})
     journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
         .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
-    data = InventoryAccountRowSerializer(journal_entries, many=True).data
-    return render(request, 'view_inventory_account.html', {'obj': obj, 'entries': journal_entries, 'data': data})
+    data = InventoryAccountRowSerializer(journal_entries, many=True, context={'default_unit': obj.item.unit.name}).data
+    current_unit = obj.item.unit
+    return render(request, 'view_inventory_account.html', {'obj': obj, 'entries': journal_entries, 'data': data, 'units': units_list, 'current_unit': current_unit})
 
 # djangorestframework API
 
