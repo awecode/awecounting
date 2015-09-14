@@ -2,6 +2,7 @@
 pyinotify
 git-pylint-commit-hook
 django-debug-toolbar
+ipdb
 
 # Development and Production
 Django
