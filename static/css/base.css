@@ -443,3 +443,7 @@ div #nav-icon ul {
     border: none;
     border-bottom: 2px solid #20806F; 
 }
+
+.selectize-control {
+  max-width: 300px;
+}

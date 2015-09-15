@@ -1,15 +1,19 @@
 import json
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404, redirect
-from inventory.models import Item, UnitConverter, Purchase, PurchaseRow, Party, Unit, Sale, SaleRow, JournalEntry, Transaction, alter, set_transactions, InventoryAccount, none_for_zero, zero_for_none
+from inventory.models import Item, UnitConverter, Purchase, PurchaseRow, Party, Unit, Sale, SaleRow, JournalEntry, Transaction, \
+    alter, set_transactions, InventoryAccount, none_for_zero, zero_for_none
 from inventory.forms import ItemForm, PartyForm, UnitForm
 from django.http import JsonResponse, HttpResponse
-from inventory.serializer import PurchaseSerializer, ItemSerializer, PartySerializer, UnitSerializer, SaleSerializer, InventoryAccountRowSerializer
+from inventory.serializer import PurchaseSerializer, ItemSerializer, PartySerializer, UnitSerializer, SaleSerializer, \
+    InventoryAccountRowSerializer
 import datetime
 from rest_framework import generics
 
+
 def index(request):
     return render(request, 'index.html')
+
 
 def item(request, id=None):
     if id:
@@ -40,17 +44,21 @@ def item(request, id=None):
         base_template = 'modal.html'
     else:
         base_template = 'base.html'
-    return render(request, 'item-form.html', {'form': form, 'base_template': base_template, 'scenario': scenario, 'item_data': item.other_properties})
+    return render(request, 'item-form.html',
+                  {'form': form, 'base_template': base_template, 'scenario': scenario, 'item_data': item.other_properties})
+
 
 def item_list(request):
     obj = Item.objects.all()
     return render(request, 'item_list.html', {'objects': obj})
+
 
 def save_model(model, values):
     for key, value in values.items():
         setattr(model, key, value)
     model.save()
     return model
+
 
 def invalid(row, required_fields):
     invalid_attrs = []
@@ -62,9 +70,11 @@ def invalid(row, required_fields):
         return False
     return invalid_attrs
 
+
 def purchase_list(request):
-	obj = Purchase.objects.all()
-	return render(request, 'purchase_list.html', {'objects': obj})
+    obj = Purchase.objects.all()
+    return render(request, 'purchase_list.html', {'objects': obj})
+
 
 def purchase(request, id=None):
     if id:
@@ -76,10 +86,11 @@ def purchase(request, id=None):
     data = PurchaseSerializer(purchase).data
     return render(request, 'create-purchase.html', {'data': data, 'scenario': scenario, 'purchase': purchase})
 
+
 def save_purchase(request):
     if request.is_ajax():
         params = json.loads(request.body)
-    dct= {'rows': {}}
+    dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'party_id': params.get('party')}
@@ -110,16 +121,17 @@ def save_purchase(request):
                 #     values = {'sn': index+1, 'item_id': row.get('item_id'), 'quantity': new_quantity,
                 #         'rate': new_rate, 'unit_id': item.unit.id, 'discount': row.get('discount'), 'purchase': obj }
                 # else:
-                values = {'sn': index+1, 'item_id': row.get('item_id'), 'quantity': row.get('quantity'),
-                    'rate': row.get('rate'), 'unit_id': row.get('unit_id'), 'discount': row.get('discount'), 'purchase': obj }
+                values = {'sn': index + 1, 'item_id': row.get('item_id'), 'quantity': row.get('quantity'),
+                          'rate': row.get('rate'), 'unit_id': row.get('unit_id'), 'discount': row.get('discount'),
+                          'purchase': obj}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
                 dct['rows'][index] = submodel.id
                 set_transactions(submodel, obj.date,
-                         ['dr', submodel.item.account, submodel.quantity],
-                         )
-        # delete_rows(params.get('table_view').get('deleted_rows'), model)
+                                 ['dr', submodel.item.account, submodel.quantity],
+                                 )
+                # delete_rows(params.get('table_view').get('deleted_rows'), model)
 
     except Exception as e:
         if hasattr(e, 'messages'):
@@ -129,6 +141,7 @@ def save_purchase(request):
         else:
             dct['error_message'] = 'Error in form data!'
     return JsonResponse(dct)
+
 
 def sale(request, id=None):
     if id:
@@ -140,10 +153,11 @@ def sale(request, id=None):
     data = SaleSerializer(sale).data
     return render(request, 'create-sale.html', {'data': data, 'scenario': scenario, 'sale': sale})
 
+
 def save_sale(request):
     if request.is_ajax():
         params = json.loads(request.body)
-    dct= {'rows': {}}
+    dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'party_id': params.get('party')}
@@ -161,16 +175,16 @@ def save_sale(request):
                 dct['error_message'] = 'These feilds must be filled: ' + ', '.join(invalid_check)
                 return JsonResponse(dct)
             else:
-                values = {'sn': index+1, 'item_id': row.get('item_id'), 'quantity': row.get('quantity'),
-                    'rate': row.get('rate'), 'unit_id': row.get('unit_id'), 'discount': row.get('discount'), 'sale': obj }
+                values = {'sn': index + 1, 'item_id': row.get('item_id'), 'quantity': row.get('quantity'),
+                          'rate': row.get('rate'), 'unit_id': row.get('unit_id'), 'discount': row.get('discount'), 'sale': obj}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
                 dct['rows'][index] = submodel.id
                 set_transactions(submodel, obj.date,
-                         ['cr', submodel.item.account, submodel.quantity],
-                         )
-        # delete_rows(params.get('table_view').get('deleted_rows'), model)
+                                 ['cr', submodel.item.account, submodel.quantity],
+                                 )
+                # delete_rows(params.get('table_view').get('deleted_rows'), model)
 
     except Exception as e:
         if hasattr(e, 'messages'):
@@ -181,9 +195,11 @@ def save_sale(request):
             dct['error_message'] = 'Error in form data!'
     return JsonResponse(dct)
 
+
 def sale_list(request):
     obj = Sale.objects.all()
     return render(request, 'sale_list.html', {'objects': obj})
+
 
 def party_form(request, id=None):
     if id:
@@ -211,6 +227,7 @@ def party_form(request, id=None):
         'form': form,
         'base_template': base_template,
     })
+
 
 def parties_list(request):
     obj = Party.objects.all()
@@ -244,18 +261,22 @@ def unit_form(request, id=None):
         'base_template': base_template,
     })
 
+
 def unit_list(request):
     obj = Unit.objects.all()
     return render(request, 'unit_list.html', {'objects': obj})
+
 
 def list_inventory_accounts(request):
     objects = InventoryAccount.objects.all()
     return render(request, 'list_inventory_accounts.html', {'objects': objects})
 
+
 def view_inventory_account(request, id):
     obj = get_object_or_404(InventoryAccount, id=id)
     # units = Unit.objects.all()
-    units_to_convert = UnitConverter.objects.filter(base_unit__name=obj.item.unit.name).values_list('unit_to_convert__pk', flat=True)
+    units_to_convert = UnitConverter.objects.filter(base_unit__name=obj.item.unit.name).values_list('unit_to_convert__pk',
+                                                                                                    flat=True)
     units_to_convert_list = Unit.objects.filter(pk__in=units_to_convert)
     units_list = [o for o in units_to_convert_list]
     units_list.append(Unit.objects.get(pk=obj.item.unit.pk))
@@ -267,14 +288,19 @@ def view_inventory_account(request, id):
             multiple = unit_convert.multiple
             journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
                 .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
-            data = InventoryAccountRowSerializer(journal_entries, many=True, context={'unit_multiple': multiple, 'default_unit': obj.item.unit.name }).data
+            data = InventoryAccountRowSerializer(journal_entries, many=True,
+                                                 context={'unit_multiple': multiple, 'default_unit': obj.item.unit.name}).data
             current_unit = unit.name
-            return render(request, 'view_inventory_account.html', {'obj': obj, 'entries': journal_entries, 'data': data, 'units': units_list, 'current_unit': current_unit})
+            return render(request, 'view_inventory_account.html',
+                          {'obj': obj, 'entries': journal_entries, 'data': data, 'units': units_list,
+                           'current_unit': current_unit})
     journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
         .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
     data = InventoryAccountRowSerializer(journal_entries, many=True, context={'default_unit': obj.item.unit.name}).data
     current_unit = obj.item.unit
-    return render(request, 'view_inventory_account.html', {'obj': obj, 'entries': journal_entries, 'data': data, 'units': units_list, 'current_unit': current_unit})
+    return render(request, 'view_inventory_account.html',
+                  {'obj': obj, 'entries': journal_entries, 'data': data, 'units': units_list, 'current_unit': current_unit})
+
 
 # djangorestframework API
 
@@ -282,12 +308,12 @@ class ItemList(generics.ListCreateAPIView):
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
 
+
 class UnitList(generics.ListCreateAPIView):
     queryset = Unit.objects.all()
     serializer_class = UnitSerializer
 
+
 class PartyList(generics.ListCreateAPIView):
     queryset = Party.objects.all()
     serializer_class = PartySerializer
-
-

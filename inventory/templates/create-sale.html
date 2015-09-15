@@ -68,7 +68,7 @@
 			                    	<select data-bind="selectize: $root.units, value: unit_id, event: {change: $root.unit_changed}" data-url="{% url 'add-unit' %}"></select>
 			                    </td>
 			                    <td data-bind="editableText: discount"></td>
-			                    <td data-bind="editableText: total"></td>
+			                    <td data-bind="text: total"></td>
 			                    <td class="hide-on-print">
 			                    	<a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
 			                    </td>
