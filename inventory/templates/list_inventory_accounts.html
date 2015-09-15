@@ -25,7 +25,8 @@
             <tr>
                 <td>
                     <a href="{% url 'view_inventory_account' obj.id %}">
-                    {{ obj.account_no|localize }}
+                    {{ obj.account_nogcca
+                            }}
                     </a>
                 </td>
                 <td>
