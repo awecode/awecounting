@@ -1,7 +1,25 @@
 {% extends "base.html" %}
+{% load staticfiles i18n %}
 
 {% block title %}
-Awecounting
+{% trans 'Awecounting' %}
+{% endblock %}
+
+{% block search %}
+        <div class="row">
+            <div class="col-lg-12">
+                <form action="{% url 'search-item' %}" method='POST'>
+                {% csrf_token %}
+                    <div class="input-group">
+                      <input type="text" name="search-code" class="form-control" placeholder="Search Items" autofocus>
+                      <span class="input-group-addon" id="basic-addon1">
+                        <button><i class="fa fa-search "></i></button>
+                      </span>
+                  </div>
+                </form>
+            </div> 
+        </div>
+        <br>
 {% endblock %}
 
 {% block content %}

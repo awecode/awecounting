@@ -6,6 +6,7 @@ urlpatterns = patterns('',
                        url(r'^item/add/$', views.item, name='add-item'),
                        url(r'^item/$', views.item_list, name='item-list'),
                        url(r'^item/detail/(?P<id>[0-9]+)/$', views.item, name='item-detail'),
+                       url(r'^item/search/$', views.item_search, name='search-item'),
 
                        url(r'^party/add$', views.party_form, name='add-party'),
                        url(r'^party/$', views.parties_list, name='list_parties'),

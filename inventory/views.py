@@ -14,6 +14,10 @@ from rest_framework import generics
 def index(request):
     return render(request, 'index.html')
 
+def item_search(request):
+    code = request.POST.get('search-code')
+    obj = Item.objects.filter(code=code)
+    return render(request, 'item-search.html', {'objects': obj})
 
 def item(request, id=None):
     if id:

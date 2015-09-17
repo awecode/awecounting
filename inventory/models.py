@@ -56,6 +56,7 @@ class InventoryAccount(models.Model):
             return 1
 
 class Item(models.Model):
+    code = models.CharField(max_length=250, blank=True, null=True)
     name = models.CharField(max_length=254)
     description = models.TextField(blank=True, null=True)
     account = models.OneToOneField(InventoryAccount, related_name='item', null=True)
