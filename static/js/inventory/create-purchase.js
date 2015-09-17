@@ -74,12 +74,20 @@ function PurchaseViewModel(data) {
     }
 
 
-
     self.table_view = new TableViewModel({rows: data.rows}, PurchaseRow);
 
 
     for (var k in data)
         self[k] = ko.observable(data[k]);
+
+
+    self.sub_total = function () {
+        var sum = 0;
+        self.table_view.rows().forEach(function (i) {
+            sum += i.total();
+        });
+        return sum;
+    }
 
     self.save = function (item, event) {
         if (!self.party()) {

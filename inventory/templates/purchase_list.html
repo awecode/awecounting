@@ -8,7 +8,7 @@
 <div class='container'>
     <div class="row">
 
-        <h1>Purchase List</h1>
+        <h1>Purchase Vourcher</h1>
 
             {% load pagination_tags %}
             {% load sorting_tags %}
@@ -19,8 +19,8 @@
 
             <table class="table table-striped table-bordered">
                 <thead>
-                <th>{% anchor release_no _('voucher_id') %}</th>
-                <th>{% anchor demandee _('date') %}</th>
+                <th>{% anchor voucher_no _('Voucher ID') %}</th>
+                <th>{% anchor date _('Date') %}</th>
                 </thead>
                 <tbody>
                 {% for purchase in paginated_objects %}
