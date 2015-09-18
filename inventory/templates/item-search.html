@@ -25,7 +25,7 @@
         {% for item in paginated_objects %}
             <tr>
                 <td>
-                    <a href="{% url 'item-detail' item.pk %}">{{ item.id }}</a>
+                    <a href="{% url 'view_inventory_account' item.account.id %}">{{ item.id }}</a>
                 </td>
                 <td>
                     {{ item.name }}

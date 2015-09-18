@@ -17,7 +17,13 @@ def index(request):
 def item_search(request):
     code = request.POST.get('search-code')
     obj = Item.objects.filter(code=code)
-    return render(request, 'item-search.html', {'objects': obj})
+    if len(obj) == 1:
+        item = obj[0]
+        inventory_account = InventoryAccount.objects.get(item__name=item.name)
+        url = reverse('view_inventory_account', kwargs={ 'id': inventory_account.id })
+        return redirect(url)
+    else:
+        return render(request, 'item-search.html', {'objects': obj})
 
 def item(request, id=None):
     if id:
