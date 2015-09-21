@@ -57,7 +57,7 @@ def item(request, id=None):
     if request.is_ajax():
         base_template = 'modal.html'
     else:
-        base_template = 'base.html'
+        base_template = '_base.html'
     return render(request, 'item_form.html',
                   {'form': form, 'base_template': base_template, 'scenario': scenario, 'item_data': item.other_properties})
 
@@ -250,7 +250,7 @@ def party_form(request, id=None):
     if request.is_ajax():
         base_template = 'modal.html'
     else:
-        base_template = 'base.html'
+        base_template = '_base.html'
     return render(request, 'party_form.html', {
         'scenario': scenario,
         'form': form,
@@ -283,7 +283,7 @@ def unit_form(request, id=None):
     if request.is_ajax():
         base_template = 'modal.html'
     else:
-        base_template = 'base.html'
+        base_template = '_base.html'
     return render(request, 'unit_form.html', {
         'scenario': scenario,
         'form': form,
