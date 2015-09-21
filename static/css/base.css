@@ -447,9 +447,103 @@ div #nav-icon ul {
 }
 
 .selectize-control {
+  max-width: 300px;
+}
+
+/*Flip animation*/
+.dashboard-icons {
+    text-align: center;
+}
+
+.tile {
+    width: 13em;
+    height: 14em;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    border: 4px solid #20806F;
+    float: left;
+    color: #20806F;
+    margin: 5px 4px;
+    text-align: center;
+}
+
+.tile:hover {
+    text-decoration: none;
+    color: black;
+}
+
+.tile:hover h2 {
+    color: #20806F;
+    margin-top: 4px;
+}
+
+.tile > .fa {
+    display: block;
+    font-size: 8em;
+    padding: 0.1em 0;
+}
+
+.tile h2 {
+    /*text-transform: uppercase;*/
+    margin-top: -18px;
+    background-color: #fff;
+    position: absolute;
+    top: 160px;
+    width: 100%;
+    padding: 0.12em;
+}
+
+.flip-body {
+    position: absolute;
+    top: 160px;
+    transition: all 300ms linear;
+    width: 100%;
+}
+
+.flip-container.open .flip-body {
+    top: 0;
+}
+
+.flip-container > i.fa {
+    transition: visibility 0s linear 0.5s, opacity 0.5s linear;
+}
+
+.flip-container.open > i.fa {
+    opacity: 0;
+}
+
+.flip-body h2 {
+    position: relative;
+    top: 0;
+}
+
+.tile .flip-body a {
+    display: block;
+    background-color: #fff;
+    padding: 0.3em;
+    border-bottom: 1px solid #20806F;
+    color: #555;
+    opacity: 0.75;
+}
+
+.open .flip-body, .open .flip-body h2, .open .flip-body a {
+    background-color: rgba(224, 241, 231, 0.84);
+}
+
+
+.tile .flip-body a:hover {
+    text-decoration: none;
+    opacity: 1;
+}
+
+.tile i {
+    margin-top: 8px;
+=======
     max-width: 300px;
 }
 
 .selectize-input {
     min-height: 25px;
+>>>>>>> 7a07e55cad8c2c22a40d00d30b75cc795d16ad78
 }
