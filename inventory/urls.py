@@ -31,6 +31,7 @@ urlpatterns = patterns('',
                        url(r'^sale/detail/(?P<id>[0-9]+)/$', views.sale, name='sale-detail'),
 
                        url(r'^daily-sale/today$', views.daily_sale_today, name='today_sale'),
+                       url(r'^daily-sale/yesterday$', views.daily_sale_yesterday, name='yesterday_sale'),
 
                        # rest_framework api
                        url(r'^api/items/$', views.ItemList.as_view()),

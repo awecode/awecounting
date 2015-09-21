@@ -9,7 +9,7 @@ from inventory.serializer import PurchaseSerializer, ItemSerializer, PartySerial
     InventoryAccountRowSerializer
 import datetime
 from rest_framework import generics
-
+from datetime import timedelta
 
 def index(request):
     return render(request, 'index.html')
@@ -211,8 +211,15 @@ def sale_list(request):
     return render(request, 'sale_list.html', {'objects': obj})
 
 def daily_sale_today(request):
-    obj = Sale.objects.filter(date=datetime.datetime.now())
+    today = datetime.datetime.now()
+    obj = Sale.objects.filter(date=today)
     return render(request, 'daily_sale_list.html', {'objects': obj})
+
+def daily_sale_yesterday(request):
+    yesterday = datetime.datetime.now() - timedelta(1)
+    obj = Sale.objects.filter(date=yesterday)
+    return render(request, 'daily_sale_list.html', {'objects': obj})
+
 
 
 def party_form(request, id=None):

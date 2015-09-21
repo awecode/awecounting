@@ -35,31 +35,31 @@
             </ul>
             </div>
         </div>
-        <div class="pull-left" id='nav-icon'>
+        <!--div class="pull-left" id='nav-icon'>
             <i class="fa fa-arrow-up"></i><br>
             <h2>Sales</h2>
             <ul class="list-group" id="nav-menu">
                 <a href="{% url 'sale-create' %}"><li class="list-group-item">New Sale</li></a>
                 <a href="{% url 'sale-list' %}"><li class="list-group-item">List Sales</li></a>
             </ul>
+        </div-->
+        <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
+            <i class="fa fa-arrow-up"></i>
+
+            <div class="flip-body">
+                <h2>Sales</h2>
+                <a href="{% url 'sale-create' %}">New Sale</a>
+                <a href="{% url 'sale-list' %}">List Sales</a>
+                <a href="{% url 'today_sale' %}">Today Sales</a>
+                <a href="{% url 'yesterday_sale' %}">Yesterday Sales</a>
+                <a href="">Datepicker</a>
+            </div>
         </div>
-            <div class="pull-left" id='nav-icon-no-list'>
+        <div class="pull-left" id='nav-icon-no-list'>
             <a href="{% url 'list_inventory_accounts' %}">
                 <i class="fa fa-book"></i><br>
                 <h2>Accounts</h2>
             </a>
-        </div>
-        <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
-            <i class="fa fa-calendar"></i>
-
-            <div class="flip-body">
-                <h2>Daily Sale</h2>
-                <a href="{% url 'today_sale' %}">Today</a>
-                <a href="">All Payments</a>
-                <a href="">Bank Deposits</a>
-                <a href="">Direct Payments</a>
-                <a href="">eSewa Payments</a>
-            </div>
         </div>
     </div>
 </div>
