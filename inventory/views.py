@@ -210,6 +210,10 @@ def sale_list(request):
     obj = Sale.objects.all()
     return render(request, 'sale_list.html', {'objects': obj})
 
+def daily_sale_today(request):
+    obj = Sale.objects.filter(date=datetime.datetime.now())
+    return render(request, 'daily_sale_list.html', {'objects': obj})
+
 
 def party_form(request, id=None):
     if id:
