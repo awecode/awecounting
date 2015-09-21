@@ -539,11 +539,9 @@ div #nav-icon ul {
 
 .tile i {
     margin-top: 8px;
-=======
     max-width: 300px;
 }
 
 .selectize-input {
     min-height: 25px;
->>>>>>> 7a07e55cad8c2c22a40d00d30b75cc795d16ad78
 }

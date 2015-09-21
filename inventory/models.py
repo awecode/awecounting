@@ -182,6 +182,12 @@ class Sale(models.Model):
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     date = models.DateField(default=datetime.datetime.today)
 
+    def get_sale_total(self):
+        grand_total = 0 
+        for obj in self.rows.all():
+            total = obj.quantity * obj.rate
+            grand_total += total
+        return grand_total
 
 class SaleRow(models.Model):
     sn = models.PositiveIntegerField()
