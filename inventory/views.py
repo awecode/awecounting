@@ -300,8 +300,18 @@ def list_inventory_accounts(request):
     objects = InventoryAccount.objects.all()
     return render(request, 'list_inventory_accounts.html', {'objects': objects})
 
-
 def view_inventory_account(request, id):
+    obj = get_object_or_404(InventoryAccount, id=id)
+    journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
+        .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
+    data = []
+    import ipdb
+    # ipdb.set_trace()
+    return render(request, 'inventory_account_detail.html',
+                  {'obj': obj, 'entries': journal_entries, 'data': data})
+
+
+def aview_inventory_account(request, id):
     obj = get_object_or_404(InventoryAccount, id=id)
     # units = Unit.objects.all()
     units_to_convert = UnitConverter.objects.filter(base_unit__name=obj.item.unit.name).values_list('unit_to_convert__pk',
@@ -309,6 +319,8 @@ def view_inventory_account(request, id):
     units_to_convert_list = Unit.objects.filter(pk__in=units_to_convert)
     units_list = [o for o in units_to_convert_list]
     units_list.append(Unit.objects.get(pk=obj.item.unit.pk))
+
+
     if request.POST:
         unit_id = request.POST.get('unit-convert-option')
         unit = Unit.objects.get(pk=unit_id)
@@ -320,14 +332,15 @@ def view_inventory_account(request, id):
             data = InventoryAccountRowSerializer(journal_entries, many=True,
                                                  context={'unit_multiple': multiple, 'default_unit': obj.item.unit.name}).data
             current_unit = unit.name
-            return render(request, 'inventory_account_Detail.html',
+            return render(request, 'inventory_account_detail.html',
                           {'obj': obj, 'entries': journal_entries, 'data': data, 'units': units_list,
                            'current_unit': current_unit})
     journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
         .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
-    data = InventoryAccountRowSerializer(journal_entries, many=True, context={'default_unit': obj.item.unit.name}).data
+    # data = InventoryAccountRowSerializer(journal_entries, many=True, context={'default_unit': obj.item.unit.name}).data
+    data = []
     current_unit = obj.item.unit
-    return render(request, 'inventory_account_Detail.html',
+    return render(request, 'inventory_account_detail.html',
                   {'obj': obj, 'entries': journal_entries, 'data': data, 'units': units_list, 'current_unit': current_unit})
 
 

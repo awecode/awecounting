@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse_lazy
 from django.db import models
 import datetime
 from jsonfield import JSONField
@@ -165,6 +166,9 @@ class Purchase(models.Model):
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     date = models.DateField(default=datetime.datetime.today)
 
+    def get_absolute_url(self):
+        return reverse_lazy('purchase-detail', kwargs={'id': self.pk})
+
 class PurchaseRow(models.Model):
     sn = models.PositiveIntegerField()
     item = models.ForeignKey(Item)
@@ -177,10 +181,16 @@ class PurchaseRow(models.Model):
     def get_voucher_no(self):
         return self.purchase.voucher_no
 
+    def get_absolute_url(self):
+        return reverse_lazy('purchase-detail', kwargs={'id': self.purchase.pk})
+
 class Sale(models.Model):
     party = models.ForeignKey(Party, blank=True, null=True)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     date = models.DateField(default=datetime.datetime.today)
+
+    def get_absolute_url(self):
+        return reverse_lazy('sale-detail', kwargs={'id': self.pk})
 
     def get_sale_total(self):
         grand_total = 0 
@@ -201,10 +211,5 @@ class SaleRow(models.Model):
     def get_voucher_no(self):
         return self.sale.voucher_no
 
-
-
-
-
-
-
-
+    def get_absolute_url(self):
+        return reverse_lazy('sale-detail', kwargs={'id': self.sale.pk})

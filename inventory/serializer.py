@@ -1,22 +1,25 @@
 from rest_framework import serializers
-from inventory.models import Purchase, PurchaseRow, Item, Party, Unit, Sale, SaleRow, JournalEntry, none_for_zero, zero_for_none, UnitConverter
+from inventory.models import Purchase, PurchaseRow, Item, Party, Unit, Sale, SaleRow, JournalEntry, none_for_zero, zero_for_none, \
+    UnitConverter
+
 
 class ItemSerializer(serializers.ModelSerializer):
-	unit_id = serializers.ReadOnlyField(source='unit.id')
+    unit_id = serializers.ReadOnlyField(source='unit.id')
 
-	class Meta:
-		model = Item
-		exclude = ['unit']
+    class Meta:
+        model = Item
+        exclude = ['unit']
+
 
 class UnitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Unit
 
-	class Meta:
-		model = Unit
 
 class PartySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Party
 
-	class Meta:
-		model = Party
 
 class PurchaseRowSerializer(serializers.ModelSerializer):
     item_id = serializers.ReadOnlyField(source='item.id')
@@ -25,7 +28,8 @@ class PurchaseRowSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurchaseRow
         exclude = ['item', 'unit']
-        
+
+
 class PurchaseSerializer(serializers.ModelSerializer):
     rows = PurchaseRowSerializer(many=True)
     date = serializers.DateField(format=None)
@@ -34,6 +38,7 @@ class PurchaseSerializer(serializers.ModelSerializer):
         model = Purchase
         # exclude = ['date']
 
+
 class SaleRowSerializer(serializers.ModelSerializer):
     item_id = serializers.ReadOnlyField(source='item.id')
     unit_id = serializers.ReadOnlyField(source='unit.id')
@@ -41,13 +46,15 @@ class SaleRowSerializer(serializers.ModelSerializer):
     class Meta:
         model = SaleRow
         exclude = ['item', 'unit']
-        
+
+
 class SaleSerializer(serializers.ModelSerializer):
     rows = SaleRowSerializer(many=True)
     date = serializers.DateField(format=None)
 
     class Meta:
         model = Sale
+
 
 class InventoryAccountRowSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
@@ -67,11 +74,12 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
         else:
             default_unit = self.context.get('default_unit')
             if obj.creator.unit.name != default_unit:
-                unit_converter = UnitConverter.objects.get(base_unit__name=default_unit, unit_to_convert__name=obj.creator.unit.name)
+                unit_converter = UnitConverter.objects.get(base_unit__name=default_unit,
+                                                           unit_to_convert__name=obj.creator.unit.name)
                 multiple = unit_converter.multiple
                 if self.context.get('unit_multiple'):
                     unit_multiple = self.context.get('unit_multiple')
-                    return (obj.creator.quantity * multiple ) / unit_multiple
+                    return (obj.creator.quantity * multiple) / unit_multiple
                 else:
                     return obj.creator.quantity * multiple
             else:
@@ -87,11 +95,12 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
         else:
             default_unit = self.context.get('default_unit')
             if obj.creator.unit.name != default_unit:
-                unit_converter = UnitConverter.objects.get(base_unit__name=default_unit, unit_to_convert__name=obj.creator.unit.name)
+                unit_converter = UnitConverter.objects.get(base_unit__name=default_unit,
+                                                           unit_to_convert__name=obj.creator.unit.name)
                 multiple = unit_converter.multiple
                 if self.context.get('unit_multiple'):
                     unit_multiple = self.context.get('unit_multiple')
-                    return (obj.creator.rate * unit_multiple ) / multiple
+                    return (obj.creator.rate * unit_multiple) / multiple
                 else:
                     return obj.creator.rate / multiple
             else:
@@ -107,11 +116,12 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
         else:
             default_unit = self.context.get('default_unit')
             if obj.creator.unit.name != default_unit:
-                unit_converter = UnitConverter.objects.get(base_unit__name=default_unit, unit_to_convert__name=obj.creator.unit.name)
+                unit_converter = UnitConverter.objects.get(base_unit__name=default_unit,
+                                                           unit_to_convert__name=obj.creator.unit.name)
                 multiple = unit_converter.multiple
                 if self.context.get('unit_multiple'):
                     unit_multiple = self.context.get('unit_multiple')
-                    return (obj.creator.quantity * multiple ) / unit_multiple
+                    return (obj.creator.quantity * multiple) / unit_multiple
                 else:
                     return obj.creator.quantity * multiple
             else:
@@ -128,5 +138,3 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
 
     def get_current_balance(self, obj):
         return obj.transactions.filter(account=obj.creator.item.account)[0].current_balance
-
-
