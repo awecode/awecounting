@@ -123,9 +123,9 @@ function SaleRow(row) {
     self.total = ko.computed(function () {
         if (self.discount() > 0 ) {
             var total = self.quantity() * self.rate()
-            return total - self.discount()
+            return round2(total - self.discount());
         } else {
-            return self.quantity() * self.rate()
+            return round2(self.quantity() * self.rate());
         }
     })
 
