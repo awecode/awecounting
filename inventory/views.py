@@ -25,7 +25,7 @@ def item_search(request):
         url = reverse('view_inventory_account', kwargs={ 'id': inventory_account.id })
         return redirect(url)
     else:
-        return render(request, 'item-search.html', {'objects': obj})
+        return render(request, 'item_search.html', {'objects': obj})
 
 def item(request, id=None):
     if id:
@@ -56,7 +56,7 @@ def item(request, id=None):
         base_template = 'modal.html'
     else:
         base_template = 'base.html'
-    return render(request, 'item-form.html',
+    return render(request, 'item_form.html',
                   {'form': form, 'base_template': base_template, 'scenario': scenario, 'item_data': item.other_properties})
 
 
@@ -96,7 +96,7 @@ def purchase(request, id=None):
         purchase = Purchase(date=datetime.datetime.now().date())
         scenario = 'Create'
     data = PurchaseSerializer(purchase).data
-    return render(request, 'create-purchase.html', {'data': data, 'scenario': scenario, 'purchase': purchase})
+    return render(request, 'purchase-form.html', {'data': data, 'scenario': scenario, 'purchase': purchase})
 
 
 def save_purchase(request):
@@ -167,7 +167,7 @@ def sale(request, id=None):
             sale = Sale(date=datetime.datetime.now().date(), voucher_no=1)
         scenario = 'Create'
     data = SaleSerializer(sale).data
-    return render(request, 'create-sale.html', {'data': data, 'scenario': scenario, 'sale': sale})
+    return render(request, 'sale_form.html', {'data': data, 'scenario': scenario, 'sale': sale})
 
 
 def save_sale(request):
@@ -258,7 +258,7 @@ def party_form(request, id=None):
 
 def parties_list(request):
     obj = Party.objects.all()
-    return render(request, 'parties_list.html', {'objects': obj})
+    return render(request, 'party_list.html', {'objects': obj})
 
 
 def unit_form(request, id=None):
@@ -318,14 +318,14 @@ def view_inventory_account(request, id):
             data = InventoryAccountRowSerializer(journal_entries, many=True,
                                                  context={'unit_multiple': multiple, 'default_unit': obj.item.unit.name}).data
             current_unit = unit.name
-            return render(request, 'view_inventory_account.html',
+            return render(request, 'inventory_account_Detail.html',
                           {'obj': obj, 'entries': journal_entries, 'data': data, 'units': units_list,
                            'current_unit': current_unit})
     journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
         .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
     data = InventoryAccountRowSerializer(journal_entries, many=True, context={'default_unit': obj.item.unit.name}).data
     current_unit = obj.item.unit
-    return render(request, 'view_inventory_account.html',
+    return render(request, 'inventory_account_Detail.html',
                   {'obj': obj, 'entries': journal_entries, 'data': data, 'units': units_list, 'current_unit': current_unit})
 
 
