@@ -10,6 +10,8 @@ from inventory.serializer import PurchaseSerializer, ItemSerializer, PartySerial
 import datetime
 from rest_framework import generics
 from datetime import timedelta
+from django.db.models import Max
+
 
 def index(request):
     return render(request, 'index.html')
@@ -158,7 +160,11 @@ def sale(request, id=None):
         sale = get_object_or_404(Sale, id=id)
         scenario = 'Update'
     else:
-        sale = Sale(date=datetime.datetime.now().date())
+        max_voucher_no = Sale.objects.all().aggregate(Max('voucher_no'))['voucher_no__max']
+        if max_voucher_no:
+            sale = Sale(date=datetime.datetime.now().date(), voucher_no=max_voucher_no + 1)
+        else:
+            sale = Sale(date=datetime.datetime.now().date(), voucher_no=1)
         scenario = 'Create'
     data = SaleSerializer(sale).data
     return render(request, 'create-sale.html', {'data': data, 'scenario': scenario, 'sale': sale})
