@@ -323,7 +323,7 @@ ul.messages {
     margin-left: -1em;
 }
 
-table#group-table td input[type="number"]{
+table#group-table td input[type="number"] {
     display: inline;
     max-width: 5em;
 }
@@ -331,21 +331,22 @@ table#group-table td input[type="number"]{
 #library form {
     margin: 0 1em;
 }
+
 /*Bootstrap override css*/
 form p select.form-control, form div select.form-control {
-  width: auto;
+    width: auto;
 }
 
 label {
     font-weight: normal;
 }
 
-input[type=text]{
+input[type=text] {
     display: block;
 }
 
-.width-auto, input[type=url]{
-    width:auto;
+.width-auto, input[type=url] {
+    width: auto;
 }
 
 #other-properties input[type=text], input[type=text]#id_q, form input[type=text].input-inline, .input-inline, .isbn-form input[type=text] {
@@ -356,14 +357,14 @@ form {
     line-height: 2.5em;
 }
 
-#breadcrumb-isbn{
+#breadcrumb-isbn {
     margin-top: -23px;
     margin-left: 17px;
     height: 26px;
 }
 
 .acquision-form div .selectize-control {
-    height:4em;
+    height: 4em;
 }
 
 #add_party {
@@ -382,7 +383,7 @@ form {
 
 div #nav-icon:hover, #nav-icon-no-list:hover {
     background-color: rgba(224, 241, 231, 0.84);
-    
+
 }
 
 #nav-icon i, #nav-icon-no-list i {
@@ -394,7 +395,7 @@ div #nav-icon:hover, #nav-icon-no-list:hover {
 
 div #nav-icon:hover i {
     font-size: 6em;
-    margin-top: -5px;    
+    margin-top: -5px;
 }
 
 .icon-caption {
@@ -425,7 +426,7 @@ div #nav-icon:hover i {
     width: 13em;
     height: 14em;
     /*margin-top: -20em;  */
-    margin-left: -4px;  
+    margin-left: -4px;
 }
 
 div #nav-icon:hover #nav-menu {
@@ -437,13 +438,18 @@ div #nav-icon:hover #nav-menu {
 div #nav-icon ul {
 
 }
+
 #nav-menu li {
     background-color: transparent;
     /*opacity: 100%; */
     border: none;
-    border-bottom: 2px solid #20806F; 
+    border-bottom: 2px solid #20806F;
 }
 
 .selectize-control {
-  max-width: 300px;
+    max-width: 300px;
+}
+
+.selectize-input {
+    min-height: 25px;
 }
