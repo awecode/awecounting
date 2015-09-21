@@ -447,7 +447,7 @@ div #nav-icon ul {
 }
 
 .selectize-control {
-  max-width: 300px;
+    max-width: 300px;
 }
 
 /*Flip animation*/
@@ -531,7 +531,6 @@ div #nav-icon ul {
     background-color: rgba(224, 241, 231, 0.84);
 }
 
-
 .tile .flip-body a:hover {
     text-decoration: none;
     opacity: 1;
@@ -539,11 +538,14 @@ div #nav-icon ul {
 
 .tile i {
     margin-top: 8px;
-=======
     max-width: 300px;
 }
 
 .selectize-input {
     min-height: 25px;
->>>>>>> 7a07e55cad8c2c22a40d00d30b75cc795d16ad78
 }
+
+/*.headertext {*/
+    /*border-bottom: 2px solid #333;*/
+/*}*/
+

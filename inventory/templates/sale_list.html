@@ -4,11 +4,13 @@
 
 {% block title %}{% trans 'Sale' %}{% endblock %}
 
-{% block content %}
-<div class='container'>
-    <div class="row">
+{% block headertext %}
+    Sales
+{% endblock %}
 
-        <h1>Sale Voucher <small><a href="{% url 'today_sale' %}">| Daily Sale</small></a></h1>
+{% block content %}
+    <div class='container'>
+        <div class="row">
 
             {% load pagination_tags %}
             {% load sorting_tags %}
@@ -39,9 +41,9 @@
             {% paginate %}
 
 
-        <a class="btn btn-default btn-lg"
+            <a class="btn btn-default btn-lg"
                href="{% url 'sale-create' %}">{% trans 'New' %} {% trans 'Sale' %}</a>
 
+        </div>
     </div>
-</div>
 {% endblock %}
