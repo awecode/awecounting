@@ -17,14 +17,18 @@
 
     <h1>{{ obj.item.name }}</h1>
     <br>
-    {% trans 'Unit' %} : {{ current_unit }}
+    {% trans 'Unit' %} : {{ unit }}
     <br>
     <form method="POST">
         {% csrf_token %}
         <label for="unit-convert">Convert to:</label>
-        <select name="unit-convert-option" id="unit-convert">
-            {% for unit in units %}
-                <option value="{{ unit.id }}">{{ unit.name }}</option>
+        <select name="unit_id" id="unit-convert">
+            {% for conversion in unit_conversions %}
+                {% if unit.id == conversion.unit_to_convert.id %}
+                    <option value="{{ conversion.base_unit.id }}">{{ conversion.base_unit.name }}</option>
+                {% else %}
+                    <option value="{{ conversion.unit_to_convert.id }}">{{ conversion.unit_to_convert.name }}</option>
+                {% endif %}
             {% endfor %}
         </select>
         <input type="submit">
@@ -60,11 +64,11 @@
 
 
                         <td>
-                            {{ transaction.dr_amount|if_not_none }}
+                        {% multiply transaction.dr_amount multiple %}
                         </td>
                         <td>
 
-                            {{ transaction.cr_amount|if_not_none }}
+                            {% multiply transaction.cr_amount multiple %}
                         </td>
                         <td>
                             {{ transaction.current_balance }}

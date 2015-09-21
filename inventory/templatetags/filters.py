@@ -269,3 +269,9 @@ def mailto(email, linktext=None):
 @register.filter
 def to_class_name(value):
     return value.__class__.__name__
+
+@register.simple_tag()
+def multiply(a, b):
+    if a and b:
+        return a * b
+    return ''
