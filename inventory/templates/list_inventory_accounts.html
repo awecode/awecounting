@@ -3,12 +3,13 @@
 
 {% block title %}{% trans 'Inventory' %} {% trans 'Accounts' %}{% endblock %}
 
+{% block headertext %}{% trans 'Inventory' %} {% trans 'Accounts' %}{% endblock %}
+
 {% block content %}
 
     {% load pagination_tags %}
     {% load sorting_tags %}
     {% load filters %}
-
 
     <br>
 
@@ -18,19 +19,19 @@
     <table class="table table-striped table-bordered">
         <thead>
         <th>{% anchor account_no _('Account No.') %}</th>
-        <th>{% anchor name _('Name')%}</th>
+        <th>{% anchor name _('Name') %}</th>
         </thead>
         <tbody>
         {% for obj in paginated_objects %}
             <tr>
                 <td>
                     <a href="{% url 'view_inventory_account' obj.id %}">
-                    {{ obj.account_no }}
+                        {{ obj.account_no }}
                     </a>
                 </td>
                 <td>
                     <a href="{% url 'view_inventory_account' obj.id %}">
-                    {{ obj.item.name }}
+                        {{ obj.item.name }}
                     </a>
                 </td>
             </tr>
@@ -39,7 +40,7 @@
     </table>
 
     {% paginate %}
-<br>
+    <br>
     <a class="btn btn-default btn-lg"
        href="{% url 'add-item' %}">{% trans 'New' %} {% trans 'Inventory' %} {% trans 'Item' %}</a>
 
