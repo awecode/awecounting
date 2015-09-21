@@ -49,7 +49,18 @@
                 <h2>Accounts</h2>
             </a>
         </div>
+        <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
+            <i class="fa fa-calendar"></i>
 
+            <div class="flip-body">
+                <h2>Daily Sale</h2>
+                <a href="{% url 'today_sale' %}">Today</a>
+                <a href="">All Payments</a>
+                <a href="">Bank Deposits</a>
+                <a href="">Direct Payments</a>
+                <a href="">eSewa Payments</a>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
