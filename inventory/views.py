@@ -16,16 +16,18 @@ from django.db.models import Max
 def index(request):
     return render(request, 'index.html')
 
+
 def item_search(request):
     code = request.POST.get('search-code')
     obj = Item.objects.filter(code=code)
     if len(obj) == 1:
         item = obj[0]
         inventory_account = InventoryAccount.objects.get(item__name=item.name)
-        url = reverse('view_inventory_account', kwargs={ 'id': inventory_account.id })
+        url = reverse('view_inventory_account', kwargs={'id': inventory_account.id})
         return redirect(url)
     else:
         return render(request, 'item_search.html', {'objects': obj})
+
 
 def item(request, id=None):
     if id:
@@ -188,8 +190,7 @@ def save_sale(request):
         for index, row in enumerate(params.get('table_view').get('rows')):
             invalid_check = invalid(row, ['item_id', 'quantity', 'unit_id'])
             if invalid_check:
-                dct['error_message'] = 'These feilds must be filled: ' + ', '.join(invalid_check)
-                return JsonResponse(dct)
+                dct['error_message'] = 'These fields must be filled: ' + ', '.join(invalid_check)
             else:
                 values = {'sn': index + 1, 'item_id': row.get('item_id'), 'quantity': row.get('quantity'),
                           'rate': row.get('rate'), 'unit_id': row.get('unit_id'), 'discount': row.get('discount'), 'sale': obj}
@@ -213,19 +214,20 @@ def save_sale(request):
 
 
 def sale_list(request):
-    obj = Sale.objects.all()
+    obj = Sale.objects.all().prefetch_related('rows')
     return render(request, 'sale_list.html', {'objects': obj})
+
 
 def daily_sale_today(request):
     today = datetime.datetime.now()
     obj = Sale.objects.filter(date=today)
     return render(request, 'daily_sale_list.html', {'objects': obj})
 
+
 def daily_sale_yesterday(request):
     yesterday = datetime.datetime.now() - timedelta(1)
     obj = Sale.objects.filter(date=yesterday)
     return render(request, 'daily_sale_list.html', {'objects': obj})
-
 
 
 def party_form(request, id=None):

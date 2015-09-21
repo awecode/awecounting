@@ -7,6 +7,8 @@ $(document).ready(function () {
 function SaleViewModel(data) {
 	var self = this;
 
+    self.status = ko.observable();
+
 	$.ajax({
         url: '/inventory/api/items.json',
         dataType: 'json',
@@ -76,14 +78,14 @@ function SaleViewModel(data) {
             url: '/inventory/save/sale/',
             data: ko.toJSON(self),
             success: function (msg) {
+                if (msg.id)
+                        self.id(msg.id);
                 if (typeof (msg.error_message) != 'undefined') {
                     alert.error(msg.error_message);
                     self.status('errorlist');
                 }
                 else {
                     alert.success('Saved!');
-                    if (msg.id)
-                        self.id(msg.id);
                     $("#tbody > tr").each(function (i) {
                         $($("#tbody > tr")[i]).addClass('invalid-row');
                     });
