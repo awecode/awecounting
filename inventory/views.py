@@ -33,17 +33,21 @@ def item(request, id=None):
     if id:
         item = get_object_or_404(Item, id=id)
         scenario = 'Update'
+        unit = item.unit.id
     else:
         item = Item()
         scenario = 'Create'
+        unit = ''
     if request.POST:
         form = ItemForm(data=request.POST, instance=item)
         if form.is_valid():
             item = form.save(commit=False)
             property_name = request.POST.getlist('property_name')
             item_property = request.POST.getlist('property')
+            unit_id = request.POST.get('unit')
+            item.unit_id = int(unit_id)
             if request.FILES != {}:
-                item.image = request.FILES.get['image']
+                item.image = request.FILES['image']
             other_properties = {}
             for key, value in zip(property_name, item_property):
                 other_properties[key] = value
@@ -59,7 +63,7 @@ def item(request, id=None):
     else:
         base_template = '_base.html'
     return render(request, 'item_form.html',
-                  {'form': form, 'base_template': base_template, 'scenario': scenario, 'item_data': item.other_properties})
+                  {'form': form, 'base_template': base_template, 'scenario': scenario, 'item_data': item.other_properties, 'item_unit_id': unit})
 
 
 def item_list(request):

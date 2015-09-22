@@ -10,6 +10,11 @@
     <script src="{% static 'js/inventory/item.js' %}"></script>
     <script>
         item_data = {{ item_data| jsonify }};
+        {% if item_unit_id %}
+            item_unit_id = {{ item_unit_id }}
+        {% else %}
+            item_unit_id = ''
+        {% endif %}
     </script>
 {% endblock %}
 
@@ -24,6 +29,9 @@
         <p>
 
         <div id="other-properties">
+            <label for="id_units">Units</label>
+            <select id ="id_units" data-bind="selectize: $root.units, value: unit_id, event: {change: unit_changed}" data-url="{% url 'add-unit' %}" name="unit"></select>
+
             <label for="id_other_properties">{% trans "Other properties" %}</label>
 
             <div id="id_other_properties" data-bind="foreach: other_properties">

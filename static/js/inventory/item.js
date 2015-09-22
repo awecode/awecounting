@@ -1,11 +1,11 @@
 $(document).ready(function () {
     if (typeof(item_data) == "undefined") {
-        item = new ItemVM();
+        vm = new ItemVM();
     } else {
-        item = new ItemVM(item_data);
+        vm = new ItemVM(item_data, item_unit_id);
     }
     var item_form = document.getElementById("other-properties");
-    ko.applyBindings(item, item_form);
+    ko.applyBindings(vm, item_form);
     $('.change-on-ready').trigger('change');
     $("table tr #item_instance_properties").each(function(i) {
         value = $(this).text().slice(1,-1);
@@ -14,9 +14,14 @@ $(document).ready(function () {
     
 });
 
-function ItemVM(data) {
+function ItemVM(data, unit_id) {
     var self = this;
     self.other_properties = ko.observableArray([]);
+    if (unit_id) {
+        self.unit_id = ko.observable(unit_id)
+    } else {
+        self.unit_id = ko.observable();
+    };
     
     if (data != null) {
         for (item_property in data) {
@@ -35,6 +40,22 @@ function ItemVM(data) {
     self.removeOtherProperty = function(property){
         self.other_properties.remove(property);
     };
+
+    $.ajax({
+        url: '/inventory/api/units.json',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            self.units = ko.observableArray(data);
+        }
+    });
+
+    self.unit_changed = function (row) {
+        var selected_item = $.grep(self.units(), function (i) {
+            return i.id == self.unit_id();
+        })[0];
+        if (!selected_item) return;
+    }
 
 }
 
