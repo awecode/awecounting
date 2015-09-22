@@ -20,6 +20,7 @@
         <thead>
         <th>{% anchor account_no _('Account No.') %}</th>
         <th>{% anchor name _('Name') %}</th>
+        <th>{% anchor current_balance _('Balance') %}</th>
         </thead>
         <tbody>
         {% for obj in paginated_objects %}
@@ -30,10 +31,13 @@
                     </a>
                 </td>
                 <td>
-                    <a href="{% url 'view_inventory_account' obj.id %}">
+                    <a href="{% url 'item-detail' obj.item.id %}">
                         {{ obj.item.name }}
                     </a>
                 </td>
+            <td>
+                {{ obj.current_balance }}
+            </td>
             </tr>
         {% endfor %}
         </tbody>

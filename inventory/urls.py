@@ -18,7 +18,8 @@ urlpatterns = patterns('',
 
                        url(r'^accounts/$', views.list_inventory_accounts, name='list_inventory_accounts'),
                        url(r'^accounts/(?P<id>[0-9]+)/$', views.view_inventory_account, name='view_inventory_account'),
-
+                       url(r'^accounts/(?P<id>[0-9]+)/rate/$', views.view_inventory_account_with_rate,
+                           name='view_inventory_account_with_rate'),
 
                        url(r'^purchase/create/$', views.purchase, name='purchase-create'),
                        url(r'^save/purchase/$', views.save_purchase, name='purchase-save'),
@@ -38,7 +39,6 @@ urlpatterns = patterns('',
                        url(r'^api/parties/$', views.PartyList.as_view()),
                        url(r'^api/units/$', views.UnitList.as_view()),
 
-
-)
+                       )
 
 urlpatterns = format_suffix_patterns(urlpatterns)
