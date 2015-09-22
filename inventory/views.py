@@ -63,7 +63,8 @@ def item(request, id=None):
     else:
         base_template = '_base.html'
     return render(request, 'item_form.html',
-                  {'form': form, 'base_template': base_template, 'scenario': scenario, 'item_data': item.other_properties, 'item_unit_id': unit})
+                  {'form': form, 'base_template': base_template, 'scenario': scenario, 'item_data': item.other_properties,
+                   'item_unit_id': unit})
 
 
 def item_list(request):
@@ -218,8 +219,28 @@ def save_sale(request):
 
 
 def sale_list(request):
-    obj = Sale.objects.all().prefetch_related('rows')
-    return render(request, 'sale_list.html', {'objects': obj})
+    objects = Sale.objects.all().prefetch_related('rows')
+    return render(request, 'sale_list.html', {'objects': objects})
+
+
+def sale_day(request, voucher_date):
+    objects = Sale.objects.filter(date=voucher_date).prefetch_related('rows')
+    total_amount = 0
+    total_quantity = 0
+    total_items = 0
+    for obj in objects:
+        for row in obj.rows.all():
+            total_items += 1
+            total_quantity += row.quantity
+            total_amount += row.quantity * row.rate
+    context = {
+        'objects': objects,
+        'total_amount': total_amount,
+        'total_quantity': total_quantity,
+        'total_items': total_items,
+        'from_date': voucher_date
+    }
+    return render(request, 'sale_report.html', context)
 
 
 def daily_sale_today(request):
