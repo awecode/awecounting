@@ -34,8 +34,8 @@ urlpatterns = patterns('',
                        url(r'^sale/(?P<from_date>\d{4}-\d{2}-\d{2})/(?P<to_date>\d{4}-\d{2}-\d{2})/$', views.sale_date_range,
                            name='sale-date-range'),
 
-                       url(r'^daily-sale/today$', views.daily_sale_today, name='today_sale'),
-                       url(r'^daily-sale/yesterday$', views.daily_sale_yesterday, name='yesterday_sale'),
+                       url(r'^sale/today/$', views.daily_sale_today, name='today_sale'),
+                       url(r'^sale/yesterday/$', views.daily_sale_yesterday, name='yesterday_sale'),
 
                        # rest_framework api
                        url(r'^api/items/$', views.ItemList.as_view()),

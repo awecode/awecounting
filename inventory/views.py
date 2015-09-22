@@ -264,15 +264,13 @@ def sale_date_range(request, from_date, to_date):
 
 
 def daily_sale_today(request):
-    today = datetime.datetime.now()
-    obj = Sale.objects.filter(date=today)
-    return render(request, 'daily_sale_list.html', {'objects': obj})
+    today = datetime.date.today()
+    return sale_day(request, today)
 
 
 def daily_sale_yesterday(request):
-    yesterday = datetime.datetime.now() - timedelta(1)
-    obj = Sale.objects.filter(date=yesterday)
-    return render(request, 'daily_sale_list.html', {'objects': obj})
+    yesterday = datetime.date.today() - timedelta(1)
+    return sale_day(request, yesterday)
 
 
 def party_form(request, id=None):
