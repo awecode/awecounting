@@ -372,80 +372,6 @@ form {
 }
 
 /*Hover effect*/
-#nav-icon, #nav-icon-no-list {
-    border: 4px solid #20806F;
-    margin: 5px;
-    width: 13em;
-    height: 14em;
-    text-align: center;
-    padding-top: 22px;
-}
-
-div #nav-icon:hover, #nav-icon-no-list:hover {
-    background-color: rgba(224, 241, 231, 0.84);
-
-}
-
-#nav-icon i, #nav-icon-no-list i {
-    color: #206E5E;
-    font-size: 9em;
-    /*max-resolution: res;n-top: 3px;*/
-    transition: font-size .5s;
-}
-
-div #nav-icon:hover i {
-    font-size: 6em;
-    margin-top: -5px;
-}
-
-.icon-caption {
-    margin-top: 9px;
-}
-
-#nav-wrapper {
-    margin-top: 10px;
-}
-
-#nav-icon h2, #nav-icon-no-list h2 {
-    margin-top: -3px;
-    /*display: none;*/
-    color: #20806F;
-}
-
-#nav-icon:hover h2 {
-    display: none;
-}
-
-#nav-wrapper a {
-    text-decoration: none;
-    color: inherit;
-}
-
-#nav-menu {
-    visibility: hidden;
-    width: 13em;
-    height: 14em;
-    /*margin-top: -20em;  */
-    margin-left: -4px;
-}
-
-div #nav-icon:hover #nav-menu {
-    /*font-size: 1em;*/
-    visibility: visible;
-    margin-top: 12px;
-}
-
-div #nav-icon ul {
-
-}
-
-#nav-menu li {
-    background-color: transparent;
-    /*opacity: 100%; */
-    border: none;
-    border-bottom: 2px solid #20806F;
-}
-
 .selectize-control {
     max-width: 300px;
 }
@@ -543,3 +469,4 @@ div #nav-icon ul {
 
 .selectize-input {
     min-height: 25px;
+}

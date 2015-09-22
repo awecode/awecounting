@@ -5,81 +5,93 @@
     {% trans 'Awecounting' %}
 {% endblock %}
 
-{% block search %}
-    <div class="row">
-        <div class="col-lg-12">
-            <form action="{% url 'search-item' %}" method='POST'>
-                {% csrf_token %}
-                <div class="input-group">
-                    <input type="text" name="search-code" class="form-control" placeholder="Search Items" autofocus>
-                      <span class="input-group-addon" id="basic-addon1">
-                        <button><i class="fa fa-search "></i></button>
-                      </span>
-                </div>
-            </form>
-        </div>
-    </div>
-    <br>
+{% block head_end %}
+    <link rel="stylesheet" href="{% static 'css/datepicker3.css' %}">
+    <script src="{% static 'js/libs/bootstrap-datepicker.js' %}"></script>
 {% endblock %}
 
 {% block content %}
-    <div class='container'>
-        <div id="nav-wrapper">
-            <div class="pull-left" id='nav-icon'>
-                <i class="fa fa-arrow-down "></i><br>
 
-                <div>
-                    <h2>Purchases</h2>
-                    <ul class="list-group" id="nav-menu">
-                        <a href="{% url 'purchase-create' %}">
-                            <li class="list-group-item">New Purchase</li>
-                        </a>
-                        <a href="{% url 'purchase-list' %}">
-                            <li class="list-group-item">List Purchases</li>
-                        </a>
-                    </ul>
-                </div>
-            </div>
-            <!--div class="pull-left" id='nav-icon'>
-            <i class="fa fa-arrow-up"></i><br>
-            <h2>Sales</h2>
-            <ul class="list-group" id="nav-menu">
-                <a href="{% url 'sale-create' %}"><li class="list-group-item">New Sale</li></a>
-                <a href="{% url 'sale-list' %}"><li class="list-group-item">List Sales</li></a>
-            </ul>
-        </div-->
-            <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
-                <i class="fa fa-arrow-up"></i>
-
-                <div class="flip-body">
-                    <h2>Sales</h2>
-                    <a href="{% url 'sale-create' %}">New Sale</a>
-                    <a href="{% url 'sale-list' %}">List Sales</a>
-                    <a href="{% url 'today_sale' %}">Today Sales</a>
-                    <a href="{% url 'yesterday_sale' %}">Yesterday Sales</a>
-                </div>
-            </div>
-
-            <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
-                <i class="fa fa-book"></i>
-
-                <div class="flip-body">
-                    <h2>Inventory</h2>
-                    <a href="{% url 'item-list' %}">Items</a>
-                    <a href="{% url 'list_units' %}">Units</a>
-                    <a href="{% url 'list_inventory_accounts' %}">Accounts</a>
-                    <a href="{% url 'yesterday_sale' %}">Yesterday Sales</a>
-                </div>
-            </div>
-
-
-            <div class="pull-left" id='nav-icon-no-list'>
-                <a href="{% url 'list_inventory_accounts' %}">
-                    <i class="fa fa-book"></i><br>
-
-                    <h2>Accounts</h2>
-                </a>
+    {% block search %}
+        <div class="row">
+            <div class="col-lg-12">
+                <form action="{% url 'search-item' %}" method='POST'>
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" name="search-code" class="form-control" placeholder="Search Items" autofocus>
+                      <span class="input-group-addon" id="basic-addon1">
+                        <button><i class="fa fa-search "></i></button>
+                      </span>
+                    </div>
+                </form>
             </div>
         </div>
+        <br>
+    {% endblock %}
+
+
+    <div id="dashboard-icons" class="row">
+
+        <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
+            <i class="fa fa-arrow-down"></i>
+
+            <div class="flip-body">
+                <h2>Purchases</h2>
+                <a href="{% url 'purchase-create' %}">New Purchase</a>
+                <a href="{% url 'purchase-list' %}">List Purchases</a>
+            </div>
+        </div>
+
+        <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
+            <i class="fa fa-arrow-up"></i>
+
+            <div class="flip-body">
+                <h2>Sales</h2>
+                <a href="{% url 'sale-create' %}">New Sale</a>
+                <a href="{% url 'sale-list' %}">List Sales</a>
+                <a href="{% url 'today_sale' %}">Today Sales</a>
+                <a href="{% url 'yesterday_sale' %}">Yesterday Sales</a>
+            </div>
+        </div>
+
+        <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
+            <i class="fa fa-book"></i>
+
+            <div class="flip-body">
+                <h2>Inventory</h2>
+                <a href="{% url 'item-list' %}">Items</a>
+                <a href="{% url 'list_units' %}">Units</a>
+                <a href="{% url 'list_inventory_accounts' %}">Accounts</a>
+                <a href="{% url 'yesterday_sale' %}">Yesterday Sales</a>
+            </div>
+        </div>
+
+
+        <div class="tile flip-container">
+            <i class="fa fa-book"></i>
+
+            <div class="flip-body">
+                <h2>Accounts</h2>
+                <a href="{% url 'list_inventory_accounts' %}">Accounts</a>
+            </div>
+
+        </div>
     </div>
+
+    <div class="sales-report row">
+        <form id="sales-report">
+            <label>From:</label>
+            <input type="text" name="date_from" id="date-from" class="datepicker" data-date-format="yyyy-mm-dd">
+            <label>To:</label>
+            <input type="text" name="date_to" id="date-to" class="datepicker" data-date-format="yyyy-mm-dd">
+        </form>
+    </div>
+{% endblock %}
+
+{% block body_end %}
+    <script>
+        $(function () {
+            $('.datepicker').datepicker();
+        });
+    </script>
 {% endblock %}
