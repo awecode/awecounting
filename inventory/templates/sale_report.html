@@ -5,7 +5,11 @@
 {% block title %}{% trans 'Sales' %}{% endblock %}
 
 {% block headertext %}
-    Sales for {{ from_date }}
+    {% if to_date %}
+        Sales from {{ from_date }} to {{ to_date }}
+    {% else %}
+        Sales for {{ from_date }}
+    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -19,20 +23,20 @@
             {% autosort objects as sorted_objects %}
             {% autopaginate sorted_objects 25 as paginated_objects %}
 
-        <table class="table table-striped table-bordered">
-            <tr>
-                <th>Total Amount Sold</th>
-                <td>{{ total_amount }}</td>
-            </tr>
-            <tr>
-                <th>Total Quantity Sold</th>
-                <td>{{ total_quantity }}</td>
-            </tr>
-            <tr>
-                <th>Total Particulars Sold</th>
-                <td>{{ total_items }}</td>
-            </tr>
-        </table>
+            <table class="table table-striped table-bordered">
+                <tr>
+                    <th>Total Amount Sold</th>
+                    <td>{{ total_amount }}</td>
+                </tr>
+                <tr>
+                    <th>Total Quantity Sold</th>
+                    <td>{{ total_quantity }}</td>
+                </tr>
+                <tr>
+                    <th>Total Particulars Sold</th>
+                    <td>{{ total_items }}</td>
+                </tr>
+            </table>
 
             <table class="table table-striped table-bordered">
                 <thead>

@@ -242,6 +242,26 @@ def sale_day(request, voucher_date):
     }
     return render(request, 'sale_report.html', context)
 
+def sale_date_range(request, from_date, to_date):
+    objects = Sale.objects.filter(date__gte=from_date, date__lte=to_date).prefetch_related('rows')
+    total_amount = 0
+    total_quantity = 0
+    total_items = 0
+    for obj in objects:
+        for row in obj.rows.all():
+            total_items += 1
+            total_quantity += row.quantity
+            total_amount += row.quantity * row.rate
+    context = {
+        'objects': objects,
+        'total_amount': total_amount,
+        'total_quantity': total_quantity,
+        'total_items': total_items,
+        'from_date': from_date,
+        'to_date': to_date,
+    }
+    return render(request, 'sale_report.html', context)
+
 
 def daily_sale_today(request):
     today = datetime.datetime.now()
