@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^$', views.index, name='home'),
 
     url(r'^inventory/', include('inventory.urls')),
+    url(r'^ledger/', include('ledger.urls')),
 
 ]
 
