@@ -14,18 +14,8 @@ var inject_binding = function (allBindings, key, value) {
     };
 }
 
-ko.bindingHandlers.foundation = {
-    init: function () {
-    },
-    init: function () {
-        $(document).foundation();
-    }
-
-}
-
 ko.bindingHandlers.selectize = {
     init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-
         if (!allBindingsAccessor.has('optionsText'))
             allBindingsAccessor = inject_binding(allBindingsAccessor, 'optionsText', 'name');
         if (!allBindingsAccessor.has('optionsValue'))
@@ -41,11 +31,43 @@ ko.bindingHandlers.selectize = {
             searchField: allBindingsAccessor.get('optionsText')
         }
 
+        if (allBindingsAccessor.has('options')) {
+            var passed_options = allBindingsAccessor.get('options')
+            for (var attr_name in passed_options) {
+                options[attr_name] = passed_options[attr_name];
+            }
+        }
+
         var $select = $(element).selectize(options)[0].selectize;
-        if (typeof allBindingsAccessor.get('value') == 'function')
+
+        if (typeof allBindingsAccessor.get('value') == 'function') {
             $select.addItem(allBindingsAccessor.get('value')());
-        var selected = allBindingsAccessor.get('selectedOptions');
-        if (selected) {
+            allBindingsAccessor.get('value').subscribe(function (new_val) {
+                $select.addItem(new_val);
+            })
+        }
+
+        if (typeof allBindingsAccessor.get('selectedOptions') == 'function') {
+            allBindingsAccessor.get('selectedOptions').subscribe(function (new_val) {
+                // Removing items which are not in new value
+                var values = $select.getValue();
+                var items_to_remove = [];
+                for (var k in values) {
+                    if (new_val.indexOf(values[k]) == -1) {
+                        items_to_remove.push(values[k]);
+                    }
+                }
+
+                for (var k in items_to_remove) {
+                    $select.removeItem(items_to_remove[k]);
+                }
+
+                for (var k in new_val) {
+                    $select.addItem(new_val[k]);
+                }
+
+            });
+            var selected = allBindingsAccessor.get('selectedOptions')();
             for (var k in selected) {
                 $select.addItem(selected[k]);
             }
@@ -56,21 +78,38 @@ ko.bindingHandlers.selectize = {
             init_selectize($select);
         }
 
-        if (1) {
-            valueAccessor().subscribe(function (new_value) {
-                var new_obj = new_value[new_value.length - 1];
-                $select.addOption(new_obj);
-            });
+        if (typeof valueAccessor().subscribe == 'function') {
+            valueAccessor().subscribe(function (changes) {
+                // To avoid having duplicate keys, all delete operations will go first
+                var addedItems = new Array();
+                changes.forEach(function (change) {
+                    switch (change.status) {
+                        case 'added':
+                            addedItems.push(change.value);
+                            break;
+                        case 'deleted':
+                            var itemId = change.value[options.valueField];
+                            if (itemId != null) $select.removeOption(itemId);
+                    }
+                });
+                addedItems.forEach(function (item) {
+                    $select.addOption(item);
+                });
+
+            }, null, "arrayChange");
         }
+
     },
     update: function (element, valueAccessor, allBindingsAccessor) {
+
         if (allBindingsAccessor.has('object')) {
+            var optionsValue = allBindingsAccessor.get('optionsValue') || 'id';
             var value_accessor = valueAccessor();
             var selected_obj = $.grep(value_accessor(), function (i) {
-                if (typeof i.id == 'function')
-                    var id = i.id()
+                if (typeof i[optionsValue] == 'function')
+                    var id = i[optionsValue]
                 else
-                    var id = i.id
+                    var id = i[optionsValue]
                 return id == allBindingsAccessor.get('value')();
             })[0];
 
@@ -80,7 +119,6 @@ ko.bindingHandlers.selectize = {
         }
     }
 }
-
 
 ko.bindingHandlers.autosize = {
     init: function (element, valueAccessor, allBindingsAccessor) {
@@ -153,8 +191,8 @@ ko.bindingHandlers.max = {
     },
     update: function (element, valueAccessor) {
 
-        $(element).on('change', function(e){
-            if ($(element).val()> valueAccessor()){
+        $(element).on('change', function (e) {
+            if ($(element).val() > valueAccessor()) {
                 $(element).val(null);
             }
         });
@@ -184,11 +222,11 @@ ko.bindingHandlers.numeric = {
 
             // Allow: backspace, delete, tab, escape, and enter
             if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
-                // Allow: Ctrl combinations
+                    // Allow: Ctrl combinations
                 (event.ctrlKey === true) ||
-                //Allow decimal symbol (.)
+                    //Allow decimal symbol (.)
                 (event.keyCode === 190) ||
-                // Allow: home, end, left, right
+                    // Allow: home, end, left, right
                 (event.keyCode >= 35 && event.keyCode <= 39)) {
                 // let it happen, don't do anything
                 return;

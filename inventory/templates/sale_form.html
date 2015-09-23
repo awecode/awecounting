@@ -65,7 +65,7 @@
                                 <td data-bind="editableText: quantity, numeric: true"></td>
                                 <td data-bind="editableText: rate, numeric: true"></td>
                                 <td>
-                                    <select data-bind="selectize: $root.units, value: unit_id, event: {change: $root.unit_changed}"
+                                    <select data-bind="selectize: $root.units, value: unit_id, object: unit, event: {change: $root.unit_changed}"
                                             data-url="{% url 'add-unit' %}"></select>
                                 </td>
                                 <td data-bind="editableText: discount"></td>

@@ -5,11 +5,11 @@ $(document).ready(function () {
 });
 
 function SaleViewModel(data) {
-	var self = this;
+    var self = this;
 
     self.status = ko.observable();
 
-	$.ajax({
+    $.ajax({
         url: '/inventory/api/items.json',
         dataType: 'json',
         async: false,
@@ -79,7 +79,7 @@ function SaleViewModel(data) {
             data: ko.toJSON(self),
             success: function (msg) {
                 if (msg.id)
-                        self.id(msg.id);
+                    self.id(msg.id);
                 if (typeof (msg.error_message) != 'undefined') {
                     alert.error(msg.error_message);
                     self.status('errorlist');
@@ -97,7 +97,7 @@ function SaleViewModel(data) {
             }
         });
     }
-   
+
     self.sub_total = function () {
         var sum = 0;
         self.table_view.rows().forEach(function (i) {
@@ -109,22 +109,24 @@ function SaleViewModel(data) {
 
 
 function SaleRow(row) {
-	var self = this;
+    var self = this;
 
-	self.item_id = ko.observable()
-	self.quantity = ko.observable()
-	self.rate = ko.observable()
-    self.discount = ko.observable(0)
+    self.item_id = ko.observable();
+    self.quantity = ko.observable();
+    self.rate = ko.observable();
+    self.discount = ko.observable(0);
 
-	self.unit_id = ko.observable()
+    self.unit = ko.observable();
+
+    self.unit_id = ko.observable();
 
     for (var k in row)
         self[k] = ko.observable(row[k]);
 
-    
+
     self.total = ko.computed(function () {
-        if (self.discount() > 0 ) {
-            var total = self.quantity() * self.rate()
+        if (self.discount() > 0) {
+            var total = self.quantity() * self.rate();
             return round2(total - self.discount());
         } else {
             return round2(self.quantity() * self.rate());
