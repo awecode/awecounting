@@ -160,7 +160,7 @@ class Party(models.Model):
     account = models.ForeignKey(Account)
 
     def save(self, *args, **kwargs):
-        if not self.account:
+        if not self.account_id:
             account = Account(name=self.name)
             account.save()
             self.account = account
