@@ -25,7 +25,6 @@ function PurchaseViewModel(data) {
     }
 
     self.unit_changed = function (row) {
-        debugger
         var selected_item = $.grep(row.units(), function (i) {
             return i.id == row.unit_id();
         })[0];
