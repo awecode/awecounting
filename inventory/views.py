@@ -127,7 +127,7 @@ def save_purchase(request):
     dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
-    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'party_id': params.get('party')}
+    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'party_id': params.get('party'), 'credit': params.get('credit')}
     if params.get('id'):
         obj = Purchase.objects.get(id=params.get('id'))
     else:
@@ -165,11 +165,18 @@ def save_purchase(request):
                 set_transactions(submodel, obj.date,
                                  ['dr', submodel.item.account, submodel.quantity],
                                  )
-                set_ledger_transactions(submodel, obj.date,
-                                        ['dr', obj.party.account, obj.total],
-                                        ['cr', 'cash', obj.total],
-                                        # ['cr', sales_tax_account, tax_amount],
-                                        )
+                if obj.credit:
+                    set_ledger_transactions(submodel, obj.date,
+                                            ['cr', obj.party.account, obj.total],
+                                            ['dr', submodel.item.ledger, obj.total],
+                                            # ['cr', sales_tax_account, tax_amount],
+                                            )
+                else:
+                    set_ledger_transactions(submodel, obj.date,
+                                            ['dr', submodel.item.ledger, obj.total],
+                                            ['cr', 'cash', obj.total],
+                                            # ['cr', sales_tax_account, tax_amount],
+                                            )
                 # delete_rows(params.get('table_view').get('deleted_rows'), model)
 
     except Exception as e:

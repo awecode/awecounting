@@ -35,6 +35,9 @@
 					Party: <select data-bind="selectize: $root.parties, value: party, event: {change: $root.party_changed}"
                         data-url="{% url 'add-party' %}" class="change-on-ready"></select>
 				</div>
+				<div>
+					Credit: <input type="checkbox" data-bind="checked: credit">
+				</div>
 				<br>
 
 				<div data-bind="with: table_view">

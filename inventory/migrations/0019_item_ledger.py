@@ -8,14 +8,13 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('ledger', '0001_initial'),
-        ('inventory', '0016_item_selling_rate'),
+        ('inventory', '0018_purchase_credit'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='party',
-            name='account',
-            field=models.ForeignKey(null=True, to='ledger.Account'),
-            preserve_default=False,
+            model_name='item',
+            name='ledger',
+            field=models.ForeignKey(to='ledger.Account', null=True),
         ),
     ]

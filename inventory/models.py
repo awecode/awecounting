@@ -68,12 +68,20 @@ class Item(models.Model):
     unit = models.ForeignKey(Unit)
     selling_rate = models.FloatField(blank=True, null=True)
     other_properties = JSONField(blank=True, null=True)
+    ledger = models.ForeignKey(Account, null=True)
+
 
     def __unicode__(self):
-        return self.name
+        return self.name + ' ' + self.size + ' ' + unicode(self.selling_rate)
 
     def save(self, *args, **kwargs):
         account_no = kwargs.pop('account_no')
+
+        if not self.ledger_id:
+            ledger = Account(name=self.name)
+            ledger.save()
+            self.ledger = ledger
+
         if account_no:
             if self.account:
                 account = self.account
@@ -157,7 +165,7 @@ class Party(models.Model):
     address = models.CharField(max_length=254, blank=True, null=True)
     phone_no = models.CharField(max_length=100, blank=True, null=True)
     pan_no = models.CharField(max_length=50, blank=True, null=True)
-    account = models.ForeignKey(Account)
+    account = models.ForeignKey(Account, null=True)
 
     def save(self, *args, **kwargs):
         if not self.account_id:
@@ -176,6 +184,7 @@ class Party(models.Model):
 class Purchase(models.Model):
     party = models.ForeignKey(Party)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
+    credit = models.BooleanField(default=False)
     date = models.DateField(default=datetime.datetime.today)
 
     @property
