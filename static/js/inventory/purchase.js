@@ -21,20 +21,17 @@ function PurchaseViewModel(data) {
         var selected_item = $.grep(self.items(), function (i) {
             return i.id == row.item_id();
         })[0];
-        if (selected_item.selling_rate)
-            row.rate(selected_item.selling_rate)
-        else
-            row.rate('')
         // row.unit_id(selected_item.unit_id)
+        // self.unit_changed(row, selected_item.unit_id)
         if (!selected_item) return;
     }
 
-    self.unit_changed = function (row) {
-        var selected_item = $.grep(row.units(), function (i) {
-            return i.id == row.unit_id();
-        })[0];
-        if (!selected_item) return;
-    }
+    // self.unit_changed = function (row, unit_id) {
+    //     var selected_item = $.grep(row.units(), function (i) {
+    //         return i.id == row.unit_id();
+    //     })[0];
+    //     if (!selected_item) return;
+    // }
 
     $.ajax({
         url: '/inventory/api/parties.json',
@@ -71,11 +68,16 @@ function PurchaseViewModel(data) {
         }
     });
 
-    self.unit_changed = function (row) {
-        debugger;
-        var selected_item = $.grep(self.units(), function (i) {
-            return i.id == row.unit_id();
-        })[0];
+    self.unit_changed = function (row, unit_id) {
+        if (typeof(unit_id) == 'number') {
+            var selected_item = $.grep(self.units(), function (i) {
+                return i.id == unit_id;
+            })[0];
+        } else {
+            var selected_item = $.grep(self.units(), function (i) {
+                return i.id == row.unit_id();
+            })[0];
+        }
         if (!selected_item) return;
     }
 

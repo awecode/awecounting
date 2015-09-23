@@ -23,6 +23,10 @@ function SaleViewModel(data) {
         var selected_item = $.grep(self.items(), function (i) {
             return i.id == row.item_id();
         })[0];
+        if (selected_item.selling_rate)
+            row.rate(selected_item.selling_rate)
+        else
+            row.rate('')
         if (!selected_item) return;
     }
 
