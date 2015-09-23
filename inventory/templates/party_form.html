@@ -4,27 +4,26 @@
 {% block title %}{{ scenario }} {% trans 'Party' %}{% endblock %}
 
 {% block content %}
-<div class='container'>
-    <div class="row">
-        <div  class="col-12-lg col-12-md col-12-sm col-12-xs">
+    <div class='container'>
+        <div class="row">
+            <div class="col-12-lg col-12-md col-12-sm col-12-xs">
 
-    {{ form.non_field_errors }}
-    {{ form.errors }}
-    <form method="post" id='form'>
-        {% csrf_token %}
-        {{ form.as_p }}
-            <div class="span12">
-                <button type="submit" value="Submit" id='submit' class="btn btn-primary btn-lg">
-                    {% trans 'Submit' %}</button>
+                {{ form.non_field_errors }}
+                {{ form.errors }}
+                <form method="post" id='form'>
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="span12">
+                        <button type="submit" value="Submit" id='submit' class="btn btn-primary btn-lg">
+                            {% trans 'Submit' %}</button>
+                    </div>
+                </form>
             </div>
-    </form>
         </div>
     </div>
-</div>
-    
+
 
 {% endblock %}
-{#                 {% if scenario == 'Update' %}
-                    <a class="btn btn-danger btn-lg"
-                       href="{% url 'delete_party' form.instance.id %}">{% trans 'Delete' %}!</a>
-                {% endif %} #}
+{#{% if scenario == 'Update' %}#}
+{#    <a class="btn btn-danger btn-lg" href="{% url 'delete_party' form.instance.id %}">{% trans 'Delete' %}!</a>#}
+{#{% endif %}#}
