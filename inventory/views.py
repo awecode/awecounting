@@ -1,5 +1,5 @@
 import json
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render, get_object_or_404, redirect
 from inventory.models import Item, UnitConverter, Purchase, PurchaseRow, Party, Unit, Sale, SaleRow, JournalEntry, Transaction, \
     alter, set_transactions, InventoryAccount, none_for_zero, zero_for_none
@@ -14,7 +14,21 @@ from django.db.models import Max, Q
 
 
 def index(request):
-    return render(request, 'index.html')
+    objects = Sale.objects.filter(date=datetime.date.today()).prefetch_related('rows')
+    total_amount = 0
+    total_quantity = 0
+    total_items = 0
+    for obj in objects:
+        for row in obj.rows.all():
+            total_items += 1
+            total_quantity += row.quantity
+            total_amount += row.quantity * row.rate
+    context = {
+        'total_amount': total_amount,
+        'total_quantity': total_quantity,
+        'total_items': total_items,
+    }
+    return render(request, 'index.html', context)
 
 
 def item_search(request):
@@ -262,6 +276,15 @@ def sale_date_range(request, from_date, to_date):
     }
     return render(request, 'sale_report.html', context)
 
+def sales_report_router(request):
+    if request.GET.get('date'):
+        return sale_day(request, request.GET.get('date'))
+    elif request.GET.get('from') and request.GET.get('to'):
+        return sale_date_range(request, request.GET.get('from'), request.GET.get('to'))
+    elif request.GET.get('from'):
+        return sale_day(request, request.GET.get('from'))
+    else:
+        return redirect(reverse_lazy('home'))
 
 def daily_sale_today(request):
     today = datetime.date.today()

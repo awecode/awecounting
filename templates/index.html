@@ -8,6 +8,7 @@
 {% block head_end %}
     <link rel="stylesheet" href="{% static 'css/datepicker3.css' %}">
     <script src="{% static 'js/libs/bootstrap-datepicker.js' %}"></script>
+    <script src="{% static 'js/index.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -77,14 +78,44 @@
 
         </div>
     </div>
-
     <div class="sales-report row">
-        <form id="sales-report">
-            <label>From:</label>
-            <input type="text" name="date_from" id="date-from" class="datepicker" data-date-format="yyyy-mm-dd">
-            <label>To:</label>
-            <input type="text" name="date_to" id="date-to" class="datepicker" data-date-format="yyyy-mm-dd">
-        </form>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><a href="{% url 'today_sale' %}">Today's Sales </a></h3>
+            </div>
+            <div class="panel-body">
+
+                <table class="table table-striped table-bordered">
+                    <tr>
+                        <th>Total Amount Sold</th>
+                        <td>{{ total_amount }}</td>
+                    </tr>
+                    <tr>
+                        <th>Total Quantity Sold</th>
+                        <td>{{ total_quantity }}</td>
+                    </tr>
+                    <tr>
+                        <th>Total Particulars Sold</th>
+                        <td>{{ total_items }}</td>
+                    </tr>
+                </table>
+
+                <form class="sales-report-form" id="sales-report-range" action="{% url 'sale-report-router' %}">
+                    <label class="pull-left">From:</label>
+                    <input type="text" name="from" id="date-from" class="pull-left datepicker" data-date-format="yyyy-mm-dd">
+                    <label class="pull-left">To:</label>
+                    <input type="text" name="to" id="date-to" class="pull-left datepicker" data-date-format="yyyy-mm-dd">
+                    <input type="submit" value="Go" class="btn">
+                </form>
+                <form class="sales-report-form" id="sales-report-day" action="{% url 'sale-report-router' %}">
+                    <label class="pull-left">Day:&nbsp;&nbsp;</label>
+                    <input type="text" name="date" id="sale-date" class="pull-left datepicker" data-date-format="yyyy-mm-dd">
+                    <input type="submit" value="Go" class="btn">
+                </form>
+            </div>
+        </div>
+
+
     </div>
 {% endblock %}
 
