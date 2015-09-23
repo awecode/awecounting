@@ -20,6 +20,8 @@ INSTALLED_APPS = (
 
     # apps
     'inventory',
+    'ledger',
+
     'rest_framework',
     'linaro_django_pagination',
     'webstack_django_sorting',
