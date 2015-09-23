@@ -161,6 +161,8 @@ def set_transactions(submodel, date, *args):
         })
     for arg in args:
         # transaction = Transaction(account=arg[1], dr_amount=arg[2])
+        if arg[1] == 'cash':
+            arg[1] = Account.objects.get(name='Cash')
         matches = journal_entry.transactions.filter(account=arg[1])
         if not matches:
             transaction = Transaction()

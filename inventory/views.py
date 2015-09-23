@@ -11,6 +11,7 @@ import datetime
 from rest_framework import generics
 from datetime import timedelta
 from django.db.models import Max, Q
+from ledger.models import set_transactions as set_ledger_transactions
 
 
 def index(request):
@@ -164,6 +165,11 @@ def save_purchase(request):
                 set_transactions(submodel, obj.date,
                                  ['dr', submodel.item.account, submodel.quantity],
                                  )
+                set_ledger_transactions(submodel, obj.date,
+                                        ['dr', obj.party.account, obj.total],
+                                        ['cr', 'cash', obj.total],
+                                        # ['cr', sales_tax_account, tax_amount],
+                                        )
                 # delete_rows(params.get('table_view').get('deleted_rows'), model)
 
     except Exception as e:
@@ -220,6 +226,11 @@ def save_sale(request):
                 set_transactions(submodel, obj.date,
                                  ['cr', submodel.item.account, submodel.quantity],
                                  )
+                set_ledger_transactions(submodel, obj.date,
+                                        ['cr', obj.party.account, obj.total],
+                                        ['dr', 'cash', obj.total],
+                                        # ['cr', sales_tax_account, tax_amount],
+                                        )
                 # delete_rows(params.get('table_view').get('deleted_rows'), model)
 
     except Exception as e:
@@ -256,6 +267,7 @@ def sale_day(request, voucher_date):
     }
     return render(request, 'sale_report.html', context)
 
+
 def sale_date_range(request, from_date, to_date):
     objects = Sale.objects.filter(date__gte=from_date, date__lte=to_date).prefetch_related('rows')
     total_amount = 0
@@ -276,6 +288,7 @@ def sale_date_range(request, from_date, to_date):
     }
     return render(request, 'sale_report.html', context)
 
+
 def sales_report_router(request):
     if request.GET.get('date'):
         return sale_day(request, request.GET.get('date'))
@@ -285,6 +298,7 @@ def sales_report_router(request):
         return sale_day(request, request.GET.get('from'))
     else:
         return redirect(reverse_lazy('home'))
+
 
 def daily_sale_today(request):
     today = datetime.date.today()

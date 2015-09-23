@@ -178,6 +178,14 @@ class Purchase(models.Model):
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     date = models.DateField(default=datetime.datetime.today)
 
+    @property
+    def total(self):
+        grand_total = 0
+        for obj in self.rows.all():
+            total = obj.quantity * obj.rate
+            grand_total += total
+        return grand_total
+
     def get_absolute_url(self):
         return reverse_lazy('purchase-detail', kwargs={'id': self.pk})
 
@@ -204,7 +212,8 @@ class Sale(models.Model):
     def get_absolute_url(self):
         return reverse_lazy('sale-detail', kwargs={'id': self.pk})
 
-    def get_sale_total(self):
+    @property
+    def total(self):
         grand_total = 0 
         for obj in self.rows.all():
             total = obj.quantity * obj.rate
