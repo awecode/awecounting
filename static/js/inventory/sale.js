@@ -27,6 +27,7 @@ function SaleViewModel(data) {
             row.rate(selected_item.selling_rate)
         else
             row.rate('')
+        row.unit_id(selected_item.unit_id)
         if (!selected_item) return;
     }
 
