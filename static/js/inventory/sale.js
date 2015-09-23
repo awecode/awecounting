@@ -60,12 +60,13 @@ function SaleViewModel(data) {
         }
     });
 
-    self.unit_changed = function (row) {
-        var selected_item = $.grep(self.units(), function (i) {
-            return i.id == row.unit_id();
-        })[0];
-        if (!selected_item) return;
-    }
+    //self.unit_changed = function (row) {
+    //    var selected_item = $.grep(self.units(), function (i) {
+    //        return i.id == row.unit_id();
+    //    })[0];
+    //    if (!selected_item) return;
+    //}
+
     self.table_view = new TableViewModel({rows: data.rows}, SaleRow);
 
 
