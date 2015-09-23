@@ -5,6 +5,8 @@ from jsonfield import JSONField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.db.models import F
+from ledger.models import Account
+
 
 def none_for_zero(obj):
     if not obj:
@@ -155,6 +157,15 @@ class Party(models.Model):
     address = models.CharField(max_length=254, blank=True, null=True)
     phone_no = models.CharField(max_length=100, blank=True, null=True)
     pan_no = models.CharField(max_length=50, blank=True, null=True)
+    account = models.ForeignKey(Account)
+
+    def save(self, *args, **kwargs):
+        if not self.account:
+            account = Account(name=self.name)
+            account.save()
+            self.account = account
+        super(Party, self).save(*args, **kwargs)
+
 
     def __unicode__(self):
         return self.name
