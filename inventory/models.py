@@ -64,6 +64,7 @@ class Item(models.Model):
     image = models.ImageField(upload_to='items', blank=True, null=True)
     size = models.CharField(max_length=250, blank=True, null=True)
     unit = models.ForeignKey(Unit)
+    selling_rate = models.FloatField(blank=True, null=True)
     other_properties = JSONField(blank=True, null=True)
 
     def __unicode__(self):

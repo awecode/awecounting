@@ -56,7 +56,13 @@
 {#        </tr>#}
         </thead>
         <tbody data-bind="with: table_vm">
-        {% for entry in entries %}
+        {% load pagination_tags %}
+        {% load sorting_tags %}
+        {% load filters %}
+
+        {% autosort entries as sorted_objects %}
+        {% autopaginate sorted_objects 25 as paginated_objects %}
+        {% for entry in paginated_objects %}
             <tr>
                 <td>{{ entry.date }}</td>
                 <td><a href="{{ entry.creator.get_absolute_url }}">{{ entry.creator.get_voucher_no }}</a></td>
@@ -96,6 +102,8 @@
         {#        <!-- /ko -->#}
         </tbody>
     </table>
+    {% paginate %}
+    <br>
 
     <a class="btn btn-default btn-lg"
        href="{% url 'view_inventory_account_with_rate' obj.id %}">{% trans 'View' %} {% trans 'with' %} {% trans 'Rate' %}</a>

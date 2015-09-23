@@ -1,11 +1,11 @@
 $(document).ready(function () {
     if (typeof(item_data) == "undefined") {
-        vm = new ItemVM();
+        item = new ItemVM();
     } else {
-        vm = new ItemVM(item_data, item_unit_id);
+        item = new ItemVM(item_data, item_unit_id);
     }
     var item_form = document.getElementById("other-properties");
-    ko.applyBindings(vm, item_form);
+    ko.applyBindings(item, item_form);
     $('.change-on-ready').trigger('change');
     $("table tr #item_instance_properties").each(function(i) {
         value = $(this).text().slice(1,-1);
