@@ -33,7 +33,7 @@ urlpatterns = patterns('',
                        url(r'^sale/(?P<voucher_date>\d{4}-\d{2}-\d{2})/$', views.sale_day, name='sale-day'),
                        url(r'^sale/(?P<from_date>\d{4}-\d{2}-\d{2})/(?P<to_date>\d{4}-\d{2}-\d{2})/$', views.sale_date_range,
                            name='sale-date-range'),
-
+                       url(r'^sale/report/$', views.sales_report_router, name='sale-report-router'),
                        url(r'^sale/today/$', views.daily_sale_today, name='today_sale'),
                        url(r'^sale/yesterday/$', views.daily_sale_yesterday, name='yesterday_sale'),
 

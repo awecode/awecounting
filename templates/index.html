@@ -100,16 +100,16 @@
                     </tr>
                 </table>
 
-                <form class="sales-report-form" id="sales-report-range">
+                <form class="sales-report-form" id="sales-report-range" action="{% url 'sale-report-router' %}">
                     <label class="pull-left">From:</label>
-                    <input type="text" name="date_from" id="date-from" class="pull-left datepicker" data-date-format="yyyy-mm-dd">
+                    <input type="text" name="from" id="date-from" class="pull-left datepicker" data-date-format="yyyy-mm-dd">
                     <label class="pull-left">To:</label>
-                    <input type="text" name="date_to" id="date-to" class="pull-left datepicker" data-date-format="yyyy-mm-dd">
+                    <input type="text" name="to" id="date-to" class="pull-left datepicker" data-date-format="yyyy-mm-dd">
                     <input type="submit" value="Go" class="btn">
                 </form>
-                <form class="sales-report-form" id="sales-report-day">
+                <form class="sales-report-form" id="sales-report-day" action="{% url 'sale-report-router' %}">
                     <label class="pull-left">Day:&nbsp;&nbsp;</label>
-                    <input type="text" name="sale_date" id="sale-date" class="pull-left datepicker" data-date-format="yyyy-mm-dd">
+                    <input type="text" name="date" id="sale-date" class="pull-left datepicker" data-date-format="yyyy-mm-dd">
                     <input type="submit" value="Go" class="btn">
                 </form>
             </div>

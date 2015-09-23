@@ -1,5 +1,5 @@
 import json
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render, get_object_or_404, redirect
 from inventory.models import Item, UnitConverter, Purchase, PurchaseRow, Party, Unit, Sale, SaleRow, JournalEntry, Transaction, \
     alter, set_transactions, InventoryAccount, none_for_zero, zero_for_none
@@ -276,6 +276,15 @@ def sale_date_range(request, from_date, to_date):
     }
     return render(request, 'sale_report.html', context)
 
+def sales_report_router(request):
+    if request.GET.get('date'):
+        return sale_day(request, request.GET.get('date'))
+    elif request.GET.get('from') and request.GET.get('to'):
+        return sale_date_range(request, request.GET.get('from'), request.GET.get('to'))
+    elif request.GET.get('from'):
+        return sale_day(request, request.GET.get('from'))
+    else:
+        return redirect(reverse_lazy('home'))
 
 def daily_sale_today(request):
     today = datetime.date.today()
