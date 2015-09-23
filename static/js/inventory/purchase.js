@@ -21,8 +21,6 @@ function PurchaseViewModel(data) {
         var selected_item = $.grep(self.items(), function (i) {
             return i.id == row.item_id();
         })[0];
-        // row.unit_id(selected_item.unit_id)
-        // self.unit_changed(row, selected_item.unit_id)
         if (!selected_item) return;
     }
 
@@ -69,15 +67,9 @@ function PurchaseViewModel(data) {
     });
 
     self.unit_changed = function (row, unit_id) {
-        if (typeof(unit_id) == 'number') {
-            var selected_item = $.grep(self.units(), function (i) {
-                return i.id == unit_id;
-            })[0];
-        } else {
-            var selected_item = $.grep(self.units(), function (i) {
-                return i.id == row.unit_id();
-            })[0];
-        }
+        var selected_item = $.grep(self.units(), function (i) {
+            return i.id == row.unit_id();
+        })[0];
         if (!selected_item) return;
     }
 
