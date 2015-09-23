@@ -14,7 +14,21 @@ from django.db.models import Max, Q
 
 
 def index(request):
-    return render(request, 'index.html')
+    objects = Sale.objects.filter(date=datetime.date.today()).prefetch_related('rows')
+    total_amount = 0
+    total_quantity = 0
+    total_items = 0
+    for obj in objects:
+        for row in obj.rows.all():
+            total_items += 1
+            total_quantity += row.quantity
+            total_amount += row.quantity * row.rate
+    context = {
+        'total_amount': total_amount,
+        'total_quantity': total_quantity,
+        'total_items': total_items,
+    }
+    return render(request, 'index.html', context)
 
 
 def item_search(request):

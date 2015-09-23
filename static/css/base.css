@@ -470,3 +470,11 @@ form {
 .selectize-input {
     min-height: 25px;
 }
+
+.sales-report-form input{
+    margin: 0 2em;
+}
+
+.sales-report-form{
+    clear: both;
+}
