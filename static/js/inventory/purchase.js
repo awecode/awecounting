@@ -1,19 +1,18 @@
 $(document).ready(function () {
-    vm = new PurchaseViewModel(ko_data);
+    var vm = new PurchaseViewModel(ko_data);
     ko.applyBindings(vm);
     $('.change-on-ready').trigger('change');
 });
 
 function PurchaseViewModel(data) {
-	var self = this;
+    var self = this;
 
-	$.ajax({
+    $.ajax({
         url: '/inventory/api/items.json',
         dataType: 'json',
         async: false,
         success: function (data) {
             self.items = ko.observableArray(data);
-
         }
     });
 
@@ -39,7 +38,7 @@ function PurchaseViewModel(data) {
             self.parties = ko.observableArray(data);
         }
     });
-    
+
     self.party = ko.observable();
     self.party_name = ko.observable();
     self.party_address = ko.observable();
@@ -74,7 +73,7 @@ function PurchaseViewModel(data) {
     }
 
 
-    self.table_view = new TableViewModel({rows: data.rows}, PurchaseRow);
+    self.table_view = new TableViewModel({rows: data.rows, argument: self}, PurchaseRow);
 
 
     for (var k in data)
@@ -121,21 +120,25 @@ function PurchaseViewModel(data) {
 }
 
 
-function PurchaseRow(row) {
-	var self = this;
+function PurchaseRow(row, purchase_vm) {
+    var self = this;
 
-	self.item_id = ko.observable()
-	self.quantity = ko.observable()
-	self.rate = ko.observable()
+    self.item_id = ko.observable()
+    self.quantity = ko.observable()
+    self.rate = ko.observable()
     self.discount = ko.observable(0)
 
-	self.unit_id = ko.observable()
+    self.unit_id = ko.observable()
 
     for (var k in row)
         self[k] = ko.observable(row[k]);
 
+    self.full_item_name = ko.computed(function () {
+        return 'ac';
+    })
+
     self.total = ko.computed(function () {
-        if (self.discount() > 0 ) {
+        if (self.discount() > 0) {
             var total = self.quantity() * self.rate()
             return round2(total - self.discount());
         } else {
@@ -143,5 +146,9 @@ function PurchaseRow(row) {
         }
     })
 
+    self.render_option = function (data) {
+        var obj = get_by_id(purchase_vm.items(), data.id);
+        return '<div>' + obj.full_name + '</div>';
+    }
 
 }

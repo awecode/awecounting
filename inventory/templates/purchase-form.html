@@ -3,7 +3,7 @@
 {% load filters %}
 
 {% block title %}
-	{{ scenario }} Purchase
+    {{ scenario }} Purchase
 {% endblock %}
 
 {% block head_end %}
@@ -18,87 +18,89 @@
 {% endblock %}
 
 {% block content %}
-<div class='container'>
+    <div class='container'>
 
-	<div class="row">
-		<div class="col-12-lg col-12-md col-12-sm col-12-xs">
-		
-			<form method="post" data-bind="submit: save">
-				{% csrf_token %}
-				<div>
-					Voucher No.: <input type="text" data-bind="value: voucher_no" class='form-control'>
-				</div>
-				<div class="pull-right">
-					Date: <input type="text" data-bind="value: date" class='form-control'>
-				</div>
-				<div>
-					Party: <select data-bind="selectize: $root.parties, value: party, event: {change: $root.party_changed}"
-                        data-url="{% url 'add-party' %}" class="change-on-ready"></select>
-				</div>
-				<div>
-					Credit: <input type="checkbox" data-bind="checked: credit">
-				</div>
-				<br>
+        <div class="row">
+            <div class="col-12-lg col-12-md col-12-sm col-12-xs">
 
-				<div data-bind="with: table_view">
-					
-					<table class="table table-bordered table-striped">
-						<thead>
-							<tr>
-								<td>{% trans "S.N" %}</td>
-								<td>{% trans "Items" %}</td>
-								<td>{% trans "Quantity" %}</td>
-								<td>{% trans "Rate" %}</td>
-								<td>{% trans "Unit" %}</td>
-								<td>{% trans 'Discount' %}</td>
-								<td>{% trans 'Total' %}</td>
-							</tr>
-						</thead>
+                <form method="post" data-bind="submit: save">
+                    {% csrf_token %}
+                    <div>
+                        Voucher No.: <input type="text" data-bind="value: voucher_no" class='form-control'>
+                    </div>
+                    <div class="pull-right">
+                        Date: <input type="text" data-bind="value: date" class='form-control'>
+                    </div>
+                    <div>
+                        Party: <select data-bind="selectize: $root.parties, value: party, event: {change: $root.party_changed}"
+                                       data-url="{% url 'add-party' %}" class="change-on-ready"></select>
+                    </div>
+                    <div>
+                        Credit: <input type="checkbox" data-bind="checked: credit">
+                    </div>
+                    <br>
 
-						<tbody>
-                			<!-- ko foreach: rows -->
-							<tr>
-			                    <td>
-			                        <span class="wid-pad pull-left" data-bind="text:  $index()+1, localize: 1"> </span>
-			                    </td>
-			                    <td>
-			                    	<select data-bind="selectize: $root.items, value: item_id, event: {change: $root.item_changed}"
-			                    	data-url="{% url 'add-item' %}" data-script="/static/js/inventory/item.js"></select>
-			                    </td>
-			                    <td data-bind="editableText: quantity, numeric: true"></td>
-			                    <td data-bind="editableText: rate, numeric: true"></td>
-			                    <td>
-			                    	<select data-bind="selectize: $root.units, value: unit_id, event: {change: $root.unit_changed}" data-url="{% url 'add-unit' %}"></select>
-			                    </td>
-			                    <td data-bind="editableText: discount"></td>
-			                    <td data-bind="text: total"></td>
-			                    <td class="hide-on-print">
-			                    	<a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
-			                    </td>
-							</tr>
+                    <div data-bind="with: table_view">
 
-							<!-- /ko -->
-							<tr>
-								<td colspan="6">
-									Grand total
-								</td>
-								<td data-bind="text: $root.sub_total(), localize: 1"></td>
-							</tr>
-						</tbody>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                            <tr>
+                                <td>{% trans "S.N" %}</td>
+                                <td>{% trans "Items" %}</td>
+                                <td>{% trans "Quantity" %}</td>
+                                <td>{% trans "Rate" %}</td>
+                                <td>{% trans "Unit" %}</td>
+                                <td>{% trans 'Discount' %}</td>
+                                <td>{% trans 'Total' %}</td>
+                            </tr>
+                            </thead>
 
-					</table>
-		            <a class="btn btn-default" data-bind="click: addRow">
-		                {% trans 'Add New Row' %}
-		            </a>
-				</div>
-				<br>
-		       <input type="submit" class="btn btn-default btn-lg" value="{% trans 'Save' %}">
+                            <tbody>
+                            <!-- ko foreach: rows -->
+                            <tr>
+                                <td>
+                                    <span class="wid-pad pull-left" data-bind="text:  $index()+1, localize: 1"> </span>
+                                </td>
+                                <td>
+                                    <select data-url="{% url 'add-item' %}" data-script="/static/js/inventory/item.js"
+                                            data-bind="selectize: $root.items, value: item_id, event: {change: $root.item_changed}, options:{render: {'option': render_option, 'item':render_option}}">
+                                    </select>
+                                </td>
+                                <td data-bind="editableText: quantity, numeric: true"></td>
+                                <td data-bind="editableText: rate, numeric: true"></td>
+                                <td>
+                                    <select data-bind="selectize: $root.units, value: unit_id, event: {change: $root.unit_changed}"
+                                            data-url="{% url 'add-unit' %}"></select>
+                                </td>
+                                <td data-bind="editableText: discount"></td>
+                                <td data-bind="text: total"></td>
+                                <td class="hide-on-print">
+                                    <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
+                                </td>
+                            </tr>
 
-			</form>
+                            <!-- /ko -->
+                            <tr>
+                                <td colspan="6">
+                                    Grand total
+                                </td>
+                                <td data-bind="text: $root.sub_total(), localize: 1"></td>
+                            </tr>
+                            </tbody>
 
-		</div>
-	</div>
+                        </table>
+                        <a class="btn btn-default" data-bind="click: addRow">
+                            {% trans 'Add New Row' %}
+                        </a>
+                    </div>
+                    <br>
+                    <input type="submit" class="btn btn-default btn-lg" value="{% trans 'Save' %}">
 
-	
-</div>
+                </form>
+
+            </div>
+        </div>
+
+
+    </div>
 {% endblock %}

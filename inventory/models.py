@@ -72,7 +72,7 @@ class Item(models.Model):
 
 
     def __unicode__(self):
-        return self.name + ' ' + self.size + ' ' + unicode(self.selling_rate)
+        return self.name + ' ' + self.code
 
     def save(self, *args, **kwargs):
         account_no = kwargs.pop('account_no')

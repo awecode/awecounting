@@ -1261,7 +1261,6 @@ function TableViewModel(options, row_model) {
 
     var self = this;
 
-
     if (typeof(options.properties) != 'undefined') {
         /** @namespace options.properties */
         for (var k in options.properties)
@@ -1567,3 +1566,4 @@ $(document).ready(function () {
         });
     });
 });
+

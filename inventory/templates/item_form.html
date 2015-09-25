@@ -30,7 +30,7 @@
 
         <div id="other-properties">
             <label for="id_units">Units</label>
-            <select id ="id_units" data-bind="selectize: $root.units, value: unit_id, event: {change: unit_changed}" data-url="{% url 'add-unit' %}" name="unit"></select>
+            <select id ="id_units" data-bind="selectize: $root.units, value: unit_id, event: {change: unit_changed}" data-url="{% url 'add-unit' %}" name="unit" required></select>
 
             <label for="id_other_properties">{% trans "Other properties" %}</label>
 

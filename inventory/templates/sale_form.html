@@ -59,8 +59,9 @@
                                     <span class="wid-pad pull-left" data-bind="text:  $index()+1, localize: 1"> </span>
                                 </td>
                                 <td>
-                                    <select data-bind="selectize: $root.items, value: item_id, event: {change: $root.item_changed}"
-                                            data-url="{% url 'add-item' %}" data-script="/static/js/inventory/item.js"></select>
+                                <select data-url="{% url 'add-item' %}" data-script="/static/js/inventory/item.js"
+                                            data-bind="selectize: $root.items, value: item_id, event: {change: $root.item_changed}, options:{render: {'option': render_option, 'item':render_option}}">
+                                    </select>
                                 </td>
                                 <td data-bind="editableText: quantity, numeric: true"></td>
                                 <td data-bind="editableText: rate, numeric: true"></td>

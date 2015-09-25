@@ -72,7 +72,7 @@ function SaleViewModel(data) {
     //    if (!selected_item) return;
     //}
 
-    self.table_view = new TableViewModel({rows: data.rows}, SaleRow);
+    self.table_view = new TableViewModel({rows: data.rows, argument: self}, SaleRow);
 
 
     for (var k in data)
@@ -114,7 +114,7 @@ function SaleViewModel(data) {
 }
 
 
-function SaleRow(row) {
+function SaleRow(row, sale_vm) {
     var self = this;
 
     self.item_id = ko.observable();
@@ -138,5 +138,10 @@ function SaleRow(row) {
             return round2(self.quantity() * self.rate());
         }
     })
+
+    self.render_option = function (data) {
+        var obj = get_by_id(sale_vm.items(), data.id);
+        return '<div>' + obj.full_name + '</div>';
+    }
 
 }

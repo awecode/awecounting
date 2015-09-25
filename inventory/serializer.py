@@ -6,6 +6,10 @@ from inventory.models import Purchase, PurchaseRow, Item, Party, Unit, Sale, Sal
 class ItemSerializer(serializers.ModelSerializer):
     unit_id = serializers.ReadOnlyField(source='unit.id')
     name = serializers.ReadOnlyField(source='__unicode__')
+    full_name = serializers.SerializerMethodField()
+
+    def get_full_name(self, obj):
+        return obj.name
 
     class Meta:
         model = Item
