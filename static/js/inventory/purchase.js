@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    var vm = new PurchaseViewModel(ko_data);
+    vm = new PurchaseViewModel(ko_data);
     ko.applyBindings(vm);
     $('.change-on-ready').trigger('change');
 });
