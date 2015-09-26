@@ -37,7 +37,6 @@ ko.bindingHandlers.selectize = {
                 options[attr_name] = passed_options[attr_name];
             }
         }
-        console.log(options);
         var $select = $(element).selectize(options)[0].selectize;
 
         if (typeof allBindingsAccessor.get('value') == 'function') {

@@ -482,3 +482,7 @@ form {
 .sales-report.row {
     margin-top: 3em;
 }
+
+.modal{
+    overflow: auto;
+}
