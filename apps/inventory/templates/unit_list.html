@@ -2,13 +2,13 @@
 {% load i18n staticfiles %}
 {% load filters %}
 
-{% block title %}{% trans 'Purchase' %}{% endblock %}
+{% block title %}{% trans 'Units' %}{% endblock %}
 
 {% block content %}
-<div class='container'>
-    <div class="row">
+    <div class='container'>
+        <div class="row">
 
-        <h1>Unit List</h1>
+            <h1>{% trans 'Units' %}</h1>
 
             {% load pagination_tags %}
             {% load sorting_tags %}
@@ -39,9 +39,8 @@
             {% paginate %}
 
 
-        <a class="btn btn-default btn-lg"
-               href="{% url 'add-unit' %}">{% trans 'New' %} {% trans 'Item' %}</a>
+            <a class="btn btn-default btn-lg" href="{% url 'add-unit' %}">{% trans 'New' %} {% trans 'Unit' %}</a>
 
+        </div>
     </div>
-</div>
 {% endblock %}
