@@ -128,3 +128,17 @@ class HTML5BootstrapModelForm(HTML5ModelForm):
                 widget.attrs['class'] += ' form-control'
             else:
                 widget.attrs['class'] = 'form-control'
+
+
+class KOModelForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(KOModelForm, self).__init__(*args, **kwargs)
+        self.refine_for_ko()
+
+    def refine_for_ko(self):
+        for (name, field) in self.fields.items():
+            # add HTML5 required attribute for required fields
+            if field.required:
+                field.widget.attrs['required'] = 'required'
+            field.widget.attrs['data-bind'] = 'value: ' + name
+            field.widget.attrs['class'] = 'form-control'
