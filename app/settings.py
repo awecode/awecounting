@@ -21,6 +21,7 @@ INSTALLED_APPS = (
     # apps
     'inventory',
     'ledger',
+    'apps.share',
 
     'rest_framework',
     'linaro_django_pagination',
