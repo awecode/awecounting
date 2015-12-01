@@ -20,3 +20,4 @@ sorl-thumbnail
 django-redis
 jsonfield
 openpyxl
+django-reversion

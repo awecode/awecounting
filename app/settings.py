@@ -25,6 +25,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'linaro_django_pagination',
     'webstack_django_sorting',
+    'reversion',
 )
 
 MIDDLEWARE_CLASSES = (

@@ -17,3 +17,4 @@ django-modeltranslation
 sorl-thumbnail
 jsonfield
 openpyxl
+django-reversion
