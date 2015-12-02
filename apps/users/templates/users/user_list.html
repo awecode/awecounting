@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block page-header %}
+    {% trans 'Users' %}
+{% endblock %}
+
+{% block title %}
+    {% trans 'Users' %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li>{% trans 'Users' %}</li>
+{% endblock %}
+
+{% block header-buttons %}
+    <a href="{% url 'users:user_add' %}" class="btn btn-default pull-right user-add-btn">Add User</a>
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+
+            {% load pagination_tags %}
+            {% load sorting_tags %}
+
+            {% autosort object_list as sorted_objects %}
+            {% autopaginate sorted_objects 25 as paginated_objects %}
+
+            <table class="table table-striped table-bordered">
+                <thead>
+                <th>{% anchor username _('Username') %}</th>
+                <th>{% trans 'Email address' %}</th>
+                <th>{% anchor full_name _('Full name') %}</th>
+                <th>{% anchor date_joined _('Date joined') %}</th>
+                <th>{% anchor outlet _('Outlet') %}</th>
+                </thead>
+                <tbody>
+                {% for user in sorted_objects %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'users:user_edit' user.id %}">{{ user.username }}</a>
+                        </td>
+                        <td>
+                            <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+                        </td>
+                        <td>
+                            <a href="#">{{ user.full_name }}</a>
+                        </td>
+                        <td>
+                            <a href="#">{{ user.date_joined }}</a>
+                        </td>
+                        <td>
+                            <a href="#">{{ user.outlet }}</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            {% paginate %}
+
+        </div>
+    </div>
+
+
+{% endblock %}

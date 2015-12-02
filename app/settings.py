@@ -21,6 +21,7 @@ INSTALLED_APPS = (
     # apps
     'inventory',
     'ledger',
+    'apps.users',
 
     'rest_framework',
     'linaro_django_pagination',
@@ -50,6 +51,8 @@ LANGUAGES = [
     ('en', gettext('English')),
     ('ne', gettext("Nepali")),
 ]
+
+AUTH_USER_MODEL = 'users.User'
 
 LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'),)
 

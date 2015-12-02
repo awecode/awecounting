@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+{% block content %}
+
+    <div class="container">
+        <div>
+            <h2 class="intro">Login</h2>
+
+            {% if form.errors %}
+                <p class="alert-error" role='alert'>Your username and password didn't match. Please try again.</p>
+            {% endif %}
+
+            <form method="post" action="{% url 'users:login' %}"
+                  id="user_login_new">{% csrf_token %}
+                {% if state %}
+                    {{ state }}
+                {% endif %}
+                {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}"/>
+                {% endif %}
+                <div class="required">
+                    <label for="id_username">Username:</label>
+                    <input type="text" class="form-control" name="username" id="id_username" value="{{ username }}" required
+                           autofocus/>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password">Password:</label>
+                    <input type="password" name="password" class="form-control" id="id_password" value="{{ username }}" required/>
+                </div>
+
+                <div>
+                    <input type="checkbox" id="remember_me" name="remember_me" value="true"/>
+                    <label for="remember_me">Remember Me</label>
+                </div>
+
+                <div>
+                    <input type="submit" value="Log In" class="btn btn-default"/>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

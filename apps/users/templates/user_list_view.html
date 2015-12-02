@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %} 
+    <h2>Groups</h2>
+    <table class="table table-striped">
+        <tr>
+    	   <th>Name</th>
+
+        </tr>
+        {% for gr in object_list %}
+            <tr>
+                <td><a href="#">{{ gr.name }}</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

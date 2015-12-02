@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block page-title %}{{ scenario }} {{ form.instance }}{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'users:user_list' %}">{% trans 'Users' %}</a></li>
+    <li>{{ scenario }} {{ form.instance }}</li>
+{% endblock %}
+
+
+{% block content %}
+    <form action="" method="POST">
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+        <div class="form-group">
+            {{ form.username.label_tag }}
+            {{ form.username }}
+            {{ form.username.errors }}
+        </div>
+
+        <div class="form-group">
+            {{ form.full_name.label_tag }}
+            {{ form.full_name }}
+            {{ form.full_name.errors }}
+        </div>
+
+
+        <div class="form-group">
+            {{ form.email.label_tag }}
+            {{ form.email }}
+            {{ form.email.errors }}
+        </div>
+
+        <div class="form-group">
+            {{ form.outlet.label_tag }}
+            {{ form.outlet }}
+            {{ form.oulet.errors }}
+        </div>
+
+        <div class="form-group">
+            {{ form.date_joined.label_tag }}
+            {{ form.date_joined }}
+            {{ form.date_joined.errors }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_password1">Password:</label>
+            <input class="form-control" id="{{ form.password1.auto_id }}" name="{{ form.password1.html_name }}"
+                   {% if not object.pk %}required="required"{% endif %} type="password">
+            {{ form.password1.errors }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_password2">Password:</label>
+            <input class="form-control" id="{{ form.password2.auto_id }}" name="{{ form.password2.html_name }}"
+                   {% if not object.pk %}required="required"{% endif %} type="password">
+            {{ form.password2.errors }}
+        </div>
+
+        <input type="submit" class='btn btn-default'>
+
+    {% if form.instance.id %}
+        <a href="{% url 'users:user_delete' form.instance.id %}" class="btn btn-danger">{% trans 'Delete' %}</a>
+    {% endif %}
+        
+    </form>
+{% endblock %}
