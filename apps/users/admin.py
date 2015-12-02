@@ -2,9 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin, UserChangeForm as DjangoUserChangeForm, \
     UserCreationForm as DjangoUserCreationForm
 from django import forms
-from django.contrib.sites.models import Site
-
-from .models import User, GroupProxy
+from .models import User, GroupProxy, Company, Role
 
 
 class UserCreationForm(DjangoUserCreationForm):
@@ -95,16 +93,19 @@ admin.site.register(User, CustomUserAdmin)
 
 
 class GroupAdmin(admin.ModelAdmin):
-    readonly_fields = ['name', ]
+    # readonly_fields = ['name', ]
 
-    def has_add_permission(self, request):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
+    # def has_add_permission(self, request):
+    #     return False
+    # 
+    # def has_delete_permission(self, request, obj=None):
+    #     return False
+    pass
 
 
 from django.contrib.auth.models import Group
 
 admin.site.unregister(Group)
 admin.site.register(GroupProxy, GroupAdmin)
+admin.site.register(Role)
+admin.site.register(Company)

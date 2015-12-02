@@ -46,6 +46,18 @@ class UserManager(BaseUserManager):
             return False
 
 
+class Company(models.Model):
+    name = models.CharField(max_length=254)
+    location = models.TextField()
+    type_of_business = models.CharField(max_length=254)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = _('Companies')
+
+
 class User(AbstractBaseUser):
     username = models.CharField(max_length=50, unique=True)
     full_name = models.CharField(max_length=245)
@@ -125,6 +137,18 @@ class User(AbstractBaseUser):
 
     class Meta:
         swappable = 'AUTH_USER_MODEL'
+
+
+class Role(models.Model):
+    user = models.ForeignKey(User, related_name='roles')
+    group = models.ForeignKey(Group, related_name='roles')
+    company = models.ForeignKey(Company, related_name='roles')
+
+    def __str__(self):
+        return self.group.name
+
+    class Meta:
+        unique_together = ('user', 'group', 'company')
 
 
 class StaffOnlyMixin(object):
