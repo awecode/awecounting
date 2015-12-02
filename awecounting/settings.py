@@ -23,6 +23,7 @@ INSTALLED_APPS = (
     'inventory',
     'ledger',
     'apps.users',
+    'apps.share',
 
     'rest_framework',
     'linaro_django_pagination',
