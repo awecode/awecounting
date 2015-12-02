@@ -6,6 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.db.models import F
 from ledger.models import Account
+from apps.users.models import Company
 
 
 def none_for_zero(obj):
@@ -23,6 +24,7 @@ def zero_for_none(obj):
 class Unit(models.Model):
     name = models.CharField(max_length=50)
     short_name = models.CharField(max_length=10, blank=True, null=True)
+    company = models.ForeignKey(Company)
 
     def __unicode__(self):
         return self.name
@@ -31,6 +33,7 @@ class UnitConverter(models.Model):
     base_unit = models.ForeignKey(Unit, null=True, related_name='base_unit')
     unit_to_convert = models.ForeignKey(Unit, null=True)
     multiple = models.FloatField()
+    company = models.ForeignKey(Company)
 
     def __unicode__(self):
         return self.unit_to_convert.name + ' ' + '[' + str(self.multiple) + ':' + self.base_unit.name + ']'
@@ -41,6 +44,7 @@ class InventoryAccount(models.Model):
     name = models.CharField(max_length=100)
     account_no = models.PositiveIntegerField()
     current_balance = models.FloatField(default=0)
+    company = models.ForeignKey(Company)
 
     def __str__(self):
         return str(self.account_no) + ' [' + self.name + ']'
@@ -69,6 +73,7 @@ class Item(models.Model):
     selling_rate = models.FloatField(blank=True, null=True)
     other_properties = JSONField(blank=True, null=True)
     ledger = models.ForeignKey(Account, null=True)
+    company = models.ForeignKey(Company)
 
 
     def __unicode__(self):
@@ -97,6 +102,7 @@ class JournalEntry(models.Model):
     content_type = models.ForeignKey(ContentType, related_name='inventory_journal_entries')
     model_id = models.PositiveIntegerField()
     creator = GenericForeignKey('content_type', 'model_id')
+    company = models.ForeignKey(Company)
 
     @staticmethod
     def get_for(source):
@@ -118,6 +124,7 @@ class Transaction(models.Model):
     cr_amount = models.FloatField(null=True, blank=True)
     current_balance = models.FloatField(null=True, blank=True)
     journal_entry = models.ForeignKey(JournalEntry, related_name='transactions')
+    company = models.ForeignKey(Company)
 
     def __str__(self):
         return str(self.account) + ' [' + str(self.dr_amount) + ' / ' + str(self.cr_amount) + ']'
@@ -166,6 +173,7 @@ class Party(models.Model):
     phone_no = models.CharField(max_length=100, blank=True, null=True)
     pan_no = models.CharField(max_length=50, blank=True, null=True)
     account = models.ForeignKey(Account, null=True)
+    company = models.ForeignKey(Company)
 
     def save(self, *args, **kwargs):
         if not self.account_id:
@@ -186,6 +194,7 @@ class Purchase(models.Model):
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     credit = models.BooleanField(default=False)
     date = models.DateField(default=datetime.datetime.today)
+    company = models.ForeignKey(Company)
 
     @property
     def total(self):
@@ -206,6 +215,7 @@ class PurchaseRow(models.Model):
     discount = models.FloatField(default=0)
     unit = models.ForeignKey(Unit)
     purchase = models.ForeignKey(Purchase, related_name='rows')
+    company = models.ForeignKey(Company)
 
     def get_voucher_no(self):
         return self.purchase.voucher_no
@@ -217,6 +227,7 @@ class Sale(models.Model):
     party = models.ForeignKey(Party, blank=True, null=True)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     date = models.DateField(default=datetime.datetime.today)
+    company = models.ForeignKey(Company)
 
     def get_absolute_url(self):
         return reverse_lazy('sale-detail', kwargs={'id': self.pk})
@@ -237,6 +248,7 @@ class SaleRow(models.Model):
     discount = models.FloatField(default=0)
     unit = models.ForeignKey(Unit)
     sale = models.ForeignKey(Sale, related_name='rows')
+    company = models.ForeignKey(Company)
 
     def get_voucher_no(self):
         return self.sale.voucher_no
