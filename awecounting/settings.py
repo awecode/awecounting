@@ -39,6 +39,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
     'linaro_django_pagination.middleware.PaginationMiddleware',
     'webstack_django_sorting.middleware.SortingMiddleware',
+    'apps.users.middleware.RoleMiddleware',
 )
 
 ROOT_URLCONF = 'awecounting.urls'

@@ -15,6 +15,8 @@ from ledger.models import set_transactions as set_ledger_transactions
 
 
 def index(request):
+    import ipdb
+    ipdb.set_trace()
     objects = Sale.objects.filter(date=datetime.date.today()).prefetch_related('rows')
     total_amount = 0
     total_quantity = 0
