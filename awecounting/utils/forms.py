@@ -73,6 +73,8 @@ def unique_slugify(instance, value, slug_field_name='slug', queryset=None, slug_
 
 
 class HTML5ModelForm(forms.ModelForm):
+    required_css_class = 'required'
+
     class EmailTypeInput(forms.widgets.TextInput):
         input_type = 'email'
 
@@ -126,5 +128,3 @@ class HTML5BootstrapModelForm(HTML5ModelForm):
                 widget.attrs['class'] += ' form-control'
             else:
                 widget.attrs['class'] = 'form-control'
-
-
