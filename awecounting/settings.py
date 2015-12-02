@@ -21,6 +21,7 @@ INSTALLED_APPS = (
     # apps
     'inventory',
     'ledger',
+    'apps.users',
 
     'rest_framework',
     'linaro_django_pagination',
@@ -40,9 +41,9 @@ MIDDLEWARE_CLASSES = (
     'webstack_django_sorting.middleware.SortingMiddleware',
 )
 
-ROOT_URLCONF = 'app.urls'
+ROOT_URLCONF = 'awecounting.urls'
 
-WSGI_APPLICATION = 'app.wsgi.application'
+WSGI_APPLICATION = 'awecounting.wsgi.application'
 
 LANGUAGE_CODE = 'en'
 
@@ -50,6 +51,8 @@ LANGUAGES = [
     ('en', gettext('English')),
     ('ne', gettext("Nepali")),
 ]
+
+AUTH_USER_MODEL = 'users.User'
 
 LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'),)
 

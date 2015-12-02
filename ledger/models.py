@@ -9,7 +9,7 @@ from django.db.models import F
 from django.contrib.contenttypes import generic
 
 # from users.models import Company
-from app.lib import zero_for_none, none_for_zero
+from awecounting.utils.helpers import zero_for_none, none_for_zero
 
 
 class Category(MPTTModel):

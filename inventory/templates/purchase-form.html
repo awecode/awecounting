@@ -6,14 +6,14 @@
     {{ scenario }} Purchase
 {% endblock %}
 
-{% block head_end %}
+{% block extrahead %}
     <script src="{% static 'js/inventory/purchase.js' %}"></script>
     <script>
         ko_data = {{data|jsonify}};
     </script>
 {% endblock %}
 
-{% block headertext %}
+{% block page-header %}
     Purchase
 {% endblock %}
 

@@ -219,25 +219,26 @@ def save_sale(request):
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = SaleRow
-        for index, row in enumerate(params.get('table_view').get('rows')):
+        for ind, row in enumerate(params.get('table_view').get('rows')):
             invalid_check = invalid(row, ['item_id', 'quantity', 'unit_id'])
             if invalid_check:
-                dct['error_message'] = 'These fields must be filled: ' + ', '.join(invalid_check)
-            else:
-                values = {'sn': index + 1, 'item_id': row.get('item_id'), 'quantity': row.get('quantity'),
-                          'rate': row.get('rate'), 'unit_id': row.get('unit_id'), 'discount': row.get('discount'), 'sale': obj}
-                submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
-                if not created:
-                    submodel = save_model(submodel, values)
-                dct['rows'][index] = submodel.id
-                set_transactions(submodel, obj.date,
-                                 ['cr', submodel.item.account, submodel.quantity],
-                                 )
-                set_ledger_transactions(submodel, obj.date,
-                                        ['cr', obj.party.account, obj.total],
-                                        ['dr', 'cash', obj.total],
-                                        # ['cr', sales_tax_account, tax_amount],
-                                        )
+                continue
+                # dct['error_message'] = 'These fields must be filled: ' + ', '.join(invalid_check)
+            # else:
+            values = {'sn': ind + 1, 'item_id': row.get('item_id'), 'quantity': row.get('quantity'),
+                      'rate': row.get('rate'), 'unit_id': row.get('unit_id'), 'discount': row.get('discount'), 'sale': obj}
+            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+            if not created:
+                submodel = save_model(submodel, values)
+            dct['rows'][ind] = submodel.id
+            set_transactions(submodel, obj.date,
+                             ['cr', submodel.item.account, submodel.quantity],
+                             )
+            set_ledger_transactions(submodel, obj.date,
+                                    ['cr', obj.party.account, obj.total],
+                                    ['dr', 'cash', obj.total],
+                                    # ['cr', sales_tax_account, tax_amount],
+                                    )
                 # delete_rows(params.get('table_view').get('deleted_rows'), model)
 
     except Exception as e:
