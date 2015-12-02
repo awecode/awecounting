@@ -12,7 +12,15 @@ class ShareHolder(models.Model):
     # Create ledger/account on creation of shareholder
 
 
+class Collection(models.Model):
+    count = models.PositiveIntegerField()
+    interest_rate = models.FloatField()
+    start_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)
+
+
 class Investment(models.Model):
     share_holder = models.ForeignKey(ShareHolder)
     date = models.DateField(default=datetime.date.today)
     amount = models.FloatField()
+    collection = models.ForeignKey(Collection)
