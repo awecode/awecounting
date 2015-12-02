@@ -63,7 +63,7 @@ class ItemForm(KOModelForm, TranslationModelForm):
     class Meta:
         model = Item
         fields = '__all__'
-        exclude = ['other_properties', 'account', 'unit', 'ledger']
+        exclude = ['other_properties', 'account', 'unit', 'ledger', 'company']
 
 class PartyForm(KOModelForm):
     address = forms.CharField(label=_('Address'), required=False)
@@ -72,9 +72,10 @@ class PartyForm(KOModelForm):
 
     class Meta:
         model = Party
-        exclude = ('account',)
+        exclude = ('account', 'company')
 
 class UnitForm(KOModelForm):
     class Meta:
         model = Unit
-        fields = '__all__'
+        exclude = ('company',)
+
