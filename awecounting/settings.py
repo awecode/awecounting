@@ -1,4 +1,5 @@
 import os
+from django.contrib import messages
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -54,6 +55,11 @@ LANGUAGES = [
 ]
 
 AUTH_USER_MODEL = 'users.User'
+LOGIN_REDIRECT_URL = '/'
+
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger'
+}
 
 LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'),)
 
