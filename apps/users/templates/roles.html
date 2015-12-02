@@ -1,0 +1,48 @@
+{% extends "_base.html" %}
+{% load i18n %}
+
+{% block title %}Company Roles{% endblock %}
+
+{% block page-title %}{% trans 'Company Roles' %}{% endblock %}
+
+{% block content %}
+
+    <table class="table table-bordered">
+        <thead>
+        <th>{% trans 'User' %}</th>
+        <th>{% trans 'E-mail' %}</th>
+        <th>{% trans 'Role' %}</th>
+        <th></th>
+        </thead>
+        <tbody>
+        {% for role in roles %}
+            <tr>
+                <td>{{ role.user }}</td>
+                <td><a href="mailto:{{ role.user.email }}">{{ role.user.email }}</a></td>
+                <td>{{ role.group }}</td>
+                <td>{% if role.group.name != 'SuperOwner' %}
+                    <a href="{% url 'users:delete_role' role.id %}" class="btn btn-danger">{% trans 'Delete' %}</a>
+                {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Add New Role:</h3>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" class=form-control" name="user" placeholder="Username or E-mail" required>
+        <select name="group" required>
+            <option selected="selected" value="">Select a Role</option>
+            <option value="Owner">Owner</option>
+            <option value="Accountant">Accountant</option>
+            <option value="Auditor">Auditor</option>
+            <option value="Supervisor">Supervisor</option>
+            <option value="Bookkeeper">Bookkeeper</option>
+        </select>
+        <input type="submit" value="Add" class="button">
+    </form>
+
+{% endblock %}
