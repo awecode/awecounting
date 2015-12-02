@@ -1,13 +1,23 @@
-{% load staticfiles i18n %}
+{% load staticfiles i18n filters %}
+
+{% kwacro page-title %}
+    {% block page-title %}{% endblock %}
+{% endkwacro %}
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>
         {% block whole_title %}
-            {% block title %}{% endblock %} | {% trans 'Awecounting' %}
+            {% block title %}{% usekwacro page-title %}{% endblock %} | RIS
         {% endblock %}
     </title>
+
     <link rel="stylesheet" href='{% static "css/bootstrap.min.css" %}' type="text/css" media="all">
     <link rel="stylesheet" href="{% static 'css/selectize.default.css' %}">
     <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
@@ -21,46 +31,61 @@
     <script src="{% static 'js/base.js' %}"></script>
     <script src="{% static 'js/ko_lib.js' %}"></script>
 
-    {% block head_end %}{% endblock %}
+    {% block extrastyle %} {% endblock %}
+    {% block extrahead %}{% endblock %}
 
 
 </head>
-<body>
-{% include '_header.html' %}
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+
 
 <div class='container'>
 
-    <div class="row">
-        <div class="headertext">
-            <h2>{% block headertext %}{% endblock %}</h2>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-12" role="content">
-            {% block alert %}
-                {% if messages %}
-                    <ul class="messages">
-                        {% for message in messages %}
-                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-                <div id="alert_placeholder">
-                </div>
+    {% if not is_popup %}
+        {% include 'partials/_header.html' %}
+
+        <ol class="breadcrumb hidden-print">
+            {% block breadcrumbs_container %}
+                <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+                {% block breadcrumbs %}
+                    <li>{% usekwacro page-title %}</li>{% endblock %}
             {% endblock %}
+        </ol>
+
+    {% endif %}
+
+    {% block messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message|capfirst }}</div>
+        {% endfor %}
+    {% endblock %}
+
+    <div class="row">
+        <div class="col-lg-10 col-md-10 col-sm-10">
+            <h1>{% block page-header %}{% usekwacro page-title %}{% endblock %}</h1>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            {% block header-buttons %}{% endblock %}
         </div>
     </div>
+
 </div>
 
-<div class='container'>
+<div id="content" class="{% block coltype %}colM{% endblock %}">
     {% block content %}
+        {% block object-tools %}{% endblock %}
     {% endblock %}
+    {% block sidebar %}{% endblock %}
 </div>
+
+{% block footer %}
+    <div id="footer"></div>
+{% endblock %}
 
 
 <script type="text/javascript" src='{% static "js/libs/bootstrap.min.js" %}'></script>
 
-{% block body_end %}
+{% block extrabody %}
 {% endblock %}
 
 </body>

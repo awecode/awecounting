@@ -6,7 +6,7 @@
 
 {% load filters %}
 
-{% block head_end %}
+{% block extrahead %}
     <script src="{% static 'js/inventory/inventory_account.js' %}"></script>
     <script>
         ko_data = {{data|jsonify}};

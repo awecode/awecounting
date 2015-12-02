@@ -2,11 +2,9 @@
 {% load staticfiles i18n %}
 {% load filters %}
 
-{% block title %}
-    Item
-{% endblock %}
+{% block page-title %}Item{% endblock %}
 
-{% block head_end %}
+{% block extrahead %}
     <script src="{% static 'js/inventory/item.js' %}"></script>
     <script>
         item_data = {{ item_data| jsonify }};
@@ -18,10 +16,7 @@
     </script>
 {% endblock %}
 
-{% block headertext %}Item{% endblock %}
-
 {% block content %}
-
 
     <form method="POST" id='form' enctype="multipart/form-data">
         {% csrf_token %}
