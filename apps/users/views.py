@@ -10,11 +10,12 @@ from django.views.generic.list import ListView
 from .forms import UserForm, UserUpdateForm
 from .models import User, Company, group_required, Role
 from django.contrib.auth.models import Group
+from django.utils.translation import ugettext_lazy as _
 
 
 class UserView(object):
     model = User
-    success_url = reverse_lazy('user_list')
+    success_url = reverse_lazy('users:user_list')
     form_class = UserForm
 
 
@@ -80,6 +81,7 @@ class GroupUpdateView(GroupView, UpdateView):
 class GroupDeleteView(GroupView, DeleteView):
     pass
 
+
 def set_role(request, pk):
     role = Role.objects.get(pk=pk, user=request.user)
     if role:
@@ -132,9 +134,10 @@ def roles(request):
     objs = Role.objects.filter(company=request.company)
     return render(request, 'roles.html', {'roles': objs})
 
-
+@group_required('Owner', 'SuperOwner')
 def delete_role(request, pk):
     obj = Role.objects.get(company=request.company, id=pk)
     if not obj.group.name == 'SuperOwner':
         obj.delete()
-    return redirect(reverse('roles'))
+        messages.error(request, "%s '%s' %s" % (_('Role'), str(obj), _('successfully deleted.')))
+    return redirect(reverse('users:roles'))

@@ -65,21 +65,22 @@
                         <li><a href="#">Another action</a></li>
                         <li><a href="#">Something else here</a></li>
                         <li role="separator" class="divider"></li>
-                        <li>
-                            <a href="#">{% trans 'Using as' %} {{ request.role.group }} {% trans 'at' %} {{ request.company }}</a>
-                        </li>
-                        <li role="separator" class="divider"></li>
-                        {% for role in request.user.roles.all %}
+                        {% if request.role %}
+                            <li>
+                                <a href="#">{% trans 'Using as' %} {{ request.role.group }} {% trans 'at' %} {{ request.company }}</a>
+                            </li>
+                            <li role="separator" class="divider"></li>
+                        {% endif %}
 
+                        {% for role in request.user.roles.all %}
                             {% if role.id != request.role.id %}
                                 <li>
                                     <a href="{% url 'users:set_role' role.id %}">{% trans 'Use as' %} {{ role.group }} {% trans 'at' %} {{ role.company }}</a>
                                 </li>
                             {% endif %}
-
                         {% endfor %}
-                    
-                        {% if request.user.roles.all.count > 1%}
+
+                        {% if request.user.roles.all.count > 1 %}
                             <li role="separator" class="divider"></li>
                         {% endif %}
 

@@ -187,13 +187,13 @@ def group_required(*groups):
             for role in request.roles:
                 if role.group.name in groups:
                     allowed = True
-                if allowed:
-                    return view_function(request, *args, **kwargs)
+            if allowed:
+                return view_function(request, *args, **kwargs)
+            else:
+                if request.user.is_authenticated():
+                    raise PermissionDenied()
                 else:
-                    if request.user.is_authenticated():
-                        raise PermissionDenied()
-                    else:
-                        return redirect(reverse_lazy('users:login'))
+                    return redirect(reverse_lazy('users:login'))
 
         return _view
 
