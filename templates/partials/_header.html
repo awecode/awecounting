@@ -71,9 +71,9 @@
                         <li role="separator" class="divider"></li>
                         {% for role in request.user.roles.all %}
 
-                            {% if role.company.id != request.company.id %}
+                            {% if role.id != request.role.id %}
                                 <li>
-                                    <a href="{% url 'users:set_company' role.company.id %}">{% trans 'Use as' %} {{ role.group }} {% trans 'at' %} {{ role.company }}</a>
+                                    <a href="{% url 'users:set_role' role.id %}">{% trans 'Use as' %} {{ role.group }} {% trans 'at' %} {{ role.company }}</a>
                                 </li>
                             {% endif %}
 

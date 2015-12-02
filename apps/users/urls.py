@@ -12,7 +12,7 @@ urlpatterns = patterns('',
                        url(r'^groups/add/$', views.GroupCreateView.as_view(), name='group_add'),
                        url(r'^groups/edit/(?P<pk>\d+)$', views.GroupUpdateView.as_view(), name='group_edit'),
                        url(r'^groups/delete/(?P<pk>\d+)$', views.GroupDeleteView.as_view(), name='group_delete'),
-                       url(r'^set-company/(?P<pk>[0-9]+)/$', views.set_company, name='set_company'),
+                       url(r'^set-role/(?P<pk>[0-9]+)/$', views.set_role, name='set_role'),
                        url(r'^roles/$', views.roles, name='roles'),
                        url(r'^role/delete/(?P<pk>[0-9]+)/$', views.delete_role, name='delete_role'),
                        )

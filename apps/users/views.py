@@ -80,11 +80,10 @@ class GroupUpdateView(GroupView, UpdateView):
 class GroupDeleteView(GroupView, DeleteView):
     pass
 
-def set_company(request, pk):
-    company = Company.objects.get(id=pk)
-    roles = Role.objects.filter(user=request.user, company=company)
-    if roles:
-        request.session['company'] = company.id
+def set_role(request, pk):
+    role = Role.objects.get(pk=pk, user=request.user)
+    if role:
+        request.session['role'] = role.pk
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 

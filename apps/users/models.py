@@ -1,8 +1,10 @@
+from django.core.urlresolvers import reverse_lazy
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, _user_has_perm
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
+from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 # from allauth.account.signals import user_logged_in
@@ -162,20 +164,40 @@ class StaffOnlyMixin(object):
         raise PermissionDenied()
 
 
-def group_required(*group_names):
-    """Requires user membership in at least one of the groups passed in."""
+# def group_required(*group_names):
+#     """Requires user membership in at least one of the groups passed in."""
+# 
+#     def in_groups(u):
+#         if u.is_authenticated():
+#             # if bool(u.groups.filter(name__in=group_names)) | u.is_superuser():
+#             # return True
+#             if bool(u.groups.filter(name__in=group_names)):
+#                 return True
+#             raise PermissionDenied()
+#         return False
+# 
+#     return user_passes_test(in_groups)
 
-    def in_groups(u):
-        if u.is_authenticated():
-            # if bool(u.groups.filter(name__in=group_names)) | u.is_superuser():
-            # return True
-            if bool(u.groups.filter(name__in=group_names)):
-                return True
-            raise PermissionDenied()
-        return False
 
-    return user_passes_test(in_groups)
+def group_required(*groups):
+    def _dec(view_function):
 
+        def _view(request, *args, **kwargs):
+            allowed = False
+            for role in request.roles:
+                if role.group.name in groups:
+                    allowed = True
+                if allowed:
+                    return view_function(request, *args, **kwargs)
+                else:
+                    if request.user.is_authenticated():
+                        raise PermissionDenied()
+                    else:
+                        return redirect(reverse_lazy('users:login'))
+
+        return _view
+
+    return _dec
 
 class GroupProxy(Group):
     class Meta:
