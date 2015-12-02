@@ -145,7 +145,7 @@ class Role(models.Model):
     company = models.ForeignKey(Company, related_name='roles')
 
     def __str__(self):
-        return self.group.name
+        return str(self.user) + ' as ' + str(self.group) + ' at ' + str(self.company)
 
     class Meta:
         unique_together = ('user', 'group', 'company')

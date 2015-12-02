@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import login
@@ -7,7 +8,7 @@ from django.contrib.auth import logout as auth_logout
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView
 from django.views.generic.list import ListView
 from .forms import UserForm, UserUpdateForm
-from .models import User
+from .models import User, Company, group_required, Role
 from django.contrib.auth.models import Group
 
 
@@ -78,3 +79,63 @@ class GroupUpdateView(GroupView, UpdateView):
 
 class GroupDeleteView(GroupView, DeleteView):
     pass
+
+def set_company(request, pk):
+    company = Company.objects.get(id=pk)
+    roles = Role.objects.filter(user=request.user, company=company)
+    if roles:
+        request.session['company'] = company.id
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+@group_required('Owner', 'SuperOwner')
+def roles(request):
+    if request.POST:
+        print request.POST
+        from django.core.validators import validate_email
+        from django.core.exceptions import ValidationError
+
+        try:
+            validate_email(request.POST['user'])
+            try:
+                user = User.objects.get(email=request.POST['user'])
+                group = Group.objects.get(name=request.POST['group'])
+                try:
+                    Role.objects.get(user=user, company=request.company, group=group)
+                    messages.error(request,
+                                   'User ' + user.username + ' (' + user.email + ') is already the ' + request.POST[
+                                       'group'] + '.')
+                except Role.DoesNotExist:
+                    role = Role(user=user, company=request.company, group=group)
+                    role.save()
+                    messages.success(request,
+                                     'User ' + user.username + ' (' + user.email + ') added as ' + request.POST[
+                                         'group'] + '.')
+            except User.DoesNotExist:
+                messages.error(request, 'No users found with the e-mail address ' + request.POST['user'])
+        except ValidationError:
+            try:
+                user = User.objects.get(username=request.POST['user'])
+                group = Group.objects.get(name=request.POST['group'])
+                try:
+                    Role.objects.get(user=user, company=request.company, group=group)
+                    messages.error(request,
+                                   'User ' + user.username + ' (' + user.email + ') is already the ' + request.POST[
+                                       'group'] + '.')
+                except Role.DoesNotExist:
+                    role = Role(user=user, company=request.company, group=group)
+                    role.save()
+                    messages.success(request,
+                                     'User ' + user.username + ' (' + user.email + ') added as ' + request.POST[
+                                         'group'] + '.')
+            except User.DoesNotExist:
+                messages.error(request, 'No users found with the username ' + request.POST['user'])
+    objs = Role.objects.filter(company=request.company)
+    return render(request, 'roles.html', {'roles': objs})
+
+
+def delete_role(request, pk):
+    obj = Role.objects.get(company=request.company, id=pk)
+    if not obj.group.name == 'SuperOwner':
+        obj.delete()
+    return redirect(reverse('roles'))

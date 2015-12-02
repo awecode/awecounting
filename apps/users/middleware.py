@@ -11,7 +11,7 @@ class RoleMiddleware(object):
             if len(roles):
                 request.__class__.company = Company.objects.get(id=request.session['company'])
                 request.__class__.roles = Role.objects.filter(user=request.user, company = request.session['company'])
-                #request.__class__.role = Role.objects.get(user=request.user, company = request.session['company'])
+                request.__class__.role = Role.objects.get(user=request.user, company = request.session['company'])
                 groups = []
                 for role in request.roles:
                     groups.append(role.group)
