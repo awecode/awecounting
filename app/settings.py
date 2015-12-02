@@ -21,6 +21,7 @@ INSTALLED_APPS = (
     # apps
     'inventory',
     'ledger',
+    'users',
 
     'rest_framework',
     'linaro_django_pagination',
@@ -39,6 +40,10 @@ MIDDLEWARE_CLASSES = (
     'linaro_django_pagination.middleware.PaginationMiddleware',
     'webstack_django_sorting.middleware.SortingMiddleware',
 )
+
+AUTH_USER_MODEL = 'users.User'
+
+LOGIN_REDIRECT_URL = '/'
 
 ROOT_URLCONF = 'app.urls'
 

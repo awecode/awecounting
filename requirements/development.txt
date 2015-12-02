@@ -3,6 +3,7 @@ pyinotify
 git-pylint-commit-hook
 django-debug-toolbar
 ipdb
+django-allauth
 
 # Development and Production
 Django

@@ -16,13 +16,17 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from inventory import views
+from users import views as user_views
+
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^$', views.index, name='home'),
+    # url(r'^$', views.index, name='home'),
+    url(r'^$', user_views.index, name="home"),
 
     url(r'^inventory/', include('inventory.urls')),
     url(r'^ledger/', include('ledger.urls')),
+    url(r'^users/', include('users.urls', namespace='users')),
 
 ]
 
