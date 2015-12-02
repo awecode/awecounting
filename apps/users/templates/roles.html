@@ -18,7 +18,7 @@
         {% for role in roles %}
             <tr>
                 <td>{{ role.user }}</td>
-                <td>{{ role.user.email }}</td>
+                <td><a href="mailto:{{ role.user.email }}">{{ role.user.email }}</a></td>
                 <td>{{ role.group }}</td>
                 <td>{% if role.group.name != 'SuperOwner' %}
                     <a href="{% url 'users:delete_role' role.id %}" class="btn btn-danger">{% trans 'Delete' %}</a>

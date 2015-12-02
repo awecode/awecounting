@@ -5,6 +5,7 @@ from apps.users.models import Company
 class RoleMiddleware(object):
     def process_request(self, request):
         if not request.user.is_anonymous():
+
             role = None
             if request.session.get('role'):
                 try:
@@ -21,11 +22,14 @@ class RoleMiddleware(object):
                 request.__class__.company = role.company
                 request.__class__.group = role.group
                 request.__class__.roles = Role.objects.filter(user=request.user, company=role.company)
+                request.__class__.is_owner = request.group.name in ('Owner', 'SuperOwner')
                 #     for role in request.roles:
                 #         groups.append(role.group)
                 #     request.__class__.groups = groups
             else:
+                request.__class__.role = None
+                request.__class__.company = None
+                request.__class__.group = None
                 request.__class__.roles = []
-                #     request.__class__.groups = []
-                #     request.__class__.company = None
-                #     # request.__class__.role = None
+                request.__class__.is_owner = False
+                # request.__class__.groups = []
