@@ -65,9 +65,21 @@
                         <li><a href="#">Another action</a></li>
                         <li><a href="#">Something else here</a></li>
                         <li role="separator" class="divider"></li>
+                        {% for role in request.user.roles.all %}
+                            {% if role.company.id == request.company.id %}
+                                <li>
+                                    <a href="#">Using as {{ role.company }}</a>
+                                </li>
+                                {% else %}
+                                <li>
+                                    <a href="/user/set-company/{{ role.company.id }}">Use
+                                        as {{ role.company }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
                         {% if request.user.is_authenticated %}
                             <li><a href="{% url 'users:logout' %}">{% trans 'Log out' %}</a></li>
-                            {% else %}
+                        {% else %}
                             <li><a href="{% url 'users:login' %}">{% trans 'Login' %}</a></li>
                         {% endif %}
                     </ul>
