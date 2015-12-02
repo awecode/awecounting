@@ -139,5 +139,5 @@ def delete_role(request, pk):
     obj = Role.objects.get(company=request.company, id=pk)
     if not obj.group.name == 'SuperOwner':
         obj.delete()
-        messages.error(request, "%s '%s' %s" % (_('Role'), str(obj), _('successfully deleted.')))
+        messages.success(request, "%s '%s' %s" % (_('Role'), str(obj), _('successfully deleted.')))
     return redirect(reverse('users:roles'))

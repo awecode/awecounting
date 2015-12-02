@@ -24,8 +24,8 @@ class RoleMiddleware(object):
                 #     for role in request.roles:
                 #         groups.append(role.group)
                 #     request.__class__.groups = groups
-                # else:
+            else:
+                request.__class__.roles = []
                 #     request.__class__.groups = []
-                #     request.__class__.roles = []
                 #     request.__class__.company = None
                 #     # request.__class__.role = None
