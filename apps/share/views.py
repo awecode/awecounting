@@ -17,11 +17,18 @@ class ShareHolderList(ShareHolderView, ListView):
 
 
 class ShareHolderCreate(ShareHolderView, CreateView):
-    pass
+
+    def form_valid(self, form):
+        form.instance.company = self.request.company
+        return super(ShareHolderCreate, self).form_valid(form)
 
 
 class ShareHolderUpdate(ShareHolderView, UpdateView):
-    pass
+
+    def form_valid(self, form):
+        form.instance.company = self.request.company
+        return super(ShareHolderUpdate, self).form_valid(form)
+
 
 
 class ShareHolderDelete(ShareHolderView, DeleteView):
@@ -40,11 +47,19 @@ class CollectionList(CollectionView, ListView):
 
 
 class CollectionCreate(CollectionView, CreateView):
-    pass
+
+    def form_valid(self, form):
+        form.instance.company = self.request.company
+        return super(CollectionCreate, self).form_valid(form)
+
 
 
 class CollectionUpdate(CollectionView, UpdateView):
-    pass
+
+    def form_valid(self, form):
+        form.instance.company = self.request.company
+        return super(CollectionUpdate, self).form_valid(form)
+
 
 
 class CollectionDelete(CollectionView, DeleteView):
@@ -62,11 +77,19 @@ class InvestmentList(InvestmentView, ListView):
 
 
 class InvestmentCreate(InvestmentView, CreateView):
-    pass
+  
+    def form_valid(self, form):
+        form.instance.company = self.request.company
+        return super(InvestmentCreate, self).form_valid(form)
+
 
 
 class InvestmentUpdate(InvestmentView, UpdateView):
-    pass
+    
+    def form_valid(self, form):
+        form.instance.company = self.request.company
+        return super(InvestmentUpdate, self).form_valid(form)
+
 
 
 class InvestmentDelete(InvestmentView, DeleteView):
