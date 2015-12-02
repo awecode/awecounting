@@ -7,6 +7,7 @@ from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
 from django.db.models import F
 from django.contrib.contenttypes import generic
+from apps.users.models import Company
 
 # from users.models import Company
 from awecounting.utils.helpers import zero_for_none, none_for_zero
@@ -16,7 +17,7 @@ class Category(MPTTModel):
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=254, null=True, blank=True)
     parent = TreeForeignKey('self', blank=True, null=True, related_name='children')
-    # company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company)
 
     def __unicode__(self):
         return self.name
@@ -36,6 +37,7 @@ class Account(models.Model):
     tax_rate = models.FloatField(blank=True, null=True)
     opening_dr = models.FloatField(default=0)
     opening_cr = models.FloatField(default=0)
+    company = models.ForeignKey(Company)
 
     def get_absolute_url(self):
         return '/ledger/' + str(self.id)
@@ -122,6 +124,7 @@ class JournalEntry(models.Model):
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
     source = generic.GenericForeignKey('content_type', 'object_id')
+    company = models.ForeignKey(Company, related_name="ledger_journal_entry")
 
     def __str__(self):
         return str(self.content_type) + ': ' + str(self.object_id) + ' [' + str(self.date) + ']'
@@ -137,6 +140,7 @@ class Transaction(models.Model):
     current_dr = models.FloatField(null=True, blank=True)
     current_cr = models.FloatField(null=True, blank=True)
     journal_entry = models.ForeignKey(JournalEntry, related_name='transactions')
+    company = models.ForeignKey(Company, related_name="ledger_transaction")
 
     def get_balance(self):
         return zero_for_none(self.current_dr) - zero_for_none(self.current_cr)
