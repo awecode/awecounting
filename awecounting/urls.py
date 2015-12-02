@@ -20,9 +20,9 @@ from inventory import views
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.index, name='home'),
+    url(r'^users/', include('apps.users.urls', namespace='users')),
 
     url(r'^inventory/', include('inventory.urls')),
     url(r'^ledger/', include('ledger.urls')),
 
 ]
-

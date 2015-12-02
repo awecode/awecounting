@@ -1,7 +1,7 @@
 from django import forms
 from .models import User
 from django.contrib.auth.models import Group
-from ris.utils.forms import HTML5BootstrapModelForm
+from awecounting.utils.forms import HTML5BootstrapModelForm
 
 
 class UserAdminForm(forms.ModelForm):
@@ -16,21 +16,21 @@ class GroupAdminForm(forms.ModelForm):
         fields = ['name', 'permissions']
 
 
-from allauth.account.forms import SignupForm
-
-
-class SignupForm(SignupForm):
-    full_name = forms.CharField(label='Full name')
-
-    def save(self, request):
-        user = super(SignupForm, self).save(request)
-        user.full_name = self.cleaned_data['full_name']
-        user.save()
-        return user
-
-    def signup(self, request, user):
-        user.full_name = self.cleaned_data['full_name']
-        user.save()
+# from allauth.account.forms import SignupForm
+# 
+# 
+# class SignupForm(SignupForm):
+#     full_name = forms.CharField(label='Full name')
+# 
+#     def save(self, request):
+#         user = super(SignupForm, self).save(request)
+#         user.full_name = self.cleaned_data['full_name']
+#         user.save()
+#         return user
+# 
+#     def signup(self, request, user):
+#         user.full_name = self.cleaned_data['full_name']
+#         user.save()
 
 
 class UserForm(HTML5BootstrapModelForm):

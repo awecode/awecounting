@@ -2,9 +2,9 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import login
 from django.contrib.auth import logout as auth_logout
-from allauth.account.forms import LoginForm, SignupForm
+# from allauth.account.forms import LoginForm, SignupForm
 
-from ris.utils.mixins import DeleteView, UpdateView, CreateView
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView
 from django.views.generic.list import ListView
 from .forms import UserForm, UserUpdateForm
 from .models import User
