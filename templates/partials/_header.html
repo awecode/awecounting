@@ -1,0 +1,106 @@
+{% load i18n %}
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Awecounting</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">Purchases <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'purchase-create' %}">New Purchase</a></li>
+                        <li><a href="{% url 'purchase-list' %}">List Purchases</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">Sales <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'sale-create' %}">New Sale</a></li>
+                        <li><a href="{% url 'sale-list' %}">List Sales</a></li>
+                    </ul>
+                </li>
+                <li><a href="{% url 'list_inventory_accounts' %}">Inventory Accounts</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">User <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'users:user_list' %}">List User</a></li>
+                        <li><a href="{% url 'users:user_add' %}">Add User</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{% url 'users:group_list' %}">List Group</a></li>
+                        <li><a href="{% url 'users:group_add' %}">Add Group</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">Share <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'share:shareholder_list' %}">List Shareholders</a></li>
+                        <li><a href="{% url 'share:shareholder_add' %}">Add Shareholder</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{% url 'share:collection_list' %}">List Collections</a></li>
+                        <li><a href="{% url 'share:collection_add' %}">Add Collection</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{% url 'share:investment_list' %}">List Investments</a></li>
+                        <li><a href="{% url 'share:investment_add' %}">Add Investment</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">Link</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">
+
+                        {% if request.user.is_authenticated %}
+                            <strong>{% firstof user.get_short_name user.get_username %}</strong>
+                        {% else %}
+                            <strong>Guest</strong>
+                        {% endif %}
+
+
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li role="separator" class="divider"></li>
+                        {% for role in request.user.roles.all %}
+                            {% if role.company.id == request.company.id %}
+                                <li>
+                                    <a href="#">Using as {{ role.company }}</a>
+                                </li>
+                                {% else %}
+                                <li>
+                                    <a href="/user/set-company/{{ role.company.id }}">Use
+                                        as {{ role.company }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if request.user.is_authenticated %}
+                            <li><a href="{% url 'users:logout' %}">{% trans 'Log out' %}</a></li>
+                        {% else %}
+                            <li><a href="{% url 'users:login' %}">{% trans 'Login' %}</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+</nav>

@@ -8,6 +8,7 @@ function SaleViewModel(data) {
     var self = this;
 
     self.status = ko.observable();
+    self.id = ko.observable();
 
     $.ajax({
         url: '/inventory/api/items.json',
@@ -30,6 +31,11 @@ function SaleViewModel(data) {
         row.unit_id(selected_item.unit_id)
         if (!selected_item) return;
     }
+
+    self.id.subscribe(function (id) {
+        console.log('hey');
+        history.pushState(id, id, window.location.href + id + '/');
+    });
 
     $.ajax({
         url: '/inventory/api/parties.json',

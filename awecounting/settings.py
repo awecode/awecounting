@@ -1,4 +1,5 @@
 import os
+from django.contrib import messages
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -21,6 +22,8 @@ INSTALLED_APPS = (
     # apps
     'inventory',
     'ledger',
+    'apps.users',
+    'apps.share',
 
     'rest_framework',
     'linaro_django_pagination',
@@ -38,11 +41,12 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
     'linaro_django_pagination.middleware.PaginationMiddleware',
     'webstack_django_sorting.middleware.SortingMiddleware',
+    'apps.users.middleware.RoleMiddleware',
 )
 
-ROOT_URLCONF = 'app.urls'
+ROOT_URLCONF = 'awecounting.urls'
 
-WSGI_APPLICATION = 'app.wsgi.application'
+WSGI_APPLICATION = 'awecounting.wsgi.application'
 
 LANGUAGE_CODE = 'en'
 
@@ -50,6 +54,13 @@ LANGUAGES = [
     ('en', gettext('English')),
     ('ne', gettext("Nepali")),
 ]
+
+AUTH_USER_MODEL = 'users.User'
+LOGIN_REDIRECT_URL = '/'
+
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger'
+}
 
 LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'),)
 
