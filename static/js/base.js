@@ -32,7 +32,11 @@ function localize(txt, lang_code, reverse) {
     return txt;
 }
 
+modal = function () {
+}
+
 function init_selectize($select) {
+    //debugger;
     if ($select.initialized)
         return;
     $select.initialized = true;
@@ -43,14 +47,17 @@ function init_selectize($select) {
         } else if ($select.$input.data('bind')) {
             var matches = $select.$input.data('bind').match(/value: ([a-z_1-9]+)/);
             if (matches) {
-                name = matches[1].replace(/_id/, '').replace(/_/g, ' ').toTitleCase();
+                name = matches[1].replace(/_id/, '').replace(/_/g, ' ');
 
             } else {
                 name = 'Object';
             }
+        } else if ($select.$input[0].name) {
+            name = $select.$input[0].name;
         } else {
             name = 'Object';
         }
+        name = name.replace('_', ' ').toTitleCase();
         var appended_link = jQuery('<a/>', {
             class: 'appended-link',
             href: $select.$input.data('url'),
@@ -75,6 +82,15 @@ function init_selectize($select) {
     }
 
 }
+
+modal.create = function () {
+    var el = jQuery('<div/>', {
+        id: 'reveal-modal' + ($('.reveal-modal').length + 1),
+        class: 'reveal-modal'
+    }).appendTo('body');
+    return el;
+}
+
 appended_link_clicked = function (e) {
 
     var old_forms = $('form');
@@ -94,7 +110,7 @@ appended_link_clicked = function (e) {
         var old_forms = $('form');
         $.get(url, function (data) {
             the_modal.html(data);
-            the_modal.find('#item_modal').modal('toggle');
+            the_modal.find('.modal').modal('toggle');
         }).success(function () {
             var new_forms = $('form').not(old_forms).get();
             $(new_forms).submit({url: url}, override_form);
@@ -1438,18 +1454,6 @@ alert.info = function (message) {
 
 alert.error = alert.warning;
 
-modal = function () {
-}
-
-modal.create = function () {
-    var el = jQuery('<div/>', {
-        id: 'reveal-modal' + ($('.reveal-modal').length + 1),
-        class: 'reveal-modal'
-    }).appendTo('body');
-    el.attr('data-reveal', '');
-    return el;
-}
-
 //http://stackoverflow.com/questions/346021/how-do-i-remove-objects-from-a-javascript-associative-array/9973592#9973592
 Object.remove_item = function (obj, key) {
     console.log(obj);
@@ -1550,12 +1554,14 @@ function HashTable() {
 
 $(document).ready(function () {
     $(function () {
-        $('.selectize').selectize();
+        $select = $('.selectize').selectize()[0].selectize;
+        init_selectize($select);
+
         $('.datepicker').datepicker({
             format: 'yyyy-mm-dd',
             startDate: '-3d'
         });
-        
+
         $('.flip-container').mouseenter(function () {
             $(this).addClass('open');
         });
