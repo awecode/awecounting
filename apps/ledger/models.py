@@ -8,7 +8,7 @@ from django.dispatch.dispatcher import receiver
 from django.db.models import F
 from django.contrib.contenttypes import generic
 
-# from users.models import Company
+from apps.users.models import Company
 from awecounting.utils.helpers import zero_for_none, none_for_zero
 
 
@@ -16,7 +16,7 @@ class Category(MPTTModel):
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=254, null=True, blank=True)
     parent = TreeForeignKey('self', blank=True, null=True, related_name='children')
-    # company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company)
 
     def __unicode__(self):
         return self.name
@@ -28,7 +28,7 @@ class Category(MPTTModel):
 class Account(models.Model):
     code = models.CharField(max_length=10, blank=True, null=True)
     name = models.CharField(max_length=100)
-    # company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company)
     current_dr = models.FloatField(null=True, blank=True)
     current_cr = models.FloatField(null=True, blank=True)
     parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
