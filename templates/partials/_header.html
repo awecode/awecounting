@@ -37,10 +37,11 @@
                 {% if request.is_owner %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false">User <span class="caret"></span></a>
+                           aria-expanded="false">{% trans 'Users' %}<span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="{% url 'users:user_list' %}">{% trans 'List Users' %}</a></li>
                             <li><a href="{% url 'users:user_add' %}">{% trans 'Add User' %}</a></li>
+                            <li><a href="{% url 'users:roles' %}">{% trans 'User Roles' %}</a></li>
                             {#                        <li role="separator" class="divider"></li>#}
                             {#                        <li><a href="{% url 'users:group_list' %}">List Group</a></li>#}
                             {#                        <li><a href="{% url 'users:group_add' %}">Add Group</a></li>#}

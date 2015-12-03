@@ -39,7 +39,7 @@ class UserForm(HTML5BootstrapModelForm):
     group = forms.ModelChoiceField(queryset=Group.objects.all(), empty_label=None)
 
     def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop('request')
+        self.request = kwargs.pop('request', None)
         ret = super(UserForm, self).__init__(*args, **kwargs)
         return ret
 
@@ -86,6 +86,7 @@ class UserUpdateForm(UserForm):
         super(UserUpdateForm, self).__init__(*args, **kwargs)
         self.fields['password1'].required = False
         self.fields['password2'].required = False
+        del self.fields['group']
 
     def save(self):
         data = self.cleaned_data
