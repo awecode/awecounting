@@ -1,0 +1,115 @@
+{% extends "dashboard.html" %}
+
+{% block title %}{{ account.name }} Ledger View {% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li>Bank</li>
+    <span class="divider"><i class="icon-angle-right"></i></span>
+    <li>{{ account.name }}</li>
+{% endblock %}
+
+{% block pageheader %}
+    {{ account.name }}
+{% endblock %}
+
+{% block extra-head %}
+    <script src="{{ STATIC_URL }}js/vendors/knockout.js"></script>
+    <script src="{{ STATIC_URL }}js/ko_lib.js"></script>
+    <script src="{{ STATIC_URL }}js/day_journal.js"></script>
+    <script>
+        $(document).ready(function () {
+            if (window.location.hash) {
+                var hash = window.location.hash.substring(1);
+                $('#row-' + hash).addClass('highlighted');
+            }
+        });
+    </script>
+{% endblock %}
+{% load filters %}
+{% block content %}
+
+    <div class="clearfix">
+
+        <div class="pull-left">
+            Code: {{ account.code }} <br/>
+            Total Deposit: {{ account.current_dr }} <br/>
+            Total Withdrawal: {{ account.current_cr }} <br/>
+            Balance : {{ account.get_balance }} <br/>
+        </div>
+
+        <div class="pull-right">
+            Bank Name: {{ bank_account.bank_name }} <br/>
+            Branch Name: {{ bank_account.branch_name }} <br/>
+            Account No.: {{ bank_account.ac_no }} <br/>
+
+        </div>
+
+    </div>
+
+    <h2>Transactions:</h2>
+
+    <table class="table table-bordered table-striped table-sortable">
+        <thead>
+        <th>Date</th>
+        <th>Particulars</th>
+        <th>Voucher Type</th>
+        <th>Voucher No.</th>
+        <th>Deposit</th>
+        <th>Withdrawal</th>
+        <th>Balance</th>
+        </thead>
+        <tbody>
+        {% for entry in journal_entries %}
+            <tr id="row-{{ entry.id }}">
+                <td>
+                    {{ entry.date }}
+                </td>
+                <td>
+                    {% if entry.content_type.name == 'journal voucher row' %}
+                        {{ entry|get_particulars:account|safe }}
+                    {% else %}
+                        {% for transaction in entry.transactions.all|remove_account:account %}{% if not forloop.first %}
+                            ,
+                        {% endif %}
+                            <a href="{{ transaction.account.get_absolute_url }}{{ entry.id }}">{{ transaction.account.name }}</a>
+                        {% endfor %}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if entry.content_type.app_label == 'dayjournal' %}
+                        Day Journal
+                    {% else %}
+                        {{ entry.content_type.name|refine_voucher_type }}
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ entry.source.get_absolute_url }}">
+                        {% if entry.content_type.app_label == 'dayjournal' %}
+                            {{ entry.source.day_journal.date }}
+                        {% else %}
+                            {{ entry.source.get_voucher_no }}
+                        {% endif %}
+                    </a>
+                </td>
+
+                {% for transaction in entry.transactions.all %}
+                    {% if transaction.account.id == account.id %}
+                        <td>
+                            {{ transaction.dr_amount|if_not_none }}
+                        </td>
+                        <td>
+
+                            {{ transaction.cr_amount|if_not_none }}
+                        </td>
+                        <td>
+                            {{ transaction.get_balance|dr_or_cr }}
+                        </td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
