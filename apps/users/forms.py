@@ -1,5 +1,5 @@
 from django import forms
-from .models import User
+from .models import User, Role
 from django.contrib.auth.models import Group
 from awecounting.utils.forms import HTML5BootstrapModelForm
 
@@ -36,6 +36,12 @@ class GroupAdminForm(forms.ModelForm):
 class UserForm(HTML5BootstrapModelForm):
     password1 = forms.CharField(widget=forms.PasswordInput, label='Password')
     password2 = forms.CharField(widget=forms.PasswordInput, label='Password (again)')
+    group = forms.ModelChoiceField(queryset=Group.objects.all(), empty_label=None)
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request')
+        ret = super(UserForm, self).__init__(*args, **kwargs)
+        return ret
 
     def clean_username(self):
         data = self.cleaned_data
@@ -67,6 +73,7 @@ class UserForm(HTML5BootstrapModelForm):
         user = User.objects.create_user(username=data['username'], email=data['email'], password=data['password1'])
         user.full_name = data['full_name']
         user.save()
+        Role.objects.create(user=user, group=self.cleaned_data['group'], company=self.request.company)
         return user
 
     class Meta:

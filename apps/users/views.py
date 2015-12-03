@@ -28,7 +28,10 @@ class UserListView(UserView, ListView):
 
 
 class UserCreate(UserView, CreateView):
-    pass
+    def get_form(self, form_class=None):
+        kwargs = self.get_form_kwargs()
+        kwargs['request'] = self.request
+        return self.form_class(**kwargs)
 
 
 class UserUpdate(UserView, UpdateView):
@@ -133,6 +136,7 @@ def roles(request):
                 messages.error(request, 'No users found with the username ' + request.POST['user'])
     objs = Role.objects.filter(company=request.company)
     return render(request, 'roles.html', {'roles': objs})
+
 
 @group_required('Owner', 'SuperOwner')
 def delete_role(request, pk):
