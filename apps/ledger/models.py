@@ -98,7 +98,7 @@ class Account(models.Model):
     categories = property(get_all_categories)
 
     def get_cr_amount(self, day):
-        #journal_entry= JournalEntry.objects.filter(date__lt=day,transactions__account=self).order_by('-id','-date')[:1]
+        # journal_entry= JournalEntry.objects.filter(date__lt=day,transactions__account=self).order_by('-id','-date')[:1]
         transactions = Transaction.objects.filter(journal_entry__date__lt=day, account=self).order_by(
             '-journal_entry__id', '-journal_entry__date')[:1]
         if len(transactions) > 0:
@@ -106,7 +106,7 @@ class Account(models.Model):
         return 0
 
     def get_dr_amount(self, day):
-        #journal_entry= JournalEntry.objects.filter(date__lt=day,transactions__account=self).order_by('-id','-date')[:1]
+        # journal_entry= JournalEntry.objects.filter(date__lt=day,transactions__account=self).order_by('-id','-date')[:1]
         transactions = Transaction.objects.filter(journal_entry__date__lt=day, account=self).order_by(
             '-journal_entry__id', '-journal_entry__date')[:1]
         if len(transactions) > 0:
@@ -219,7 +219,7 @@ def set_transactions(submodel, date, *args):
             transaction.account.current_cr = none_for_zero(
                 zero_for_none(transaction.account.current_cr) + cr_difference)
 
-        #the following code lies outside if,else block, inside for loop
+        # the following code lies outside if,else block, inside for loop
         transaction.account.save()
         journal_entry.transactions.add(transaction)
 
@@ -251,3 +251,14 @@ def _transaction_delete(sender, instance, **kwargs):
           float(zero_for_none(transaction.cr_amount)) * -1)
 
     transaction.account.save()
+
+
+from apps.users.signals import company_creation
+
+
+def handle_company_creation(sender, **kwargs):
+    company = kwargs.get('company')
+    Account.objects.create(company=company, name='Cash')
+
+
+company_creation.connect(handle_company_creation)

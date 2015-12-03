@@ -52,6 +52,16 @@ class Company(models.Model):
     name = models.CharField(max_length=254)
     location = models.TextField()
     type_of_business = models.CharField(max_length=254)
+    
+    def save(self, *args, **kwargs):
+        new = False
+        if not self.pk:
+            new = True
+        ret = super(Company, self).save(*args, **kwargs)
+        if new:
+            from .signals import company_creation
+            company_creation.send(sender=None, company=self)
+        return ret
 
     def __unicode__(self):
         return self.name
