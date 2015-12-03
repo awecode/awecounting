@@ -8,12 +8,6 @@
     <li>{{ scenario }} {{ form.instance }}</li>
 {% endblock %}
 
-
-{% block extrahead %}
-    <link rel="stylesheet" href="{% static 'css/datepicker3.css' %}">
-    <script src="{% static 'js/libs/bootstrap-datepicker.js' %}"></script>
-{% endblock %}
-
 {% block content %}
     <form method="POST">
         {% csrf_token %}
@@ -32,5 +26,9 @@
 {% endblock %}
 
 {% block extrabody %}
-    <script src="{% static 'js/index.js' %}"></script>
+    <script>
+        $('#id_date').datepicker({
+            format: 'yyyy-mm-dd',
+        });
+    </script>
 {% endblock %}

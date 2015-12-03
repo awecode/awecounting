@@ -20,9 +20,10 @@
 
             <table class="table table-striped table-bordered">
                 <thead>
-                <th>{% anchor share_holder.name _('ShareHolder name') %}</th>
+                <th>{% anchor share_holder.name _('Shareholder') %}</th>
                 <th>{% anchor date _('Date') %}</th>
                 <th>{% anchor amount _('Amount') %}</th>
+                <th>{% anchor collection _('Collection') %}</th>
                 <th>{% anchor collection.interest_rate _('Interest Rate') %}</th>
                 </thead>
                 <tbody>
@@ -31,11 +32,16 @@
                         <td>
                             <a href="{% url 'share:investment_edit' object.pk %}">{{ object.share_holder.name }}</a>
                         </td>
-                       <td>
+                        <td>
                             <a href="{% url 'share:investment_edit' object.pk %}">{{ object.date }}</a>
-                        </td>   <td>
+                        </td>
+                        <td>
                             <a href="{% url 'share:investment_edit' object.pk %}">{{ object.amount }}</a>
-                        </td>   <td>
+                        </td>
+                        <td>
+                            <a href="{% url 'share:investment_edit' object.pk %}">{{ object.collection }}</a>
+                        </td>
+                        <td>
                             <a href="{% url 'share:investment_edit' object.pk %}">{{ object.collection.interest_rate }}</a>
                         </td>
                     </tr>

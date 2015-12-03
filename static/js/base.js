@@ -1550,7 +1550,12 @@ function HashTable() {
 
 $(document).ready(function () {
     $(function () {
-
+        $('.selectize').selectize();
+        $('.datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            startDate: '-3d'
+        });
+        
         $('.flip-container').mouseenter(function () {
             $(this).addClass('open');
         });

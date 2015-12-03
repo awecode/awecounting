@@ -24,11 +24,13 @@
     <link rel="stylesheet" href="{% static 'fontawesome/css/font-awesome.min.css' %}">
     <link rel="stylesheet" href='{% static "css/selectize.css" %}' type="text/css" media="all">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/datepicker3.css' %}">
 
     <script src='{% static "js/libs/jquery-1.11.3.min.js" %}'></script>
     <script src="{% static 'js/libs/jquery.autosize.input.js' %}"></script>
     <script src="{% static 'js/libs/selectize.js' %}"></script>
     <script src="{% static 'js/libs/knockout.js' %}"></script>
+    <script src="{% static 'js/libs/bootstrap-datepicker.js' %}"></script>
     <script src="{% static 'js/base.js' %}"></script>
     <script src="{% static 'js/ko_lib.js' %}"></script>
 
@@ -71,17 +73,16 @@
     </div>
 
 
+    <div id="content" class="{% block coltype %}colM{% endblock %}">
+        {% block content %}
+            {% block object-tools %}{% endblock %}
+        {% endblock %}
+        {% block sidebar %}{% endblock %}
+    </div>
 
-<div id="content" class="{% block coltype %}colM{% endblock %}">
-    {% block content %}
-        {% block object-tools %}{% endblock %}
+    {% block footer %}
+        <div id="footer"></div>
     {% endblock %}
-    {% block sidebar %}{% endblock %}
-</div>
-
-{% block footer %}
-    <div id="footer"></div>
-{% endblock %}
 
 </div>
 <script type="text/javascript" src='{% static "js/libs/bootstrap.min.js" %}'></script>

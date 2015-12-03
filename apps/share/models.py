@@ -9,7 +9,7 @@ class ShareHolder(models.Model):
     address = models.TextField(blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
     company = models.ForeignKey(Company)
-    
+
     def __str__(self):
         return self.name
 
@@ -22,14 +22,14 @@ class Collection(models.Model):
     company = models.ForeignKey(Company)
 
     def __str__(self):
-        return self.company.name
+        return str(self.count)
 
     def get_class_name(self):
         return self.__class__.__name__
+
 
 class Investment(models.Model):
     share_holder = models.ForeignKey(ShareHolder)
     date = models.DateField(default=datetime.date.today)
     amount = models.FloatField()
     collection = models.ForeignKey(Collection)
-
