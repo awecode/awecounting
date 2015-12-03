@@ -33,4 +33,9 @@ class CreateView(BaseCreateView):
     def get_context_data(self, **kwargs):
         context = super(CreateView, self).get_context_data(**kwargs)
         context['scenario'] = _('Add')
+        if self.request.is_ajax():
+            base_template = '_modal.html'
+        else:
+            base_template = '_base.html'
+        context['base_template'] = base_template
         return context
