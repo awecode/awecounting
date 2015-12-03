@@ -35,7 +35,6 @@
                 <th>{% trans 'Email address' %}</th>
                 <th>{% anchor full_name _('Full name') %}</th>
                 <th>{% anchor date_joined _('Date joined') %}</th>
-                <th>{% anchor outlet _('Outlet') %}</th>
                 </thead>
                 <tbody>
                 {% for user in sorted_objects %}
@@ -47,13 +46,10 @@
                             <a href="mailto:{{ user.email }}">{{ user.email }}</a>
                         </td>
                         <td>
-                            <a href="#">{{ user.full_name }}</a>
+                            <a href="{% url 'users:user_edit' user.id %}">{{ user.full_name }}</a>
                         </td>
                         <td>
-                            <a href="#">{{ user.date_joined }}</a>
-                        </td>
-                        <td>
-                            <a href="#">{{ user.outlet }}</a>
+                            <a href="{% url 'users:user_edit' user.id %}">{{ user.date_joined }}</a>
                         </td>
                     </tr>
                 {% endfor %}

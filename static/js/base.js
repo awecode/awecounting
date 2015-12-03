@@ -1559,7 +1559,7 @@ $(document).ready(function () {
         });
 
         $('.btn.warning, .btn-danger').click(function (e) {
-            var action = e.currentTarget.value.toLowerCase();
+            var action = $(e.currentTarget).text().toLowerCase();
             if (confirm('Are you sure you want to ' + action + '?')) {
                 return true;
             } else return false;
