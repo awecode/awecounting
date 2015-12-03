@@ -29,12 +29,8 @@
         {% endif %}
     </form>
 
-<script>
-    $('#id_collection').selectize();
-    $('#id_share_holder').selectize();
-    $('#id_date').datepicker({
-        format: 'yyyy-mm-dd',
-        startDate: '-3d'
-    });
-</script>
+{% endblock %}
+
+{% block extrabody %}
+    <script src="{% static 'js/index.js' %}"></script>
 {% endblock %}

@@ -13,9 +13,6 @@ class ShareHolder(models.Model):
     def __str__(self):
         return self.name
 
-    # TODO
-    # Create ledger/account on creation of shareholder
-
 
 class Collection(models.Model):
     count = models.PositiveIntegerField()
@@ -26,6 +23,9 @@ class Collection(models.Model):
 
     def __str__(self):
         return self.company.name
+
+    def get_class_name(self):
+        return self.__class__.__name__
 
 class Investment(models.Model):
     share_holder = models.ForeignKey(ShareHolder)
