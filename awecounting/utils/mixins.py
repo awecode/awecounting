@@ -26,6 +26,7 @@ class UpdateView(BaseUpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         context['scenario'] = _('Edit')
+        context['base_template'] = '_base.html'
         return context
 
 
