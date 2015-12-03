@@ -1,11 +1,17 @@
 {% extends "_base.html" %}
-{% load i18n %}
+{% load i18n staticfiles %}
 
 {% block page-title %}{{ scenario }} {{ form.instance }}{% endblock %}
 
 {% block breadcrumbs %}
     <li><a href="{% url 'share:investment_list' %}">{% trans 'Investments' %}</a></li>
     <li>{{ scenario }} {{ form.instance }}</li>
+{% endblock %}
+
+
+{% block extrahead %}
+    <link rel="stylesheet" href="{% static 'css/datepicker3.css' %}">
+    <script src="{% static 'js/libs/bootstrap-datepicker.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -23,4 +29,12 @@
         {% endif %}
     </form>
 
+<script>
+    $('#id_collection').selectize();
+    $('#id_share_holder').selectize();
+    $('#id_date').datepicker({
+        format: 'yyyy-mm-dd',
+        startDate: '-3d'
+    });
+</script>
 {% endblock %}

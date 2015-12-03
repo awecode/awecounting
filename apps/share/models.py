@@ -10,6 +10,9 @@ class ShareHolder(models.Model):
     email = models.EmailField(blank=True, null=True)
     company = models.ForeignKey(Company)
     
+    def __str__(self):
+        return self.name
+
     # TODO
     # Create ledger/account on creation of shareholder
 
@@ -21,6 +24,8 @@ class Collection(models.Model):
     end_date = models.DateField(blank=True, null=True)
     company = models.ForeignKey(Company)
 
+    def __str__(self):
+        return self.company.name
 
 class Investment(models.Model):
     share_holder = models.ForeignKey(ShareHolder)
