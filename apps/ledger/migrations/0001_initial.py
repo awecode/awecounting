@@ -61,18 +61,18 @@ class Migration(migrations.Migration):
                 ('cr_amount', models.FloatField(null=True, blank=True)),
                 ('current_dr', models.FloatField(null=True, blank=True)),
                 ('current_cr', models.FloatField(null=True, blank=True)),
-                ('account', models.ForeignKey(to='apps.ledger.Account')),
-                ('journal_entry', models.ForeignKey(related_name='transactions', to='apps.ledger.JournalEntry')),
+                ('account', models.ForeignKey(to='ledger.Account')),
+                ('journal_entry', models.ForeignKey(related_name='transactions', to='ledger.JournalEntry')),
             ],
         ),
         migrations.AddField(
             model_name='account',
             name='category',
-            field=models.ForeignKey(related_name='accounts', blank=True, to='apps.ledger.Category', null=True),
+            field=models.ForeignKey(related_name='accounts', blank=True, to='ledger.Category', null=True),
         ),
         migrations.AddField(
             model_name='account',
             name='parent',
-            field=models.ForeignKey(related_name='children', blank=True, to='apps.ledger.Account', null=True),
+            field=models.ForeignKey(related_name='children', blank=True, to='ledger.Account', null=True),
         ),
     ]
