@@ -5,11 +5,16 @@
 
 {% block page-title %}{% trans 'Company Roles' %}{% endblock %}
 
+{% block header-buttons %}
+    <a href="{% url 'users:user_add' %}" class="btn btn-default pull-right user-add-btn">Add User</a>
+{% endblock %}
+
 {% block content %}
 
     <table class="table table-bordered">
         <thead>
         <th>{% trans 'User' %}</th>
+        <th>{% trans 'Full Name' %}</th>
         <th>{% trans 'E-mail' %}</th>
         <th>{% trans 'Role' %}</th>
         <th></th>
@@ -17,11 +22,13 @@
         <tbody>
         {% for role in roles %}
             <tr>
-                <td>{{ role.user }}</td>
+                <td><a href="{% url 'users:user_edit' role.user.pk %}">{{ role.user.username }}</a></td>
+            <td><a href="{% url 'users:user_edit' role.user.pk %}">{{ role.user.full_name }}</a></td>
                 <td><a href="mailto:{{ role.user.email }}">{{ role.user.email }}</a></td>
                 <td>{{ role.group }}</td>
                 <td>{% if role.group.name != 'SuperOwner' %}
                     <a href="{% url 'users:delete_role' role.id %}" class="btn btn-danger">{% trans 'Delete' %}</a>
+                    <a href="{% url 'users:edit_role' role.id %}" class="btn">{% trans 'Edit' %}</a>
                 {% endif %}
                 </td>
             </tr>

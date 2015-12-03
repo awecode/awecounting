@@ -2,6 +2,7 @@ from django import forms
 from .models import User, Role
 from django.contrib.auth.models import Group
 from awecounting.utils.forms import HTML5BootstrapModelForm
+from django.utils.translation import ugettext_lazy as _
 
 
 class UserAdminForm(forms.ModelForm):
@@ -98,3 +99,18 @@ class UserUpdateForm(UserForm):
         user.full_name = data['full_name']
         user.save()
         return user
+
+
+class RoleForm(HTML5BootstrapModelForm):
+    group = forms.ModelChoiceField(queryset=Group.objects.all(), empty_label=None)
+    
+    def clean(self):
+        try:
+            Role.objects.get(group=self.cleaned_data['group'], user=self.instance.user, company=self.instance.company)
+            raise forms.ValidationError(_('This role is already assigned to the user.'))
+        except Role.DoesNotExist:
+            pass
+
+    class Meta:
+        model = Role
+        exclude = ('user', 'company')

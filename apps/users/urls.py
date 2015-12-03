@@ -15,4 +15,5 @@ urlpatterns = patterns('',
                        url(r'^set-role/(?P<pk>[0-9]+)/$', views.set_role, name='set_role'),
                        url(r'^roles/$', views.roles, name='roles'),
                        url(r'^role/delete/(?P<pk>[0-9]+)/$', views.delete_role, name='delete_role'),
+                       url(r'^role/(?P<pk>\d+)/$', views.RoleUpdate.as_view(), name='edit_role'),
                        )

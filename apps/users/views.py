@@ -7,7 +7,7 @@ from django.contrib.auth import logout as auth_logout
 
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView
 from django.views.generic.list import ListView
-from .forms import UserForm, UserUpdateForm
+from .forms import UserForm, UserUpdateForm, RoleForm
 from .models import User, Company, group_required, Role
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
@@ -17,6 +17,16 @@ class UserView(object):
     model = User
     success_url = reverse_lazy('users:user_list')
     form_class = UserForm
+
+
+class RoleView(object):
+    model = Role
+    success_url = reverse_lazy('users:roles')
+    form_class = RoleForm
+
+
+class RoleUpdate(RoleView, UpdateView):
+    pass
 
 
 class UserDelete(UserView, DeleteView):
