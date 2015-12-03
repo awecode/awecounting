@@ -1,18 +1,7 @@
 {% extends '_base.html' %}
 {% load i18n %}
 
-{% block page-header %}
-    {% trans 'Users' %}
-{% endblock %}
-
-{% block title %}
-    {% trans 'Users' %}
-{% endblock %}
-
-{% block breadcrumbs %}
-    {{ block.super }}
-    <li>{% trans 'Users' %}</li>
-{% endblock %}
+{% block page-title %}{% trans 'Users' %}{% endblock %}
 
 {% block header-buttons %}
     <a href="{% url 'users:user_add' %}" class="btn btn-default pull-right user-add-btn">Add User</a>

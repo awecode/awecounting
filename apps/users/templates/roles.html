@@ -1,9 +1,12 @@
 {% extends "_base.html" %}
 {% load i18n %}
 
-{% block title %}Company Roles{% endblock %}
-
 {% block page-title %}{% trans 'Company Roles' %}{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'users:user_list' %}">{% trans 'Users' %}</a></li>
+    <li>{% trans 'Company Roles' %}</li>
+{% endblock %}
 
 {% block header-buttons %}
     <a href="{% url 'users:user_add' %}" class="btn btn-default pull-right user-add-btn">Add User</a>
