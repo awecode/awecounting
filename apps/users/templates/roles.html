@@ -23,7 +23,7 @@
         {% for role in roles %}
             <tr>
                 <td><a href="{% url 'users:user_edit' role.user.pk %}">{{ role.user.username }}</a></td>
-            <td><a href="{% url 'users:user_edit' role.user.pk %}">{{ role.user.full_name }}</a></td>
+                <td><a href="{% url 'users:user_edit' role.user.pk %}">{{ role.user.full_name }}</a></td>
                 <td><a href="mailto:{{ role.user.email }}">{{ role.user.email }}</a></td>
                 <td>{{ role.group }}</td>
                 <td>{% if role.group.name != 'SuperOwner' %}
@@ -43,11 +43,9 @@
         <input type="text" class=form-control" name="user" placeholder="Username or E-mail" required>
         <select name="group" required>
             <option selected="selected" value="">Select a Role</option>
-            <option value="Owner">Owner</option>
-            <option value="Accountant">Accountant</option>
-            <option value="Auditor">Auditor</option>
-            <option value="Supervisor">Supervisor</option>
-            <option value="Bookkeeper">Bookkeeper</option>
+            {% for group in groups %}
+                <option value="{{ group }}">{{ group }}</option>
+            {% endfor %}
         </select>
         <input type="submit" value="Add" class="button">
     </form>

@@ -145,7 +145,8 @@ def roles(request):
             except User.DoesNotExist:
                 messages.error(request, 'No users found with the username ' + request.POST['user'])
     objs = Role.objects.filter(company=request.company)
-    return render(request, 'roles.html', {'roles': objs})
+    groups = Group.objects.all()
+    return render(request, 'roles.html', {'roles': objs, 'groups': groups})
 
 
 @group_required('Owner', 'SuperOwner')
