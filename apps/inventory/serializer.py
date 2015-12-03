@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from inventory.models import Purchase, PurchaseRow, Item, Party, Unit, Sale, SaleRow, JournalEntry, none_for_zero, zero_for_none, \
-    UnitConverter
+
+from apps.inventory.models import Purchase, PurchaseRow, Item, Party, Unit, Sale, SaleRow, JournalEntry, UnitConverter
 
 
 class ItemSerializer(serializers.ModelSerializer):

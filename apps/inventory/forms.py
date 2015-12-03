@@ -1,7 +1,8 @@
 from django import forms
 from modeltranslation.forms import TranslationModelForm
-from inventory.models import Item, Party, Unit, InventoryAccount
 from django.utils.translation import ugettext_lazy as _
+
+from apps.inventory.models import Item, Party, Unit, InventoryAccount
 
 
 class KOModelForm(forms.ModelForm):

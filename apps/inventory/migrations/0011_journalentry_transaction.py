@@ -31,8 +31,8 @@ class Migration(migrations.Migration):
                 ('dr_amount', models.FloatField(null=True, blank=True)),
                 ('cr_amount', models.FloatField(null=True, blank=True)),
                 ('current_balance', models.FloatField(null=True, blank=True)),
-                ('account', models.ForeignKey(to='inventory.InventoryAccount')),
-                ('journal_entry', models.ForeignKey(related_name='transactions', to='inventory.JournalEntry')),
+                ('account', models.ForeignKey(to='apps.inventory.InventoryAccount')),
+                ('journal_entry', models.ForeignKey(related_name='transactions', to='apps.inventory.JournalEntry')),
             ],
         ),
     ]

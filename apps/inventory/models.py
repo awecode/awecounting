@@ -1,11 +1,13 @@
+import datetime
+
 from django.core.urlresolvers import reverse_lazy
 from django.db import models
-import datetime
 from jsonfield import JSONField
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db.models import F
-from ledger.models import Account
+
+from apps.ledger.models import Account
 
 
 def none_for_zero(obj):

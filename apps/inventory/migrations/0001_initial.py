@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('voucher_no', models.PositiveIntegerField(null=True, blank=True)),
                 ('data', models.DateField(default=datetime.datetime.today)),
-                ('party', models.ForeignKey(to='inventory.Party')),
+                ('party', models.ForeignKey(to='apps.inventory.Party')),
             ],
         ),
         migrations.CreateModel(
@@ -46,8 +46,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('quantity', models.FloatField()),
                 ('rate', models.FloatField()),
-                ('item', models.ForeignKey(to='inventory.Item')),
-                ('product', models.ForeignKey(related_name='rows', to='inventory.Purchase')),
+                ('item', models.ForeignKey(to='apps.inventory.Item')),
+                ('product', models.ForeignKey(related_name='rows', to='apps.inventory.Purchase')),
             ],
         ),
         migrations.CreateModel(
@@ -61,11 +61,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='purchaserow',
             name='unit',
-            field=models.ForeignKey(to='inventory.Unit'),
+            field=models.ForeignKey(to='apps.inventory.Unit'),
         ),
         migrations.AddField(
             model_name='item',
             name='unit',
-            field=models.ForeignKey(to='inventory.Unit'),
+            field=models.ForeignKey(to='apps.inventory.Unit'),
         ),
     ]

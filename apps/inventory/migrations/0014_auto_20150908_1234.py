@@ -22,11 +22,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='unitconverter',
             name='base_unit',
-            field=models.ForeignKey(related_name='base_unit', to='inventory.Unit', null=True),
+            field=models.ForeignKey(related_name='base_unit', to='apps.inventory.Unit', null=True),
         ),
         migrations.AddField(
             model_name='unitconverter',
             name='unit_to_convert',
-            field=models.ForeignKey(to='inventory.Unit', null=True),
+            field=models.ForeignKey(to='apps.inventory.Unit', null=True),
         ),
     ]

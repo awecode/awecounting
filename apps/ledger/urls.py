@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, url
-import views
+
+from apps.ledger import views
 
 urlpatterns = patterns('',
                        url(r'^$', views.list_accounts, name='list_account'),

@@ -22,6 +22,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='item',
             name='account',
-            field=models.OneToOneField(related_name='item', null=True, to='inventory.InventoryAccount'),
+            field=models.OneToOneField(related_name='item', null=True, to='apps.inventory.InventoryAccount'),
         ),
     ]

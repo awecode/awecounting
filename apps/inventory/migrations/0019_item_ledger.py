@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='item',
             name='ledger',
-            field=models.ForeignKey(to='ledger.Account', null=True),
+            field=models.ForeignKey(to='apps.ledger.Account', null=True),
         ),
     ]

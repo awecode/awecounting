@@ -1,22 +1,29 @@
 from django.contrib import admin
-from inventory.models import Unit, Item, Purchase, PurchaseRow, Party, Sale, SaleRow, InventoryAccount, Transaction, JournalEntry, UnitConverter
 from modeltranslation.admin import TranslationAdmin
 
+from apps.inventory.models import Unit, Item, Purchase, PurchaseRow, Party, Sale, SaleRow, InventoryAccount, Transaction, \
+    JournalEntry, UnitConverter
+
+
 class PurchaseRowInline(admin.TabularInline):
-	model = PurchaseRow
+    model = PurchaseRow
+
 
 class PurchaseAdmin(admin.ModelAdmin):
-	inlines = [
-		PurchaseRowInline,
-	]
+    inlines = [
+        PurchaseRowInline,
+    ]
+
 
 class SaleRowInline(admin.TabularInline):
-	model = SaleRow
+    model = SaleRow
+
 
 class SaleAdmin(admin.ModelAdmin):
-	inlines = [
-		SaleRowInline,
-	]
+    inlines = [
+        SaleRowInline,
+    ]
+
 
 admin.site.register(Unit, TranslationAdmin)
 admin.site.register(Item, TranslationAdmin)
@@ -29,7 +36,3 @@ admin.site.register(InventoryAccount)
 admin.site.register(Transaction)
 admin.site.register(JournalEntry)
 admin.site.register(UnitConverter)
-
-
-
-

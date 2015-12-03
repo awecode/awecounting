@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('voucher_no', models.PositiveIntegerField(null=True, blank=True)),
                 ('date', models.DateField(default=datetime.datetime.today)),
-                ('party', models.ForeignKey(blank=True, to='inventory.Party', null=True)),
+                ('party', models.ForeignKey(blank=True, to='apps.inventory.Party', null=True)),
             ],
         ),
         migrations.CreateModel(
@@ -28,9 +28,9 @@ class Migration(migrations.Migration):
                 ('sn', models.PositiveIntegerField()),
                 ('quantity', models.FloatField()),
                 ('rate', models.FloatField()),
-                ('item', models.ForeignKey(to='inventory.Item')),
-                ('sale', models.ForeignKey(related_name='rows', to='inventory.Sale')),
-                ('unit', models.ForeignKey(to='inventory.Unit')),
+                ('item', models.ForeignKey(to='apps.inventory.Item')),
+                ('sale', models.ForeignKey(related_name='rows', to='apps.inventory.Sale')),
+                ('unit', models.ForeignKey(to='apps.inventory.Unit')),
             ],
         ),
     ]

@@ -20,8 +20,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     # apps
-    'inventory',
-    'ledger',
+    'apps.inventory',
+    'apps.ledger',
     'apps.users',
     'apps.share',
 

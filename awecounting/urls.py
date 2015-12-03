@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from inventory import views
+
+from apps.inventory import views
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
@@ -23,7 +24,7 @@ urlpatterns = [
     url(r'^users/', include('apps.users.urls', namespace='users')),
     url(r'^share/', include('apps.share.urls', namespace='share')),
 
-    url(r'^inventory/', include('inventory.urls')),
-    url(r'^ledger/', include('ledger.urls')),
+    url(r'^inventory/', include('apps.inventory.urls')),
+    url(r'^ledger/', include('apps.ledger.urls')),
 
 ]
