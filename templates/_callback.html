@@ -19,9 +19,9 @@
             var match = matches[1];
             if (typeof(vm) == 'undefined') {
                 item[match].push(obj);
-            } else if ( typeof(item) == 'undefined') {
+            } else if (typeof(item) == 'undefined') {
                 vm[match].push(obj);
-            } else if (typeof vm[match] == 'function' && typeof item[match] == 'function' ) {
+            } else if (typeof vm[match] == 'function' && typeof item[match] == 'function') {
                 vm[match].push(obj);
                 item[match].push(obj);
             } else {
@@ -47,8 +47,10 @@
         {#        el.select2('val', obj.id);#}
     }
     {#    el.select2('close');#}
-    // if ($select.$input.closest('.reveal-modal').length) {
-    //     $select.$input.closest('.reveal-modal').foundation('reveal', 'close');
-    //     $select.$input.closest('.reveal-modal').foundation('reveal', 'open');
-    // }
+    
+    if ($select.$input.closest('.reveal-modal').length) {
+        $select.$input.closest('.reveal-modal').modal('hide');
+    } else {
+        $('.modal').modal('hide');
+    }
 </script>

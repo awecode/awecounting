@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.views.generic.edit import UpdateView as BaseUpdateView, CreateView as BaseCreateView, \
     DeleteView as BaseDeleteView, FormView as BaseFormView
 from django.contrib import messages
@@ -40,3 +41,28 @@ class CreateView(BaseCreateView):
             base_template = '_base.html'
         context['base_template'] = base_template
         return context
+
+
+class AjaxableResponseMixin(object):
+    def form_invalid(self, form):
+        response = super(AjaxableResponseMixin, self).form_invalid(form)
+        if self.request.is_ajax():
+            return JsonResponse(form.errors, status=400)
+        else:
+            return response
+
+    def form_valid(self, form):
+        response = super(AjaxableResponseMixin, self).form_valid(form)
+        if self.request.is_ajax():
+            data = {
+                'id': self.object.id
+            }
+            if hasattr(self.object, 'name'):
+                data['name'] = self.object.name
+            elif hasattr(self.object, 'title'):
+                data['name'] = self.object.title
+            else:
+                data['name'] = str(self.object)
+            return JsonResponse(data)
+        else:
+            return response

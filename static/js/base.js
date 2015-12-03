@@ -1,37 +1,3 @@
-function test() {
-    alert('test');
-}
-
-function localize(txt, lang_code, reverse) {
-    txt = txt + '';
-    if (txt == 'undefined')
-        return;
-    var replace = [];
-    replace['ne'] = {
-        '1': '१',
-        '2': '२',
-        '3': '३',
-        '4': '४',
-        '5': '५',
-        '6': '६',
-        '7': '७',
-        '8': '८',
-        '9': '९',
-        '0': '०'
-    }
-
-    if (reverse) {
-        for (var key in replace[lang_code]) {
-            txt = txt.replace(new RegExp(replace[lang_code][key], "ig"), key);
-        }
-    } else {
-        for (var key in replace[lang_code]) {
-            txt = txt.replace(new RegExp(key, "ig"), replace[lang_code][key]);
-        }
-    }
-    return txt;
-}
-
 modal = function () {
 }
 
@@ -112,17 +78,120 @@ appended_link_clicked = function (e) {
             the_modal.html(data);
             the_modal.find('.modal').modal('toggle');
         }).success(function () {
+            console.log('hey');
             var new_forms = $('form').not(old_forms).get();
             $(new_forms).submit({url: url}, override_form);
 //                $(new_forms[0]).find('input:text:visible:first').focus();
-            $(new_forms).each(function (form) {
-                apply_select2(new_forms[form]);
-            });
+//            $(new_forms).each(function (form) {
+//                apply_select2(new_forms[form]);
+//            });
             $.getScript(script);
         });
     }
     return false;
 }
+
+handle_ajax_response = function (obj) {
+    var no_of_modals = $('.reveal-modal').length;
+    $('#reveal-modal' + $('.reveal-modal').length).find($('.close-reveal-modal')).click();
+    $select = window.last_active_select.pop();
+
+    if ($select.$input.data('bind')) {
+        var matches = $select.$input.data('bind').match(/selectize: \$root\.([a-z_]+)/);
+        if ($select.$input.data('to')) {
+        }
+        else if (matches) {
+            var match = matches[1];
+            if (typeof(vm) == 'undefined') {
+                item[match].push(obj);
+            } else if (typeof(item) == 'undefined') {
+                vm[match].push(obj);
+            } else if (typeof vm[match] == 'function' && typeof item[match] == 'function') {
+                vm[match].push(obj);
+                item[match].push(obj);
+            } else {
+                vm[match].push(obj);
+            }
+            $select.addItem(obj.id);
+            $select.$wrapper.find('> .appended-link').remove();
+        }
+    }
+    else {
+        $select.$input.append("<option value='" + obj.id + "'>" + obj.name + "</option>");
+        $select.addOption({
+            text: obj.name,
+            value: obj.id
+        });
+        $select.addItem(obj.id);
+        $select.refreshItems();
+    }
+    if ($select.$input.closest('.reveal-modal').length) {
+        $select.$input.closest('.reveal-modal').modal('hide');
+    } else {
+        $('.modal').modal('hide');
+    }
+}
+
+override_form = function (event) {
+    var $form = $(this);
+    var $target = $('#reveal-modal' + $('.reveal-modal').length);
+    var action = $form.attr('action');
+    if (typeof action == 'undefined') {
+        action = event.data.url;
+    }
+
+    $.ajax({
+        type: $form.attr('method'),
+        url: action,
+        data: $form.serialize(),
+
+        success: function (data, status) {
+            handle_ajax_response(data);
+            //write the reply
+            $target.append(data);
+            //form sent by callback is also overwritten to submit via ajax
+            $target.find('form').submit({url: action}, override_form);
+        }
+    });
+
+    event.preventDefault();
+}
+
+
+function test() {
+    alert('test');
+}
+
+function localize(txt, lang_code, reverse) {
+    txt = txt + '';
+    if (txt == 'undefined')
+        return;
+    var replace = [];
+    replace['ne'] = {
+        '1': '१',
+        '2': '२',
+        '3': '३',
+        '4': '४',
+        '5': '५',
+        '6': '६',
+        '7': '७',
+        '8': '८',
+        '9': '९',
+        '0': '०'
+    }
+
+    if (reverse) {
+        for (var key in replace[lang_code]) {
+            txt = txt.replace(new RegExp(replace[lang_code][key], "ig"), key);
+        }
+    } else {
+        for (var key in replace[lang_code]) {
+            txt = txt.replace(new RegExp(key, "ig"), replace[lang_code][key]);
+        }
+    }
+    return txt;
+}
+
 
 function return_name(obj) {
     return obj.name;
@@ -979,64 +1048,40 @@ $(document).ready(function () {
 )
 ;
 
-apply_select2 = function (form) {
-    if (typeof form != 'undefined') {
-        var selection = $(form).find('.select2')
-    }
-    else {
-        var selection = $('.select2');
-    }
-    selection.each(function () {
-        var element = this;
-        var len = $('.select-drop-klass').length;
-        var drop_class = 'select-drop-klass unique-drop' + len;
-        $(element).attr('data-counter', len);
-        var options_dict = {'dropdownCssClass': drop_class, 'dropdownAutoWidth': true, 'width': 'resolve'}
-        if ($(element).hasClass('placehold'))
-            options_dict['placeholderOption'] = 'first';
-        $(element).select2(options_dict);
-        if ($(element).data('url')) {
-            if (!$('#appended-link' + $(element).data('counter')).length) {
-                if ($(element).data('name'))
-                    var field_name = $(element).data('name');
-                else
-                    var field_name = $(element).attr('name').replace(/_/g, ' ').toTitleCase();
-                jQuery('<a/>', {
-                    class: 'appended-link',
-                    id: 'appended-link' + $(element).data('counter'),
-                    href: $(element).data('url'),
-                    title: 'Add New ' + field_name,
-                    text: 'Add New ' + field_name,
-                    'data-toggle': 'modal'
-                }).appendTo($('.unique-drop' + len)).on('click', [element], appended_link_clicked);
-            }
-        }
-    });
-}
-
-override_form = function (event) {
-    var $form = $(this);
-    var $target = $('#reveal-modal' + $('.reveal-modal').length);
-    var action = $form.attr('action');
-    if (typeof action == 'undefined') {
-        action = event.data.url;
-    }
-
-    $.ajax({
-        type: $form.attr('method'),
-        url: action,
-        data: $form.serialize(),
-
-        success: function (data, status) {
-            //write the reply
-            $target.append(data);
-            //form sent by callback is also overwritten to submit via ajax
-            $target.find('form').submit({url: action}, override_form);
-        }
-    });
-
-    event.preventDefault();
-}
+//apply_select2 = function (form) {
+//    if (typeof form != 'undefined') {
+//        var selection = $(form).find('.select2')
+//    }
+//    else {
+//        var selection = $('.select2');
+//    }
+//    selection.each(function () {
+//        var element = this;
+//        var len = $('.select-drop-klass').length;
+//        var drop_class = 'select-drop-klass unique-drop' + len;
+//        $(element).attr('data-counter', len);
+//        var options_dict = {'dropdownCssClass': drop_class, 'dropdownAutoWidth': true, 'width': 'resolve'}
+//        if ($(element).hasClass('placehold'))
+//            options_dict['placeholderOption'] = 'first';
+//        $(element).select2(options_dict);
+//        if ($(element).data('url')) {
+//            if (!$('#appended-link' + $(element).data('counter')).length) {
+//                if ($(element).data('name'))
+//                    var field_name = $(element).data('name');
+//                else
+//                    var field_name = $(element).attr('name').replace(/_/g, ' ').toTitleCase();
+//                jQuery('<a/>', {
+//                    class: 'appended-link',
+//                    id: 'appended-link' + $(element).data('counter'),
+//                    href: $(element).data('url'),
+//                    title: 'Add New ' + field_name,
+//                    text: 'Add New ' + field_name,
+//                    'data-toggle': 'modal'
+//                }).appendTo($('.unique-drop' + len)).on('click', [element], appended_link_clicked);
+//            }
+//        }
+//    });
+//}
 
 on_form_submit = function (event) {
     var $form = $(this);
@@ -1554,8 +1599,10 @@ function HashTable() {
 
 $(document).ready(function () {
     $(function () {
-        $select = $('.selectize').selectize()[0].selectize;
-        init_selectize($select);
+        if ($('.selectize').length) {
+            var $select = $('.selectize').selectize()[0].selectize;
+            init_selectize($select);
+        }
 
         $('.datepicker').datepicker({
             format: 'yyyy-mm-dd',
