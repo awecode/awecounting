@@ -1600,8 +1600,10 @@ function HashTable() {
 $(document).ready(function () {
     $(function () {
         if ($('.selectize').length) {
-            var $select = $('.selectize').selectize()[0].selectize;
-            init_selectize($select);
+            var $select = $('.selectize').selectize();
+            $($select).each(function () {
+                init_selectize(this.selectize);
+            });
         }
 
         $('.datepicker').datepicker({

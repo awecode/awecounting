@@ -23,4 +23,5 @@ class InvestmentForm(HTML5BootstrapModelForm):
         exclude = ()
         widgets = {
             'share_holder': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('share:shareholder_add')}),
+            'collection': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('share:collection_add')}),
         }

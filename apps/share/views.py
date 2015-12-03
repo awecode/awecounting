@@ -9,7 +9,6 @@ class ShareHolderView(object):
     model = ShareHolder
     success_url = reverse_lazy('share:shareholder_list')
     form_class = ShareHolderForm
-    
 
 
 class ShareHolderList(ShareHolderView, ListView):
@@ -42,7 +41,7 @@ class CollectionList(CollectionView, ListView):
     pass
 
 
-class CollectionCreate(CollectionView, CreateView):
+class CollectionCreate(AjaxableResponseMixin, CollectionView, CreateView):
     def form_valid(self, form):
         form.instance.company = self.request.company
         return super(CollectionCreate, self).form_valid(form)
