@@ -36,7 +36,7 @@
                         </td>   <td>
                             <a href="{% url 'share:shareholder_edit' object.pk %}">{{ object.address }}</a>
                         </td>   <td>
-                            <a href="{% url 'share:shareholder_edit' object.pk %}">{{ object.email }}</a>
+                            <a href="mailto: {{ object.email }}">{{ object.email }}</a>
                         </td>
                     </tr>
                 {% endfor %}

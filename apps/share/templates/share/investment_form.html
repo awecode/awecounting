@@ -1,5 +1,5 @@
 {% extends "_base.html" %}
-{% load i18n %}
+{% load i18n staticfiles %}
 
 {% block page-title %}{{ scenario }} {{ form.instance }}{% endblock %}
 
@@ -23,4 +23,12 @@
         {% endif %}
     </form>
 
+{% endblock %}
+
+{% block extrabody %}
+    <script>
+        $('#id_date').datepicker({
+            format: 'yyyy-mm-dd',
+        });
+    </script>
 {% endblock %}

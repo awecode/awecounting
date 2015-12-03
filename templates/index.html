@@ -5,12 +5,6 @@
     {% trans 'Awecounting' %}
 {% endblock %}
 
-{% block extrahead %}
-    <link rel="stylesheet" href="{% static 'css/datepicker3.css' %}">
-    <script src="{% static 'js/libs/bootstrap-datepicker.js' %}"></script>
-    <script src="{% static 'js/index.js' %}"></script>
-{% endblock %}
-
 {% block content %}
 
     {% block search %}
@@ -118,12 +112,4 @@
 
 
     </div>
-{% endblock %}
-
-{% block extrabody %}
-    <script>
-        $(function () {
-            $('.datepicker').datepicker();
-        });
-    </script>
 {% endblock %}

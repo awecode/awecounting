@@ -1,11 +1,11 @@
 {% extends "_base.html" %}
 {% load i18n %}
 
-{% block page-title %}{{ scenario }} {{ form.instance }}{% endblock %}
+{% block page-title %}{{ scenario }} {{ form.instance.get_class_name }}{% endblock %}
 
 {% block breadcrumbs %}
     <li><a href="{% url 'share:collection_list' %}">{% trans 'Shareholders' %}</a></li>
-    <li>{{ scenario }} {{ form.instance }}</li>
+    <li>{{ scenario }} {{ form.instance.get_class_name }}</li>
 {% endblock %}
 
 {% block content %}
