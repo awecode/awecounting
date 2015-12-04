@@ -21,7 +21,7 @@
     <br>
     <form method="POST">
         {% csrf_token %}
-        <label for="unit-convert">Convert to:</label>
+        <label for="unit-convert">{% trans 'Convert to' %}:</label>
         <select name="unit-convert-option" id="unit-convert">
             {% for unit in units %}
             <option value="{{ unit.id }}">{{ unit.name }}</option>

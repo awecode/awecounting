@@ -2,13 +2,11 @@
 {% load i18n staticfiles %}
 {% load filters %}
 
-{% block title %}{% trans 'Parties' %}{% endblock %}
+{% block page-title %}{% trans 'Parties' %}{% endblock %}
 
 {% block content %}
 <div class='container'>
     <div class="row">
-
-        <h1>Parties</h1>
 
             {% load pagination_tags %}
             {% load sorting_tags %}
