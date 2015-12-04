@@ -21,7 +21,10 @@ class BankAccount(models.Model):
         super(BankAccount, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.bank_name + ' Account (' + str(self.ac_no) + ' )'
+        if self.ac_no:
+            return self.bank_name + ' Account (' + str(self.ac_no) + ' )'
+        else:
+            return self.bank_name + ' Account '
 
 
 class ChequeDeposit(models.Model):
