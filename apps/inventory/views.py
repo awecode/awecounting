@@ -367,7 +367,7 @@ class UnitList(UnitView, ListView):
     pass
 
 
-class UnitCreate(UnitView, CreateView):
+class UnitCreate(AjaxableResponseMixin, UnitView, CreateView):
     def form_valid(self, form):
         form.instance.company = self.request.company
         return super(UnitCreate, self).form_valid(form)
