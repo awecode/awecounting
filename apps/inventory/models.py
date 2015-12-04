@@ -194,6 +194,7 @@ class Purchase(models.Model):
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     credit = models.BooleanField(default=False)
     date = models.DateField(default=datetime.datetime.today)
+    company = models.ForeignKey(Company)
 
     @property
     def total(self):
@@ -225,6 +226,7 @@ class Sale(models.Model):
     party = models.ForeignKey(Party, blank=True, null=True)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     date = models.DateField(default=datetime.datetime.today)
+    company = models.ForeignKey(Company)
 
     def get_absolute_url(self):
         return reverse_lazy('sale-detail', kwargs={'id': self.pk})

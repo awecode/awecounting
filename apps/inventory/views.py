@@ -164,7 +164,7 @@ def save_purchase(request):
     dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
-    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'party_id': params.get('party'), 'credit': params.get('credit')}
+    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'party_id': params.get('party'), 'credit': params.get('credit'), 'company': request.company}
     if params.get('id'):
         obj = Purchase.objects.get(id=params.get('id'))
     else:
@@ -247,7 +247,7 @@ def save_sale(request):
     dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
-    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'party_id': params.get('party')}
+    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'party_id': params.get('party'), 'company': request.company}
     if params.get('id'):
         obj = Sale.objects.get(id=params.get('id'))
     else:
