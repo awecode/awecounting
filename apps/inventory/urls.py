@@ -4,17 +4,18 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from apps.inventory import views
 
 urlpatterns = patterns('',
-                       url(r'^item/add/$', views.item, name='add-item'),
-                       url(r'^item/$', views.item_list, name='item-list'),
-                       url(r'^item/(?P<id>[0-9]+)/$', views.item, name='item-detail'),
+                       url(r'^item/add/$', views.item, name='item_add'),
+                       url(r'^item/$', views.ItemList.as_view(), name='item_list'),
+                       url(r'^item/(?P<id>[0-9]+)/$', views.item, name='item_edit'),
                        url(r'^item/search/$', views.item_search, name='search-item'),
+                       url(r'^item/delete/(?P<pk>\d+)/$', views.ItemDelete.as_view(), name='item_delete'),
 
                        url(r'^party/add$', views.party_form, name='add-party'),
                        url(r'^party/$', views.parties_list, name='list_parties'),
                        url(r'^party/(?P<id>[0-9]+)/$', views.party_form, name='party-detail'),
 
                        url(r'^unit/add$', views.UnitCreate.as_view(), name='unit_add'),
-                       url(r'^unit/$', views.UnitList.as_view(), name='units_list'),
+                       url(r'^unit/$', views.UnitList.as_view(), name='unit_list'),
                        url(r'^unit/edit/(?P<pk>\d+)/$', views.UnitUpdate.as_view(), name='unit_edit'),
                        url(r'^unit/delete/(?P<pk>\d+)/$', views.UnitDelete.as_view(), name='unit_delete'),
 

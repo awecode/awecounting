@@ -44,5 +44,9 @@
         </div>
         </p>
         <input type="submit" id='submit' class="btn btn-default">
+            {% if form.instance.id %}
+            <a href="{% url 'item_delete' form.instance.id %}" class="btn btn-danger">{% trans 'Delete' %}</a>
+        {% endif %}
+
     </form>
 {% endblock %}

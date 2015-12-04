@@ -66,6 +66,7 @@ def item(request, id=None):
             item_property = request.POST.getlist('property')
             unit_id = request.POST.get('unit')
             item.unit_id = int(unit_id)
+            item.company = request.company
             if request.FILES != {}:
                 item.image = request.FILES['image']
             other_properties = {}
@@ -87,9 +88,18 @@ def item(request, id=None):
                    'item_unit_id': unit})
 
 
-def item_list(request):
-    obj = Item.objects.all()
-    return render(request, 'item_list.html', {'objects': obj})
+class ItemView(object):
+    model = Item
+    form_class = ItemForm
+    success_url = reverse_lazy('item_list')
+
+
+class ItemList(ItemView, ListView):
+    pass
+
+
+class ItemDelete(ItemView, DeleteView):
+    pass
 
 
 def save_model(model, values):
@@ -359,7 +369,7 @@ def parties_list(request):
 # Unit CRUD with mixins
 class UnitView(object):
     model = Unit
-    success_url = reverse_lazy('units_list')
+    success_url = reverse_lazy('unit_list')
     form_class = UnitForm
 
 

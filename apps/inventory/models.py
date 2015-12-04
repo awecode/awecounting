@@ -44,6 +44,7 @@ class InventoryAccount(models.Model):
     name = models.CharField(max_length=100)
     account_no = models.PositiveIntegerField()
     current_balance = models.FloatField(default=0)
+    company = models.ForeignKey(Company)
 
     def __str__(self):
         return str(self.account_no) + ' [' + self.name + ']'
@@ -61,6 +62,7 @@ class InventoryAccount(models.Model):
         else:
             return 1
 
+
 class Item(models.Model):
     code = models.CharField(max_length=250, blank=True, null=True)
     name = models.CharField(max_length=254)
@@ -72,16 +74,17 @@ class Item(models.Model):
     selling_rate = models.FloatField(blank=True, null=True)
     other_properties = JSONField(blank=True, null=True)
     ledger = models.ForeignKey(Account, null=True)
+    company = models.ForeignKey(Company)
 
 
-    def __unicode__(self):
-        return self.name + ' ' + self.code
+    def __str__(self):
+        return str(self.name) + ' ' + str(self.code)
 
     def save(self, *args, **kwargs):
         account_no = kwargs.pop('account_no')
 
         if not self.ledger_id:
-            ledger = Account(name=self.name)
+            ledger = Account(name=self.name, company=self.company)
             ledger.save()
             self.ledger = ledger
 
@@ -90,10 +93,11 @@ class Item(models.Model):
                 account = self.account
                 account.account_no = account_no
             else:
-                account = InventoryAccount(name=self.name, account_no=account_no)
+                account = InventoryAccount(name=self.name, account_no=account_no, company=self.company)
                 account.save()
                 self.account = account
         super(Item, self).save(*args, **kwargs)
+
 
 class JournalEntry(models.Model):
     date = models.DateField()
