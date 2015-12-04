@@ -9,7 +9,7 @@ from rest_framework import generics
 from django.db.models import Max, Q
 
 from apps.inventory.models import Item, UnitConverter, Purchase, PurchaseRow, Party, Unit, Sale, SaleRow, JournalEntry, set_transactions, InventoryAccount
-from apps.inventory.forms import ItemForm, PartyForm, UnitForm
+from apps.inventory.forms import ItemForm, PartyForm, UnitForm, UnitConverterForm
 from apps.inventory.serializer import PurchaseSerializer, ItemSerializer, PartySerializer, UnitSerializer, SaleSerializer, \
     InventoryAccountRowSerializer
 from apps.ledger.models import set_transactions as set_ledger_transactions
@@ -99,6 +99,28 @@ class ItemList(ItemView, ListView):
 
 
 class ItemDelete(ItemView, DeleteView):
+    pass
+
+
+class UnitConverterView(object):
+    model = UnitConverter
+    form_class = UnitConverterForm
+    success_url = reverse_lazy('unitconverter_list')
+
+
+class UnitConverterList(UnitConverterView, ListView):
+    pass
+
+
+class UnitConverterCreate(UnitConverterView, CreateView ):
+    pass
+
+
+class UnitConverterUpdate(UnitConverterView, UpdateView):
+    pass
+
+
+class UnitConverterDelete(UnitConverterView, DeleteView):
     pass
 
 

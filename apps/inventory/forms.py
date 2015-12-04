@@ -2,7 +2,7 @@ from django import forms
 from modeltranslation.forms import TranslationModelForm
 from django.utils.translation import ugettext_lazy as _
 
-from apps.inventory.models import Item, Party, Unit, InventoryAccount
+from apps.inventory.models import Item, Party, Unit, InventoryAccount, UnitConverter
 
 
 class KOModelForm(forms.ModelForm):
@@ -79,3 +79,9 @@ class UnitForm(KOModelForm):
     class Meta:
         model = Unit
         exclude = ('company',)
+
+
+class UnitConverterForm(KOModelForm):
+    class Meta:
+        model = UnitConverter
+        exclude = ()
