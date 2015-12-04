@@ -1,9 +1,8 @@
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
-from awecounting.utils.mixins import DeleteView, UpdateView, CreateView
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin
 from .models import ShareHolder, Collection, Investment
 from .forms import ShareHolderForm, CollectionForm, InvestmentForm
-import json
 
 
 class ShareHolderView(object):
@@ -16,24 +15,20 @@ class ShareHolderList(ShareHolderView, ListView):
     pass
 
 
-class ShareHolderCreate(ShareHolderView, CreateView):
-
+class ShareHolderCreate(AjaxableResponseMixin, ShareHolderView, CreateView):
     def form_valid(self, form):
         form.instance.company = self.request.company
         return super(ShareHolderCreate, self).form_valid(form)
 
 
 class ShareHolderUpdate(ShareHolderView, UpdateView):
-
     def form_valid(self, form):
         form.instance.company = self.request.company
         return super(ShareHolderUpdate, self).form_valid(form)
 
 
-
 class ShareHolderDelete(ShareHolderView, DeleteView):
     pass
-
 
 
 class CollectionView(object):
@@ -46,20 +41,16 @@ class CollectionList(CollectionView, ListView):
     pass
 
 
-class CollectionCreate(CollectionView, CreateView):
-
+class CollectionCreate(AjaxableResponseMixin, CollectionView, CreateView):
     def form_valid(self, form):
         form.instance.company = self.request.company
         return super(CollectionCreate, self).form_valid(form)
 
 
-
 class CollectionUpdate(CollectionView, UpdateView):
-
     def form_valid(self, form):
         form.instance.company = self.request.company
         return super(CollectionUpdate, self).form_valid(form)
-
 
 
 class CollectionDelete(CollectionView, DeleteView):
@@ -77,19 +68,15 @@ class InvestmentList(InvestmentView, ListView):
 
 
 class InvestmentCreate(InvestmentView, CreateView):
-  
     def form_valid(self, form):
         form.instance.company = self.request.company
         return super(InvestmentCreate, self).form_valid(form)
 
 
-
 class InvestmentUpdate(InvestmentView, UpdateView):
-    
     def form_valid(self, form):
         form.instance.company = self.request.company
         return super(InvestmentUpdate, self).form_valid(form)
-
 
 
 class InvestmentDelete(InvestmentView, DeleteView):
