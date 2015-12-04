@@ -13,9 +13,10 @@ urlpatterns = patterns('',
                        url(r'^party/$', views.parties_list, name='list_parties'),
                        url(r'^party/(?P<id>[0-9]+)/$', views.party_form, name='party-detail'),
 
-                       url(r'^unit/add$', views.unit_form, name='add-unit'),
-                       url(r'^unit/$', views.unit_list, name='list_units'),
-                       url(r'^unit/(?P<id>[0-9]+)/$', views.unit_form, name='unit-detail'),
+                       url(r'^unit/add$', views.UnitCreate.as_view(), name='unit_add'),
+                       url(r'^unit/$', views.UnitList.as_view(), name='units_list'),
+                       url(r'^unit/edit/(?P<pk>\d+)/$', views.UnitUpdate.as_view(), name='unit_edit'),
+                       url(r'^unit/delete/(?P<pk>\d+)/$', views.UnitDelete.as_view(), name='unit_delete'),
 
                        url(r'^accounts/$', views.list_inventory_accounts, name='list_inventory_accounts'),
                        url(r'^accounts/(?P<id>[0-9]+)/$', views.view_inventory_account, name='view_inventory_account'),
@@ -39,9 +40,9 @@ urlpatterns = patterns('',
                        url(r'^sale/yesterday/$', views.daily_sale_yesterday, name='yesterday_sale'),
 
                        # rest_framework api
-                       url(r'^api/items/$', views.ItemList.as_view()),
-                       url(r'^api/parties/$', views.PartyList.as_view()),
-                       url(r'^api/units/$', views.UnitList.as_view()),
+                       url(r'^api/items/$', views.ItemListAPI.as_view()),
+                       url(r'^api/parties/$', views.PartyListAPI.as_view()),
+                       url(r'^api/units/$', views.UnitListAPI.as_view()),
 
                        )
 

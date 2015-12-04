@@ -78,4 +78,4 @@ class PartyForm(KOModelForm):
 class UnitForm(KOModelForm):
     class Meta:
         model = Unit
-        fields = '__all__'
+        exclude = ('company',)

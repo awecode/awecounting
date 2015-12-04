@@ -14,7 +14,7 @@
             {% load sorting_tags %}
             {% load filters %}
 
-            {% autosort objects as sorted_objects %}
+            {% autosort object_list as sorted_objects %}
             {% autopaginate sorted_objects 25 as paginated_objects %}
 
             <table class="table table-striped table-bordered">
@@ -26,7 +26,7 @@
                 {% for unit in paginated_objects %}
                     <tr>
                         <td>
-                            <a href="{% url 'unit-detail' unit.pk %}">{{ unit.id }}</a>
+                            <a href="{% url 'unit_edit' unit.pk %}">{{ unit.id }}</a>
                         </td>
                         <td>
                             {{ unit.name }}
@@ -39,8 +39,8 @@
             {% paginate %}
 
 
-        <a class="btn btn-default btn-lg"
-               href="{% url 'add-unit' %}">{% trans 'New' %} {% trans 'Item' %}</a>
+        <a class="btn btn-default"
+               href="{% url 'unit_add' %}">{% trans 'New' %} {% trans 'Unit' %}</a>
 
     </div>
 </div>
