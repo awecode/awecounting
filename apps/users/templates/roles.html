@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block header-buttons %}
-    <a href="{% url 'users:user_add' %}" class="btn btn-default pull-right user-add-btn">Add User</a>
+    <a href="{% url 'users:user_add' %}" class="btn btn-default pull-right user-add-btn">{% trans 'Add User' %}</a>
 {% endblock %}
 
 {% block content %}
