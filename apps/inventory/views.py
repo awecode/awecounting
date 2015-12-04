@@ -355,6 +355,34 @@ def daily_sale_yesterday(request):
     return sale_day(request, yesterday)
 
 
+# Party CRUD with mixins
+class PartyView(object):
+    model = Party
+    success_url = reverse_lazy('parties_list')
+    form_class = PartyForm
+
+
+class PartyList(PartyView, ListView):
+    pass
+
+
+class PartyCreate(AjaxableResponseMixin, PartyView, CreateView):
+    def form_valid(self, form):
+        form.instance.company = self.request.company
+        return super(PartyCreate, self).form_valid(form)
+
+
+class PartyUpdate(PartyView, UpdateView):
+    def form_valid(self, form):
+        form.instance.company = self.request.company
+        return super(PartyUpdate, self).form_valid(form)
+
+
+class PartyDelete(PartyView, DeleteView):
+    pass
+
+
+
 def party_form(request, id=None):
     if id:
         obj = get_object_or_404(Party, id=id)

@@ -10,9 +10,10 @@ urlpatterns = patterns('',
                        url(r'^item/search/$', views.item_search, name='search-item'),
                        url(r'^item/delete/(?P<pk>\d+)/$', views.ItemDelete.as_view(), name='item_delete'),
 
-                       url(r'^party/add$', views.party_form, name='add-party'),
-                       url(r'^party/$', views.parties_list, name='list_parties'),
-                       url(r'^party/(?P<id>[0-9]+)/$', views.party_form, name='party-detail'),
+                       url(r'^party/$', views.PartyList.as_view(), name='parties_list'),
+                       url(r'^party/add/$', views.PartyCreate.as_view(), name='party_add'),
+                       url(r'^party/edit/(?P<pk>\d+)/$', views.PartyUpdate.as_view(), name='party_edit'),
+                       url(r'^party/delete/(?P<pk>\d+)/$', views.PartyDelete.as_view(), name='party_delete'),
 
                        url(r'^unit/add$', views.UnitCreate.as_view(), name='unit_add'),
                        url(r'^unit/$', views.UnitList.as_view(), name='unit_list'),

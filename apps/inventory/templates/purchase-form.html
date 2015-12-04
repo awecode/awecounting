@@ -29,7 +29,7 @@
                     </div>
                     <div>
                         {% trans 'Party' %}: <select data-bind="selectize: $root.parties, value: party, event: {change: $root.party_changed}"
-                                       data-url="{% url 'add-party' %}" class="change-on-ready"></select>
+                                       data-url="{% url 'party_add' %}" class="change-on-ready"></select>
                     </div>
                     <div>
                         {% trans 'Credit' %}: <input type="checkbox" data-bind="checked: credit">

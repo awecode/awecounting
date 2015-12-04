@@ -73,7 +73,7 @@ class PartyForm(KOModelForm):
 
     class Meta:
         model = Party
-        exclude = ('account',)
+        exclude = ('account', 'company',)
 
 class UnitForm(KOModelForm):
     class Meta:
