@@ -8,7 +8,7 @@ gunicorn.log
 gunicorn-error.log
 gunicorn-access.log
 
-app/local_settings.py
+awecounting/local_settings.py
 
 *.sqlite3
 *.~*

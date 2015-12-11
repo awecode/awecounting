@@ -1,0 +1,38 @@
+{% extends base_template %}
+{% load i18n %}
+
+{% block page-title %}{{ scenario }} {{ form.instance.get_class_name }}{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'share:collection_list' %}">{% trans 'Shareholders' %}</a></li>
+    <li>{{ scenario }} {{ form.instance.get_class_name }}</li>
+{% endblock %}
+
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+        {{ form.as_p }}
+
+        <input type="submit" class='btn btn-default' value="{% trans 'Save' %}">
+
+        {% if form.instance.id %}
+            <a href="{% url 'share:collection_delete' form.instance.id %}" class="btn btn-danger">{% trans 'Delete' %}</a>
+        {% endif %}
+    </form>
+
+{% endblock %}
+
+{% block extrabody %}
+<script>
+    $('#id_start_date').datepicker({
+        format: 'yyyy-mm-dd',
+    });
+    $('#id_end_date').datepicker({
+        format: 'yyyy-mm-dd',
+    });
+
+</script>
+{% endblock %}

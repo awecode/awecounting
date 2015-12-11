@@ -1,3 +1,163 @@
+modal = function () {
+}
+
+function init_selectize($select) {
+    //debugger;
+    if ($select.initialized)
+        return;
+    $select.initialized = true;
+    if ($select.$input.data('url')) {
+        var name;
+        if ($select.$input.data('name')) {
+            name = $select.$input.data('name');
+        } else if ($select.$input.data('bind')) {
+            var matches = $select.$input.data('bind').match(/value: ([a-z_1-9]+)/);
+            if (matches) {
+                name = matches[1].replace(/_id/, '').replace(/_/g, ' ');
+
+            } else {
+                name = 'Object';
+            }
+        } else if ($select.$input[0].name) {
+            name = $select.$input[0].name;
+        } else {
+            name = 'Object';
+        }
+        name = name.replace('_', ' ').toTitleCase();
+        var appended_link = jQuery('<a/>', {
+            class: 'appended-link',
+            href: $select.$input.data('url'),
+            title: 'Add New ' + name,
+            text: 'Add New ' + name,
+            'data-toggle': 'modal',
+            'script': $select.$input.data('script')
+        });
+        appended_link.appendTo($select.$dropdown).on('click', [$select], appended_link_clicked);
+
+        if (!Object.size($select.options)) {
+            var appended_link = jQuery('<button/>', {
+                class: 'appended-link',
+                href: $select.$input.data('url'),
+                title: 'Add New ' + name,
+                text: 'Add New ' + name,
+                'data-toggle': 'modal',
+                'script': $select.$input.data('script')
+            });
+            appended_link.prependTo($select.$wrapper).on('click', [$select], appended_link_clicked);
+        }
+    }
+
+}
+
+modal.create = function () {
+    var el = jQuery('<div/>', {
+        id: 'reveal-modal' + ($('.reveal-modal').length + 1),
+        class: 'reveal-modal'
+    }).appendTo('body');
+    return el;
+}
+
+appended_link_clicked = function (e) {
+
+    var old_forms = $('form');
+    if (!window.last_active_select) {
+        window.last_active_select = new Array();
+    }
+    window.last_active_select.push(e.data[0]);
+    e.preventDefault();
+    var the_modal = modal.create();
+    if (typeof($(this).attr('script')) != 'undefined') {
+        var script = $(this).attr('script');
+    }
+    var url = $(this).attr('href');
+    if (url.indexOf('#') == 0) {
+        $(url).modal('open');
+    } else {
+        var old_forms = $('form');
+        $.get(url, function (data) {
+            the_modal.html(data);
+            the_modal.find('.modal').modal('toggle');
+        }).success(function () {
+            console.log('hey');
+            var new_forms = $('form').not(old_forms).get();
+            $(new_forms).submit({url: url}, override_form);
+//                $(new_forms[0]).find('input:text:visible:first').focus();
+//            $(new_forms).each(function (form) {
+//                apply_select2(new_forms[form]);
+//            });
+            $.getScript(script);
+        });
+    }
+    return false;
+}
+
+handle_ajax_response = function (obj) {
+    var no_of_modals = $('.reveal-modal').length;
+    $('#reveal-modal' + $('.reveal-modal').length).find($('.close-reveal-modal')).click();
+    $select = window.last_active_select.pop();
+
+    if ($select.$input.data('bind')) {
+        var matches = $select.$input.data('bind').match(/selectize: \$root\.([a-z_]+)/);
+        if ($select.$input.data('to')) {
+        }
+        else if (matches) {
+            var match = matches[1];
+            if (typeof(vm) == 'undefined') {
+                item[match].push(obj);
+            } else if (typeof(item) == 'undefined') {
+                vm[match].push(obj);
+            } else if (typeof vm[match] == 'function' && typeof item[match] == 'function') {
+                vm[match].push(obj);
+                item[match].push(obj);
+            } else {
+                vm[match].push(obj);
+            }
+            $select.addItem(obj.id);
+            $select.$wrapper.find('> .appended-link').remove();
+        }
+    }
+    else {
+        $select.$input.append("<option value='" + obj.id + "'>" + obj.name + "</option>");
+        $select.addOption({
+            text: obj.name,
+            value: obj.id
+        });
+        $select.addItem(obj.id);
+        $select.refreshItems();
+    }
+    if ($select.$input.closest('.reveal-modal').length) {
+        $select.$input.closest('.reveal-modal').modal('hide');
+    } else {
+        $('.modal').modal('hide');
+    }
+}
+
+override_form = function (event) {
+    var $form = $(this);
+    var $target = $('#reveal-modal' + $('.reveal-modal').length);
+    var action = $form.attr('action');
+    if (typeof action == 'undefined') {
+        action = event.data.url;
+    }
+
+    $.ajax({
+        type: $form.attr('method'),
+        url: action,
+        data: $form.serialize(),
+
+        success: function (data, status) {
+            handle_ajax_response(data);
+            //write the reply
+            $target.append(data);
+            //form sent by callback is also overwritten to submit via ajax
+            $target.find('form').submit({url: action}, override_form);
+        }
+    });
+
+    event.preventDefault();
+}
+
+
 function test() {
     alert('test');
 }
@@ -32,81 +192,6 @@ function localize(txt, lang_code, reverse) {
     return txt;
 }
 
-function init_selectize($select) {
-    if ($select.initialized)
-        return;
-    $select.initialized = true;
-    if ($select.$input.data('url')) {
-        var name;
-        if ($select.$input.data('name')) {
-            name = $select.$input.data('name');
-        } else if ($select.$input.data('bind')) {
-            var matches = $select.$input.data('bind').match(/value: ([a-z_1-9]+)/);
-            if (matches) {
-                name = matches[1].replace(/_id/, '').replace(/_/g, ' ').toTitleCase();
-
-            } else {
-                name = 'Object';
-            }
-        } else {
-            name = 'Object';
-        }
-        var appended_link = jQuery('<a/>', {
-            class: 'appended-link',
-            href: $select.$input.data('url'),
-            title: 'Add New ' + name,
-            text: 'Add New ' + name,
-            'data-toggle': 'modal',
-            'script': $select.$input.data('script')
-        });
-        appended_link.appendTo($select.$dropdown).on('click', [$select], appended_link_clicked);
-
-        if (!Object.size($select.options)) {
-            var appended_link = jQuery('<button/>', {
-                class: 'appended-link',
-                href: $select.$input.data('url'),
-                title: 'Add New ' + name,
-                text: 'Add New ' + name,
-                'data-toggle': 'modal',
-                'script': $select.$input.data('script')
-            });
-            appended_link.prependTo($select.$wrapper).on('click', [$select], appended_link_clicked);
-        }
-    }
-
-}
-appended_link_clicked = function (e) {
-
-    var old_forms = $('form');
-    if (!window.last_active_select) {
-        window.last_active_select = new Array();
-    }
-    window.last_active_select.push(e.data[0]);
-    e.preventDefault();
-    var the_modal = modal.create();
-    if (typeof($(this).attr('script')) != 'undefined') {
-        var script = $(this).attr('script');
-    }
-    var url = $(this).attr('href');
-    if (url.indexOf('#') == 0) {
-        $(url).modal('open');
-    } else {
-        var old_forms = $('form');
-        $.get(url, function (data) {
-            the_modal.html(data);
-            the_modal.find('#item_modal').modal('toggle');
-        }).success(function () {
-            var new_forms = $('form').not(old_forms).get();
-            $(new_forms).submit({url: url}, override_form);
-//                $(new_forms[0]).find('input:text:visible:first').focus();
-            $(new_forms).each(function (form) {
-                apply_select2(new_forms[form]);
-            });
-            $.getScript(script);
-        });
-    }
-    return false;
-}
 
 function return_name(obj) {
     return obj.name;
@@ -963,64 +1048,40 @@ $(document).ready(function () {
 )
 ;
 
-apply_select2 = function (form) {
-    if (typeof form != 'undefined') {
-        var selection = $(form).find('.select2')
-    }
-    else {
-        var selection = $('.select2');
-    }
-    selection.each(function () {
-        var element = this;
-        var len = $('.select-drop-klass').length;
-        var drop_class = 'select-drop-klass unique-drop' + len;
-        $(element).attr('data-counter', len);
-        var options_dict = {'dropdownCssClass': drop_class, 'dropdownAutoWidth': true, 'width': 'resolve'}
-        if ($(element).hasClass('placehold'))
-            options_dict['placeholderOption'] = 'first';
-        $(element).select2(options_dict);
-        if ($(element).data('url')) {
-            if (!$('#appended-link' + $(element).data('counter')).length) {
-                if ($(element).data('name'))
-                    var field_name = $(element).data('name');
-                else
-                    var field_name = $(element).attr('name').replace(/_/g, ' ').toTitleCase();
-                jQuery('<a/>', {
-                    class: 'appended-link',
-                    id: 'appended-link' + $(element).data('counter'),
-                    href: $(element).data('url'),
-                    title: 'Add New ' + field_name,
-                    text: 'Add New ' + field_name,
-                    'data-toggle': 'modal'
-                }).appendTo($('.unique-drop' + len)).on('click', [element], appended_link_clicked);
-            }
-        }
-    });
-}
-
-override_form = function (event) {
-    var $form = $(this);
-    var $target = $('#reveal-modal' + $('.reveal-modal').length);
-    var action = $form.attr('action');
-    if (typeof action == 'undefined') {
-        action = event.data.url;
-    }
-
-    $.ajax({
-        type: $form.attr('method'),
-        url: action,
-        data: $form.serialize(),
-
-        success: function (data, status) {
-            //write the reply
-            $target.append(data);
-            //form sent by callback is also overwritten to submit via ajax
-            $target.find('form').submit({url: action}, override_form);
-        }
-    });
-
-    event.preventDefault();
-}
+//apply_select2 = function (form) {
+//    if (typeof form != 'undefined') {
+//        var selection = $(form).find('.select2')
+//    }
+//    else {
+//        var selection = $('.select2');
+//    }
+//    selection.each(function () {
+//        var element = this;
+//        var len = $('.select-drop-klass').length;
+//        var drop_class = 'select-drop-klass unique-drop' + len;
+//        $(element).attr('data-counter', len);
+//        var options_dict = {'dropdownCssClass': drop_class, 'dropdownAutoWidth': true, 'width': 'resolve'}
+//        if ($(element).hasClass('placehold'))
+//            options_dict['placeholderOption'] = 'first';
+//        $(element).select2(options_dict);
+//        if ($(element).data('url')) {
+//            if (!$('#appended-link' + $(element).data('counter')).length) {
+//                if ($(element).data('name'))
+//                    var field_name = $(element).data('name');
+//                else
+//                    var field_name = $(element).attr('name').replace(/_/g, ' ').toTitleCase();
+//                jQuery('<a/>', {
+//                    class: 'appended-link',
+//                    id: 'appended-link' + $(element).data('counter'),
+//                    href: $(element).data('url'),
+//                    title: 'Add New ' + field_name,
+//                    text: 'Add New ' + field_name,
+//                    'data-toggle': 'modal'
+//                }).appendTo($('.unique-drop' + len)).on('click', [element], appended_link_clicked);
+//            }
+//        }
+//    });
+//}
 
 on_form_submit = function (event) {
     var $form = $(this);
@@ -1438,18 +1499,6 @@ alert.info = function (message) {
 
 alert.error = alert.warning;
 
-modal = function () {
-}
-
-modal.create = function () {
-    var el = jQuery('<div/>', {
-        id: 'reveal-modal' + ($('.reveal-modal').length + 1),
-        class: 'reveal-modal'
-    }).appendTo('body');
-    el.attr('data-reveal', '');
-    return el;
-}
-
 //http://stackoverflow.com/questions/346021/how-do-i-remove-objects-from-a-javascript-associative-array/9973592#9973592
 Object.remove_item = function (obj, key) {
     console.log(obj);
@@ -1550,6 +1599,17 @@ function HashTable() {
 
 $(document).ready(function () {
     $(function () {
+        if ($('.selectize').length) {
+            var $select = $('.selectize').selectize();
+            $($select).each(function () {
+                init_selectize(this.selectize);
+            });
+        }
+
+        $('.datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            startDate: '-3d'
+        });
 
         $('.flip-container').mouseenter(function () {
             $(this).addClass('open');
@@ -1559,7 +1619,7 @@ $(document).ready(function () {
         });
 
         $('.btn.warning, .btn-danger').click(function (e) {
-            var action = e.currentTarget.value.toLowerCase();
+            var action = $(e.currentTarget).text().toLowerCase();
             if (confirm('Are you sure you want to ' + action + '?')) {
                 return true;
             } else return false;

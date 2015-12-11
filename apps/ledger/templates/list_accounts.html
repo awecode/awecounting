@@ -1,0 +1,50 @@
+{% extends "_base.html" %}
+
+{% block page-title %}{% trans 'All Accounts' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url "list_account" %}">{% trans 'Accounts' %}</a></li>
+{% endblock %}
+{% load sorting_tags %}
+
+
+{% block content %}
+
+    <table class="table table-bordered table-striped table-sortable">
+        <thead>
+        <th>{% anchor code 'Code' %}</th>
+        <th>{% anchor name 'Name' %}</th>
+        <th>{% anchor category 'Category' %}</th>
+        <th>{% trans 'Actions' %}</th>
+        </thead>
+        <tbody>
+        {% autosort accounts as sorted_accounts %}
+        {% for account in sorted_accounts %}
+            <tr>
+                <td>
+                    <a href="{% url "view_account" account.id %}">
+                        {{ account.code }}
+                    </a>
+                </td>
+                <td>
+                    <a href="{% url "view_account" account.id %}">
+                        {{ account.name }}
+                    </a>
+                </td>
+                <td>
+                    {{ account.category }}
+                </td>
+                <td>
+                    <a href="{% url "view_account" account.id %}">
+                        {% trans 'View' %}
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{#    <a class="btn" href="{% url 'create_account' %}">Create New Account</a>#}
+
+{% endblock %}

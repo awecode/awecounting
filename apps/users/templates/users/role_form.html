@@ -1,0 +1,24 @@
+{% extends '_base.html' %}
+{% load i18n %}
+{% block page-title %}{{ scenario }} {{ form.instance }}{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'users:user_list' %}">{% trans 'Users' %}</a></li>
+    <li>{{ scenario }} {{ form.instance }}</li>
+{% endblock %}
+
+
+{% block content %}
+    <form action="" method="POST">
+        {% csrf_token %}
+
+        <p>{% trans 'User' %}:<br>
+            <a href="{% url 'users:user_edit' form.instance.user.id %}">{{ form.instance.user.full_name }}</a>
+        </p>
+
+        {{ form.as_p }}
+
+        <input type="submit" class='btn btn-default'>
+
+    </form>
+{% endblock %}

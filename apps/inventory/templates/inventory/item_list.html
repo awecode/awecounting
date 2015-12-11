@@ -1,0 +1,55 @@
+{% extends "_base.html" %}
+{% load i18n staticfiles %}
+{% load filters %}
+
+{% block title %}{% trans 'Items' %}{% endblock %}
+
+{% block page-header %}
+    {% trans 'Items' %}
+{% endblock %}
+
+{% block content %}
+    <div class='container'>
+        <div class="row">
+
+
+            {% load pagination_tags %}
+            {% load sorting_tags %}
+            {% load filters %}
+
+            {% autosort object_list as sorted_objects %}
+            {% autopaginate sorted_objects 25 as paginated_objects %}
+
+            <table class="table table-striped table-bordered">
+                <thead>
+                <th>{% anchor id _('ID') %}</th>
+                <th>{% anchor name _('Name') %}</th>
+                <th>{% trans 'Other Properties' %}</th>
+
+                </thead>
+                <tbody>
+                {% for item in paginated_objects %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'item_edit' item.pk %}">{{ item.id }}</a>
+                        </td>
+                        <td>
+                            {{ item.name }}
+                        </td>
+                        <td>
+                            {{ item.other_properties }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            {% paginate %}
+
+
+            <a class="btn btn-default"
+               href="{% url 'item_add' %}">{% trans 'New' %} {% trans 'Item' %}</a>
+
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "_base.html" %}
+{% load i18n staticfiles %}
+{% load filters %}
+
+{% block title %}{% trans 'Purchase' %}{% endblock %}
+
+{% block content %}
+<div class='container'>
+    <div class="row">
+
+        <h1>{% trans 'Unit List' %}</h1>
+
+            {% load pagination_tags %}
+            {% load sorting_tags %}
+            {% load filters %}
+
+            {% autosort object_list as sorted_objects %}
+            {% autopaginate sorted_objects 25 as paginated_objects %}
+
+            <table class="table table-striped table-bordered">
+                <thead>
+                <th>{% anchor id _('ID') %}</th>
+                <th>{% anchor name _('Name') %}</th>
+                </thead>
+                <tbody>
+                {% for unit in paginated_objects %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'unit_edit' unit.pk %}">{{ unit.id }}</a>
+                        </td>
+                        <td>
+                            {{ unit.name }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            {% paginate %}
+
+
+        <a class="btn btn-default"
+               href="{% url 'unit_add' %}">{% trans 'New' %} {% trans 'Unit' %}</a>
+
+    </div>
+</div>
+{% endblock %}

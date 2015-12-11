@@ -1,0 +1,111 @@
+{% extends "_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block title %}{{ obj.name }}{% endblock %}
+
+{% load filters %}
+
+{#{% block extrahead %}#}
+{#    <script src="{% static 'js/inventory/inventory_account.js' %}"></script>#}
+{#    <script>#}
+{#        ko_data = {{data|jsonify}};#}
+{#    </script>#}
+{#{% endblock %}#}
+
+{% block content %}
+
+    <h1>{{ obj.item.name }}</h1>
+    <br>
+    {% trans 'Unit' %} : {{ unit }}
+    <br>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="unit-convert">{% trans 'Convert to' %}:</label>
+        <select name="unit_id" id="unit-convert">
+            {% for conversion in unit_conversions %}
+                {% if unit.id == conversion.unit_to_convert.id %}
+                    <option value="{{ conversion.base_unit.id }}">{{ conversion.base_unit.name }}</option>
+                {% else %}
+                    <option value="{{ conversion.unit_to_convert.id }}">{{ conversion.unit_to_convert.name }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        <input type="submit">
+    </form>
+    <br><br>
+
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>{% trans 'Date' %}</th>
+            <th>{% trans 'Voucher No.' %}</th>
+            <th>{% trans 'In' %}</th>
+            <th>{% trans 'Out' %}</th>
+            <th>{% trans 'Current Balance' %}</th>
+
+        </tr>
+{#        <tr>#}
+{#            <th>{% trans "Quantity" %}</th>#}
+{#            <th>{% trans "Rate" %}</th>#}
+{#            <th>{% trans "Total" %}</th>#}
+{#            <th>{% trans "Quantity" %}</th>#}
+{#            <th>{% trans "Rate" %}</th>#}
+{#            <th>{% trans "Total" %}</th>#}
+{##}
+{#        </tr>#}
+        </thead>
+        <tbody data-bind="with: table_vm">
+        {% load pagination_tags %}
+        {% load sorting_tags %}
+        {% load filters %}
+
+        {% autosort entries as sorted_objects %}
+        {% autopaginate sorted_objects 25 as paginated_objects %}
+        {% for entry in paginated_objects %}
+            <tr>
+                <td>{{ entry.date }}</td>
+                <td><a href="{{ entry.creator.get_absolute_url }}">{{ entry.creator.get_voucher_no }}</a></td>
+                {% for transaction in entry.transactions.all %}
+
+
+                        <td>
+                        {% multiply transaction.dr_amount multiple %}
+                        </td>
+                        <td>
+
+                            {% multiply transaction.cr_amount multiple %}
+                        </td>
+                        <td>
+                            {{ transaction.current_balance }}
+                        </td>
+
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        {#        <!-- ko foreach:rows -->#}
+        {#        <tr>#}
+        {#            <td data-bind="text: date(), localize: 1"></td>#}
+        {#            <td><a data-bind="attr: {'href': voucher_url()}, text: voucher_no()"></a></td>#}
+        {#            <td data-bind="text: income_quantity(), localize: 1"></td>#}
+        {#            <td data-bind="text: income_rate(), localize: 1"></td>#}
+        {#            <td data-bind="text: income_total(), localize: 1"></td>#}
+        {##}
+        {#            <td data-bind="text: expense_quantity(), localize: 1"></td>#}
+        {#            <td data-bind="text: expense_rate(), localize: 1"></td>#}
+        {#            <td data-bind="text: expense_total(), localize: 1"></td>#}
+        {##}
+        {#            <td data-bind="text: current_balance(), localize: 1"></td>#}
+        {#            <td data-bind="visible:expense_flag">(<span data-bind="text:e1">a</span>:<span data-bind="text:r1">a</span>) (<span data-bind="text:e2">a</span>:<span data-bind="text:r2">a</span>)</td>#}
+        {##}
+        {#        </tr>#}
+        {#        <!-- /ko -->#}
+        </tbody>
+    </table>
+    {% paginate %}
+    <br>
+
+    <a class="btn btn-default btn-lg"
+       href="{% url 'view_inventory_account_with_rate' obj.id %}">{% trans 'View' %} {% trans 'with' %} {% trans 'Rate' %}</a>
+
+{% endblock %}
