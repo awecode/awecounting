@@ -332,6 +332,7 @@ def party_form(request, id=None):
         form = PartyForm(data=request.POST, instance=obj)
         if form.is_valid():
             obj = form.save(commit=False)
+            obj.company = request.company
             obj.save()
             if request.is_ajax():
                 return render(request, '_callback.html', {'obj': PartySerializer(obj).data})

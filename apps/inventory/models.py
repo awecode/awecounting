@@ -8,6 +8,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db.models import F
 
 from apps.ledger.models import Account
+from apps.users.models import Company
 
 
 def get_next_voucher_no(cls, attr):
@@ -177,10 +178,11 @@ class Party(models.Model):
     phone_no = models.CharField(max_length=100, blank=True, null=True)
     pan_no = models.CharField(max_length=50, blank=True, null=True)
     account = models.ForeignKey(Account, null=True)
+    company = models.ForeignKey(Company)
 
     def save(self, *args, **kwargs):
         if not self.account_id:
-            account = Account(name=self.name)
+            account = Account(name=self.name, company=self.company)
             account.save()
             self.account = account
         super(Party, self).save(*args, **kwargs)
