@@ -31,7 +31,7 @@
                     </a>
                 </td>
                 <td>
-                    <a href="{% url 'item-detail' obj.item.id %}">
+                    <a href="{% url 'item_edit' obj.item.id %}">
                         {{ obj.item.name }}
                     </a>
                 </td>
@@ -46,6 +46,6 @@
     {% paginate %}
     <br>
     <a class="btn btn-default btn-lg"
-       href="{% url 'add-item' %}">{% trans 'New' %} {% trans 'Inventory' %} {% trans 'Item' %}</a>
+       href="{% url 'item_add' %}">{% trans 'New' %} {% trans 'Inventory' %} {% trans 'Item' %}</a>
 
 {% endblock %}

@@ -2,7 +2,7 @@
 {% load staticfiles i18n %}
 {% load filters %}
 
-{% block page-title %}Item{% endblock %}
+{% block page-title %}{% trans 'Item' %}{% endblock %}
 
 {% block extrahead %}
     <script src="{% static 'js/inventory/item.js' %}"></script>
@@ -24,8 +24,8 @@
         <p>
 
         <div id="other-properties">
-            <label for="id_units">Units</label>
-            <select id ="id_units" data-bind="selectize: $root.units, value: unit_id, event: {change: unit_changed}" data-url="{% url 'add-unit' %}" name="unit" required></select>
+            <label for="id_units">{% trans 'Units' %}</label>
+            <select id ="id_units" data-bind="selectize: $root.units, value: unit_id, event: {change: unit_changed}" data-url="{% url 'unit_add' %}" name="unit" required></select>
 
             <label for="id_other_properties">{% trans "Other properties" %}</label>
 
@@ -44,5 +44,9 @@
         </div>
         </p>
         <input type="submit" id='submit' class="btn btn-default">
+            {% if form.instance.id %}
+            <a href="{% url 'item_delete' form.instance.id %}" class="btn btn-danger">{% trans 'Delete' %}</a>
+        {% endif %}
+
     </form>
 {% endblock %}

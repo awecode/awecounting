@@ -1,16 +1,13 @@
 {% extends "_base.html" %}
 
-{% block title %}All Accounts{% endblock %}
+{% block page-title %}{% trans 'All Accounts' %}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="{% url "list_account" %}">Accounts</a></li>
+    <li><a href="{% url "list_account" %}">{% trans 'Accounts' %}</a></li>
 {% endblock %}
 {% load sorting_tags %}
 
-{% block page-header %}
-    All Accounts
-{% endblock %}
 
 {% block content %}
 
@@ -19,7 +16,7 @@
         <th>{% anchor code 'Code' %}</th>
         <th>{% anchor name 'Name' %}</th>
         <th>{% anchor category 'Category' %}</th>
-        <th>Actions</th>
+        <th>{% trans 'Actions' %}</th>
         </thead>
         <tbody>
         {% autosort accounts as sorted_accounts %}
@@ -40,7 +37,7 @@
                 </td>
                 <td>
                     <a href="{% url "view_account" account.id %}">
-                        View
+                        {% trans 'View' %}
                     </a>
                 </td>
             </tr>

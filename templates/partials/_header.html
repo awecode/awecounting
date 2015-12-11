@@ -5,12 +5,12 @@
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
                     data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                <span class="sr-only">Toggle navigation</span>
+                <span class="sr-only">{% trans 'Toggle navigation' %}</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Awecounting</a>
+            <a class="navbar-brand" href="/">{% trans 'Awecounting' %}</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -19,21 +19,21 @@
 
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false">Purchases <span class="caret"></span></a>
+                       aria-expanded="false">{% trans 'Purchases' %} <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="{% url 'purchase-create' %}">New Purchase</a></li>
-                        <li><a href="{% url 'purchase-list' %}">List Purchases</a></li>
+                        <li><a href="{% url 'purchase-create' %}">{% trans 'New Purchase' %}</a></li>
+                        <li><a href="{% url 'purchase-list' %}">{% trans 'List Purchases' %}</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false">Sales <span class="caret"></span></a>
+                       aria-expanded="false">{% trans 'Sales' %} <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="{% url 'sale-create' %}">New Sale</a></li>
-                        <li><a href="{% url 'sale-list' %}">List Sales</a></li>
+                        <li><a href="{% url 'sale-create' %}">{% trans 'New Sale' %}</a></li>
+                        <li><a href="{% url 'sale-list' %}">{% trans 'List Sales' %}</a></li>
                     </ul>
                 </li>
-                <li><a href="{% url 'list_inventory_accounts' %}">Inventory Accounts</a></li>
+                <li><a href="{% url 'list_inventory_accounts' %}">{% trans 'Inventory Accounts' %}</a></li>
                 {% if request.is_owner %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
@@ -49,14 +49,14 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false">{% trans 'Shares' %}<span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="{% url 'share:shareholder_list' %}">List Shareholders</a></li>
-                        <li><a href="{% url 'share:shareholder_add' %}">Add Shareholder</a></li>
+                        <li><a href="{% url 'share:shareholder_list' %}">{% trans 'List Shareholders' %}</a></li>
+                        <li><a href="{% url 'share:shareholder_add' %}">{% trans 'Add Shareholder' %}</a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a href="{% url 'share:collection_list' %}">List Collections</a></li>
-                        <li><a href="{% url 'share:collection_add' %}">Add Collection</a></li>
+                        <li><a href="{% url 'share:collection_list' %}">{% trans 'List Collections' %}</a></li>
+                        <li><a href="{% url 'share:collection_add' %}">{% trans 'Add Collection' %}</a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a href="{% url 'share:investment_list' %}">List Investments</a></li>
-                        <li><a href="{% url 'share:investment_add' %}">Add Investment</a></li>
+                        <li><a href="{% url 'share:investment_list' %}">{% trans 'List Investments' %}</a></li>
+                        <li><a href="{% url 'share:investment_add' %}">{% trans 'Add Investment' %}</a></li>
                     </ul>
                 </li>
 
@@ -70,7 +70,7 @@
                         {% if request.user.is_authenticated %}
                             <strong>{% firstof user.get_short_name user.get_username %}</strong>
                         {% else %}
-                            <strong>Guest</strong>
+                            <strong>{% trans 'Guest' %}</strong>
                         {% endif %}
 
 

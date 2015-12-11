@@ -6,7 +6,6 @@ from jsonfield import JSONField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db.models import F
-
 from apps.ledger.models import Account
 from apps.users.models import Company
 
@@ -72,6 +71,7 @@ class InventoryAccount(models.Model):
         else:
             return 1
 
+
 class Item(models.Model):
     code = models.CharField(max_length=250, blank=True, null=True)
     name = models.CharField(max_length=254)
@@ -85,8 +85,8 @@ class Item(models.Model):
     ledger = models.ForeignKey(Account, null=True)
     company = models.ForeignKey(Company)
 
-    def __unicode__(self):
-        return self.name + ' ' + self.code
+    def __str__(self):
+        return str(self.name) + ' ' + str(self.code)
 
     def save(self, *args, **kwargs):
         account_no = kwargs.pop('account_no')
@@ -106,6 +106,7 @@ class Item(models.Model):
                 account.save()
                 self.account = account
         super(Item, self).save(*args, **kwargs)
+
 
 class JournalEntry(models.Model):
     date = models.DateField()
@@ -202,6 +203,7 @@ class Purchase(models.Model):
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     credit = models.BooleanField(default=False)
     date = models.DateField(default=datetime.datetime.today)
+    company = models.ForeignKey(Company)
 
     def __init__(self, *args, **kwargs):
         super(Purchase, self).__init__(*args, **kwargs)
@@ -239,6 +241,7 @@ class Sale(models.Model):
     party = models.ForeignKey(Party, blank=True, null=True)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     date = models.DateField(default=datetime.datetime.today)
+    company = models.ForeignKey(Company)
 
     def get_absolute_url(self):
         return reverse_lazy('sale-detail', kwargs={'id': self.pk})
