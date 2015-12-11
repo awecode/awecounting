@@ -53,6 +53,7 @@ class InventoryAccount(models.Model):
     name = models.CharField(max_length=100)
     account_no = models.PositiveIntegerField()
     current_balance = models.FloatField(default=0)
+    company = models.ForeignKey(Company)
 
     def __str__(self):
         return str(self.account_no) + ' [' + self.name + ']'
@@ -81,7 +82,7 @@ class Item(models.Model):
     selling_rate = models.FloatField(blank=True, null=True)
     other_properties = JSONField(blank=True, null=True)
     ledger = models.ForeignKey(Account, null=True)
-
+    company = models.ForeignKey(Company)
 
     def __unicode__(self):
         return self.name + ' ' + self.code
@@ -90,7 +91,7 @@ class Item(models.Model):
         account_no = kwargs.pop('account_no')
 
         if not self.ledger_id:
-            ledger = Account(name=self.name)
+            ledger = Account(name=self.name, company=self.company)
             ledger.save()
             self.ledger = ledger
 
@@ -98,8 +99,9 @@ class Item(models.Model):
             if self.account:
                 account = self.account
                 account.account_no = account_no
+                account.company = self.company
             else:
-                account = InventoryAccount(name=self.name, account_no=account_no)
+                account = InventoryAccount(name=self.name, account_no=account_no, company=self.company)
                 account.save()
                 self.account = account
         super(Item, self).save(*args, **kwargs)

@@ -70,6 +70,7 @@ def item(request, id=None):
             for key, value in zip(property_name, item_property):
                 other_properties[key] = value
             item.other_properties = other_properties
+            item.company = request.company
             item.save(account_no=form.cleaned_data['account_no'])
             if request.is_ajax():
                 return render(request, '_callback.html', {'obj': ItemSerializer(item).data})
