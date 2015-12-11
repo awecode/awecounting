@@ -72,7 +72,7 @@ def item(request, id=None):
             item.other_properties = other_properties
             item.save(account_no=form.cleaned_data['account_no'])
             if request.is_ajax():
-                return render(request, 'callback.html', {'obj': ItemSerializer(item).data})
+                return render(request, '_callback.html', {'obj': ItemSerializer(item).data})
             return redirect('/inventory/item')
     else:
         form = ItemForm(instance=item)
@@ -334,7 +334,7 @@ def party_form(request, id=None):
             obj = form.save(commit=False)
             obj.save()
             if request.is_ajax():
-                return render(request, 'callback.html', {'obj': PartySerializer(obj).data})
+                return render(request, '_callback.html', {'obj': PartySerializer(obj).data})
             return redirect(reverse('list_parties'))
     else:
         form = PartyForm(instance=obj)
@@ -367,7 +367,7 @@ def unit_form(request, id=None):
             obj = form.save(commit=False)
             obj.save()
             if request.is_ajax():
-                return render(request, 'callback.html', {'obj': UnitSerializer(obj).data})
+                return render(request, '_callback.html', {'obj': UnitSerializer(obj).data})
             return redirect(reverse('list_units'))
     else:
         form = UnitForm(instance=obj)
