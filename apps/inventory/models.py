@@ -10,6 +10,15 @@ from django.db.models import F
 from apps.ledger.models import Account
 
 
+def get_next_voucher_no(cls, attr):
+    from django.db.models import Max
+
+    max_voucher_no = cls.objects.all().aggregate(Max(attr))[attr + '__max']
+    if max_voucher_no:
+        return max_voucher_no + 1
+    else:
+        return 1
+
 def none_for_zero(obj):
     if not obj:
         return None
@@ -188,6 +197,12 @@ class Purchase(models.Model):
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     credit = models.BooleanField(default=False)
     date = models.DateField(default=datetime.datetime.today)
+
+    def __init__(self, *args, **kwargs):
+        super(Purchase, self).__init__(*args, **kwargs)
+
+        if not self.pk and not self.voucher_no:
+            self.voucher_no = get_next_voucher_no(Purchase, 'voucher_no')
 
     @property
     def total(self):
