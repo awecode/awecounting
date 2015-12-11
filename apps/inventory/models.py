@@ -35,6 +35,7 @@ def zero_for_none(obj):
 class Unit(models.Model):
     name = models.CharField(max_length=50)
     short_name = models.CharField(max_length=10, blank=True, null=True)
+    company = models.ForeignKey(Company)
 
     def __unicode__(self):
         return self.name

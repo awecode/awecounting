@@ -36,6 +36,7 @@ class KOModelForm(forms.ModelForm):
             field.widget.attrs['data-bind'] = 'value: ' + name
             field.widget.attrs['class'] = 'form-control'
 
+
 class ItemForm(KOModelForm, TranslationModelForm):
     account_no = forms.Field(widget=forms.TextInput(), label=_('Inventory Account No.'))
 
@@ -66,6 +67,7 @@ class ItemForm(KOModelForm, TranslationModelForm):
         fields = '__all__'
         exclude = ['other_properties', 'account', 'unit', 'ledger', 'company']
 
+
 class PartyForm(KOModelForm):
     address = forms.CharField(label=_('Address'), required=False)
     phone_no = forms.CharField(label=_('Phone No.'), required=False)
@@ -75,7 +77,9 @@ class PartyForm(KOModelForm):
         model = Party
         exclude = ('account', 'company')
 
+
 class UnitForm(KOModelForm):
     class Meta:
         model = Unit
-        fields = '__all__'
+        exclude = ('company',)
+        # fields = '__all__'
