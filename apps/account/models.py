@@ -1,13 +1,22 @@
 from django.db import models
+from apps.users.models import Company
+from apps.ledger.models import Account
+from awecounting.utils.helpers import get_next_voucher_no
+
 
 class JournalVoucher(models.Model):
-    #voucher_no = models.CharField(max_length=10)
     voucher_no = models.IntegerField()
     date = models.DateField()
     company = models.ForeignKey(Company)
     narration = models.TextField()
     statuses = [('Cancelled', 'Cancelled'), ('Approved', 'Approved'), ('Unapproved', 'Unapproved')]
     status = models.CharField(max_length=10, choices=statuses, default='Unapproved')
+
+    def __init__(self, *args, **kwargs):
+        super(JournalVoucher, self).__init__(*args, **kwargs)
+
+        if not self.pk and not self.voucher_no:
+            self.voucher_no = get_next_voucher_no(JournalVoucher, 'voucher_no')
 
     def get_voucher_no(self):
         return self.voucher_no
@@ -33,4 +42,3 @@ class JournalVoucherRow(models.Model):
     def get_voucher_no(self):
         return self.journal_voucher.voucher_no
 
-# Create your models here.
