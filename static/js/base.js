@@ -1647,3 +1647,7 @@ $(document).on('show.bs.modal', '.modal', function () {
         $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
     }, 0);
 });
+
+function update_url_with_id(id) {
+    history.pushState(id, id, window.location.href.replace('/create/', '').replace('/add/', '').replace('/create', '').replace('/add', '') + '/' + id + '/');
+}

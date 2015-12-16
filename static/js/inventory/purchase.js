@@ -82,7 +82,7 @@ function PurchaseViewModel(data) {
         self[k] = ko.observable(data[k]);
 
     self.id.subscribe(function (id) {
-        history.pushState(id, id, window.location.href + id + '/');
+        update_url_with_id(id);
     });
 
 
