@@ -1,0 +1,7 @@
+{% extends "_base.html" %}
+{% load i18n %}
+{% block page-title %}{% trans "Journal Voucher"}{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'account:journalvoucher_list' %}">{% trans 'Journal Voucher' %}</a></li>
+{% endblock %}
