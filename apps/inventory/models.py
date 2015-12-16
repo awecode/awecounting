@@ -197,6 +197,7 @@ class Party(models.Model):
 
     class Meta:
         verbose_name_plural = 'Parties'
+        unique_together = ['pan_no', 'company']
 
 class Purchase(models.Model):
     party = models.ForeignKey(Party)

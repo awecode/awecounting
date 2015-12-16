@@ -132,7 +132,7 @@ class HTML5BootstrapModelForm(HTML5ModelForm):
 
 class KOModelForm(forms.ModelForm):
     required_css_class = 'required'
-    
+
     def __init__(self, *args, **kwargs):
         super(KOModelForm, self).__init__(*args, **kwargs)
         self.refine_for_ko()
@@ -144,3 +144,11 @@ class KOModelForm(forms.ModelForm):
                 field.widget.attrs['required'] = 'required'
             field.widget.attrs['data-bind'] = 'value: ' + name
             field.widget.attrs['class'] = 'form-control'
+
+
+class NullCharField(forms.CharField):
+    def clean(self, value):
+        value = super(NullCharField, self).clean(value)
+        if value in forms.fields.EMPTY_VALUES:
+            return None
+        return value
