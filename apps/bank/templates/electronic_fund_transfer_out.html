@@ -1,0 +1,100 @@
+{% extends "dashboard.html" %}
+
+{% block title %} {{ scenario }} Electronic Fund Transfer Out{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url "list_bank_accounts" %}">Banking</a></li>
+    <span class="divider"><i class="icon-angle-right"></i></span>
+    <li><a href="{% url "new_cheque_payment" %}">Electronic Fund Transfer Out</a></li>
+{% endblock %}
+
+{% block pageheader %}
+    {{ request.company.voucher_settings.eft_out_heading }}
+{% endblock %}
+
+{% block extra-head %}
+    {#    <script src="{{ STATIC_URL }}js/vendors/knockout.js"></script>#}
+    {#    <script src="{{ STATIC_URL }}js/ko_lib.js"></script>#}
+    {#    <script src="{{ STATIC_URL }}js/bank.js"></script>#}
+    {#    <script>#}
+    {#        $(document).ready(function () {#}
+    {#            {% load filters %}#}
+    {#            ko.applyBindings(new ElectronicFundPaymentViewModel({{data|jsonify}}));#}
+    {#        });#}
+    {#    </script>#}
+    <script>
+        $(document).ready(function () {
+            $('.date-picker').datepicker();
+        });
+    </script>
+{% endblock %}
+
+{% load filters %}
+
+{% block content %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+
+        {{ form.bank_account.label_tag }}
+        {{ form.bank_account }}
+        {{ form.bank_account.errors }}
+
+        <br/><br/>
+
+        {{ form.transaction_number.label_tag }}
+        {{ form.transaction_number }}
+        {{ form.bank_account.errors }}
+
+        <br/>
+
+        {{ form.date.label_tag }}
+        {{ form.date }}
+        {{ form.date.errors }}
+
+        <br/>
+
+        {{ form.beneficiary.label_tag }}
+        {{ form.beneficiary }}
+        {{ form.beneficiary.errors }}
+
+        <br/><br/>
+
+        {{ form.amount.label_tag }}
+        {{ form.amount }}
+        {{ form.amount.errors }}
+
+        <div class="row-fluid">
+
+            <div class="span8">
+                {{ form.narration.label_tag }}
+                {{ form.narration }}
+                {{ form.narration.errors }}
+            </div>
+
+            <div class="span4">
+                {{ form.attachment.label_tag }}
+                {{ form.attachment }}
+                {{ form.attachment.errors }}
+            </div>
+
+        </div>
+
+        <br/>
+
+        <input class="btn" type="submit" value="Save" name="action">
+        {% if scenario == 'Update' %}
+            {% if form.instance.status == 'Unapproved' %}
+                {% ifusergroup 'Owner' 'SuperOwner' 'Supervisor' %}
+                    <input class="btn" type="submit" value="Approve" name="action">
+                {% endifusergroup %}
+            {% endif %}
+            <a class="btn btn-danger"
+               href="{% url 'delete_electronic_fund_transfer_out' form.instance.id %}">Delete!</a>
+        {% endif %}
+
+    </form>
+
+{% endblock %}

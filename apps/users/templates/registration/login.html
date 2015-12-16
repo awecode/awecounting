@@ -1,14 +1,15 @@
 {% extends '_base.html' %}
+{% load i18n %}
 
-{% block title %}Login{% endblock %}
+{% block title %}{% trans 'Login' %}{% endblock %}
 {% block content %}
 
     <div class="container">
         <div>
-            <h2 class="intro">Login</h2>
+            <h2 class="intro">{% trans 'Login' %}</h2>
 
             {% if form.errors %}
-                <p class="alert-error" role='alert'>Your username and password didn't match. Please try again.</p>
+                <p class="alert-error" role='alert'>{% trans "Your username and password didn't match. Please try again." %}</p>
             {% endif %}
 
             <form method="post" action="{% url 'users:login' %}"
@@ -20,19 +21,19 @@
                     <input type="hidden" name="next" value="{{ next }}"/>
                 {% endif %}
                 <div class="required">
-                    <label for="id_username">Username:</label>
+                    <label for="id_username">{% trans 'Username:' %}</label>
                     <input type="text" class="form-control" name="username" id="id_username" value="{{ username }}" required
                            autofocus/>
                 </div>
 
                 <div class="form-group">
-                    <label for="id_password">Password:</label>
+                    <label for="id_password">{% trans 'Password:' %}</label>
                     <input type="password" name="password" class="form-control" id="id_password" value="{{ username }}" required/>
                 </div>
 
                 <div>
                     <input type="checkbox" id="remember_me" name="remember_me" value="true"/>
-                    <label for="remember_me">Remember Me</label>
+                    <label for="remember_me">{% trans 'Remember Me' %}</label>
                 </div>
 
                 <div>

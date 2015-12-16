@@ -14,7 +14,9 @@
 
     <title>
         {% block whole_title %}
-            {% block title %}{% usekwacro page-title %}{% endblock %} | Awecounting
+
+            {% block title %}{% usekwacro page-title %}{% endblock %} | {% trans 'Awecounting' %}
+
         {% endblock %}
     </title>
 

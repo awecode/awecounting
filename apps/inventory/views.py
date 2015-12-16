@@ -9,10 +9,12 @@ from rest_framework import generics
 from django.db.models import Max, Q
 
 from apps.inventory.models import Item, UnitConverter, Purchase, PurchaseRow, Party, Unit, Sale, SaleRow, JournalEntry, set_transactions, InventoryAccount
-from apps.inventory.forms import ItemForm, PartyForm, UnitForm
+from apps.inventory.forms import ItemForm, PartyForm, UnitForm, UnitConverterForm
 from apps.inventory.serializer import PurchaseSerializer, ItemSerializer, PartySerializer, UnitSerializer, SaleSerializer, \
     InventoryAccountRowSerializer
 from apps.ledger.models import set_transactions as set_ledger_transactions
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin
+from django.views.generic import ListView
 
 
 def index(request):
@@ -64,6 +66,7 @@ def item(request, id=None):
             item_property = request.POST.getlist('property')
             unit_id = request.POST.get('unit')
             item.unit_id = int(unit_id)
+            item.company = request.company
             if request.FILES != {}:
                 item.image = request.FILES['image']
             other_properties = {}
@@ -72,12 +75,12 @@ def item(request, id=None):
             item.other_properties = other_properties
             item.save(account_no=form.cleaned_data['account_no'])
             if request.is_ajax():
-                return render(request, 'callback.html', {'obj': ItemSerializer(item).data})
+                return render(request, '_callback.html', {'obj': ItemSerializer(item).data})
             return redirect('/inventory/item')
     else:
         form = ItemForm(instance=item)
     if request.is_ajax():
-        base_template = 'modal.html'
+        base_template = '_modal.html'
     else:
         base_template = '_base.html'
     return render(request, 'item_form.html',
@@ -85,9 +88,40 @@ def item(request, id=None):
                    'item_unit_id': unit})
 
 
-def item_list(request):
-    obj = Item.objects.all()
-    return render(request, 'item_list.html', {'objects': obj})
+class ItemView(object):
+    model = Item
+    form_class = ItemForm
+    success_url = reverse_lazy('item_list')
+
+
+class ItemList(ItemView, ListView):
+    pass
+
+
+class ItemDelete(ItemView, DeleteView):
+    pass
+
+
+class UnitConverterView(object):
+    model = UnitConverter
+    form_class = UnitConverterForm
+    success_url = reverse_lazy('unitconverter_list')
+
+
+class UnitConverterList(UnitConverterView, ListView):
+    pass
+
+
+class UnitConverterCreate(UnitConverterView, CreateView ):
+    pass
+
+
+class UnitConverterUpdate(UnitConverterView, UpdateView):
+    pass
+
+
+class UnitConverterDelete(UnitConverterView, DeleteView):
+    pass
 
 
 def save_model(model, values):
@@ -130,7 +164,7 @@ def save_purchase(request):
     dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
-    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'party_id': params.get('party'), 'credit': params.get('credit')}
+    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'party_id': params.get('party'), 'credit': params.get('credit'), 'company': request.company}
     if params.get('id'):
         obj = Purchase.objects.get(id=params.get('id'))
     else:
@@ -213,7 +247,7 @@ def save_sale(request):
     dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
-    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'party_id': params.get('party')}
+    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'party_id': params.get('party'), 'company': request.company}
     if params.get('id'):
         obj = Sale.objects.get(id=params.get('id'))
     else:
@@ -321,70 +355,154 @@ def daily_sale_yesterday(request):
     return sale_day(request, yesterday)
 
 
-def party_form(request, id=None):
-    if id:
-        obj = get_object_or_404(Party, id=id)
-        scenario = 'Update'
-    else:
-        obj = Party()
-        scenario = 'Create'
-    if request.POST:
-        form = PartyForm(data=request.POST, instance=obj)
-        if form.is_valid():
-            obj = form.save(commit=False)
-            obj.save()
-            if request.is_ajax():
-                return render(request, 'callback.html', {'obj': PartySerializer(obj).data})
-            return redirect(reverse('list_parties'))
-    else:
-        form = PartyForm(instance=obj)
-    if request.is_ajax():
-        base_template = 'modal.html'
-    else:
-        base_template = '_base.html'
-    return render(request, 'party_form.html', {
-        'scenario': scenario,
-        'form': form,
-        'base_template': base_template,
-    })
+# Party CRUD with mixins
+class PartyView(object):
+    model = Party
+    success_url = reverse_lazy('parties_list')
+    form_class = PartyForm
 
 
-def parties_list(request):
-    obj = Party.objects.all()
-    return render(request, 'party_list.html', {'objects': obj})
+class PartyList(PartyView, ListView):
+    pass
 
 
-def unit_form(request, id=None):
-    if id:
-        obj = get_object_or_404(Unit, id=id)
-        scenario = 'Update'
-    else:
-        obj = Unit()
-        scenario = 'Create'
-    if request.POST:
-        form = UnitForm(data=request.POST, instance=obj)
-        if form.is_valid():
-            obj = form.save(commit=False)
-            obj.save()
-            if request.is_ajax():
-                return render(request, 'callback.html', {'obj': UnitSerializer(obj).data})
-            return redirect(reverse('list_units'))
-    else:
-        form = UnitForm(instance=obj)
-    if request.is_ajax():
-        base_template = 'modal.html'
-    else:
-        base_template = '_base.html'
-    return render(request, 'unit_form.html', {
-        'scenario': scenario,
-        'form': form,
-        'base_template': base_template,
-    })
+class PartyCreate(AjaxableResponseMixin, PartyView, CreateView):
+    def form_valid(self, form):
+        form.instance.company = self.request.company
+        return super(PartyCreate, self).form_valid(form)
 
 
-def unit_list(request):
-    obj = Unit.objects.all()
-    return render(request, 'unit_list.html', {'objects': obj})
+class PartyUpdate(PartyView, UpdateView):
+    def form_valid(self, form):
+        form.instance.company = self.request.company
+        return super(PartyUpdate, self).form_valid(form)
+
+
+class PartyDelete(PartyView, DeleteView):
+    pass
+
+
+
+# def party_form(request, id=None):
+#     if id:
+#         obj = get_object_or_404(Party, id=id)
+#         scenario = 'Update'
+#     else:
+#         obj = Party()
+#         scenario = 'Create'
+#     if request.POST:
+#         form = PartyForm(data=request.POST, instance=obj)
+#         if form.is_valid():
+#             obj = form.save(commit=False)
+#             obj.company = request.company
+#             obj.save()
+#             if request.is_ajax():
+#                 return render(request, '_callback.html', {'obj': PartySerializer(obj).data})
+#             return redirect(reverse('list_parties'))
+#     else:
+#         form = PartyForm(instance=obj)
+#     if request.is_ajax():
+#         base_template = '_modal.html'
+#     else:
+#         base_template = '_base.html'
+#     return render(request, 'party_form.html', {
+#         'scenario': scenario,
+#         'form': form,
+#         'base_template': base_template,
+#     })
+
+
+# def parties_list(request):
+#     obj = Party.objects.all()
+#     return render(request, 'party_list.html', {'objects': obj})
+
+
+# def unit_form(request, id=None):
+#     if id:
+#         obj = get_object_or_404(Unit, id=id)
+#         scenario = 'Update'
+#     else:
+#         obj = Unit()
+#         scenario = 'Create'
+#     if request.POST:
+#         form = UnitForm(data=request.POST, instance=obj)
+#         if form.is_valid():
+#             obj = form.save(commit=False)
+#             obj.company = request.company
+#             obj.save()
+#             if request.is_ajax():
+#                 return render(request, '_callback.html', {'obj': UnitSerializer(obj).data})
+#             return redirect(reverse('list_units'))
+#     else:
+#         form = UnitForm(instance=obj)
+#     if request.is_ajax():
+#         base_template = '_modal.html'
+#     else:
+#         base_template = '_base.html'
+#     return render(request, 'unit_form.html', {
+#         'scenario': scenario,
+#         'form': form,
+#         'base_template': base_template,
+#     })
+# Unit CRUD with mixins
+class UnitView(object):
+    model = Unit
+    success_url = reverse_lazy('unit_list')
+    form_class = UnitForm
+
+
+class UnitList(UnitView, ListView):
+    pass
+
+
+class UnitCreate(AjaxableResponseMixin, UnitView, CreateView):
+    def form_valid(self, form):
+        form.instance.company = self.request.company
+        return super(UnitCreate, self).form_valid(form)
+
+
+class UnitUpdate(UnitView, UpdateView):
+    def form_valid(self, form):
+        form.instance.company = self.request.company
+        return super(UnitUpdate, self).form_valid(form)
+
+
+class UnitDelete(UnitView, DeleteView):
+    pass
+
+    
+# def unit_form(request, id=None):
+#     if id:
+#         obj = get_object_or_404(Unit, id=id)
+#         scenario = 'Update'
+#     else:
+#         obj = Unit()
+#         scenario = 'Create'
+#     if request.POST:
+#         form = UnitForm(data=request.POST, instance=obj)
+#         if form.is_valid():
+#             obj = form.save(commit=False)
+#             obj.company = request.company
+#             obj.save()
+#             if request.is_ajax():
+#                 return render(request, 'callback.html', {'obj': UnitSerializer(obj).data})
+#             return redirect(reverse('list_units'))
+#     else:
+#         form = UnitForm(instance=obj)
+#     if request.is_ajax():
+#         base_template = '_modal.html'
+#     else:
+#         base_template = '_base.html'
+#     return render(request, 'unit_form.html', {
+#         'scenario': scenario,
+#         'form': form,
+#         'base_template': base_template,
+#     })
+
+
+# def unit_list(request):
+#     obj = Unit.objects.all()
+#     return render(request, 'unit_list.html', {'objects': obj})
 
 
 def list_inventory_accounts(request):
@@ -444,16 +562,16 @@ def view_inventory_account_with_rate(request, id):
 
 # djangorestframework API
 
-class ItemList(generics.ListCreateAPIView):
+class ItemListAPI(generics.ListCreateAPIView):
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
 
 
-class UnitList(generics.ListCreateAPIView):
+class UnitListAPI(generics.ListCreateAPIView):
     queryset = Unit.objects.all()
     serializer_class = UnitSerializer
 
 
-class PartyList(generics.ListCreateAPIView):
+class PartyListAPI(generics.ListCreateAPIView):
     queryset = Party.objects.all()
     serializer_class = PartySerializer

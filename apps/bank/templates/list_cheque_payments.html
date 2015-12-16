@@ -1,0 +1,76 @@
+{% extends "dashboard.html" %}
+
+{% block title %}Cheque Payments{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url "list_bank_accounts" %}">Bank Accounts</a></li>
+    <span class="divider"><i class="icon-angle-right"></i></span>
+    <li>Cheque Payments</li>
+{% endblock %}
+
+{% block pageheader %}
+    Cheque Payments
+{% endblock %}
+
+{% block content %}
+
+    {% load pagination_tags %}
+    {% load sorting_tags %}
+
+    <div class="widget-box collapsed">
+        <div class="widget-header">
+            <div class="widget-toolbar" >
+                <a href="#" data-action="collapse">
+                    <i class="icon-chevron-up"></i>
+                </a>
+            </div>
+            <h4>Search</h4>
+        </div>
+        <div class="widget-body"><div class="widget-body-inner">
+            <div class="widget-main">
+                <br>
+                <form action="" method="get">
+                    {{ objects.form.as_p }}
+                    <input type="submit" value="Search" class="btn"/>
+                </form>
+            </div><!-- /widget-main -->
+        </div></div><!-- /widget-body -->
+    </div>    
+    <br>
+
+    {% autosort objects.qs as sorted_objects %}
+    {% autopaginate sorted_objects 25 as paginated_objects %}
+
+    <table class="table table-bordered table-striped table-sortable">
+        <thead>
+        <th>{% anchor date 'Date' %}</th>
+        <th>{% anchor bank_account 'Bank Account' %}</th>
+        <th>{% anchor cheque_number 'Cheque No.' %}</th>
+        <th>{% anchor beneficiary 'Beneficiary (Given To)' %}</th>
+        <th>{% anchor amount 'Amount' %}</th>
+        <th>Actions</th>
+        </thead>
+        <tbody>
+        {% for item in paginated_objects %}
+            <tr>
+                <td>
+                    {{ item.date }}
+                </td>
+                <td>{{ item.bank_account }}</td>
+                <td>{{ item.cheque_number }}</td>
+                <td>{{ item.beneficiary }}</td>
+                <td>{{ item.amount }}</td>
+                <td>
+                    <a href="{% url 'update_cheque_payment' item.id %}">Edit</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% paginate %}
+
+    <a class="btn" href="{% url 'new_cheque_payment' %}">New Cheque Payment</a>
+
+{% endblock %}

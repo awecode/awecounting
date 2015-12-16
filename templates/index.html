@@ -31,9 +31,9 @@
             <i class="fa fa-arrow-down"></i>
 
             <div class="flip-body">
-                <h2>Purchases</h2>
-                <a href="{% url 'purchase-create' %}">New Purchase</a>
-                <a href="{% url 'purchase-list' %}">List Purchases</a>
+                <h2>{% trans 'Purchases' %}</h2>
+                <a href="{% url 'purchase-create' %}">{% trans 'New Purchase' %}</a>
+                <a href="{% url 'purchase-list' %}">{% trans 'List Purchases' %}</a>
             </div>
         </div>
 
@@ -41,11 +41,11 @@
             <i class="fa fa-arrow-up"></i>
 
             <div class="flip-body">
-                <h2>Sales</h2>
-                <a href="{% url 'sale-create' %}">New Sale</a>
-                <a href="{% url 'sale-list' %}">List Sales</a>
-                <a href="{% url 'today_sale' %}">Today Sales</a>
-                <a href="{% url 'yesterday_sale' %}">Yesterday Sales</a>
+                <h2>{% trans 'Sales' %}</h2>
+                <a href="{% url 'sale-create' %}">{% trans 'New Sale' %}</a>
+                <a href="{% url 'sale-list' %}">{% trans 'List Sales' %}</a>
+                <a href="{% url 'today_sale' %}">{% trans 'Today Sales' %}</a>
+                <a href="{% url 'yesterday_sale' %}">{% trans 'Yesterday Sales' %}</a>
             </div>
         </div>
 
@@ -53,12 +53,12 @@
             <i class="fa fa-balance-scale"></i>
 
             <div class="flip-body">
-                <h2>Inventory</h2>
-                <a href="{% url 'item-list' %}">Items</a>
-                <a href="{% url 'list_units' %}">Units</a>
-                <a href="{% url 'list_parties' %}">Parties</a>
-                <a href="{% url 'list_inventory_accounts' %}">Accounts</a>
-                <a href="{% url 'yesterday_sale' %}">Yesterday's Sales</a>
+                <h2>{% trans 'Inventory' %}</h2>
+                <a href="{% url 'item_list' %}">{% trans 'Items' %}</a>
+                <a href="{% url 'unit_list' %}">{% trans 'Units' %}</a>
+                <a href="{% url 'parties_list' %}">{% trans 'Parties' %}</a>
+                <a href="{% url 'list_inventory_accounts' %}">{% trans 'Accounts' %}</a>
+                <a href="{% url 'yesterday_sale' %}">{% trans "Yesterday's Sales" %}</a>
             </div>
         </div>
 
@@ -67,8 +67,8 @@
             <i class="fa fa-book"></i>
 
             <div class="flip-body">
-                <h2>Accounts</h2>
-                <a href="{% url 'list_account' %}">Accounts</a>
+                <h2>{% trans 'Accounts' %}</h2>
+                <a href="{% url 'list_account' %}">{% trans 'Accounts' %}</a>
             </div>
 
         </div>
@@ -76,34 +76,34 @@
     <div class="sales-report row">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title"><a href="{% url 'today_sale' %}">Today's Sales </a></h3>
+                <h3 class="panel-title"><a href="{% url 'today_sale' %}">{% trans "Today's Sales" %} </a></h3>
             </div>
             <div class="panel-body">
 
                 <table class="table table-striped table-bordered">
                     <tr>
-                        <th>Total Amount Sold</th>
+                        <th>{% trans 'Total Amount Sold' %}</th>
                         <td>{{ total_amount }}</td>
                     </tr>
                     <tr>
-                        <th>Total Quantity Sold</th>
+                        <th>{% trans 'Total Quantity Sold' %}</th>
                         <td>{{ total_quantity }}</td>
                     </tr>
                     <tr>
-                        <th>Total Particulars Sold</th>
+                        <th>{% trans 'Total Particulars Sold' %}</th>
                         <td>{{ total_items }}</td>
                     </tr>
                 </table>
 
                 <form class="sales-report-form" id="sales-report-range" action="{% url 'sale-report-router' %}">
-                    <label class="pull-left">From:</label>
+                    <label class="pull-left">{% trans 'From' %}:</label>
                     <input type="text" name="from" id="date-from" class="pull-left datepicker" data-date-format="yyyy-mm-dd">
-                    <label class="pull-left">To:</label>
+                    <label class="pull-left">{% trans 'To' %}:</label>
                     <input type="text" name="to" id="date-to" class="pull-left datepicker" data-date-format="yyyy-mm-dd">
                     <input type="submit" value="Go" class="btn">
                 </form>
                 <form class="sales-report-form" id="sales-report-day" action="{% url 'sale-report-router' %}">
-                    <label class="pull-left">Day:&nbsp;&nbsp;</label>
+                    <label class="pull-left">{% trans 'Day' %}:&nbsp;&nbsp;</label>
                     <input type="text" name="date" id="sale-date" class="pull-left datepicker" data-date-format="yyyy-mm-dd">
                     <input type="submit" value="Go" class="btn">
                 </form>

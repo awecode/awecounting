@@ -1,10 +1,10 @@
 {% extends "_base.html" %}
 
-{% block title %}{{ account.name }} Ledger View {% endblock %}
+    {% block title %}{{ account.name }} {% trans 'Ledger View' % {% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="{% url "list_account" %}">Accounts</a></li>
+    <li><a href="{% url "list_account" %}">{% trans 'Accounts' %}</a></li>
     <span class="divider"><i class="icon-angle-right"></i></span>
     <li>{{ account.name }}</li>
 {% endblock %}
@@ -26,26 +26,26 @@
 {% load filters %}
 {% block content %}
 
-    Code: {{ account.code }} <br/>
-    Dr Amount: {{ account.current_dr }} <br/>
-    Cr Amount: {{ account.current_cr }} <br/>
-    Closing Balance : {{ account.get_balance|dr_or_cr }} <br/>
-    Category: {{ account.category }} <br/>
+    {% trans 'Code' %}': {{ account.code }} <br/>
+    {% trans 'Dr Amount' %}: {{ account.current_dr }} <br/>
+    {% trans 'Cr Amount' %}: {{ account.current_cr }} <br/>
+    {% trans 'Closing Balance ' %}: {{ account.get_balance|dr_or_cr }} <br/>
+    {% trans 'Category' %}: {{ account.category }} <br/>
 {#    <a href="{% url "update_account" account.id %}">#}
 {#        Edit Account Details#}
 {#    </a>#}
 
-    <h2>Transactions:</h2>
+    <h2>{% trans 'Transactions' %}:</h2>
 
     <table class="table table-bordered table-striped table-sortable">
         <thead>
-        <th>Date</th>
-        <th>Particulars</th>
-        <th>Voucher Type</th>
-        <th>Voucher No.</th>
-        <th>Dr</th>
-        <th>Cr</th>
-        <th>Balance</th>
+        <th>{% trans 'Date' %}</th>
+        <th>{% trans 'Particulars' %}</th>
+        <th>{% trans 'Voucher Type' %}</th>
+        <th>{% trans 'Voucher No.' %}</th>
+        <th>{% trans 'Dr' %}</th>
+        <th>{% trans 'Cr' %}</th>
+        <th>{% trans 'Balance' %}</th>
         </thead>
         <tbody>
         {% for entry in journal_entries %}
@@ -66,7 +66,7 @@
                 </td>
                 <td>
                     {% if entry.content_type.app_label == 'dayjournal' %}
-                        Day Journal
+                        {% trans 'Day Journal' %}
                     {% else %}
                         {{ entry.content_type.name|refine_voucher_type }}
                     {% endif %}

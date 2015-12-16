@@ -21,7 +21,7 @@
     <br>
     <form method="POST">
         {% csrf_token %}
-        <label for="unit-convert">Convert to:</label>
+        <label for="unit-convert">{% trans 'Convert to' %}:</label>
         <select name="unit_id" id="unit-convert">
             {% for conversion in unit_conversions %}
                 {% if unit.id == conversion.unit_to_convert.id %}

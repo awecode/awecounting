@@ -6,9 +6,18 @@ from jsonfield import JSONField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db.models import F
-
 from apps.ledger.models import Account
+from apps.users.models import Company
 
+
+def get_next_voucher_no(cls, attr):
+    from django.db.models import Max
+
+    max_voucher_no = cls.objects.all().aggregate(Max(attr))[attr + '__max']
+    if max_voucher_no:
+        return max_voucher_no + 1
+    else:
+        return 1
 
 def none_for_zero(obj):
     if not obj:
@@ -25,6 +34,7 @@ def zero_for_none(obj):
 class Unit(models.Model):
     name = models.CharField(max_length=50)
     short_name = models.CharField(max_length=10, blank=True, null=True)
+    company = models.ForeignKey(Company)
 
     def __unicode__(self):
         return self.name
@@ -43,6 +53,7 @@ class InventoryAccount(models.Model):
     name = models.CharField(max_length=100)
     account_no = models.PositiveIntegerField()
     current_balance = models.FloatField(default=0)
+    company = models.ForeignKey(Company)
 
     def __str__(self):
         return str(self.account_no) + ' [' + self.name + ']'
@@ -60,6 +71,7 @@ class InventoryAccount(models.Model):
         else:
             return 1
 
+
 class Item(models.Model):
     code = models.CharField(max_length=250, blank=True, null=True)
     name = models.CharField(max_length=254)
@@ -71,16 +83,16 @@ class Item(models.Model):
     selling_rate = models.FloatField(blank=True, null=True)
     other_properties = JSONField(blank=True, null=True)
     ledger = models.ForeignKey(Account, null=True)
+    company = models.ForeignKey(Company)
 
-
-    def __unicode__(self):
-        return self.name + ' ' + self.code
+    def __str__(self):
+        return str(self.name) + ' ' + str(self.code)
 
     def save(self, *args, **kwargs):
         account_no = kwargs.pop('account_no')
 
         if not self.ledger_id:
-            ledger = Account(name=self.name)
+            ledger = Account(name=self.name, company=self.company)
             ledger.save()
             self.ledger = ledger
 
@@ -88,11 +100,13 @@ class Item(models.Model):
             if self.account:
                 account = self.account
                 account.account_no = account_no
+                account.company = self.company
             else:
-                account = InventoryAccount(name=self.name, account_no=account_no)
+                account = InventoryAccount(name=self.name, account_no=account_no, company=self.company)
                 account.save()
                 self.account = account
         super(Item, self).save(*args, **kwargs)
+
 
 class JournalEntry(models.Model):
     date = models.DateField()
@@ -168,10 +182,11 @@ class Party(models.Model):
     phone_no = models.CharField(max_length=100, blank=True, null=True)
     pan_no = models.CharField(max_length=50, blank=True, null=True)
     account = models.ForeignKey(Account, null=True)
+    company = models.ForeignKey(Company)
 
     def save(self, *args, **kwargs):
         if not self.account_id:
-            account = Account(name=self.name)
+            account = Account(name=self.name, company=self.company)
             account.save()
             self.account = account
         super(Party, self).save(*args, **kwargs)
@@ -188,6 +203,13 @@ class Purchase(models.Model):
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     credit = models.BooleanField(default=False)
     date = models.DateField(default=datetime.datetime.today)
+    company = models.ForeignKey(Company)
+
+    def __init__(self, *args, **kwargs):
+        super(Purchase, self).__init__(*args, **kwargs)
+
+        if not self.pk and not self.voucher_no:
+            self.voucher_no = get_next_voucher_no(Purchase, 'voucher_no')
 
     @property
     def total(self):
@@ -219,6 +241,7 @@ class Sale(models.Model):
     party = models.ForeignKey(Party, blank=True, null=True)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     date = models.DateField(default=datetime.datetime.today)
+    company = models.ForeignKey(Company)
 
     def get_absolute_url(self):
         return reverse_lazy('sale-detail', kwargs={'id': self.pk})

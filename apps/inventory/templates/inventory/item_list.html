@@ -2,34 +2,42 @@
 {% load i18n staticfiles %}
 {% load filters %}
 
-{% block title %}{% trans 'Parties' %}{% endblock %}
+{% block title %}{% trans 'Items' %}{% endblock %}
+
+{% block page-header %}
+    {% trans 'Items' %}
+{% endblock %}
 
 {% block content %}
-<div class='container'>
-    <div class="row">
+    <div class='container'>
+        <div class="row">
 
-        <h1>Parties</h1>
 
             {% load pagination_tags %}
             {% load sorting_tags %}
             {% load filters %}
 
-            {% autosort objects as sorted_objects %}
+            {% autosort object_list as sorted_objects %}
             {% autopaginate sorted_objects 25 as paginated_objects %}
 
             <table class="table table-striped table-bordered">
                 <thead>
                 <th>{% anchor id _('ID') %}</th>
                 <th>{% anchor name _('Name') %}</th>
+                <th>{% trans 'Other Properties' %}</th>
+
                 </thead>
                 <tbody>
-                {% for party in paginated_objects %}
+                {% for item in paginated_objects %}
                     <tr>
                         <td>
-                            <a href="{% url 'party-detail' party.pk %}">{{ party.id }}</a>
+                            <a href="{% url 'item_edit' item.pk %}">{{ item.id }}</a>
                         </td>
                         <td>
-                            {{ party.name }}
+                            {{ item.name }}
+                        </td>
+                        <td>
+                            {{ item.other_properties }}
                         </td>
                     </tr>
                 {% endfor %}
@@ -39,9 +47,9 @@
             {% paginate %}
 
 
-        <a class="btn btn-default btn-lg"
-               href="{% url 'add-party' %}">{% trans 'New' %} {% trans 'Item' %}</a>
+            <a class="btn btn-default"
+               href="{% url 'item_add' %}">{% trans 'New' %} {% trans 'Item' %}</a>
 
+        </div>
     </div>
-</div>
 {% endblock %}
