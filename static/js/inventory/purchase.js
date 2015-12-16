@@ -80,7 +80,7 @@ function PurchaseViewModel(data) {
 
     for (var k in data)
         self[k] = ko.observable(data[k]);
-    
+
     self.id.subscribe(function (id) {
         history.pushState(id, id, window.location.href + id + '/');
     });
@@ -129,19 +129,26 @@ function PurchaseViewModel(data) {
 function PurchaseRow(row, purchase_vm) {
     var self = this;
 
-    self.item_id = ko.observable()
-    self.quantity = ko.observable()
-    self.rate = ko.observable()
-    self.discount = ko.observable(0)
+    self.item = ko.observable();
+    self.item_id = ko.observable();
+    self.quantity = ko.observable();
+    self.rate = ko.observable();
+    self.discount = ko.observable(0);
 
-    self.unit_id = ko.observable()
+    self.unit_id = ko.observable();
 
     for (var k in row)
         self[k] = ko.observable(row[k]);
-
-    self.full_item_name = ko.computed(function () {
-        return 'ac';
-    })
+    
+    self.item.subscribe(function(item){
+        var unit = get_by_id(purchase_vm.units(), item.unit.id);
+        if (unit){
+            self.unit_id(unit.id);    
+        }else{
+            purchase_vm.units.push(unit);
+            self.unit_id(unit.id);
+        }
+    });
 
     self.total = ko.computed(function () {
         if (self.discount() > 0) {

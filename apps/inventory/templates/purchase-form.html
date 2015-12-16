@@ -59,7 +59,7 @@
                                 </td>
                                 <td>
                                     <select data-url="{% url 'item_add' %}" data-script="/static/js/inventory/item.js"
-                                            data-bind="selectize: $root.items, value: item_id, event: {change: $root.item_changed}, options:{render: {'option': render_option, 'item':render_option}}">
+                                            data-bind="selectize: $root.items, value: item_id, object: item, event: {change: $root.item_changed}, options:{render: {'option': render_option, 'item':render_option}}">
                                     </select>
                                 </td>
                                 <td data-bind="editableText: quantity, numeric: true"></td>
