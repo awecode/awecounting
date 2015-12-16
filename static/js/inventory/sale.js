@@ -92,11 +92,11 @@ function SaleViewModel(data) {
                 if (msg.id)
                     self.id(msg.id);
                 if (typeof (msg.error_message) != 'undefined') {
-                    alert.error(msg.error_message);
+                    bsalert.error(msg.error_message);
                     self.status('errorlist');
                 }
                 else {
-                    alert.success('Saved!');
+                    bsalert.success('Saved!');
                     $("#tbody > tr").each(function (i) {
                         $($("#tbody > tr")[i]).addClass('invalid-row');
                     });
