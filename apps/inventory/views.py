@@ -51,40 +51,40 @@ def item_search(request):
 
 def item(request, id=None):
     if id:
-        item = get_object_or_404(Item, id=id)
+        item_obj = get_object_or_404(Item, id=id)
         scenario = 'Update'
-        unit = item.unit.id
+        unit = item_obj.unit.id
     else:
-        item = Item()
+        item_obj = Item()
         scenario = 'Create'
         unit = ''
     if request.POST:
-        form = ItemForm(data=request.POST, instance=item)
+        form = ItemForm(data=request.POST, instance=item_obj)
         if form.is_valid():
-            item = form.save(commit=False)
+            item_obj = form.save(commit=False)
             property_name = request.POST.getlist('property_name')
             item_property = request.POST.getlist('property')
             unit_id = request.POST.get('unit')
-            item.unit_id = int(unit_id)
-            item.company = request.company
+            item_obj.unit_id = int(unit_id)
+            item_obj.company = request.company
             if request.FILES != {}:
-                item.image = request.FILES['image']
+                item_obj.image = request.FILES['image']
             other_properties = {}
             for key, value in zip(property_name, item_property):
                 other_properties[key] = value
-            item.other_properties = other_properties
-            item.save(account_no=form.cleaned_data['account_no'])
+            item_obj.other_properties = other_properties
+            item_obj.save(account_no=form.cleaned_data['account_no'])
             if request.is_ajax():
-                return render(request, '_callback.html', {'obj': ItemSerializer(item).data})
+                return render(request, '_callback.html', {'obj': ItemSerializer(item_obj).data})
             return redirect('/inventory/item')
     else:
-        form = ItemForm(instance=item)
+        form = ItemForm(instance=item_obj)
     if request.is_ajax():
         base_template = '_modal.html'
     else:
         base_template = '_base.html'
     return render(request, 'item_form.html',
-                  {'form': form, 'base_template': base_template, 'scenario': scenario, 'item_data': item.other_properties,
+                  {'form': form, 'base_template': base_template, 'scenario': scenario, 'item_data': item_obj.other_properties,
                    'item_unit_id': unit})
 
 

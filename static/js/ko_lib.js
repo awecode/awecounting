@@ -72,7 +72,6 @@ ko.bindingHandlers.selectize = {
             }
         }
 
-
         if (typeof init_selectize == 'function') {
             init_selectize($select);
         }
