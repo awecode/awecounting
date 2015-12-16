@@ -167,40 +167,28 @@ def save_purchase(request):
         params['voucher_no'] = None
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'party_id': params.get('party'),
                      'credit': params.get('credit'), 'company': request.company}
+
     if params.get('id'):
         obj = Purchase.objects.get(id=params.get('id'))
     else:
         obj = Purchase()
+    # if True:
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
+
         model = PurchaseRow
-        for index, row in enumerate(params.get('table_view').get('rows')):
-            invalid_check = invalid(row, ['item_id', 'quantity', 'unit_id'])
-            if invalid_check:
-                dct['error_message'] = 'These feilds must be filled: ' + ', '.join(invalid_check)
-                return JsonResponse(dct)
+        for ind, row in enumerate(params.get('table_view').get('rows')):
+            if invalid(row, ['item_id', 'quantity', 'unit_id']):
+                continue
             else:
-                item = Item.objects.get(pk=row.get('item_id'))
-                unit = Unit.objects.get(pk=row.get('unit_id'))
-                # if item.unit.name != unit.name:
-                #     try:
-                #         unit_converter = UnitConverter.objects.get(base_unit__name=item.unit.name, unit_to_convert__name=unit.name)
-                #     except:
-                #         dct['error_message'] = "Unit doesn't match"
-                #         return JsonResponse(dct)
-                #     new_quantity = int(row.get('quantity')) * unit_converter.multiple
-                #     new_rate = int(row.get('rate')) / unit_converter.multiple
-                #     values = {'sn': index+1, 'item_id': row.get('item_id'), 'quantity': new_quantity,
-                #         'rate': new_rate, 'unit_id': item.unit.id, 'discount': row.get('discount'), 'purchase': obj }
-                # else:
-                values = {'sn': index + 1, 'item_id': row.get('item_id'), 'quantity': row.get('quantity'),
+                values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'quantity': row.get('quantity'),
                           'rate': row.get('rate'), 'unit_id': row.get('unit_id'), 'discount': row.get('discount'),
                           'purchase': obj}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
-                dct['rows'][index] = submodel.id
+                dct['rows'][ind] = submodel.id
                 set_transactions(submodel, obj.date,
                                  ['dr', submodel.item.account, submodel.quantity],
                                  )
