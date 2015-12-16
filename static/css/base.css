@@ -488,7 +488,7 @@ form {
 }
 
 label.required:after {
-    content: '*';
+    content: ' *';
     color: red;
 }
 
