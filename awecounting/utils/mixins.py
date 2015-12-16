@@ -4,6 +4,7 @@ from django.views.generic.edit import UpdateView as BaseUpdateView, CreateView a
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
+from .helpers import json_from_object
 
 
 class DeleteView(BaseDeleteView):
@@ -54,15 +55,6 @@ class AjaxableResponseMixin(object):
     def form_valid(self, form):
         response = super(AjaxableResponseMixin, self).form_valid(form)
         if self.request.is_ajax():
-            data = {
-                'id': self.object.id
-            }
-            if hasattr(self.object, 'name'):
-                data['name'] = self.object.name
-            elif hasattr(self.object, 'title'):
-                data['name'] = self.object.title
-            else:
-                data['name'] = str(self.object)
-            return JsonResponse(data)
+            return json_from_object(self.object)
         else:
             return response

@@ -72,10 +72,24 @@ ko.bindingHandlers.selectize = {
             }
         }
 
-
         if (typeof init_selectize == 'function') {
             init_selectize($select);
         }
+        
+        // Selectize required field form submit focus fix
+        // https://github.com/brianreavis/selectize.js/issues/733#issuecomment-145871854
+
+        $select.$input.on('invalid', function (event) {
+            event.preventDefault();
+            $select.focus(true);
+            $select.$wrapper.addClass('invalid');
+        });
+
+        $select.$input.on('change', function (event) {
+            if (event.target.validity && event.target.validity.valid) {
+                $select.$wrapper.removeClass('invalid');
+            }
+        });
 
         if (typeof valueAccessor().subscribe == 'function') {
             valueAccessor().subscribe(function (changes) {

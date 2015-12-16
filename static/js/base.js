@@ -78,7 +78,6 @@ appended_link_clicked = function (e) {
             the_modal.html(data);
             the_modal.find('.modal').modal('toggle');
         }).success(function () {
-            console.log('hey');
             var new_forms = $('form').not(old_forms).get();
             $(new_forms).submit({url: url}, override_form);
 //                $(new_forms[0]).find('input:text:visible:first').focus();
@@ -113,7 +112,7 @@ handle_ajax_response = function (obj) {
                 vm[match].push(obj);
             }
             $select.addItem(obj.id);
-            $select.$wrapper.find('> .appended-link').remove();
+
         }
     }
     else {
@@ -125,6 +124,7 @@ handle_ajax_response = function (obj) {
         $select.addItem(obj.id);
         $select.refreshItems();
     }
+    $select.$wrapper.find('> .appended-link').remove();
     if ($select.$input.closest('.reveal-modal').length) {
         $select.$input.closest('.reveal-modal').modal('hide');
     } else {
@@ -1478,26 +1478,39 @@ function hms_to_s(t) { // h:m:s
     return (a[0] * 60 + +a[1]) * 60 + +a[2]
 }
 
-alert = function () {
+bsalert = function () {
 }
 
-alert.clear = function () {
-    $('#alert_placeholder').html('');
+bsalert.message = function (message, type) {
+    $.notify({
+        message: message
+    }, {
+        type: type,
+        //allow_dismiss: false,
+        animate: {
+            enter: 'animated fadeInDown',
+            exit: 'animated fadeOutUp'
+        },
+    });
 }
 
-alert.warning = function (message) {
-    $('#alert_placeholder').html('<div data-alert class="alert alert-warning radius">' + message + '<a href="#" class="close">&times;</a></div>')
+bsalert.warning = function (message) {
+    bsalert.message(message, 'warning');
 }
 
-alert.success = function (message) {
-    $('#alert_placeholder').html('<div data-alert class="alert alert-success radius">' + message + '<a href="#" class="close">&times;</a></div>')
+bsalert.success = function (message) {
+    bsalert.message(message, 'success');
 }
 
-alert.info = function (message) {
-    $('#alert_placeholder').html('<div data-alert class="alert alert-info radius">' + message + '<a href="#" class="close">&times;</a></div>')
+bsalert.info = function (message) {
+    bsalert.message(message, 'info');
 }
 
-alert.error = alert.warning;
+bsalert.error = function (message) {
+    bsalert.message(message, 'danger');
+}
+
+bsalert.danger = bsalert.error;
 
 //http://stackoverflow.com/questions/346021/how-do-i-remove-objects-from-a-javascript-associative-array/9973592#9973592
 Object.remove_item = function (obj, key) {
@@ -1627,3 +1640,10 @@ $(document).ready(function () {
     });
 });
 
+$(document).on('show.bs.modal', '.modal', function () {
+    var zIndex = 1040 + (10 * $('.modal:visible').length);
+    $(this).css('z-index', zIndex);
+    setTimeout(function () {
+        $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+    }, 0);
+});

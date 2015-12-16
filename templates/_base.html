@@ -14,7 +14,9 @@
 
     <title>
         {% block whole_title %}
-            {% block title %}{% usekwacro page-title %}{% endblock %} | {% trans 'RIS' %}
+
+            {% block title %}{% usekwacro page-title %}{% endblock %} | {% trans 'Awecounting' %}
+
         {% endblock %}
     </title>
 
@@ -27,11 +29,12 @@
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/datepicker3.css' %}">
 
-    <script src='{% static "js/libs/jquery-1.11.3.min.js" %}'></script>
+    <script src='{% static "js/libs/jquery-2.1.4.min.js" %}'></script>
     <script src="{% static 'js/libs/jquery.autosize.input.js' %}"></script>
     <script src="{% static 'js/libs/selectize.js' %}"></script>
     <script src="{% static 'js/libs/knockout.js' %}"></script>
     <script src="{% static 'js/libs/bootstrap-datepicker.js' %}"></script>
+<script src="{% static 'js/libs/bootstrap-notify.min.js' %}"></script>
     <script src="{% static 'js/base.js' %}"></script>
     <script src="{% static 'js/ko_lib.js' %}"></script>
 

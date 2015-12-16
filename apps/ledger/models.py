@@ -1,4 +1,5 @@
 import datetime
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
@@ -6,7 +7,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
 from django.db.models import F
-from django.contrib.contenttypes import generic
 
 from apps.users.models import Company
 from awecounting.utils.helpers import zero_for_none, none_for_zero
@@ -121,7 +121,7 @@ class JournalEntry(models.Model):
     date = models.DateField()
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
-    source = generic.GenericForeignKey('content_type', 'object_id')
+    source = GenericForeignKey('content_type', 'object_id')
 
     def __str__(self):
         return str(self.content_type) + ': ' + str(self.object_id) + ' [' + str(self.date) + ']'

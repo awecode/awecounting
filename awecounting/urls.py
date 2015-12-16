@@ -27,6 +27,5 @@ urlpatterns = [
 
     url(r'^inventory/', include('apps.inventory.urls')),
     url(r'^ledger/', include('apps.ledger.urls')),
-    url(r'^bank/', include('apps.bank.urls', namespace='bank')),
 
 ]

@@ -8,6 +8,7 @@ import mptt.fields
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('users', '0003_data-groups_20151008_1930'),
         ('contenttypes', '0002_remove_content_type_name'),
     ]
 
@@ -35,6 +36,7 @@ class Migration(migrations.Migration):
                 ('rght', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('tree_id', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('level', models.PositiveIntegerField(editable=False, db_index=True)),
+                ('company', models.ForeignKey(to='users.Company')),
                 ('parent', mptt.fields.TreeForeignKey(related_name='children', blank=True, to='ledger.Category', null=True)),
             ],
             options={
@@ -69,6 +71,11 @@ class Migration(migrations.Migration):
             model_name='account',
             name='category',
             field=models.ForeignKey(related_name='accounts', blank=True, to='ledger.Category', null=True),
+        ),
+        migrations.AddField(
+            model_name='account',
+            name='company',
+            field=models.ForeignKey(to='users.Company'),
         ),
         migrations.AddField(
             model_name='account',

@@ -7,6 +7,8 @@ $(document).ready(function () {
 function PurchaseViewModel(data) {
     var self = this;
 
+    self.status = ko.observable();
+
     $.ajax({
         url: '/inventory/api/items.json',
         dataType: 'json',
@@ -78,6 +80,10 @@ function PurchaseViewModel(data) {
 
     for (var k in data)
         self[k] = ko.observable(data[k]);
+    
+    self.id.subscribe(function (id) {
+        history.pushState(id, id, window.location.href + id + '/');
+    });
 
 
     self.sub_total = function () {
@@ -90,7 +96,7 @@ function PurchaseViewModel(data) {
 
     self.save = function (item, event) {
         if (!self.party()) {
-            alert.error('Party is required!');
+            bsalert.error('Party is required!');
             return false;
         }
         $.ajax({
@@ -99,11 +105,11 @@ function PurchaseViewModel(data) {
             data: ko.toJSON(self),
             success: function (msg) {
                 if (typeof (msg.error_message) != 'undefined') {
-                    alert.error(msg.error_message);
+                    bsalert.error(msg.error_message);
                     self.status('errorlist');
                 }
                 else {
-                    alert.success('Saved!');
+                    bsalert.success('Saved!');
                     if (msg.id)
                         self.id(msg.id);
                     $("#tbody > tr").each(function (i) {

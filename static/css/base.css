@@ -471,11 +471,11 @@ form {
     min-height: 25px;
 }
 
-.sales-report-form input{
+.sales-report-form input {
     margin: 0 2em;
 }
 
-.sales-report-form{
+.sales-report-form {
     clear: both;
 }
 
@@ -483,6 +483,15 @@ form {
     margin-top: 3em;
 }
 
-.modal{
+.modal {
     overflow: auto;
+}
+
+label.required:after {
+    content: ' *';
+    color: red;
+}
+
+.selectize-control.invalid > .selectize-input {
+    border-color: red;
 }

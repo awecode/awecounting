@@ -24,7 +24,7 @@ INSTALLED_APPS = (
     'apps.ledger',
     'apps.users',
     'apps.share',
-    'apps.bank',
+    # 'apps.bank',
     'apps.account',
 
     'rest_framework',

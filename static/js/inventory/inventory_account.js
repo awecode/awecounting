@@ -26,14 +26,14 @@ function InventoryAccountVM(data) {
             data: ko.toJSON(self),
             success: function (msg) {
                 if (typeof (msg.error_message) != 'undefined') {
-                    alert.error(msg.error_message);
+                    bsalert.error(msg.error_message);
                 }
                 else {
-                    alert.success('Saved!');
+                    bsalert.success('Saved!');
                 }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
-                alert.error(textStatus);
+                bsalert.error(textStatus);
             }
         });
     }

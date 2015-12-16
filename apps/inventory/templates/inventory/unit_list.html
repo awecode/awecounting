@@ -2,13 +2,14 @@
 {% load i18n staticfiles %}
 {% load filters %}
 
-{% block title %}{% trans 'Purchase' %}{% endblock %}
+{% block title %}{% trans 'Units' %}{% endblock %}
 
 {% block content %}
-<div class='container'>
-    <div class="row">
+    <div class='container'>
+        <div class="row">
 
-        <h1>{% trans 'Unit List' %}</h1>
+
+        <h1>{% trans 'Units' %}</h1>
 
             {% load pagination_tags %}
             {% load sorting_tags %}
@@ -42,6 +43,6 @@
                href="{% url 'unit_add' %}">{% trans 'New' %} {% trans 'Unit' %}</a>
 
 
+        </div>
     </div>
-</div>
 {% endblock %}
