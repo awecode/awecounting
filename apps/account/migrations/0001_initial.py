@@ -7,8 +7,8 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ledger', '0002_auto_20151203_1412'),
         ('users', '0003_data-groups_20151008_1930'),
+        ('ledger', '0001_initial'),
     ]
 
     operations = [
