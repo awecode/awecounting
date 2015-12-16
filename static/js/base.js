@@ -78,7 +78,6 @@ appended_link_clicked = function (e) {
             the_modal.html(data);
             the_modal.find('.modal').modal('toggle');
         }).success(function () {
-            console.log('hey');
             var new_forms = $('form').not(old_forms).get();
             $(new_forms).submit({url: url}, override_form);
 //                $(new_forms[0]).find('input:text:visible:first').focus();
@@ -113,7 +112,7 @@ handle_ajax_response = function (obj) {
                 vm[match].push(obj);
             }
             $select.addItem(obj.id);
-            $select.$wrapper.find('> .appended-link').remove();
+            
         }
     }
     else {
@@ -125,6 +124,7 @@ handle_ajax_response = function (obj) {
         $select.addItem(obj.id);
         $select.refreshItems();
     }
+    $select.$wrapper.find('> .appended-link').remove();
     if ($select.$input.closest('.reveal-modal').length) {
         $select.$input.closest('.reveal-modal').modal('hide');
     } else {

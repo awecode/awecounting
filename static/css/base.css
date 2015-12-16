@@ -491,3 +491,7 @@ label.required:after {
     content: '*';
     color: red;
 }
+
+.selectize-control.invalid > .selectize-input {
+    border-color: red;
+}
