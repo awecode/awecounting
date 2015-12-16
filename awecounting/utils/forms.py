@@ -144,11 +144,3 @@ class KOModelForm(forms.ModelForm):
                 field.widget.attrs['required'] = 'required'
             field.widget.attrs['data-bind'] = 'value: ' + name
             field.widget.attrs['class'] = 'form-control'
-
-
-class NullCharField(forms.CharField):
-    def clean(self, value):
-        value = super(NullCharField, self).clean(value)
-        if value in forms.fields.EMPTY_VALUES:
-            return None
-        return value
