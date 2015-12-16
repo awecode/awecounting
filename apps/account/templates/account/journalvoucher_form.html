@@ -1,0 +1,28 @@
+{% extends "_base.html" %}
+{% load i18n staticfiles %}
+
+{% block page-title %}
+	{% trans "Journal Voucher" %}
+{% endblock %}
+
+{% block extrahead %}
+	<script src="{% static 'js/account/journalvoucher_form.js' %}"></script>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'account:journalvoucher_list' %}">{% trans 'Journal Voucher' %}</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-12-lg col-12-md col-12-sm col-12-xs">
+
+		<form method="post" data-bind="submit: save">
+			{% csrf_token %}
+			{{ form.as_p}}
+		</form>
+
+	</div>
+</div>
+
+{% endblock %}
