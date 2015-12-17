@@ -250,6 +250,7 @@ class PurchaseRow(models.Model):
 
 class Sale(models.Model):
     party = models.ForeignKey(Party, blank=True, null=True)
+    credit = models.BooleanField(default=False)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     date = models.DateField(default=datetime.datetime.today)
     company = models.ForeignKey(Company)
