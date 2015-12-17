@@ -6,6 +6,11 @@
     {{ scenario }} {% trans 'Purchase' %}
 {% endblock %}
 
+{% block breadcrumbs %}
+    <li><a href="{% url 'purchase-list' %}">{% trans 'Purchases' %}</a></li>
+    <li>{{ scenario }} {% trans 'Purchase' %}</li>
+{% endblock %}
+
 {% block extrahead %}
     <script src="{% static 'js/inventory/purchase.js' %}"></script>
     <script>
@@ -23,7 +28,8 @@
                     {% csrf_token %}
                     <div class="row">
                         <div class="col-md-6 col-sm-12">
-                            {% trans 'Voucher' %} {% trans 'No.' %}: <input type="text" data-bind="value: voucher_no" class="form-control">
+                            {% trans 'Voucher' %} {% trans 'No.' %}: <input type="text" data-bind="value: voucher_no"
+                                                                            class="form-control">
                         </div>
                         <div class="col-md-6 col-sm-12">
                             {% trans 'Date' %}: <input type="text" data-bind="value: date" class="form-control">
