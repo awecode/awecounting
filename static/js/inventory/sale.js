@@ -8,7 +8,6 @@ function SaleViewModel(data) {
     var self = this;
 
     self.status = ko.observable();
-    self.id = ko.observable();
 
     $.ajax({
         url: '/inventory/api/items.json',
@@ -31,10 +30,6 @@ function SaleViewModel(data) {
         row.unit_id(selected_item.unit_id)
         if (!selected_item) return;
     }
-
-    self.id.subscribe(function (id) {
-        update_url_with_id(id);
-    });
 
     $.ajax({
         url: '/inventory/api/parties.json',
@@ -79,7 +74,6 @@ function SaleViewModel(data) {
 
     self.table_view = new TableViewModel({rows: data.rows, argument: self}, SaleRow);
 
-
     for (var k in data)
         self[k] = ko.observable(data[k]);
 
@@ -108,6 +102,10 @@ function SaleViewModel(data) {
             }
         });
     }
+
+    self.id.subscribe(function (id) {
+        history.pushState(id, id, window.location.href + id + '/');
+    });
 
     self.sub_total = function () {
         var sum = 0;
