@@ -33,7 +33,7 @@ function SaleViewModel(data) {
     }
 
     self.id.subscribe(function (id) {
-        history.pushState(id, id, window.location.href + id + '/');
+        update_url_with_id(id);
     });
 
     $.ajax({
