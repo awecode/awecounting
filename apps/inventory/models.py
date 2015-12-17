@@ -254,6 +254,14 @@ class Sale(models.Model):
     date = models.DateField(default=datetime.datetime.today)
     company = models.ForeignKey(Company)
 
+    def __init__(self, *args, **kwargs):
+        super(Sale, self).__init__(*args, **kwargs)
+
+        if not self.pk and not self.voucher_no:
+            print self.company
+            self.voucher_no = get_next_voucher_no(Sale, self.company)
+
+
     def get_absolute_url(self):
         return reverse_lazy('sale-detail', kwargs={'id': self.pk})
 
