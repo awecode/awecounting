@@ -4,6 +4,7 @@ from django.views.generic import ListView
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin
 from .models import JournalVoucher, JournalVoucherRow
 from .forms import JournalVoucherForm
+from .serializer import JournalVoucherSerializer, JournalVoucherRowSerializer
 
 class JournalVoucherView(object):
 	model = JournalVoucher
@@ -18,6 +19,8 @@ class JournalVoucherCreate(JournalVoucherView, CreateView):
 	pass
 
 
-def journalvoucher_create(request):
+def journalvoucher_create(request, pk=None):
+	obj = JournalVoucher.objects.get(pk=1)
+	data = JournalVoucherSerializer(obj).data
 	return render(request, 'account/journalvoucher_form.html')
 # Create your views here.
