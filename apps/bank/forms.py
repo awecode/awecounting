@@ -17,13 +17,6 @@ class BankAccountForm(HTML5BootstrapModelForm):
 # from models import BankAccount, ChequeDeposit, BankCashDeposit, ChequePayment, ElectronicFundTransferIn, ElectronicFundTransferOut
 # from ledger.models import Account
 
-
-# class BankAccountForm(KOModelForm):
-#     class Meta:
-#         model = BankAccount
-#         exclude = ['company', 'account']
-
-
 # class ChequeDepositForm(KOModelForm):
 #     bank_account = forms.ModelChoiceField(Account.objects.filter(category__name='Bank Account'), empty_label=None,
 #                                           widget=forms.Select(attrs={'class': 'select2', 'data-name': 'Bank Account',

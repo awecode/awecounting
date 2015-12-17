@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
-from awecounting.utils.mixins import DeleteView, UpdateView, CreateView
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView
 from .models import BankAccount
 from .forms import BankAccountForm
 from apps.ledger.models import Account
@@ -17,7 +17,6 @@ class BankAccountList(BankAccountView, ListView):
 
 
 class BankAccountCreate(BankAccountView, CreateView):
-
     def form_valid(self, form):
         form.instance.company = self.request.company
         form.instance.account = Account.objects.create(
@@ -34,43 +33,10 @@ class BankAccountUpdate(BankAccountView, UpdateView):
 class BankAccountDelete(BankAccountView, DeleteView):
     pass
 
-
-# from datetime import date
-# import json
-# from django.contrib.auth.decorators import login_required
-# from django.core.urlresolvers import reverse_lazy
-# from django.http import HttpResponse
-# from django.shortcuts import render, get_object_or_404, redirect
-
-# from .models import BankAccount, ChequeDeposit, ChequeDepositRow, BankCashDeposit, ChequePayment, ElectronicFundTransferIn, ElectronicFundTransferInRow, ElectronicFundTransferOut
-# from .forms import BankAccountForm, ChequeDepositForm, BankCashDepositForm, ChequePaymentForm, ElectronicFundTransferInForm, ElectronicFundTransferOutForm
-
-# from .lib import invalid, save_model
-
-# from .serializers import ChequeDepositSerializer, ElectronicFundTransferInSerializer
-# from .filters import ChequeDepositFilter, CashDepositFilter, ChequePaymentFilter, ElectronicFundTransferInFilter, ElectronicFundTransferOutFilter
-# from apps.ledger.models import set_transactions, Account, delete_rows, JournalEntry
-# from apps.ledger.serializers import AccountSerializer
-# from apps.users.models import group_required
-
-
 # @login_required
 # def bank_settings(request):
 #     items = BankAccount.objects.filter(company=request.company)
 #     return render(request, 'bank_settings.html', {'items': items})
-
-
-# @login_required
-# def list_bank_accounts(request):
-#     items = BankAccount.objects.filter(company=request.company)
-#     return render(request, 'list_bank_accounts.html', {'items': items})
-
-
-# @login_required
-# def delete_bank_account(request, id):
-#     obj = get_object_or_404(BankAccount, id=id, company=request.company)
-#     obj.delete()
-#     return redirect('/bank/accounts/')
 
 
 # @login_required
@@ -141,36 +107,6 @@ class BankAccountDelete(BankAccountView, DeleteView):
 #     items = BankCashDeposit.objects.filter(company=request.company)
 #     filtered_items = CashDepositFilter(request.GET, queryset=items, company=request.company)
 #     return render(request, 'list_cash_deposits.html', {'objects': filtered_items})
-
-
-# @login_required
-# def bank_account_form(request, id=None):
-#     if id:
-#         bank_account = get_object_or_404(BankAccount, id=id, company=request.company)
-#         scenario = 'Update'
-#     else:
-#         bank_account = BankAccount()
-#         scenario = 'Create'
-#     if request.POST:
-#         form = BankAccountForm(data=request.POST, instance=bank_account)
-#         if form.is_valid():
-#             item = form.save(commit=False)
-#             item.company = request.company
-#             item.save()
-#             if request.is_ajax():
-#                 return render(request, 'callback.html', {'obj': AccountSerializer(item.account).data})
-#             return redirect('/bank/accounts/')
-#     else:
-#         form = BankAccountForm(instance=bank_account)
-#     if request.is_ajax():
-#         base_template = 'modal.html'
-#     else:
-#         base_template = 'dashboard.html'
-#     return render(request, 'bank_account_form.html', {
-#         'scenario': scenario,
-#         'form': form,
-#         'base_template': base_template,
-#     })
 
 
 # @login_required
