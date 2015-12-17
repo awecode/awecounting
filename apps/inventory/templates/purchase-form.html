@@ -29,29 +29,32 @@
                     <div class="well">
                         <div class="row">
                             <div class="col-md-6 col-sm-12">
-                                {% trans 'Voucher' %} {% trans 'No.' %}: <input type="text" data-bind="value: voucher_no"
-                                                                                class="form-control">
+                                <label for="voucher-no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
+                                <input type="text" data-bind="value: voucher_no" class="form-control" id="voucher-no">
                             </div>
                             <div class="col-md-6 col-sm-12">
-                                {% trans 'Date' %}: <input type="text" data-bind="value: date" class="form-control">
+                                <label for="date">{% trans 'Date' %}</label>
+                                <input type="text" data-bind="value: date" class="form-control" id="date">
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 col-sm-12">
-                                {% trans 'Party' %}: <select
-                                    data-bind="selectize: $root.parties, value: party, event: {change: $root.party_changed}"
-                                    data-url="{% url 'party_add' %}" class="change-on-ready"></select>
+                                <label for="party">{% trans 'Party' %}</label>
+                                <select id="party"
+                                        data-bind="selectize: $root.parties, value: party, event: {change: $root.party_changed}"
+                                        data-url="{% url 'party_add' %}" class="change-on-ready"></select>
                             </div>
                             <div class="col-md-6 col-sm-12">
-                                {% trans 'Credit' %}: <input type="checkbox" data-bind="checked: credit" class="form-control">
 
-                                {#                                <div class="checkbox">#}
-                                {#                                    <label>#}
-                                {#                                        <input type="checkbox"><span class="checkbox-material"><span class="check"></span></span>#}
-                                {#                                        Notifications#}
-                                {#                                    </label>#}
-                                {#                                </div>#}
+                                <div class="form-group">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" data-bind="checked: credit"> {% trans 'Credit' %}
+                                        </label>
+                                    </div>
+                                    <p class="help-block">{% trans 'Check if this is a credit purchase.' %}</p>
+                                </div>
                             </div>
                         </div>
                     </div>

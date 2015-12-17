@@ -26,10 +26,11 @@
     <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
     <link rel="stylesheet" href="{% static 'fontawesome/css/font-awesome.min.css' %}">
     <link rel="stylesheet" href='{% static "css/selectize.css" %}' type="text/css" media="all">
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/datepicker3.css' %}">
     <link rel="stylesheet" href="{% static 'css/bootstrap-material-design.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/ripples.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/material.awe.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
     <script src='{% static "js/libs/jquery-2.1.4.min.js" %}'></script>
     <script src="{% static 'js/libs/jquery.autosize.input.js' %}"></script>
@@ -51,7 +52,7 @@
     {% if not is_popup %}
         {% include 'partials/_header.html' %}
 
-        <ol class="breadcrumb hidden-print">
+        <ol class="breadcrumb hidden-print well">
             {% block breadcrumbs_container %}
                 <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
                 {% block breadcrumbs %}
