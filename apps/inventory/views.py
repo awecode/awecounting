@@ -14,7 +14,7 @@ from apps.inventory.forms import ItemForm, PartyForm, UnitForm, UnitConverterFor
 from apps.inventory.serializer import PurchaseSerializer, ItemSerializer, PartySerializer, UnitSerializer, SaleSerializer, \
     InventoryAccountRowSerializer
 from apps.ledger.models import set_transactions as set_ledger_transactions
-from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView
 from django.views.generic import ListView
 
 
@@ -357,13 +357,10 @@ class PartyList(PartyView, ListView):
     pass
 
 
-class PartyCreate(AjaxableResponseMixin, PartyView, CreateView):
-    def form_valid(self, form):
-        form.instance.company = self.request.company
-        return super(PartyCreate, self).form_valid(form)
+class PartyCreate(CompanyView, AjaxableResponseMixin, PartyView, CreateView):
+    pass
 
-
-class PartyUpdate(PartyView, UpdateView):
+class PartyUpdate(CompanyView, PartyView, UpdateView):
     def form_valid(self, form):
         form.instance.company = self.request.company
         return super(PartyUpdate, self).form_valid(form)
