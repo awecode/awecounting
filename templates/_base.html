@@ -28,13 +28,13 @@
     <link rel="stylesheet" href='{% static "css/selectize.css" %}' type="text/css" media="all">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/datepicker3.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-material-design.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ripples.min.css' %}">
 
     <script src='{% static "js/libs/jquery-2.1.4.min.js" %}'></script>
     <script src="{% static 'js/libs/jquery.autosize.input.js' %}"></script>
     <script src="{% static 'js/libs/selectize.js' %}"></script>
     <script src="{% static 'js/libs/knockout.js' %}"></script>
-    <script src="{% static 'js/libs/bootstrap-datepicker.js' %}"></script>
-    <script src="{% static 'js/libs/bootstrap-notify.min.js' %}"></script>
     <script src="{% static 'js/base.js' %}"></script>
     <script src="{% static 'js/ko_lib.js' %}"></script>
 
@@ -89,8 +89,15 @@
     {% endblock %}
 
 </div>
-<script type="text/javascript" src='{% static "js/libs/bootstrap.min.js" %}'></script>
-<script type="text/javascript" src='{% static "js/libs/selectize.min.js" %}'></script>
+<script src='{% static "js/libs/bootstrap.min.js" %}'></script>
+<script src='{% static "js/libs/selectize.min.js" %}'></script>
+<script src="{% static 'js/libs/bootstrap-datepicker.js' %}"></script>
+<script src="{% static 'js/libs/bootstrap-notify.min.js' %}"></script>
+<script src="{% static 'js/libs/material.min.js' %}"></script>
+<script src="{% static 'js/libs/ripples.min.js' %}"></script>
+<script>
+    $.material.init();
+</script>
 
 {% block extrabody %}
 {% endblock %}
