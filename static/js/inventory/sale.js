@@ -122,17 +122,26 @@ function SaleViewModel(data) {
 function SaleRow(row, sale_vm) {
     var self = this;
 
+    self.item = ko.observable();
     self.item_id = ko.observable();
     self.quantity = ko.observable();
     self.rate = ko.observable();
     self.discount = ko.observable(0);
 
-    self.unit = ko.observable();
-
     self.unit_id = ko.observable();
 
     for (var k in row)
         self[k] = ko.observable(row[k]);
+
+    self.item.subscribe(function(item){
+        var unit = get_by_id(sale_vm.units(), item.unit.id);
+        if (unit){
+            self.unit_id(unit.id);    
+        }else{
+            purchase_vm.units.push(unit);
+            self.unit_id(unit.id);
+        }
+    });
 
 
     self.total = ko.computed(function () {
