@@ -23,7 +23,7 @@ class JournalVoucher(models.Model):
 
 
 class JournalVoucherRow(models.Model):
-    types = [('Dr', 'Dr'), ('Cr', 'Dr')]
+    types = [('Dr', 'Dr'), ('Cr', 'Cr')]
     type = models.CharField(choices=types, default='Dr', max_length=2)
     account = models.ForeignKey(Account, related_name='account_rows')
     description = models.TextField()
