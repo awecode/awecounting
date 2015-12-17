@@ -26,3 +26,26 @@ def json_from_object(obj):
     else:
         data['name'] = str(obj)
     return JsonResponse(data)
+
+
+def get_next_voucher_no(cls, company=None, attr='voucher_no'):
+    from django.db.models import Max
+
+    qs = cls.objects.all()
+    if company:
+        qs = qs.filter(company=company)
+    max_voucher_no = qs.aggregate(Max(attr))[attr + '__max']
+    if max_voucher_no:
+        return max_voucher_no + 1
+    else:
+        return 1
+
+
+def delete_rows(rows, model):
+    for row in rows:
+        if row.get('id'):
+            instance = model.objects.get(id=row.get('id'))
+            # TODO is journalentry deleted on row deletion?
+            # JournalEntry.objects.get(content_type=ContentType.objects.get_for_model(model),
+            #                         model_id=instance.id).delete()
+            instance.delete()

@@ -11,16 +11,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db.models import F
 from apps.ledger.models import Account
 from apps.users.models import Company
-
-
-def get_next_voucher_no(cls, attr):
-    from django.db.models import Max
-
-    max_voucher_no = cls.objects.all().aggregate(Max(attr))[attr + '__max']
-    if max_voucher_no:
-        return max_voucher_no + 1
-    else:
-        return 1
+from awecounting.utils.helpers import get_next_voucher_no
 
 
 def none_for_zero(obj):
@@ -226,7 +217,8 @@ class Purchase(models.Model):
         super(Purchase, self).__init__(*args, **kwargs)
 
         if not self.pk and not self.voucher_no:
-            self.voucher_no = get_next_voucher_no(Purchase, 'voucher_no')
+            print self.company
+            self.voucher_no = get_next_voucher_no(Purchase, self.company)
 
     @property
     def total(self):

@@ -13,7 +13,7 @@ from apps.inventory.models import Item, UnitConverter, Purchase, PurchaseRow, Pa
 from apps.inventory.forms import ItemForm, PartyForm, UnitForm, UnitConverterForm
 from apps.inventory.serializer import PurchaseSerializer, ItemSerializer, PartySerializer, UnitSerializer, SaleSerializer, \
     InventoryAccountRowSerializer
-from apps.ledger.models import set_transactions as set_ledger_transactions
+from apps.ledger.models import set_transactions as set_ledger_transactions, Account, delete_rows
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView
 from django.views.generic import ListView
 
@@ -153,7 +153,7 @@ def purchase(request, id=None):
         purchase = get_object_or_404(Purchase, id=id)
         scenario = 'Update'
     else:
-        purchase = Purchase(date=datetime.datetime.now().date())
+        purchase = Purchase(date=datetime.datetime.now().date(), company=request.company)
         scenario = 'Create'
     data = PurchaseSerializer(purchase).data
     return render(request, 'purchase-form.html', {'data': data, 'scenario': scenario, 'purchase': purchase})
@@ -169,9 +169,9 @@ def save_purchase(request):
                      'credit': params.get('credit'), 'company': request.company}
 
     if params.get('id'):
-        obj = Purchase.objects.get(id=params.get('id'))
+        obj = Purchase.objects.get(id=params.get('id'), company=request.company)
     else:
-        obj = Purchase()
+        obj = Purchase(company=request.company)
     # if True:
     try:
         obj = save_model(obj, object_values)
@@ -201,10 +201,10 @@ def save_purchase(request):
                 else:
                     set_ledger_transactions(submodel, obj.date,
                                             ['dr', submodel.item.ledger, obj.total],
-                                            ['cr', 'cash', obj.total],
+                                            ['cr', Account.objects.get(name='Cash', company=request.company), obj.total],
                                             # ['cr', sales_tax_account, tax_amount],
                                             )
-                    # delete_rows(params.get('table_view').get('deleted_rows'), model)
+                    delete_rows(params.get('table_view').get('deleted_rows'), model)
 
     except Exception as e:
         if hasattr(e, 'messages'):
@@ -359,6 +359,7 @@ class PartyList(PartyView, ListView):
 
 class PartyCreate(CompanyView, AjaxableResponseMixin, PartyView, CreateView):
     pass
+
 
 class PartyUpdate(CompanyView, PartyView, UpdateView):
     def form_valid(self, form):
