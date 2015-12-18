@@ -493,7 +493,7 @@ label.required:after {
 }
 
 .selectize-control.invalid > .selectize-input {
-    border-color: red;
+    border: 1px solid red !important;
 }
 
 .selectize-input {
