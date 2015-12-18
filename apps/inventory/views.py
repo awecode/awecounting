@@ -221,11 +221,7 @@ def sale(request, id=None):
         sale = get_object_or_404(Sale, id=id)
         scenario = 'Update'
     else:
-        max_voucher_no = Sale.objects.all().aggregate(Max('voucher_no'))['voucher_no__max']
-        if max_voucher_no:
-            sale = Sale(date=datetime.datetime.now().date(), voucher_no=max_voucher_no + 1)
-        else:
-            sale = Sale(date=datetime.datetime.now().date(), voucher_no=1)
+        sale = Sale(date=datetime.datetime.now().date(), company=request.company)
         scenario = 'Create'
     data = SaleSerializer(sale).data
     return render(request, 'sale_form.html', {'data': data, 'scenario': scenario, 'sale': sale})
@@ -238,11 +234,11 @@ def save_sale(request):
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'party_id': params.get('party'),
-                     'company': request.company}
+                     'credit': params.get('credit'), 'company': request.company}
     if params.get('id'):
-        obj = Sale.objects.get(id=params.get('id'))
+        obj = Sale.objects.get(id=params.get('id'), company=request.company)
     else:
-        obj = Sale()
+        obj = Sale(company=request.company)
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
@@ -262,11 +258,18 @@ def save_sale(request):
             set_transactions(submodel, obj.date,
                              ['cr', submodel.item.account, submodel.quantity],
                              )
-            set_ledger_transactions(submodel, obj.date,
-                                    ['cr', obj.party.account, obj.total],
-                                    ['dr', 'cash', obj.total],
-                                    # ['cr', sales_tax_account, tax_amount],
-                                    )
+            if obj.credit:
+                set_ledger_transactions(submodel, obj.date,
+                                        ['cr', obj.party.account, obj.total],
+                                        ['dr', 'cash', obj.total],
+                                        # ['cr', sales_tax_account, tax_amount],
+                                        )
+            else:
+                set_ledger_transactions(submodel, obj.date,
+                                        ['cr', obj.party.account, obj.total],
+                                        ['dr', 'cash', obj.total],
+                                        # ['cr', sales_tax_account, tax_amount],
+                                        )
             # delete_rows(params.get('table_view').get('deleted_rows'), model)
 
     except Exception as e:

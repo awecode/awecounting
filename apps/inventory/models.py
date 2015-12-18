@@ -77,7 +77,7 @@ class Item(models.Model):
     account = models.OneToOneField(InventoryAccount, related_name='item', null=True)
     image = models.ImageField(upload_to='items', blank=True, null=True)
     size = models.CharField(max_length=250, blank=True, null=True)
-    unit = models.ForeignKey(Unit, null=True)
+    unit = models.ForeignKey(Unit, related_name="item_unit", blank=False, null=True, on_delete=models.SET_NULL)
     selling_rate = models.FloatField(blank=True, null=True)
     other_properties = JSONField(blank=True, null=True)
     ledger = models.ForeignKey(Account, null=True)
@@ -250,9 +250,18 @@ class PurchaseRow(models.Model):
 
 class Sale(models.Model):
     party = models.ForeignKey(Party, blank=True, null=True)
+    credit = models.BooleanField(default=False)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     date = models.DateField(default=datetime.datetime.today)
     company = models.ForeignKey(Company)
+
+    def __init__(self, *args, **kwargs):
+        super(Sale, self).__init__(*args, **kwargs)
+
+        if not self.pk and not self.voucher_no:
+            print self.company
+            self.voucher_no = get_next_voucher_no(Sale, self.company)
+
 
     def get_absolute_url(self):
         return reverse_lazy('sale-detail', kwargs={'id': self.pk})
