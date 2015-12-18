@@ -258,7 +258,6 @@ def save_sale(request):
             set_transactions(submodel, obj.date,
                              ['cr', submodel.item.account, submodel.quantity],
                              )
-            import ipdb; ipdb.set_trace()
             if obj.credit:
                 set_ledger_transactions(submodel, obj.date,
                                         ['cr', obj.party.account, obj.total],
