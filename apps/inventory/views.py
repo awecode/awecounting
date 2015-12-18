@@ -405,20 +405,24 @@ def list_inventory_accounts(request):
 
 def view_inventory_account(request, id):
     obj = get_object_or_404(InventoryAccount, id=id)
-    if request.POST:
-        unit = Unit.objects.get(pk=request.POST.get('unit_id'))
+    if hasattr(obj, 'item'):
+        if request.POST:
+            unit = Unit.objects.get(pk=request.POST.get('unit_id'))
+        else:
+            unit = obj.item.unit
     else:
-        unit = obj.item.unit
+        unit = None
     journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
         .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
     conversions = UnitConverter.objects.filter(Q(base_unit=unit) | Q(unit_to_convert=unit)).select_related('base_unit',
                                                                                                            'unit_to_convert')
     multiple = 1
-    if not unit == obj.item.unit:
-        if conversions.filter(base_unit=unit).first():
-            multiple = 1 / conversions.filter(base_unit=unit).first().multiple
-        elif conversions.filter(unit_to_convert=unit).first():
-            multiple = conversions.filter(unit_to_convert=unit).first().multiple
+    if hasattr(obj, 'item'):
+        if not unit == obj.item.unit:
+            if conversions.filter(base_unit=unit).first():
+                multiple = 1 / conversions.filter(base_unit=unit).first().multiple
+            elif conversions.filter(unit_to_convert=unit).first():
+                multiple = conversions.filter(unit_to_convert=unit).first().multiple
     return render(request, 'inventory_account_detail.html',
                   {'obj': obj, 'entries': journal_entries, 'unit_conversions': conversions, 'unit': unit, 'multiple': multiple})
 
