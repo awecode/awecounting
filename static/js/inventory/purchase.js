@@ -18,20 +18,6 @@ function PurchaseViewModel(data) {
         }
     });
 
-    self.item_changed = function (row) {
-        var selected_item = $.grep(self.items(), function (i) {
-            return i.id == row.item_id();
-        })[0];
-        if (!selected_item) return;
-    }
-
-    // self.unit_changed = function (row, unit_id) {
-    //     var selected_item = $.grep(row.units(), function (i) {
-    //         return i.id == row.unit_id();
-    //     })[0];
-    //     if (!selected_item) return;
-    // }
-
     $.ajax({
         url: '/inventory/api/parties.json',
         dataType: 'json',
@@ -67,14 +53,6 @@ function PurchaseViewModel(data) {
         }
     });
 
-    self.unit_changed = function (row, unit_id) {
-        var selected_item = $.grep(self.units(), function (i) {
-            return i.id == row.unit_id();
-        })[0];
-        if (!selected_item) return;
-    }
-
-
     self.table_view = new TableViewModel({rows: data.rows, argument: self}, PurchaseRow);
 
 
@@ -84,7 +62,6 @@ function PurchaseViewModel(data) {
     self.id.subscribe(function (id) {
         update_url_with_id(id);
     });
-
 
     self.sub_total = function () {
         var sum = 0;
@@ -139,12 +116,12 @@ function PurchaseRow(row, purchase_vm) {
 
     for (var k in row)
         self[k] = ko.observable(row[k]);
-    
-    self.item.subscribe(function(item){
+
+    self.item.subscribe(function (item) {
         var unit = get_by_id(purchase_vm.units(), item.unit.id);
-        if (unit){
-            self.unit_id(unit.id);    
-        }else{
+        if (unit) {
+            self.unit_id(unit.id);
+        } else {
             purchase_vm.units.push(unit);
             self.unit_id(unit.id);
         }

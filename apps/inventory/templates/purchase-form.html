@@ -66,7 +66,7 @@
                             <thead>
                             <tr>
                                 <th>{% trans "S.N" %}</th>
-                                <th>{% trans "Items" %}</th>
+                                <th>{% trans "Item" %}</th>
                                 <th>{% trans "Quantity" %}</th>
                                 <th>{% trans "Rate" %}</th>
                                 <th>{% trans "Unit" %}</th>
@@ -84,12 +84,12 @@
                                 </td>
                                 <td>
                                     <select data-url="{% url 'item_add' %}" data-script="/static/js/inventory/item.js"
-                                            data-bind="selectize: $root.items, value: item_id, object: item, event: {change: $root.item_changed}, options:{render: {'option': render_option, 'item':render_option}}">
+                                            data-bind="selectize: $root.items, value: item_id, object: item, options:{render: {'option': render_option, 'item':render_option}}">
                                     </select>
                                 </td>
                                 <td data-bind="editableText: quantity, numeric: true"></td>
                                 <td data-bind="editableText: rate, numeric: true"></td>
-                                <td>
+                                <td class="unit-cell">
                                     <select data-bind="selectize: $root.units, value: unit_id, event: {change: $root.unit_changed}"
                                             data-url="{% url 'unit_add' %}"></select>
                                 </td>
@@ -103,7 +103,7 @@
                             <!-- /ko -->
                             <tr>
                                 <td colspan="6">
-                                    {% trans 'Grand total' %}
+                                    {% trans 'Grand Total' %}
                                 </td>
                                 <td data-bind="text: $root.sub_total(), localize: 1"></td>
                             </tr>
