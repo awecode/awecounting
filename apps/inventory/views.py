@@ -234,7 +234,7 @@ def save_sale(request):
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'party_id': params.get('party'),
-                     'company': request.company}
+                     'credit': params.get('credit'), 'company': request.company}
     if params.get('id'):
         obj = Sale.objects.get(id=params.get('id'), company=request.company)
     else:
@@ -258,11 +258,19 @@ def save_sale(request):
             set_transactions(submodel, obj.date,
                              ['cr', submodel.item.account, submodel.quantity],
                              )
-            set_ledger_transactions(submodel, obj.date,
-                                    ['cr', obj.party.account, obj.total],
-                                    ['dr', 'cash', obj.total],
-                                    # ['cr', sales_tax_account, tax_amount],
-                                    )
+            import ipdb; ipdb.set_trace()
+            if obj.credit:
+                set_ledger_transactions(submodel, obj.date,
+                                        ['cr', obj.party.account, obj.total],
+                                        ['dr', 'cash', obj.total],
+                                        # ['cr', sales_tax_account, tax_amount],
+                                        )
+            else:
+                set_ledger_transactions(submodel, obj.date,
+                                        ['cr', obj.party.account, obj.total],
+                                        ['dr', 'cash', obj.total],
+                                        # ['cr', sales_tax_account, tax_amount],
+                                        )
             # delete_rows(params.get('table_view').get('deleted_rows'), model)
 
     except Exception as e:
