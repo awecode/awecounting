@@ -2,11 +2,12 @@ from django.db import models
 from apps.ledger.models import Account
 from apps.users.models import Company
 from awecounting.utils.helpers import get_next_voucher_no
+from django.utils.translation import ugettext_lazy as _
 
 
 class BankAccount(models.Model):
     bank_name = models.CharField(max_length=254)
-    ac_no = models.CharField(max_length=50)
+    ac_no = models.CharField(max_length=50, verbose_name=_('Account No.'))
     branch_name = models.CharField(max_length=254, blank=True, null=True)
     account = models.OneToOneField(Account)
     company = models.ForeignKey(Company)

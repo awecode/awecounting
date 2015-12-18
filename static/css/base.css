@@ -497,11 +497,5 @@ label.required:after {
 }
 
 .selectize-input {
-    border-radius: 0 !important;
     min-height: 36px;
-}
-
-.selectize-dropdown {
-    border-radius: 0 !important;
-    box-shadow: none !important;
 }

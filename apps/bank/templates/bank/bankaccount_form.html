@@ -1,0 +1,26 @@
+{% extends "_base.html" %}
+{% load i18n %}
+
+{% block page-title %}{{ scenario }} {{ form.instance }}{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'bank:bankaccount_list' %}">{% trans 'Bank Accounts' %}</a></li>
+    <li>{{ scenario }} {{ form.instance }}</li>
+{% endblock %}
+
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+        {{ form.as_p }}
+
+        <input type="submit" class='btn btn-default' value="{% trans 'Save' %}">
+
+        {% if form.instance.id %}
+            <a href="{% url 'bank:bankaccount_delete' form.instance.id %}" class="btn btn-danger">{% trans 'Delete' %}</a>
+        {% endif %}
+    </form>
+
+{% endblock %}
