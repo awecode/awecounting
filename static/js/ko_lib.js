@@ -75,7 +75,7 @@ ko.bindingHandlers.selectize = {
         if (typeof init_selectize == 'function') {
             init_selectize($select);
         }
-        
+
         // Selectize required field form submit focus fix
         // https://github.com/brianreavis/selectize.js/issues/733#issuecomment-145871854
 

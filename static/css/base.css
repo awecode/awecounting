@@ -159,7 +159,7 @@ input[type="text"] {
 }
 
 .appended-link + .selectize-input {
-    display: none;
+    display: none !important;
 }
 
 .selectize-input {
@@ -493,6 +493,10 @@ label.required:after {
 }
 
 .selectize-control.invalid > .selectize-input {
+    border: 1px solid red !important;
+}
+
+.selectize-control.invalid > button.appended-link {
     border: 1px solid red !important;
 }
 
