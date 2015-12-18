@@ -9,7 +9,6 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
 
-
 INSTALLED_APPS = (
     'modeltranslation',
     'django.contrib.admin',
@@ -44,6 +43,28 @@ MIDDLEWARE_CLASSES = (
     'webstack_django_sorting.middleware.SortingMiddleware',
     'apps.users.middleware.RoleMiddleware',
 )
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.core.context_processors.i18n',
+                'django.core.context_processors.media',
+                'django.core.context_processors.static',
+                'django.core.context_processors.tz',
+                'django.core.context_processors.request',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 ROOT_URLCONF = 'awecounting.urls'
 
