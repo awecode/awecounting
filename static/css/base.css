@@ -499,3 +499,7 @@ label.required:after {
 .selectize-input {
     min-height: 36px;
 }
+
+.red{
+    color: red;
+}

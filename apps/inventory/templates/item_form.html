@@ -18,39 +18,46 @@
 
 {% block content %}
 
-    <form method="POST" id='form' enctype="multipart/form-data" class="well">
+    <form method="POST" id='form' enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
 
-        <div id="other-properties">
+        <div class="well">
+            {{ form.as_p }}
 
-            <div class="form-group">
+            <div id="other-properties">
 
-                <label for="id_units">{% trans 'Units' %}</label>
-                <select id="id_units" data-bind="selectize: $root.units, value: unit_id, event: {change: unit_changed}"
-                        data-url="{% url 'unit_add' %}" name="unit" required></select>
+                <div class="form-group">
+
+                    <label for="id_units">{% trans 'Units' %}</label>
+                    <select id="id_units" data-bind="selectize: $root.units, value: unit_id, event: {change: unit_changed}"
+                            data-url="{% url 'unit_add' %}" name="unit" required></select>
+
+                </div>
+
+                <label for="id_other_properties">{% trans "Other properties" %}</label>
+                <label>
+                    <a class="btn btn-default btn-raised" data-bind="click: addOtherProperty"><i
+                            class="fa fa-plus"></i> {% trans 'Add New' %}
+                    </a>
+                </label>
+
+                <div id="id_other_properties" data-bind="foreach: other_properties" class="form-inline">
+
+                    <input type="text" class="form-control test" id="id_property_name" name="property_name"
+                           placeholder="Property name" data-bind="value: property_name">
+                    <input type="text" class="form-control" id="id_property" name="property" placeholder="Property"
+                           data-bind="value: property">
+                    <a href="#" data-bind="click: $parent.removeOtherProperty"><i class="red fa fa-trash-o"></i></a>
+
+                </div>
 
             </div>
 
-            <label for="id_other_properties">{% trans "Other properties" %}</label>
-
-            <div id="id_other_properties" data-bind="foreach: other_properties" class="form-inline">
-
-                <input type="text" class="form-control test" id="id_property_name" name="property_name"
-                       placeholder="Property name" data-bind="value: property_name">
-                <input type="text" class="form-control" id="id_property" name="property" placeholder="Property"
-                       data-bind="value: property">
-                <a href="#" data-bind="click: $parent.removeOtherProperty">x</a>
-
-            </div>
-            <a class="btn btn-default btn-raised" data-bind="click: addOtherProperty">
-                {% trans 'Add New Property' %}
-            </a>
         </div>
 
         <input type="submit" id='submit' class="btn btn-info btn-raised" value="{% trans 'Save' %}">
         {% if form.instance.id %}
-            <a href="{% url 'item_delete' form.instance.id %}" class="btn btn-danger">{% trans 'Delete' %}</a>
+            <a href="{% url 'item_delete' form.instance.id %}" class="btn btn-danger btn-raised">{% trans 'Delete' %}</a>
         {% endif %}
 
     </form>
