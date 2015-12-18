@@ -33,7 +33,9 @@
                         <a href="{% url 'item_edit' item.pk %}">{{ item.name }}</a>
                     </td>
                     <td>
-                        {{ item.other_properties }}
+                        {% for key, value in item.other_properties.items %}
+                            <span><b>{{ key }}</b>: <i>{{ value }}</i></span>{% if not forloop.last %},{% endif %}
+                        {% endfor %}
                     </td>
                 </tr>
             {% endfor %}

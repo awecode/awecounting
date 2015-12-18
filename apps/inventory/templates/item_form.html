@@ -42,13 +42,13 @@
                 </label>
 
                 <div id="id_other_properties" data-bind="foreach: other_properties" class="form-inline">
-
-                    <input type="text" class="form-control test" id="id_property_name" name="property_name"
-                           placeholder="Property name" data-bind="value: property_name">
-                    <input type="text" class="form-control" id="id_property" name="property" placeholder="Property"
-                           data-bind="value: property">
-                    <a href="#" data-bind="click: $parent.removeOtherProperty"><i class="red fa fa-trash-o"></i></a>
-
+                    <div>
+                        <input type="text" class="form-control test" id="id_property_name" name="property_name"
+                               placeholder="Property name" data-bind="value: property_name">
+                        <input type="text" class="form-control" id="id_property" name="property" placeholder="Property"
+                               data-bind="value: property">
+                        <a href="#" data-bind="click: $parent.removeOtherProperty"><i class="red fa fa-trash-o"></i></a>
+                    </div>
                 </div>
 
             </div>
