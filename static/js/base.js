@@ -36,7 +36,7 @@ function init_selectize($select) {
 
         if (!Object.size($select.options)) {
             var appended_link = jQuery('<button/>', {
-                class: 'appended-link',
+                class: 'appended-link btn btn-success btn-raised',
                 href: $select.$input.data('url'),
                 title: 'Add New ' + name,
                 text: 'Add New ' + name,
@@ -1646,6 +1646,7 @@ $(document).on('show.bs.modal', '.modal', function () {
     setTimeout(function () {
         $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
     }, 0);
+    $.material.init();
 });
 
 function update_url_with_id(id) {
