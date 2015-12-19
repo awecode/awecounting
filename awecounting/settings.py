@@ -25,6 +25,7 @@ INSTALLED_APPS = (
     'apps.share',
     'apps.bank',
 
+    'njango',
     'rest_framework',
     'linaro_django_pagination',
     'webstack_django_sorting',
@@ -42,6 +43,7 @@ MIDDLEWARE_CLASSES = (
     'linaro_django_pagination.middleware.PaginationMiddleware',
     'webstack_django_sorting.middleware.SortingMiddleware',
     'apps.users.middleware.RoleMiddleware',
+    'njango.middleware.CalendarMiddleware',
 )
 
 TEMPLATES = [
