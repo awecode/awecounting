@@ -10,21 +10,20 @@
 
 {% block content %}
 
-    <div class="well">
-        {{ form.non_field_errors }}
-        {{ form.errors }}
-        <form method="post" id='form'>
+    <form method="post" id='form'>
+
+        <div class="well">
+            {{ form.non_field_errors }}
+            {{ form.errors }}
             {% csrf_token %}
             {{ form.as_p }}
+        </div>
 
-            <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
+        <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
 
-            {% if form.instance.id %}
-                <a href="{% url 'party_delete' form.instance.id %}" class="btn btn-danger btn-raised">{% trans 'Delete' %}</a>
-            {% endif %}
-        </form>
-
-    </div>
-
+        {% if form.instance.id %}
+            <a href="{% url 'party_delete' form.instance.id %}" class="btn btn-danger btn-raised">{% trans 'Delete' %}</a>
+        {% endif %}
+    </form>
 
 {% endblock %}
