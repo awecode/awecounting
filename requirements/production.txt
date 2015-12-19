@@ -19,4 +19,4 @@ django-modeltranslation
 sorl-thumbnail
 django-redis
 jsonfield
-openpyxl
+-e git+https://github.com/awecode/njango.git@master#egg=njango

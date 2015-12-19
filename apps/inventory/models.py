@@ -1,7 +1,5 @@
 import datetime
-from django.core.exceptions import ValidationError
-from django.forms import forms
-from django.utils.translation import ugettext_lazy as _
+from njango.fields import BSDateField, today
 
 from django.core.urlresolvers import reverse_lazy
 from django.db import models
@@ -217,7 +215,6 @@ class Purchase(models.Model):
         super(Purchase, self).__init__(*args, **kwargs)
 
         if not self.pk and not self.voucher_no:
-            print self.company
             self.voucher_no = get_next_voucher_no(Purchase, self.company)
 
     @property
