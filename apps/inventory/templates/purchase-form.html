@@ -94,8 +94,8 @@
                                 </td>
                                 <td data-bind="editableText: discount"></td>
                                 <td data-bind="text: total"></td>
-                                <td class="hide-on-print">
-                                    <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
+                                <td class="hide-on-print text-center">
+                                    <a href="#" class="red fa fa-trash-o fa-2x" data-bind="click: $parent.removeRow"></a>
                                 </td>
                             </tr>
 
@@ -104,7 +104,8 @@
                                 <td colspan="6">
                                     {% trans 'Grand Total' %}
                                 </td>
-                                <td data-bind="text: $root.sub_total(), localize: 1"></td>
+                                <td colspan="2" data-bind="text: $root.sub_total(), localize: 1"></td>
+                                
                             </tr>
                             </tbody>
 

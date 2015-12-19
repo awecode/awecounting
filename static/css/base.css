@@ -504,6 +504,12 @@ label.required:after {
     min-height: 36px;
 }
 
-.red{
+.red, .red:hover{
     color: red;
+    text-decoration: none;
+}
+
+td+td
+{
+  border-left: 1px solid #ddd;
 }
