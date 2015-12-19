@@ -9,7 +9,6 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
 
-
 INSTALLED_APPS = (
     'modeltranslation',
     'django.contrib.admin',
@@ -24,8 +23,12 @@ INSTALLED_APPS = (
     'apps.ledger',
     'apps.users',
     'apps.share',
+<<<<<<< HEAD
     # 'apps.bank',
     'apps.account',
+=======
+    'apps.bank',
+>>>>>>> f4d2dc7be5b1b7df3c58f5e031a78f09caa1c81f
 
     'rest_framework',
     'linaro_django_pagination',
@@ -45,6 +48,28 @@ MIDDLEWARE_CLASSES = (
     'webstack_django_sorting.middleware.SortingMiddleware',
     'apps.users.middleware.RoleMiddleware',
 )
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.core.context_processors.i18n',
+                'django.core.context_processors.media',
+                'django.core.context_processors.static',
+                'django.core.context_processors.tz',
+                'django.core.context_processors.request',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 ROOT_URLCONF = 'awecounting.urls'
 

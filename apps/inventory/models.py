@@ -1,4 +1,7 @@
 import datetime
+from django.core.exceptions import ValidationError
+from django.forms import forms
+from django.utils.translation import ugettext_lazy as _
 
 from django.core.urlresolvers import reverse_lazy
 from django.db import models
@@ -17,11 +20,13 @@ def none_for_zero(obj):
     else:
         return obj
 
+
 def zero_for_none(obj):
     if obj is None:
         return 0
     else:
         return obj
+
 
 class Unit(models.Model):
     name = models.CharField(max_length=50)
@@ -30,6 +35,7 @@ class Unit(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class UnitConverter(models.Model):
     base_unit = models.ForeignKey(Unit, null=True, related_name='base_unit')
@@ -71,7 +77,7 @@ class Item(models.Model):
     account = models.OneToOneField(InventoryAccount, related_name='item', null=True)
     image = models.ImageField(upload_to='items', blank=True, null=True)
     size = models.CharField(max_length=250, blank=True, null=True)
-    unit = models.ForeignKey(Unit)
+    unit = models.ForeignKey(Unit, related_name="item_unit", blank=False, null=True, on_delete=models.SET_NULL)
     selling_rate = models.FloatField(blank=True, null=True)
     other_properties = JSONField(blank=True, null=True)
     ledger = models.ForeignKey(Account, null=True)
@@ -130,9 +136,11 @@ class Transaction(models.Model):
     def __str__(self):
         return str(self.account) + ' [' + str(self.dr_amount) + ' / ' + str(self.cr_amount) + ']'
 
+
 def alter(account, date, diff):
     Transaction.objects.filter(journal_entry__date__gt=date, account=account).update(
         current_balance=none_for_zero(zero_for_none(F('current_balance')) + zero_for_none(diff)))
+
 
 def set_transactions(model, date, *args):
     args = [arg for arg in args if arg is not None]
@@ -168,6 +176,7 @@ def set_transactions(model, date, *args):
         journal_entry.transactions.add(transaction)
         alter(transaction.account, date, diff)
 
+
 class Party(models.Model):
     name = models.CharField(max_length=254)
     address = models.CharField(max_length=254, blank=True, null=True)
@@ -176,19 +185,26 @@ class Party(models.Model):
     account = models.ForeignKey(Account, null=True)
     company = models.ForeignKey(Company)
 
+    # def clean(self):
+    #     if self.pan_no:
+    #         conflicting_instance = Party.objects.filter(pan_no=self.pan_no, company=self.company).exclude(pk=self.pk)
+    #         if conflicting_instance.exists():
+    #             raise forms.ValidationError(_('Company with this PAN already exists.'))
+
     def save(self, *args, **kwargs):
         if not self.account_id:
             account = Account(name=self.name, company=self.company)
             account.save()
             self.account = account
-        super(Party, self).save(*args, **kwargs)
 
+        super(Party, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.name
 
     class Meta:
         verbose_name_plural = 'Parties'
+        # unique_together = ['pan_no', 'company']
 
 class Purchase(models.Model):
     party = models.ForeignKey(Party)
@@ -201,7 +217,8 @@ class Purchase(models.Model):
         super(Purchase, self).__init__(*args, **kwargs)
 
         if not self.pk and not self.voucher_no:
-            self.voucher_no = get_next_voucher_no(Purchase, 'voucher_no')
+            print self.company
+            self.voucher_no = get_next_voucher_no(Purchase, self.company)
 
     @property
     def total(self):
@@ -213,6 +230,7 @@ class Purchase(models.Model):
 
     def get_absolute_url(self):
         return reverse_lazy('purchase-detail', kwargs={'id': self.pk})
+
 
 class PurchaseRow(models.Model):
     sn = models.PositiveIntegerField()
@@ -229,22 +247,33 @@ class PurchaseRow(models.Model):
     def get_absolute_url(self):
         return reverse_lazy('purchase-detail', kwargs={'id': self.purchase.pk})
 
+
 class Sale(models.Model):
     party = models.ForeignKey(Party, blank=True, null=True)
+    credit = models.BooleanField(default=False)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     date = models.DateField(default=datetime.datetime.today)
     company = models.ForeignKey(Company)
+
+    def __init__(self, *args, **kwargs):
+        super(Sale, self).__init__(*args, **kwargs)
+
+        if not self.pk and not self.voucher_no:
+            print self.company
+            self.voucher_no = get_next_voucher_no(Sale, self.company)
+
 
     def get_absolute_url(self):
         return reverse_lazy('sale-detail', kwargs={'id': self.pk})
 
     @property
     def total(self):
-        grand_total = 0 
+        grand_total = 0
         for obj in self.rows.all():
             total = obj.quantity * obj.rate
             grand_total += total
         return grand_total
+
 
 class SaleRow(models.Model):
     sn = models.PositiveIntegerField()

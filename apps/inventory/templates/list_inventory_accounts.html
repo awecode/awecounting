@@ -31,9 +31,11 @@
                     </a>
                 </td>
                 <td>
-                    <a {% if obj.item.id %} href="{% url 'item_edit' obj.item.id %}" {% endif %}>
+                    {% if obj.item %}
+                    <a href="{% url 'item_edit' obj.item.id %}">
                         {{ obj.item.name }}
                     </a>
+                    {% endif %}
                 </td>
             <td>
                 {{ obj.current_balance }}

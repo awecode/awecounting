@@ -2,6 +2,16 @@ from apps.users.models import Role
 from apps.users.models import Company
 
 
+def clear_roles(request):
+    request.__class__.role = None
+    request.__class__.company = None
+    request.__class__.group = None
+    request.__class__.roles = []
+    request.__class__.is_owner = False
+    # request.__class__.groups = []
+    return request
+
+
 class RoleMiddleware(object):
     def process_request(self, request):
         if not request.user.is_anonymous():
@@ -12,6 +22,7 @@ class RoleMiddleware(object):
                     role = Role.objects.get(pk=request.session.get('role'), user=request.user)
                 except Role.DoesNotExist:
                     pass
+
             if not role:
                 roles = Role.objects.filter(user=request.user)
                 if roles:
@@ -27,9 +38,6 @@ class RoleMiddleware(object):
                 #         groups.append(role.group)
                 #     request.__class__.groups = groups
             else:
-                request.__class__.role = None
-                request.__class__.company = None
-                request.__class__.group = None
-                request.__class__.roles = []
-                request.__class__.is_owner = False
-                # request.__class__.groups = []
+                request = clear_roles(request)
+        else:
+            request = clear_roles(request)

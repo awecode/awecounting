@@ -18,20 +18,6 @@ function PurchaseViewModel(data) {
         }
     });
 
-    self.item_changed = function (row) {
-        var selected_item = $.grep(self.items(), function (i) {
-            return i.id == row.item_id();
-        })[0];
-        if (!selected_item) return;
-    }
-
-    // self.unit_changed = function (row, unit_id) {
-    //     var selected_item = $.grep(row.units(), function (i) {
-    //         return i.id == row.unit_id();
-    //     })[0];
-    //     if (!selected_item) return;
-    // }
-
     $.ajax({
         url: '/inventory/api/parties.json',
         dataType: 'json',
@@ -67,24 +53,15 @@ function PurchaseViewModel(data) {
         }
     });
 
-    self.unit_changed = function (row, unit_id) {
-        var selected_item = $.grep(self.units(), function (i) {
-            return i.id == row.unit_id();
-        })[0];
-        if (!selected_item) return;
-    }
-
-
     self.table_view = new TableViewModel({rows: data.rows, argument: self}, PurchaseRow);
 
 
     for (var k in data)
         self[k] = ko.observable(data[k]);
-    
-    self.id.subscribe(function (id) {
-        history.pushState(id, id, window.location.href + id + '/');
-    });
 
+    self.id.subscribe(function (id) {
+        update_url_with_id(id);
+    });
 
     self.sub_total = function () {
         var sum = 0;
@@ -129,19 +106,26 @@ function PurchaseViewModel(data) {
 function PurchaseRow(row, purchase_vm) {
     var self = this;
 
-    self.item_id = ko.observable()
-    self.quantity = ko.observable()
-    self.rate = ko.observable()
-    self.discount = ko.observable(0)
+    self.item = ko.observable();
+    self.item_id = ko.observable();
+    self.quantity = ko.observable();
+    self.rate = ko.observable();
+    self.discount = ko.observable(0);
 
-    self.unit_id = ko.observable()
+    self.unit_id = ko.observable();
 
     for (var k in row)
         self[k] = ko.observable(row[k]);
 
-    self.full_item_name = ko.computed(function () {
-        return 'ac';
-    })
+    self.item.subscribe(function (item) {
+        var unit = get_by_id(purchase_vm.units(), item.unit.id);
+        if (unit) {
+            self.unit_id(unit.id);
+        } else {
+            purchase_vm.units.push(unit);
+            self.unit_id(unit.id);
+        }
+    });
 
     self.total = ko.computed(function () {
         if (self.discount() > 0) {

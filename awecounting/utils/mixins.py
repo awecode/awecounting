@@ -58,3 +58,8 @@ class AjaxableResponseMixin(object):
             return json_from_object(self.object)
         else:
             return response
+
+class CompanyView(object):
+    def form_valid(self, form):
+        form.instance.company = self.request.company
+        return super(CompanyView, self).form_valid(form)

@@ -13,8 +13,8 @@ from apps.inventory.models import Item, UnitConverter, Purchase, PurchaseRow, Pa
 from apps.inventory.forms import ItemForm, PartyForm, UnitForm, UnitConverterForm
 from apps.inventory.serializer import PurchaseSerializer, ItemSerializer, PartySerializer, UnitSerializer, SaleSerializer, \
     InventoryAccountRowSerializer
-from apps.ledger.models import set_transactions as set_ledger_transactions
-from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin
+from apps.ledger.models import set_transactions as set_ledger_transactions, Account, delete_rows
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView
 from django.views.generic import ListView
 
 
@@ -153,7 +153,7 @@ def purchase(request, id=None):
         purchase = get_object_or_404(Purchase, id=id)
         scenario = 'Update'
     else:
-        purchase = Purchase(date=datetime.datetime.now().date())
+        purchase = Purchase(date=datetime.datetime.now().date(), company=request.company)
         scenario = 'Create'
     data = PurchaseSerializer(purchase).data
     return render(request, 'purchase-form.html', {'data': data, 'scenario': scenario, 'purchase': purchase})
@@ -167,40 +167,28 @@ def save_purchase(request):
         params['voucher_no'] = None
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'party_id': params.get('party'),
                      'credit': params.get('credit'), 'company': request.company}
+
     if params.get('id'):
-        obj = Purchase.objects.get(id=params.get('id'))
+        obj = Purchase.objects.get(id=params.get('id'), company=request.company)
     else:
-        obj = Purchase()
+        obj = Purchase(company=request.company)
+    # if True:
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
+
         model = PurchaseRow
-        for index, row in enumerate(params.get('table_view').get('rows')):
-            invalid_check = invalid(row, ['item_id', 'quantity', 'unit_id'])
-            if invalid_check:
-                dct['error_message'] = 'These feilds must be filled: ' + ', '.join(invalid_check)
-                return JsonResponse(dct)
+        for ind, row in enumerate(params.get('table_view').get('rows')):
+            if invalid(row, ['item_id', 'quantity', 'unit_id']):
+                continue
             else:
-                item = Item.objects.get(pk=row.get('item_id'))
-                unit = Unit.objects.get(pk=row.get('unit_id'))
-                # if item.unit.name != unit.name:
-                #     try:
-                #         unit_converter = UnitConverter.objects.get(base_unit__name=item.unit.name, unit_to_convert__name=unit.name)
-                #     except:
-                #         dct['error_message'] = "Unit doesn't match"
-                #         return JsonResponse(dct)
-                #     new_quantity = int(row.get('quantity')) * unit_converter.multiple
-                #     new_rate = int(row.get('rate')) / unit_converter.multiple
-                #     values = {'sn': index+1, 'item_id': row.get('item_id'), 'quantity': new_quantity,
-                #         'rate': new_rate, 'unit_id': item.unit.id, 'discount': row.get('discount'), 'purchase': obj }
-                # else:
-                values = {'sn': index + 1, 'item_id': row.get('item_id'), 'quantity': row.get('quantity'),
+                values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'quantity': row.get('quantity'),
                           'rate': row.get('rate'), 'unit_id': row.get('unit_id'), 'discount': row.get('discount'),
                           'purchase': obj}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
-                dct['rows'][index] = submodel.id
+                dct['rows'][ind] = submodel.id
                 set_transactions(submodel, obj.date,
                                  ['dr', submodel.item.account, submodel.quantity],
                                  )
@@ -213,10 +201,10 @@ def save_purchase(request):
                 else:
                     set_ledger_transactions(submodel, obj.date,
                                             ['dr', submodel.item.ledger, obj.total],
-                                            ['cr', 'cash', obj.total],
+                                            ['cr', Account.objects.get(name='Cash', company=request.company), obj.total],
                                             # ['cr', sales_tax_account, tax_amount],
                                             )
-                    # delete_rows(params.get('table_view').get('deleted_rows'), model)
+                    delete_rows(params.get('table_view').get('deleted_rows'), model)
 
     except Exception as e:
         if hasattr(e, 'messages'):
@@ -233,11 +221,7 @@ def sale(request, id=None):
         sale = get_object_or_404(Sale, id=id)
         scenario = 'Update'
     else:
-        max_voucher_no = Sale.objects.all().aggregate(Max('voucher_no'))['voucher_no__max']
-        if max_voucher_no:
-            sale = Sale(date=datetime.datetime.now().date(), voucher_no=max_voucher_no + 1)
-        else:
-            sale = Sale(date=datetime.datetime.now().date(), voucher_no=1)
+        sale = Sale(date=datetime.datetime.now().date(), company=request.company)
         scenario = 'Create'
     data = SaleSerializer(sale).data
     return render(request, 'sale_form.html', {'data': data, 'scenario': scenario, 'sale': sale})
@@ -250,11 +234,11 @@ def save_sale(request):
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'party_id': params.get('party'),
-                     'company': request.company}
+                     'credit': params.get('credit'), 'company': request.company}
     if params.get('id'):
-        obj = Sale.objects.get(id=params.get('id'))
+        obj = Sale.objects.get(id=params.get('id'), company=request.company)
     else:
-        obj = Sale()
+        obj = Sale(company=request.company)
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
@@ -274,11 +258,18 @@ def save_sale(request):
             set_transactions(submodel, obj.date,
                              ['cr', submodel.item.account, submodel.quantity],
                              )
-            set_ledger_transactions(submodel, obj.date,
-                                    ['cr', obj.party.account, obj.total],
-                                    ['dr', 'cash', obj.total],
-                                    # ['cr', sales_tax_account, tax_amount],
-                                    )
+            if obj.credit:
+                set_ledger_transactions(submodel, obj.date,
+                                        ['cr', obj.party.account, obj.total],
+                                        ['dr', 'cash', obj.total],
+                                        # ['cr', sales_tax_account, tax_amount],
+                                        )
+            else:
+                set_ledger_transactions(submodel, obj.date,
+                                        ['cr', obj.party.account, obj.total],
+                                        ['dr', 'cash', obj.total],
+                                        # ['cr', sales_tax_account, tax_amount],
+                                        )
             # delete_rows(params.get('table_view').get('deleted_rows'), model)
 
     except Exception as e:
@@ -369,13 +360,11 @@ class PartyList(PartyView, ListView):
     pass
 
 
-class PartyCreate(AjaxableResponseMixin, PartyView, CreateView):
-    def form_valid(self, form):
-        form.instance.company = self.request.company
-        return super(PartyCreate, self).form_valid(form)
+class PartyCreate(CompanyView, AjaxableResponseMixin, PartyView, CreateView):
+    pass
 
 
-class PartyUpdate(PartyView, UpdateView):
+class PartyUpdate(CompanyView, PartyView, UpdateView):
     def form_valid(self, form):
         form.instance.company = self.request.company
         return super(PartyUpdate, self).form_valid(form)
@@ -419,20 +408,24 @@ def list_inventory_accounts(request):
 
 def view_inventory_account(request, id):
     obj = get_object_or_404(InventoryAccount, id=id)
-    if request.POST:
-        unit = Unit.objects.get(pk=request.POST.get('unit_id'))
+    if hasattr(obj, 'item'):
+        if request.POST:
+            unit = Unit.objects.get(pk=request.POST.get('unit_id'))
+        else:
+            unit = obj.item.unit
     else:
-        unit = obj.item.unit
+        unit = None
     journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
         .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
     conversions = UnitConverter.objects.filter(Q(base_unit=unit) | Q(unit_to_convert=unit)).select_related('base_unit',
                                                                                                            'unit_to_convert')
     multiple = 1
-    if not unit == obj.item.unit:
-        if conversions.filter(base_unit=unit).first():
-            multiple = 1 / conversions.filter(base_unit=unit).first().multiple
-        elif conversions.filter(unit_to_convert=unit).first():
-            multiple = conversions.filter(unit_to_convert=unit).first().multiple
+    if hasattr(obj, 'item'):
+        if not unit == obj.item.unit:
+            if conversions.filter(base_unit=unit).first():
+                multiple = 1 / conversions.filter(base_unit=unit).first().multiple
+            elif conversions.filter(unit_to_convert=unit).first():
+                multiple = conversions.filter(unit_to_convert=unit).first().multiple
     return render(request, 'inventory_account_detail.html',
                   {'obj': obj, 'entries': journal_entries, 'unit_conversions': conversions, 'unit': unit, 'multiple': multiple})
 

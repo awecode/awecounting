@@ -159,7 +159,7 @@ input[type="text"] {
 }
 
 .appended-link + .selectize-input {
-    display: none;
+    display: none !important;
 }
 
 .selectize-input {
@@ -493,5 +493,17 @@ label.required:after {
 }
 
 .selectize-control.invalid > .selectize-input {
-    border-color: red;
+    border: 1px solid red !important;
+}
+
+.selectize-control.invalid > button.appended-link {
+    border: 1px solid red !important;
+}
+
+.selectize-input {
+    min-height: 36px;
+}
+
+.red{
+    color: red;
 }

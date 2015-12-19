@@ -3,8 +3,13 @@ from rest_framework import serializers
 from apps.inventory.models import Purchase, PurchaseRow, Item, Party, Unit, Sale, SaleRow, JournalEntry, UnitConverter
 
 
+class UnitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Unit
+
+
 class ItemSerializer(serializers.ModelSerializer):
-    unit_id = serializers.ReadOnlyField(source='unit.id')
+    unit = UnitSerializer()
     name = serializers.ReadOnlyField(source='__unicode__')
     full_name = serializers.SerializerMethodField()
 
@@ -13,12 +18,7 @@ class ItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Item
-        exclude = ['unit']
-
-
-class UnitSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Unit
+        # exclude = ['unit']
 
 
 class PartySerializer(serializers.ModelSerializer):

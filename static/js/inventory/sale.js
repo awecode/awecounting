@@ -8,7 +8,6 @@ function SaleViewModel(data) {
     var self = this;
 
     self.status = ko.observable();
-    self.id = ko.observable();
 
     $.ajax({
         url: '/inventory/api/items.json',
@@ -31,10 +30,6 @@ function SaleViewModel(data) {
         row.unit_id(selected_item.unit_id)
         if (!selected_item) return;
     }
-
-    self.id.subscribe(function (id) {
-        history.pushState(id, id, window.location.href + id + '/');
-    });
 
     $.ajax({
         url: '/inventory/api/parties.json',
@@ -79,7 +74,6 @@ function SaleViewModel(data) {
 
     self.table_view = new TableViewModel({rows: data.rows, argument: self}, SaleRow);
 
-
     for (var k in data)
         self[k] = ko.observable(data[k]);
 
@@ -109,6 +103,10 @@ function SaleViewModel(data) {
         });
     }
 
+    self.id.subscribe(function (id) {
+        history.pushState(id, id, window.location.href + id + '/');
+    });
+
     self.sub_total = function () {
         var sum = 0;
         self.table_view.rows().forEach(function (i) {
@@ -122,17 +120,26 @@ function SaleViewModel(data) {
 function SaleRow(row, sale_vm) {
     var self = this;
 
+    self.item = ko.observable();
     self.item_id = ko.observable();
     self.quantity = ko.observable();
     self.rate = ko.observable();
     self.discount = ko.observable(0);
 
-    self.unit = ko.observable();
-
     self.unit_id = ko.observable();
 
     for (var k in row)
         self[k] = ko.observable(row[k]);
+
+    self.item.subscribe(function(item){
+        var unit = get_by_id(sale_vm.units(), item.unit.id);
+        if (unit){
+            self.unit_id(unit.id);    
+        }else{
+            purchase_vm.units.push(unit);
+            self.unit_id(unit.id);
+        }
+    });
 
 
     self.total = ko.computed(function () {
