@@ -208,14 +208,14 @@ class Purchase(models.Model):
     party = models.ForeignKey(Party)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     credit = models.BooleanField(default=False)
-    date = models.DateField(default=datetime.datetime.today)
+    date = BSDateField(default=today)
     company = models.ForeignKey(Company)
 
     def __init__(self, *args, **kwargs):
         super(Purchase, self).__init__(*args, **kwargs)
 
         if not self.pk and not self.voucher_no:
-            self.voucher_no = get_next_voucher_no(Purchase, self.company)
+            self.voucher_no = get_next_voucher_no(Purchase, self.company_id)
 
     @property
     def total(self):

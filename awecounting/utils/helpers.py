@@ -28,12 +28,12 @@ def json_from_object(obj):
     return JsonResponse(data)
 
 
-def get_next_voucher_no(cls, company=None, attr='voucher_no'):
+def get_next_voucher_no(cls, company_id=None, attr='voucher_no'):
     from django.db.models import Max
 
     qs = cls.objects.all()
-    if company:
-        qs = qs.filter(company=company)
+    if company_id:
+        qs = qs.filter(company_id=company_id)
     max_voucher_no = qs.aggregate(Max(attr))[attr + '__max']
     if max_voucher_no:
         return max_voucher_no + 1
