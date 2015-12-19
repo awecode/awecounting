@@ -1,5 +1,6 @@
 from django.db import models
 import datetime
+from njango.fields import today, BSDateField
 from apps.users.models import Company
 
 
@@ -17,7 +18,7 @@ class ShareHolder(models.Model):
 class Collection(models.Model):
     count = models.PositiveIntegerField()
     interest_rate = models.FloatField()
-    start_date = models.DateField(blank=True, null=True)
+    start_date = BSDateField(blank=True, null=True, default=today)
     end_date = models.DateField(blank=True, null=True)
     company = models.ForeignKey(Company)
 

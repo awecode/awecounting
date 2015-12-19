@@ -10,11 +10,14 @@
 
 {% block content %}
     <form method="POST">
-        {% csrf_token %}
+        <div class="well">
+            {% csrf_token %}
 
-        {{ form.non_field_errors }}
+            {{ form.non_field_errors }}
 
-        {{ form.as_p }}
+            {{ form.as_p }}
+
+        </div>
 
         <input type="submit" class='btn btn-default' value="{% trans 'Save' %}">
 
@@ -23,16 +26,4 @@
         {% endif %}
     </form>
 
-{% endblock %}
-
-{% block extrabody %}
-<script>
-    $('#id_start_date').datepicker({
-        format: 'yyyy-mm-dd',
-    });
-    $('#id_end_date').datepicker({
-        format: 'yyyy-mm-dd',
-    });
-
-</script>
 {% endblock %}

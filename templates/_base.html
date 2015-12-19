@@ -21,7 +21,6 @@
     </title>
 
     <link rel="stylesheet" href='{% static "css/bootstrap.min.css" %}' type="text/css" media="all">
-{#    <link rel="stylesheet" href='{% static "css/bootstrap-flat.min.css" %}' type="text/css" media="all">#}
     <link rel="stylesheet" href="{% static 'css/selectize.default.css' %}">
     <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
     <link rel="stylesheet" href="{% static 'fontawesome/css/font-awesome.min.css' %}">
@@ -103,6 +102,12 @@
 
 <script>
     $.material.init();
+    $(function () {
+        $('.ad-date').datepicker({
+            format: 'yyyy-mm-dd',
+        });
+        $('.bs-date').nepaliDatePicker();
+    });
 </script>
 
 {% block extrabody %}
