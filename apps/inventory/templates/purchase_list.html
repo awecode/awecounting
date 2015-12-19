@@ -4,42 +4,42 @@
 
 {% block page-title %}{% trans 'Purchases' %}{% endblock %}
 
+{% block header-buttons %}
+    <a class="btn btn-success btn-raised" href="{% url 'purchase-create' %}">{% trans 'New' %} {% trans 'Purchase' %}</a>
+{% endblock %}
+
+
 {% block content %}
-    <div class='container'>
-        <div class="row">
+    <div class="well">
 
-            {% load pagination_tags %}
-            {% load sorting_tags %}
-            {% load filters %}
+        {% load pagination_tags %}
+        {% load sorting_tags %}
+        {% load filters %}
 
-            {% autosort objects as sorted_objects %}
-            {% autopaginate sorted_objects 25 as paginated_objects %}
+        {% autosort objects as sorted_objects %}
+        {% autopaginate sorted_objects 25 as paginated_objects %}
 
-            <table class="table table-striped table-bordered">
-                <thead>
-                <th>{% anchor voucher_no _('Voucher No.') %}</th>
-                <th>{% anchor date _('Date') %}</th>
-                </thead>
-                <tbody>
-                {% for purchase in paginated_objects %}
-                    <tr>
-                        <td>
-                            <a href="{% url 'purchase-detail' purchase.pk %}">{{ purchase.voucher_no }}</a>
-                        </td>
-                        <td>
-                            {{ purchase.date }}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-
-            {% paginate %}
-
-
-            <a class="btn btn-default btn-lg"
-               href="{% url 'purchase-create' %}">{% trans 'New' %} {% trans 'Purchase' %}</a>
-
-        </div>
+        <table class="table table-striped">
+            <thead>
+            <th>{% anchor voucher_no _('Voucher No.') %}</th>
+            <th>{% anchor date _('Date') %}</th>
+            </thead>
+            <tbody>
+            {% for purchase in paginated_objects %}
+                <tr>
+                    <td>
+                        <a href="{% url 'purchase-detail' purchase.pk %}">{{ purchase.voucher_no }}</a>
+                    </td>
+                    <td>
+                        {{ purchase.date }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
+
+    {% paginate %}
+
+
 {% endblock %}
