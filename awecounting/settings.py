@@ -68,6 +68,11 @@ TEMPLATES = [
     },
 ]
 
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+)
+
 ROOT_URLCONF = 'awecounting.urls'
 
 WSGI_APPLICATION = 'awecounting.wsgi.application'
