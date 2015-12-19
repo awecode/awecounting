@@ -1,5 +1,6 @@
 import datetime
 from njango.fields import BSDateField, today
+from django.utils.translation import ugettext_lazy as _
 
 from django.core.urlresolvers import reverse_lazy
 from django.db import models
@@ -188,6 +189,9 @@ class Party(models.Model):
     #         conflicting_instance = Party.objects.filter(pan_no=self.pan_no, company=self.company).exclude(pk=self.pk)
     #         if conflicting_instance.exists():
     #             raise forms.ValidationError(_('Company with this PAN already exists.'))
+    
+    def get_absolute_url(self):
+        return reverse_lazy('party_edit', kwargs={'pk': self.pk})
 
     def save(self, *args, **kwargs):
         if not self.account_id:
@@ -204,12 +208,19 @@ class Party(models.Model):
         verbose_name_plural = 'Parties'
         # unique_together = ['pan_no', 'company']
 
+
 class Purchase(models.Model):
     party = models.ForeignKey(Party)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     credit = models.BooleanField(default=False)
     date = BSDateField(default=today)
     company = models.ForeignKey(Company)
+
+    def type(self):
+        if self.credit:
+            return _('Credit')
+        else:
+            return _('Cash')
 
     def __init__(self, *args, **kwargs):
         super(Purchase, self).__init__(*args, **kwargs)
@@ -258,7 +269,6 @@ class Sale(models.Model):
         if not self.pk and not self.voucher_no:
             print self.company
             self.voucher_no = get_next_voucher_no(Sale, self.company)
-
 
     def get_absolute_url(self):
         return reverse_lazy('sale-detail', kwargs={'id': self.pk})

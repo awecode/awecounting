@@ -23,6 +23,8 @@
             <thead>
             <th>{% anchor voucher_no _('Voucher No.') %}</th>
             <th>{% anchor date _('Date') %}</th>
+            <th>{% anchor party _('Party') %}</th>
+            <th>{% anchor credit _('Credit/Cash') %}</th>
             </thead>
             <tbody>
             {% for purchase in paginated_objects %}
@@ -32,6 +34,14 @@
                     </td>
                     <td>
                         {{ purchase.date }}
+                    </td>
+                    <td>
+                        <a href="{{ purchase.party.get_absolute_url }}">
+                            {{ purchase.party }}
+                        </a>
+                    </td>
+                    <td>
+                        {{ purchase.type }}
                     </td>
                 </tr>
             {% endfor %}

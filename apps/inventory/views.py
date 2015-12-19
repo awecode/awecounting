@@ -352,7 +352,7 @@ def daily_sale_yesterday(request):
 # Party CRUD with mixins
 class PartyView(object):
     model = Party
-    success_url = reverse_lazy('parties_list')
+    success_url = reverse_lazy('party_list')
     form_class = PartyForm
 
 
