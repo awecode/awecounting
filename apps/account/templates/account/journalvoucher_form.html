@@ -40,6 +40,46 @@
 		        </div>
 		    </div>
 
+		    <div data-bind="with: table_view" class="well">
+		    	<table class="table table-striped">
+		    		<thead>
+		    			<tr>
+		    			    <th>{% trans "Dr/Cr" %}</th>
+		                    <th>{% trans "Particular" %}</th>
+		                    <th>{% trans "Description" %}</th>
+		                    <th>{% trans "Dr Amount" %}</th>
+		                    <th>{% trans "Cr Amount" %}</th>
+		                    <th class="span1"></th>
+		                </tr>
+		    		</thead>
+
+		    		<tbody>
+		    			<!-- ko foreach: rows -->
+		    			<tr>
+		    				<td>
+		    					<select class="form-control" data-bind="options: account_type, value: type"></select>
+		    				</td>
+		    				<td>
+		    					<select data-bind="selectize: $root.accounts, value: account"></select>
+		    				</td>
+		    				<td data-bind="editableText: description"></td>
+		    				<td data-bind="editableText: dr_amount, attr : {'contenteditable' : is_dr}"></td>
+		    				<td data-bind="editableText: cr_amount, attr : {'contenteditable' : is_cr}"></td>
+		    			</tr>
+		    			<!-- /ko -->
+		    			</tr>
+		    			<tr>
+		    				<td colspan="3">{% trans "Total" %}</td>
+		    				<td data-bind="text: $root.total_dr_amount"></td>
+		    				<td data-bind="text: $root.total_cr_amount"></td>
+
+		    			</tr>
+		    		</tbody>
+		    </table>
+		    <a class="btn btn-default btn-raised" data-bind="click: addRow">
+		    	{% trans 'Add New Row' %}
+		    </a>
+		</div>
 		</form>
 
 	</div>
