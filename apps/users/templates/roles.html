@@ -46,7 +46,8 @@
         {% csrf_token %}
         <div class="well">
             <input type="text" class="form-control" name="user" placeholder="Username or E-mail" required>
-            <select name="group" class="form-control" required>
+            <label for="group">{% trans "Group" %}</label>
+            <select name="group" id="group"  class="form-control" required>
                 <option selected="selected" value="">Select a Role</option>
                 {% for group in groups %}
                     <option value="{{ group }}">{{ group }}</option>
