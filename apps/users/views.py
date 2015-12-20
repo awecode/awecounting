@@ -105,7 +105,6 @@ def set_role(request, pk):
 @group_required('Owner', 'SuperOwner')
 def roles(request):
     if request.POST:
-        print request.POST
         from django.core.validators import validate_email
         from django.core.exceptions import ValidationError
 

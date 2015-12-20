@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from .helpers import json_from_object
+from django.core.exceptions import PermissionDenied
 
 
 class DeleteView(BaseDeleteView):
@@ -63,3 +64,14 @@ class CompanyView(object):
     def form_valid(self, form):
         form.instance.company = self.request.company
         return super(CompanyView, self).form_valid(form)
+    
+
+class StaffOnlyMixin(object):
+    def dispatch(self, request, *args, **kwargs):
+        u = request.user
+        if u.is_authenticated():
+            # if bool(u.groups.filter(name__in=group_names)) | u.is_superuser():
+            # return True
+            if bool(u.groups.filter(name='Staff')):
+                return super(StaffOnlyMixin, self).dispatch(request, *args, **kwargs)
+        raise PermissionDenied()

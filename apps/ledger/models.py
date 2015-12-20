@@ -246,7 +246,6 @@ def _transaction_delete(sender, instance, **kwargs):
     if transaction.cr_amount:
         transaction.account.current_cr -= transaction.cr_amount
 
-    print transaction.dr_amount
     alter(transaction.account, transaction.journal_entry.date, float(zero_for_none(transaction.dr_amount)) * -1,
           float(zero_for_none(transaction.cr_amount)) * -1)
 

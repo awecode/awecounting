@@ -21,7 +21,6 @@
     </title>
 
     <link rel="stylesheet" href='{% static "css/bootstrap.min.css" %}' type="text/css" media="all">
-    <link rel="stylesheet" href='{% static "css/bootstrap-flat.min.css" %}' type="text/css" media="all">
     <link rel="stylesheet" href="{% static 'css/selectize.default.css' %}">
     <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
     <link rel="stylesheet" href="{% static 'fontawesome/css/font-awesome.min.css' %}">
@@ -29,6 +28,8 @@
     <link rel="stylesheet" href="{% static 'css/datepicker3.css' %}">
     <link rel="stylesheet" href="{% static 'css/bootstrap-material-design.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/ripples.min.css' %}">
+    <link rel="stylesheet" href="{% static 'njango/css/nepali.datepicker.v2.min.css' %}">
+
     <link rel="stylesheet" href="{% static 'css/material.awe.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
@@ -96,8 +97,17 @@
 <script src="{% static 'js/libs/bootstrap-notify.min.js' %}"></script>
 <script src="{% static 'js/libs/material.min.js' %}"></script>
 <script src="{% static 'js/libs/ripples.min.js' %}"></script>
+<script src="{% static 'njango/js/nepali.datepicker.v2.min.js' %}"></script>
+
+
 <script>
     $.material.init();
+    $(function () {
+        $('.ad-date').datepicker({
+            format: 'yyyy-mm-dd',
+        });
+        $('.bs-date').nepaliDatePicker();
+    });
 </script>
 
 {% block extrabody %}

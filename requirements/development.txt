@@ -16,4 +16,4 @@ Pillow
 django-modeltranslation
 sorl-thumbnail
 jsonfield
-openpyxl
+-e git+https://github.com/awecode/njango.git@master#egg=njango

@@ -1,14 +1,16 @@
+import datetime
 from django.core.urlresolvers import reverse_lazy
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, _user_has_perm
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Group
-from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from njango.fields import BSDateField, today
 # from allauth.account.signals import user_logged_in
 # from django.dispatch import receiver
+# from django.contrib.auth.decorators import user_passes_test
 
 
 
@@ -52,7 +54,7 @@ class Company(models.Model):
     name = models.CharField(max_length=254)
     location = models.TextField()
     type_of_business = models.CharField(max_length=254)
-    
+
     def save(self, *args, **kwargs):
         new = False
         if not self.pk:
@@ -60,6 +62,7 @@ class Company(models.Model):
         ret = super(Company, self).save(*args, **kwargs)
         if new:
             from .signals import company_creation
+
             company_creation.send(sender=None, company=self)
         return ret
 
@@ -163,32 +166,6 @@ class Role(models.Model):
         unique_together = ('user', 'group', 'company')
 
 
-class StaffOnlyMixin(object):
-    def dispatch(self, request, *args, **kwargs):
-        u = request.user
-        if u.is_authenticated():
-            # if bool(u.groups.filter(name__in=group_names)) | u.is_superuser():
-            # return True
-            if bool(u.groups.filter(name='Staff')):
-                return super(StaffOnlyMixin, self).dispatch(request, *args, **kwargs)
-        raise PermissionDenied()
-
-
-# def group_required(*group_names):
-#     """Requires user membership in at least one of the groups passed in."""
-# 
-#     def in_groups(u):
-#         if u.is_authenticated():
-#             # if bool(u.groups.filter(name__in=group_names)) | u.is_superuser():
-#             # return True
-#             if bool(u.groups.filter(name__in=group_names)):
-#                 return True
-#             raise PermissionDenied()
-#         return False
-# 
-#     return user_passes_test(in_groups)
-
-
 def group_required(*groups):
     def _dec(view_function):
 
@@ -208,6 +185,7 @@ def group_required(*groups):
         return _view
 
     return _dec
+
 
 class GroupProxy(Group):
     class Meta:
@@ -257,3 +235,14 @@ if 'rest_framework.authtoken' in settings.INSTALLED_APPS:
     def generate_token():
         for user in User.objects.all():
             Token.objects.get_or_create(user=user)
+
+
+class CompanySetting(models.Model):
+    company = models.OneToOneField(Company, related_name='settings')
+    voucher_number_start_date = BSDateField(default=today)
+    voucher_number_restart_years = models.IntegerField(default=1)
+    voucher_number_restart_months = models.IntegerField(default=0)
+    voucher_number_restart_days = models.IntegerField(default=0)
+
+    def __unicode__(self):
+        return self.company.name

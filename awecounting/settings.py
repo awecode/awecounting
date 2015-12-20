@@ -27,6 +27,7 @@ INSTALLED_APPS = (
     'apps.account',
     'apps.bank',
 
+    'njango',
     'rest_framework',
     'linaro_django_pagination',
     'webstack_django_sorting',
@@ -44,6 +45,7 @@ MIDDLEWARE_CLASSES = (
     'linaro_django_pagination.middleware.PaginationMiddleware',
     'webstack_django_sorting.middleware.SortingMiddleware',
     'apps.users.middleware.RoleMiddleware',
+    'njango.middleware.CalendarMiddleware',
 )
 
 TEMPLATES = [
@@ -67,6 +69,11 @@ TEMPLATES = [
         },
     },
 ]
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+)
 
 ROOT_URLCONF = 'awecounting.urls'
 

@@ -153,7 +153,7 @@ def purchase(request, id=None):
         purchase = get_object_or_404(Purchase, id=id)
         scenario = 'Update'
     else:
-        purchase = Purchase(date=datetime.datetime.now().date(), company=request.company)
+        purchase = Purchase(company=request.company)
         scenario = 'Create'
     data = PurchaseSerializer(purchase).data
     return render(request, 'purchase-form.html', {'data': data, 'scenario': scenario, 'purchase': purchase})
@@ -352,7 +352,7 @@ def daily_sale_yesterday(request):
 # Party CRUD with mixins
 class PartyView(object):
     model = Party
-    success_url = reverse_lazy('parties_list')
+    success_url = reverse_lazy('party_list')
     form_class = PartyForm
 
 
