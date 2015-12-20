@@ -4,7 +4,7 @@
 {% block page-title %}{% trans 'Journal Voucher' %}{% endblock %}
 
 {% block header-buttons %}
-    <a href="{% url 'account:journalvoucher_add' %}" class="btn btn-default pull-right">{% trans 'Add' %} {% trans 'Journal Voucher' %}</a>
+    <a href="{% url 'account:journalvoucher_add' %}" class="btn btn-success btn-raised">{% trans 'Add' %} {% trans 'Journal Voucher' %}</a>
 {% endblock %}
 
 {% block content %}
@@ -17,8 +17,8 @@
 
             {% autosort object_list as sorted_objects %}
             {% autopaginate sorted_objects 25 as paginated_objects %}
-
-            <table class="table table-striped table-bordered">
+            <div class="well">
+            <table class="table table-striped">
                 <thead>
                 <th>{% anchor voucher_no _('Voucher No') %}</th>
                 <th>{% anchor date _('Date') %}</th>
@@ -42,6 +42,7 @@
                 {% endfor %}
                 </tbody>
             </table>
+            </div>
 
             {% paginate %}
 
