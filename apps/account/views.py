@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin
@@ -19,8 +19,13 @@ class JournalVoucherCreate(JournalVoucherView, CreateView):
 	pass
 
 
-def journalvoucher_create(request, pk=None):
-	obj = JournalVoucher.objects.get(pk=1)
-	data = JournalVoucherSerializer(obj).data
-	return render(request, 'account/journalvoucher_form.html')
+def journalvoucher_create(request, id=None):
+    if id:
+        journal_voucher = get_object_or_404(JournalVoucher, id=id)
+        scenario = 'Update'
+    else:
+        journal_voucher = JournalVoucher(company=request.company)
+        scenario = 'Create'
+    data = JournalVoucherSerializer(journal_voucher).data
+    return render(request, 'account/journalvoucher_form.html', {'data': data})
 # Create your views here.

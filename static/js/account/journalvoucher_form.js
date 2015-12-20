@@ -4,7 +4,7 @@ $(document).ready(function () {
     $('.change-on-ready').trigger('change');
 });
 
-function JournalVoucherViewModel(){
+function JournalVoucherViewModel(data){
 	var self = this
 
 	self.id =  ko.observable();
@@ -14,6 +14,9 @@ function JournalVoucherViewModel(){
 	self.status = ko.observable();
 
     self.table_view = new TableViewModel({rows: data.rows}, JournalVoucherRowViewModel);
+
+    for (var k in data)
+        self[k] = ko.observable(data[k]);
 
 }
 

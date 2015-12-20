@@ -1,12 +1,15 @@
 {% extends "_base.html" %}
-{% load i18n staticfiles %}
+{% load i18n filters staticfiles njango_filters %}
 
 {% block page-title %}
 	{% trans "Journal Voucher" %}
 {% endblock %}
 
 {% block extrahead %}
-	<script src="{% static 'js/account/journalvoucher_form.js' %}"></script>
+<script src="{% static 'js/account/journalvoucher_form.js' %}"></script>
+	<script>
+		ko_data = {{ data |jsonify }}
+	</script>
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -16,10 +19,34 @@
 {% block content %}
 <div class="row">
 	<div class="col-12-lg col-12-md col-12-sm col-12-xs">
-
-		<form method="post" data-bind="submit: save">
+		<form method="post" data-bind="">
 			{% csrf_token %}
-			{{ form.as_p}}
+			    <div class="well">
+		        <div class="row">
+		            <div class="col-md-6 col-sm-12">
+		                <label for="voucher-no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
+		                <input type="text" data-bind="value: voucher_no" class="form-control" id="voucher-no">
+		            </div>
+		            <div class="col-md-6 col-sm-12">
+		                <label for="date">{% trans 'Date' %}</label>
+		                <input type="text" data-bind="value: date" class="form-control {% calendar_class %}" id="date">
+		            </div>
+		        </div>
+
+		        <div class="row">
+		            <div class="col-md-6 col-sm-12">
+		                <label for="party">{% trans 'Narration' %}</label>
+		                <input type="text" data-bind="value: narration" class="form-control" id="date">
+
+		            </div>
+		            <div class="col-md-6 col-sm-12">
+		                <div class="form-group">
+		                <p data-bind="text: status"></p>
+		                </div>
+		            </div>
+		        </div>
+		    </div>
+
 		</form>
 
 	</div>

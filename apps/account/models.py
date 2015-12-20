@@ -16,7 +16,7 @@ class JournalVoucher(models.Model):
         super(JournalVoucher, self).__init__(*args, **kwargs)
 
         if not self.pk and not self.voucher_no:
-            self.voucher_no = get_next_voucher_no(JournalVoucher, 'voucher_no')
+            self.voucher_no = get_next_voucher_no(JournalVoucher, self.company_id)
 
     def get_voucher_no(self):
         return self.voucher_no
