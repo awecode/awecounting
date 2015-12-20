@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
-
+from rest_framework import generics
 from apps.ledger.models import Account, JournalEntry
+from apps.ledger.serializer import AccountSerializer
 
 
 def list_accounts(request):
@@ -21,3 +22,8 @@ def view_account(request, id):
         'journal_entries': journal_entries,
         'base_template': base_template,
     })
+
+# rest_framework API
+class AccountListAPI(generics.ListCreateAPIView):
+    serializer_class = AccountSerializer
+    queryset = Account.objects.all()
