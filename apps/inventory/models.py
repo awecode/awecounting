@@ -1,4 +1,5 @@
 import datetime
+from django.core.exceptions import ValidationError
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
 
@@ -10,21 +11,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db.models import F
 from apps.ledger.models import Account
 from apps.users.models import Company
-from awecounting.utils.helpers import get_next_voucher_no
-
-
-def none_for_zero(obj):
-    if not obj:
-        return None
-    else:
-        return obj
-
-
-def zero_for_none(obj):
-    if obj is None:
-        return 0
-    else:
-        return obj
+from awecounting.utils.helpers import get_next_voucher_no, none_for_zero, zero_for_none
 
 
 class Unit(models.Model):
@@ -189,7 +176,7 @@ class Party(models.Model):
     #         conflicting_instance = Party.objects.filter(pan_no=self.pan_no, company=self.company).exclude(pk=self.pk)
     #         if conflicting_instance.exists():
     #             raise forms.ValidationError(_('Company with this PAN already exists.'))
-    
+
     def get_absolute_url(self):
         return reverse_lazy('party_edit', kwargs={'pk': self.pk})
 
@@ -221,6 +208,11 @@ class Purchase(models.Model):
             return _('Credit')
         else:
             return _('Cash')
+
+    def clean(self):
+        import ipdb
+        ipdb.set_trace()
+        raise ValidationError('aaa')
 
     def __init__(self, *args, **kwargs):
         super(Purchase, self).__init__(*args, **kwargs)

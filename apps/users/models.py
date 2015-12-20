@@ -239,10 +239,17 @@ if 'rest_framework.authtoken' in settings.INSTALLED_APPS:
 
 class CompanySetting(models.Model):
     company = models.OneToOneField(Company, related_name='settings')
+    use_nepali_fy_system = models.BooleanField(default=True)
     voucher_number_start_date = BSDateField(default=today)
     voucher_number_restart_years = models.IntegerField(default=1)
     voucher_number_restart_months = models.IntegerField(default=0)
     voucher_number_restart_days = models.IntegerField(default=0)
+
+    def get_fy_start(self, date=None):
+        pass
+
+    def get_fy_end(self, date=None):
+        pass
 
     def __unicode__(self):
         return self.company.name
