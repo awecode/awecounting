@@ -53,7 +53,7 @@ function JournalVoucherViewModel(data){
 function JournalVoucherRowViewModel(row) {
 	var self = this;
 
-    self.account_type = ko.observableArray(['Cr','Dr']);
+    self.account_type = ko.observableArray(['Dr','Cr']);
 	self.id = ko.observable();
 	self.type = ko.observable();
 	self.description = ko.observable();
