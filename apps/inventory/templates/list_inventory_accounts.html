@@ -5,6 +5,12 @@
 
 {% block page-header %}{% trans 'Inventory' %} {% trans 'Accounts' %}{% endblock %}
 
+{% block header-buttons %}
+ <a class="btn btn-success btn-raised"
+       href="{% url 'item_add' %}">{% trans 'New' %} {% trans 'Inventory' %} {% trans 'Item' %}</a>
+{% endblock %}
+
+
 {% block content %}
 
     {% load pagination_tags %}
@@ -15,39 +21,37 @@
 
     {% autosort objects as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
-
-    <table class="table table-striped table-bordered">
-        <thead>
-        <th>{% anchor account_no _('Account No.') %}</th>
-        <th>{% anchor name _('Name') %}</th>
-        <th>{% anchor current_balance _('Balance') %}</th>
-        </thead>
-        <tbody>
-        {% for obj in paginated_objects %}
-            <tr>
+    <div class="well">
+        <table class="table table-striped">
+            <thead>
+            <th>{% anchor account_no _('Account No.') %}</th>
+            <th>{% anchor name _('Name') %}</th>
+            <th>{% anchor current_balance _('Balance') %}</th>
+            </thead>
+            <tbody>
+            {% for obj in paginated_objects %}
+                <tr>
+                    <td>
+                        <a href="{% url 'view_inventory_account' obj.id %}">
+                            {{ obj.account_no }}
+                        </a>
+                    </td>
+                    <td>
+                        {% if obj.item %}
+                        <a href="{% url 'item_edit' obj.item.id %}">
+                            {{ obj.item.name }}
+                        </a>
+                        {% endif %}
+                    </td>
                 <td>
-                    <a href="{% url 'view_inventory_account' obj.id %}">
-                        {{ obj.account_no }}
-                    </a>
+                    {{ obj.current_balance }}
                 </td>
-                <td>
-                    {% if obj.item %}
-                    <a href="{% url 'item_edit' obj.item.id %}">
-                        {{ obj.item.name }}
-                    </a>
-                    {% endif %}
-                </td>
-            <td>
-                {{ obj.current_balance }}
-            </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% paginate %}
     <br>
-    <a class="btn btn-default btn-lg"
-       href="{% url 'item_add' %}">{% trans 'New' %} {% trans 'Inventory' %} {% trans 'Item' %}</a>
-
+   
 {% endblock %}

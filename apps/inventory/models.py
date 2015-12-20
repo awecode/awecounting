@@ -273,6 +273,12 @@ class Sale(models.Model):
     def get_absolute_url(self):
         return reverse_lazy('sale-detail', kwargs={'id': self.pk})
 
+    def type(self):
+        if self.credit:
+            return _('Credit')
+        else:
+            return _('Cash')
+
     @property
     def total(self):
         grand_total = 0
