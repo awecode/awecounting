@@ -4,9 +4,7 @@
     {% block title %}{{ account.name }} {% trans 'Ledger View' %} {% endblock %}
 
 {% block breadcrumbs %}
-    {{ block.super }}
     <li><a href="{% url "list_account" %}">{% trans 'Accounts' %}</a></li>
-    <span class="divider"><i class="icon-angle-right"></i></span>
     <li>{{ account.name }}</li>
 {% endblock %}
 
