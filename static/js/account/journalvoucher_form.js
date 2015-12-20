@@ -20,7 +20,7 @@ function JournalVoucherViewModel(data){
 
 }
 
-function JournalVoucherRowViewModel(row) {
+function JournalVoucherRowViewModel(rows) {
 	var self = this;
 
 	self.id = ko.observable();
@@ -29,8 +29,5 @@ function JournalVoucherRowViewModel(row) {
 	self.cr_amount = ko.observable();
 	self.dr_amount = ko.observable();
 	self.account = ko.observable();
-
-    for (var k in row)
-        self[k] = ko.observable(row[k]);
 
 }

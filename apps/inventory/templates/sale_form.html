@@ -1,5 +1,5 @@
 {% extends "_base.html" %}
-{% load staticfiles i18n %}
+{% load staticfiles i18n njango_filters %}
 {% load filters %}
 
 {% block page-title %}
@@ -28,7 +28,7 @@
             class="form-control">
         </div>
         <div class="col-md-6 col-sm-12">
-            {% trans 'Date' %}: <input type="text" data-bind="value: date" class="form-control">
+            {% trans 'Date' %}: <input type="text" data-bind="value: date" class="form-control {% calendar_class %}">
         </div>
     </div>
 

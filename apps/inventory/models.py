@@ -260,7 +260,7 @@ class Sale(models.Model):
     party = models.ForeignKey(Party, blank=True, null=True)
     credit = models.BooleanField(default=False)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
-    date = models.DateField(default=datetime.datetime.today)
+    date = BSDateField(default=today)
     company = models.ForeignKey(Company)
 
     def __init__(self, *args, **kwargs):
