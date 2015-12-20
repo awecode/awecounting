@@ -2,11 +2,12 @@ from django.db import models
 from apps.users.models import Company
 from apps.ledger.models import Account
 from awecounting.utils.helpers import get_next_voucher_no
+from njango.fields import BSDateField, today
 
 
 class JournalVoucher(models.Model):
     voucher_no = models.IntegerField()
-    date = models.DateField()
+    date = BSDateField(default=today)
     company = models.ForeignKey(Company)
     narration = models.TextField()
     statuses = [('Cancelled', 'Cancelled'), ('Approved', 'Approved'), ('Unapproved', 'Unapproved')]
