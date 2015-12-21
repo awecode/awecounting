@@ -6,7 +6,7 @@ from .models import JournalVoucher, JournalVoucherRow
 from .forms import JournalVoucherForm
 from .serializer import JournalVoucherSerializer, JournalVoucherRowSerializer
 from django.http import JsonResponse
-from awecounting.utils.helpers import save_model, invalid, empty_to_none
+from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows
 import json
 
 
@@ -70,4 +70,5 @@ def journalvoucher_save(request):
             dct['error_message'] = str(e)
         else:
             dct['error_message'] = 'Error in form data!'
+    delete_rows(params.get('table_view').get('deleted_rows'), model)
     return JsonResponse(dct)
