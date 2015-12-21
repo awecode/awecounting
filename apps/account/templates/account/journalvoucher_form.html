@@ -63,8 +63,8 @@
 		    					<select data-bind="selectize: $root.accounts, value: account"></select>
 		    				</td>
 		    				<td data-bind="editableText: description"></td>
-		    				<td data-bind="editableText: dr_amount, attr : {'contenteditable' : is_dr}"></td>
-		    				<td data-bind="editableText: cr_amount, attr : {'contenteditable' : is_cr}"></td>
+		    				<td data-bind="editableText: dr_amount, attr : {'contenteditable' : is_dr}, on_tab: $root.add_row"></td>
+		    				<td data-bind="editableText: cr_amount, attr : {'contenteditable' : is_cr}, on_tab: $root.add_row"></td>
 		    			</tr>
 		    			<!-- /ko -->
 		    			</tr>

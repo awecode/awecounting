@@ -332,3 +332,19 @@ ko.bindingHandlers.toggle = {
     update: function (element, valueAccessor) {
     }
 };
+
+
+ko.bindingHandlers.on_tab = {
+    init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+        $(element).on('keydown', function (event) {
+            if (event.keyCode == 9) {
+
+                var fn = valueAccessor();
+                fn(element, viewModel);
+            }
+        });
+    },
+    update: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+
+    }
+}

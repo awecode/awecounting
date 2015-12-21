@@ -47,6 +47,27 @@ function JournalVoucherViewModel(data){
         return total;
     });
 
+    self.add_row = function (element, viewModel) {
+        $(element).blur();
+        var type;
+        var dr_amount;
+        var cr_amount;
+        debugger;
+        var diff = self.total_dr_amount() - self.total_cr_amount()
+        if (diff > 0) {
+            type = 'Cr';
+            dr_amount = 0;
+            cr_amount = diff;
+        } else {
+            type = 'Dr';
+            cr_amount = 0;
+            dr_amount = (-1) * diff;
+        }
+
+        if ($(element).closest("tr").is(":nth-last-child(2)") && self.total_dr_amount() != self.total_cr_amount())
+            self.table_view.rows.push(new JournalVoucherRowViewModel({type: type, cr_amount: cr_amount, dr_amount: dr_amount}));
+    }
+
 
 }
 
