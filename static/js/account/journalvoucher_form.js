@@ -52,8 +52,7 @@ function JournalVoucherViewModel(data){
         var type;
         var dr_amount;
         var cr_amount;
-        debugger;
-        var diff = self.total_dr_amount() - self.total_cr_amount()
+        var diff = self.total_dr_amount() - self.total_cr_amount();
         if (diff > 0) {
             type = 'Cr';
             dr_amount = 0;
@@ -68,6 +67,36 @@ function JournalVoucherViewModel(data){
             self.table_view.rows.push(new JournalVoucherRowViewModel({type: type, cr_amount: cr_amount, dr_amount: dr_amount}));
     }
 
+    self.save = function (item, event) {
+        if (self.total_cr_amount() !== self.total_dr_amount()) {
+            bsalert.error('Total Dr and Cr amounts don\'t tally!');
+            return false;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: '/account/save/journal_voucher/',
+            data: ko.toJSON(self),
+            success: function (msg) {
+                if (typeof (msg.error_message) != 'undefined') {
+                    bsalert.error(msg.error_message);
+                    self.status('errorlist');
+                }
+                else {
+                    bsalert.success('Saved!');
+                    if (msg.id)
+                        self.id(msg.id);
+                    $("#tbody > tr").each(function (i) {
+                        $($("#tbody > tr")[i]).addClass('invalid-row');
+                    });
+                    for (var i in msg.rows) {
+                        self.table_view.rows()[i].id = msg.rows[i];
+                        $($("#tbody > tr")[i]).removeClass('invalid-row');
+                    }
+                }
+            }
+        });
+    }
 
 }
 
@@ -98,7 +127,7 @@ function JournalVoucherRowViewModel(row) {
     });
 
     self.type.subscribe(function(type) {
-        self.dr_amount('');
-        self.cr_amount('');
+        self.dr_amount(0);
+        self.cr_amount(0);
     }); 
 }

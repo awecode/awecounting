@@ -19,7 +19,7 @@
 {% block content %}
 <div class="row">
 	<div class="col-12-lg col-12-md col-12-sm col-12-xs">
-		<form method="post" data-bind="">
+		<form method="post" data-bind="submit: save">
 			{% csrf_token %}
 			    <div class="well">
 		        <div class="row">
@@ -65,9 +65,11 @@
 		    				<td data-bind="editableText: description"></td>
 		    				<td data-bind="editableText: dr_amount, attr : {'contenteditable' : is_dr}, on_tab: $root.add_row"></td>
 		    				<td data-bind="editableText: cr_amount, attr : {'contenteditable' : is_cr}, on_tab: $root.add_row"></td>
-		    			</tr>
+			                <td class="hide-on-print text-center">
+			                    <a href="#" class="red fa fa-trash-o fa-2x" data-bind="click: $parent.removeRow"></a>
+			                </td>
+		                </tr>
 		    			<!-- /ko -->
-		    			</tr>
 		    			<tr>
 		    				<td colspan="3">{% trans "Total" %}</td>
 		    				<td data-bind="text: $root.total_dr_amount"></td>
@@ -80,6 +82,7 @@
 		    	{% trans 'Add New Row' %}
 		    </a>
 		</div>
+			<input type="submit" class="btn btn-raised btn-info btn-lg" value="{% trans 'Save' %}">
 		</form>
 
 	</div>

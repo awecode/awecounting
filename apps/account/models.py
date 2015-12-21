@@ -32,9 +32,6 @@ class JournalVoucherRow(models.Model):
     cr_amount = models.FloatField(null=True, blank=True)
     journal_voucher = models.ForeignKey(JournalVoucher, related_name='rows')
 
-    def get_absolute_url(self):
-        return '/voucher/journal/' + str(self.journal_voucher_id)
-
     def get_voucher_no(self):
         return self.journal_voucher.voucher_no
 
