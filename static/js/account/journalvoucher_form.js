@@ -47,6 +47,16 @@ function JournalVoucherViewModel(data){
         return total;
     });
 
+    self.check_description = function() {
+        arr = [];
+        for ( i in self.table_view.rows() ){
+            arr.push(self.table_view.rows()[i].description());
+        }
+        if ( $.inArray("", arr) >= 0 || $.inArray(undefined, arr) >= 0  )
+            return true
+        return false
+    }
+
     self.add_row = function (element, viewModel) {
         $(element).blur();
         var type;
@@ -70,6 +80,11 @@ function JournalVoucherViewModel(data){
     self.save = function (item, event) {
         if (self.total_cr_amount() !== self.total_dr_amount()) {
             bsalert.error('Total Dr and Cr amounts don\'t tally!');
+            return false;
+        }
+
+        if (self.check_description()){
+            bsalert.error('Description isn\'t provided!');
             return false;
         }
 
