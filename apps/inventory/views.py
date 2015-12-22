@@ -14,13 +14,12 @@ from apps.inventory.forms import ItemForm, PartyForm, UnitForm, UnitConverterFor
 from apps.inventory.serializer import PurchaseSerializer, ItemSerializer, PartySerializer, UnitSerializer, SaleSerializer, \
     InventoryAccountRowSerializer
 from apps.ledger.models import set_transactions as set_ledger_transactions, Account, delete_rows
+from awecounting.utils.helpers import invalid, save_model
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView
 from django.views.generic import ListView
 
 
 def index(request):
-    # import ipdb
-    # ipdb.set_trace()
     objects = Sale.objects.filter(date=datetime.date.today()).prefetch_related('rows')
     total_amount = 0
     total_quantity = 0
@@ -123,24 +122,6 @@ class UnitConverterUpdate(UnitConverterView, UpdateView):
 
 class UnitConverterDelete(UnitConverterView, DeleteView):
     pass
-
-
-def save_model(model, values):
-    for key, value in values.items():
-        setattr(model, key, value)
-    model.save()
-    return model
-
-
-def invalid(row, required_fields):
-    invalid_attrs = []
-    for attr in required_fields:
-        # if one of the required attributes isn't received or is an empty string
-        if not attr in row or row.get(attr) == "":
-            invalid_attrs.append(attr)
-    if len(invalid_attrs) is 0:
-        return False
-    return invalid_attrs
 
 
 def purchase_list(request):
@@ -270,7 +251,7 @@ def save_sale(request):
                                         ['dr', 'cash', obj.total],
                                         # ['cr', sales_tax_account, tax_amount],
                                         )
-            # delete_rows(params.get('table_view').get('deleted_rows'), model)
+                # delete_rows(params.get('table_view').get('deleted_rows'), model)
 
     except Exception as e:
         if hasattr(e, 'messages'):

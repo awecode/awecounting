@@ -7,11 +7,11 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from njango.fields import BSDateField, today
+from njango.fields import BSDateField, today, get_calendar
 # from allauth.account.signals import user_logged_in
 # from django.dispatch import receiver
 # from django.contrib.auth.decorators import user_passes_test
-
+from njango.nepdate import ad2bs, string_from_tuple, tuple_from_string, bs2ad, bs
 
 
 class UserManager(BaseUserManager):
@@ -240,16 +240,52 @@ if 'rest_framework.authtoken' in settings.INSTALLED_APPS:
 class CompanySetting(models.Model):
     company = models.OneToOneField(Company, related_name='settings')
     use_nepali_fy_system = models.BooleanField(default=True)
+    unique_voucher_number = models.BooleanField(default=True)
     voucher_number_start_date = BSDateField(default=today)
     voucher_number_restart_years = models.IntegerField(default=1)
     voucher_number_restart_months = models.IntegerField(default=0)
     voucher_number_restart_days = models.IntegerField(default=0)
 
+    def save(self, *args, **kwargs):
+        # if self.use_nepali_fy_system:
+        #     
+        ret = super(CompanySetting, self).save(*args, **kwargs)
+        return ret
+
+    @staticmethod
+    def get_fy_from_date(date):
+        calendar = get_calendar()
+        if type(date) == str or type(date) == unicode:
+            date = tuple_from_string(date)
+        if calendar == 'ad':
+            date = ad2bs(date)
+        if type(date) == tuple:
+            date = string_from_tuple(date)
+        month = int(date.split('-')[1])
+        year = int(date.split('-')[0])
+        if month < 4:
+            year -= 1
+        return year
+
     def get_fy_start(self, date=None):
-        pass
+        if self.use_nepali_fy_system:
+            year = CompanySetting.get_fy_from_date(date)
+            fiscal_year_start = str(year) + '-04-01'
+            tuple_value = tuple_from_string(fiscal_year_start)
+            calendar = get_calendar()
+            if calendar == 'ad':
+                tuple_value = bs2ad(tuple_value)
+            return tuple_value
 
     def get_fy_end(self, date=None):
-        pass
+        if self.use_nepali_fy_system:
+            year = CompanySetting.get_fy_from_date(date)
+            fiscal_year_end = str(int(year) + 1) + '-03-' + str(bs[int(year) + 1][2])
+            tuple_value = tuple_from_string(fiscal_year_end)
+            calendar = get_calendar()
+            if calendar == 'ad':
+                tuple_value = bs2ad(tuple_value)
+            return tuple_value
 
     def __unicode__(self):
         return self.company.name

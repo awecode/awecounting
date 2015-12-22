@@ -49,3 +49,21 @@ def delete_rows(rows, model):
             # JournalEntry.objects.get(content_type=ContentType.objects.get_for_model(model),
             #                         model_id=instance.id).delete()
             instance.delete()
+
+
+def save_model(model, values):
+    for key, value in values.items():
+        setattr(model, key, value)
+    model.clean()
+    model.save()
+    return model
+
+def invalid(row, required_fields):
+    invalid_attrs = []
+    for attr in required_fields:
+        # if one of the required attributes isn't received or is an empty string
+        if not attr in row or row.get(attr) == "":
+            invalid_attrs.append(attr)
+    if len(invalid_attrs) is 0:
+        return False
+    return invalid_attrs

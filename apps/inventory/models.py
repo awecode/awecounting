@@ -210,9 +210,11 @@ class Purchase(models.Model):
             return _('Cash')
 
     def clean(self):
-        import ipdb
-        ipdb.set_trace()
-        raise ValidationError('aaa')
+        if self.company.settings.unique_voucher_number:
+            if self.__class__.objects.filter(voucher_no=self.voucher_no).filter(
+                    date__gte=self.company.settings.get_fy_start(self.date),
+                    date__lte=self.company.settings.get_fy_end(self.date)).exclude(pk=self.pk):
+                raise ValidationError(_('Voucher no. already exists for the fiscal year!'))
 
     def __init__(self, *args, **kwargs):
         super(Purchase, self).__init__(*args, **kwargs)
