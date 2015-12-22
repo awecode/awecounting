@@ -1,5 +1,25 @@
 from django.http import JsonResponse
 
+def save_model(model, values):
+    for key, value in values.items():
+        setattr(model, key, value)
+    model.save()
+    return model
+
+def invalid(row, required_fields):
+    invalid_attrs = []
+    for attr in required_fields:
+        # if one of the required attributes isn't received or is an empty string
+        if not attr in row or row.get(attr) == "":
+            invalid_attrs.append(attr)
+    if len(invalid_attrs) is 0:
+        return False
+    return invalid_attrs
+
+def empty_to_none(o):
+    if o == '':
+        return None
+    return o
 
 def zero_for_none(obj):
     if obj is None:
@@ -7,13 +27,20 @@ def zero_for_none(obj):
     else:
         return obj
 
-
 def none_for_zero(obj):
     if not obj:
         return None
     else:
         return obj
 
+def get_next_voucher_no(cls, attr):
+    from django.db.models import Max
+
+    max_voucher_no = cls.objects.all().aggregate(Max(attr))[attr + '__max']
+    if max_voucher_no:
+        return max_voucher_no + 1
+    else:
+        return 1
 
 def json_from_object(obj):
     data = {
