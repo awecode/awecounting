@@ -452,8 +452,14 @@ class ItemListAPI(generics.ListCreateAPIView):
 
 
 class UnitListAPI(generics.ListCreateAPIView):
-    queryset = Unit.objects.all()
+    # queryset = Unit.objects.all()
     serializer_class = UnitSerializer
+
+    def get_queryset(self):
+        queryset = Unit.objects.all()
+        if self.request.company:
+            queryset = queryset.filter(company=self.request.company)
+        return queryset
 
 
 class PartyListAPI(generics.ListCreateAPIView):
