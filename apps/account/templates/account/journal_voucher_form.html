@@ -6,14 +6,14 @@
 {% endblock %}
 
 {% block extrahead %}
-<script src="{% static 'js/account/journalvoucher_form.js' %}"></script>
+<script src="{% static 'js/account/journal_voucher_form.js' %}"></script>
 	<script>
 		ko_data = {{ data |jsonify }}
 	</script>
 {% endblock %}
 
 {% block breadcrumbs %}
-    <li><a href="{% url 'account:journalvoucher_list' %}">{% trans 'Journal Voucher' %}</a></li>
+    <li><a href="{% url 'account:journal_voucher_list' %}">{% trans 'Journal Voucher' %}</a></li>
     <li>{{ scenario }}</li>
 {% endblock %}
 
@@ -31,12 +31,6 @@
 		            <div class="col-md-6 col-sm-12">
 		                <label for="date">{% trans 'Date' %}</label>
 		                <input type="text" data-bind="value: date" class="form-control {% calendar_class %}" id="date">
-		            </div>
-		        </div>
-		        <div class="row">
-		            <div class="col-md-12 col-sm-12">
-		                <label for="party">{% trans 'Narration' %}</label>
-		                <input type="textarea" id="narration" data-bind="value: narration" class="form-control" id="date">
 		            </div>
 		        </div>
 		    </div>
@@ -83,7 +77,15 @@
 		    	{% trans 'Add New Row' %}
 		    </a>
 		</div>
-			<input type="submit" class="btn btn-raised btn-info btn-lg" value="{% trans 'Save' %}">
+		<div class="well">
+	        <div class="row">
+	            <div class="col-md-12 col-sm-12">
+	                <label for="party">{% trans 'Narration' %}</label>
+	                <input type="textarea" id="narration" data-bind="value: narration" class="form-control" id="date">
+	            </div>
+	        </div>
+		</div>
+		<input type="submit" class="btn btn-raised btn-info btn-lg" value="{% trans 'Save' %}">
 		</form>
 
 	</div>

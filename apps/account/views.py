@@ -12,7 +12,7 @@ import json
 
 class JournalVoucherView(object):
 	model = JournalVoucher
-	success_url = reverse_lazy('account:journalvoucher_list')
+	success_url = reverse_lazy('account:journal_voucher_list')
 	form_class = JournalVoucherForm
 
 class JournalVoucherList(JournalVoucherView, ListView):
@@ -23,7 +23,7 @@ class JournalVoucherCreate(JournalVoucherView, CreateView):
 	pass
 
 
-def journalvoucher_create(request, id=None):
+def journal_voucher_create(request, id=None):
     if id:
         journal_voucher = get_object_or_404(JournalVoucher, id=id)
         scenario = 'Update'
@@ -31,9 +31,9 @@ def journalvoucher_create(request, id=None):
         journal_voucher = JournalVoucher(company=request.company)
         scenario = 'Create'
     data = JournalVoucherSerializer(journal_voucher).data
-    return render(request, 'account/journalvoucher_form.html', {'data': data, 'scenario': scenario})
+    return render(request, 'account/journal_voucher_form.html', {'data': data, 'scenario': scenario})
 
-def journalvoucher_save(request):
+def journal_voucher_save(request):
     if request.is_ajax():
         params = json.loads(request.body)
     dct = {'rows': {}}
