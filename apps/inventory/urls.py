@@ -2,6 +2,7 @@ from django.conf.urls import patterns, url
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from apps.inventory import views
+from apps.inventory import api
 
 urlpatterns = patterns('',
                        url(r'^item/add/$', views.item, name='item_add'),
@@ -47,9 +48,9 @@ urlpatterns = patterns('',
                        url(r'^sale/yesterday/$', views.daily_sale_yesterday, name='yesterday_sale'),
 
                        # rest_framework api
-                       url(r'^api/items/$', views.ItemListAPI.as_view()),
-                       url(r'^api/parties/$', views.PartyListAPI.as_view()),
-                       url(r'^api/units/$', views.UnitListAPI.as_view()),
+                       url(r'^api/items/$', api.ItemListAPI.as_view()),
+                       url(r'^api/parties/$', api.PartyListAPI.as_view()),
+                       url(r'^api/units/$', api.UnitListAPI.as_view()),
 
                        )
 

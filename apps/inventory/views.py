@@ -443,25 +443,3 @@ def view_inventory_account_with_rate(request, id):
     return render(request, 'inventory_account_detail_with_rate.html',
                   {'obj': obj, 'entries': journal_entries, 'data': data, 'units': units_list, 'current_unit': current_unit})
 
-
-# djangorestframework API
-
-class ItemListAPI(generics.ListCreateAPIView):
-    queryset = Item.objects.all()
-    serializer_class = ItemSerializer
-
-
-class UnitListAPI(generics.ListCreateAPIView):
-    # queryset = Unit.objects.all()
-    serializer_class = UnitSerializer
-
-    def get_queryset(self):
-        queryset = Unit.objects.all()
-        if self.request.company:
-            queryset = queryset.filter(company=self.request.company)
-        return queryset
-
-
-class PartyListAPI(generics.ListCreateAPIView):
-    queryset = Party.objects.all()
-    serializer_class = PartySerializer
