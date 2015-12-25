@@ -23,6 +23,8 @@ INSTALLED_APPS = (
     'apps.ledger',
     'apps.users',
     'apps.share',
+    # 'apps.bank',
+    'apps.account',
     'apps.bank',
 
     'njango',

@@ -9,48 +9,52 @@
 {% endblock %}
 
 {% block header-buttons %}
-    <a href="{% url 'users:user_add' %}" class="btn btn-default pull-right user-add-btn">{% trans 'Add User' %}</a>
+    <a href="{% url 'users:user_add' %}" class="btn btn-success btn-raised user-add-btn">{% trans 'Add User' %}</a>
 {% endblock %}
 
 {% block content %}
-
-    <table class="table table-bordered">
-        <thead>
-        <th>{% trans 'User' %}</th>
-        <th>{% trans 'Full Name' %}</th>
-        <th>{% trans 'E-mail' %}</th>
-        <th>{% trans 'Role' %}</th>
-        <th></th>
-        </thead>
-        <tbody>
-        {% for role in roles %}
-            <tr>
-                <td><a href="{% url 'users:user_edit' role.user.pk %}">{{ role.user.username }}</a></td>
-                <td><a href="{% url 'users:user_edit' role.user.pk %}">{{ role.user.full_name }}</a></td>
-                <td><a href="mailto:{{ role.user.email }}">{{ role.user.email }}</a></td>
-                <td>{{ role.group }}</td>
-                <td>{% if role.group.name != 'SuperOwner' %}
-                    <a href="{% url 'users:delete_role' role.id %}" class="btn btn-danger">{% trans 'Delete' %}</a>
-                    <a href="{% url 'users:edit_role' role.id %}" class="btn">{% trans 'Edit' %}</a>
-                {% endif %}
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="well">
+        <table class="table">
+            <thead>
+            <th>{% trans 'User' %}</th>
+            <th>{% trans 'Full Name' %}</th>
+            <th>{% trans 'E-mail' %}</th>
+            <th>{% trans 'Role' %}</th>
+            <th></th>
+            </thead>
+            <tbody>
+            {% for role in roles %}
+                <tr>
+                    <td><a href="{% url 'users:user_edit' role.user.pk %}">{{ role.user.username }}</a></td>
+                    <td><a href="{% url 'users:user_edit' role.user.pk %}">{{ role.user.full_name }}</a></td>
+                    <td><a href="mailto:{{ role.user.email }}">{{ role.user.email }}</a></td>
+                    <td>{{ role.group }}</td>
+                    <td>{% if role.group.name != 'SuperOwner' %}
+                        <a href="{% url 'users:delete_role' role.id %}" class="btn btn-danger">{% trans 'Delete' %}</a>
+                        <a href="{% url 'users:edit_role' role.id %}" class="btn">{% trans 'Edit' %}</a>
+                    {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
     <h3>{% trans 'Add New Role' %}:</h3>
 
     <form method="post">
         {% csrf_token %}
-        <input type="text" class=form-control" name="user" placeholder="Username or E-mail" required>
-        <select name="group" required>
-            <option selected="selected" value="">Select a Role</option>
-            {% for group in groups %}
-                <option value="{{ group }}">{{ group }}</option>
-            {% endfor %}
-        </select>
-        <input type="submit" value="Add" class="button">
+        <div class="well">
+            <input type="text" class="form-control" name="user" placeholder="Username or E-mail" required>
+            <label for="group">{% trans "Group" %}</label>
+            <select name="group" id="group"  class="form-control" required>
+                <option selected="selected" value="">Select a Role</option>
+                {% for group in groups %}
+                    <option value="{{ group }}">{{ group }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <input type="submit" value="Add" class="button btn btn-info btn-raised">
     </form>
 
 {% endblock %}

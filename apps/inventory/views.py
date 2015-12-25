@@ -16,6 +16,8 @@ from apps.inventory.serializer import PurchaseSerializer, ItemSerializer, PartyS
 from apps.ledger.models import set_transactions as set_ledger_transactions, Account, delete_rows
 from awecounting.utils.helpers import invalid, save_model
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView
+from awecounting.utils.helpers import save_model, invalid
+
 from django.views.generic import ListView
 
 
@@ -440,19 +442,3 @@ def view_inventory_account_with_rate(request, id):
     return render(request, 'inventory_account_detail_with_rate.html',
                   {'obj': obj, 'entries': journal_entries, 'data': data, 'units': units_list, 'current_unit': current_unit})
 
-
-# djangorestframework API
-
-class ItemListAPI(generics.ListCreateAPIView):
-    queryset = Item.objects.all()
-    serializer_class = ItemSerializer
-
-
-class UnitListAPI(generics.ListCreateAPIView):
-    queryset = Unit.objects.all()
-    serializer_class = UnitSerializer
-
-
-class PartyListAPI(generics.ListCreateAPIView):
-    queryset = Party.objects.all()
-    serializer_class = PartySerializer

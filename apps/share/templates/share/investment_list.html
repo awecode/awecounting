@@ -4,7 +4,7 @@
 {% block page-title %}{% trans 'Investments' %}{% endblock %}
 
 {% block header-buttons %}
-    <a href="{% url 'share:investment_add' %}" class="btn btn-default pull-right">{% trans 'Add' %} {% trans 'Investment' %}</a>
+    <a href="{% url 'share:investment_add' %}" class="btn btn-success btn-raised">{% trans 'Add' %} {% trans 'Investment' %}</a>
 {% endblock %}
 
 {% block content %}
@@ -17,8 +17,9 @@
 
             {% autosort object_list as sorted_objects %}
             {% autopaginate sorted_objects 25 as paginated_objects %}
+            <div class="well">
 
-            <table class="table table-striped table-bordered">
+            <table class="table table-striped">
                 <thead>
                 <th>{% anchor share_holder.name _('Shareholder') %}</th>
                 <th>{% anchor date _('Date') %}</th>
@@ -48,7 +49,7 @@
                 {% endfor %}
                 </tbody>
             </table>
-
+            </div>
             {% paginate %}
 
         </div>
