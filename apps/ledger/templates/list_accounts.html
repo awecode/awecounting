@@ -4,7 +4,6 @@
 {% block page-title %}{% trans 'All Accounts' %}{% endblock %}
 
 {% block breadcrumbs %}
-    {{ block.super }}
     <li><a href="{% url "list_account" %}">{% trans 'Accounts' %}</a></li>
 {% endblock %}
 {% load sorting_tags %}
@@ -23,9 +22,9 @@
         {% autosort accounts as sorted_accounts %}
         {% for account in sorted_accounts %}
             <tr>
-                <td>
+                <td class="text-center">
                     <a href="{% url "view_account" account.id %}">
-                        {{ account.code }}
+                        {{ account.code|default:'-' }}
                     </a>
                 </td>
                 <td>
