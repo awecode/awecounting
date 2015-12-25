@@ -2,14 +2,15 @@
 {% load i18n filters staticfiles njango_filters %}
 
 {% block page-title %}
-	{% trans "Journal Voucher" %}
+    {% trans "Journal Voucher" %}
 {% endblock %}
 
 {% block extrahead %}
-<script src="{% static 'js/account/journal_voucher_form.js' %}"></script>
-	<script>
-		ko_data = {{ data |jsonify }}
-	</script>
+    <script src="{% static 'js/account/journal_voucher_form.js' %}"></script>
+    <script>
+        ko_data =
+        {{ data |jsonify }}
+    </script>
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -18,77 +19,77 @@
 {% endblock %}
 
 {% block content %}
-<div class="row">
-	<div class="col-12-lg col-12-md col-12-sm col-12-xs">
-		<form method="post" data-bind="submit: save">
-			{% csrf_token %}
-			    <div class="well">
-		        <div class="row">
-		            <div class="col-md-6 col-sm-12">
-		                <label for="voucher-no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
-		                <input type="text" data-bind="value: voucher_no" class="form-control" id="voucher-no">
-		            </div>
-		            <div class="col-md-6 col-sm-12">
-		                <label for="date">{% trans 'Date' %}</label>
-		                <input type="text" data-bind="value: date" class="form-control {% calendar_class %}" id="date">
-		            </div>
-		        </div>
-		    </div>
+    <div class="row">
+        <div class="col-12-lg col-12-md col-12-sm col-12-xs">
+            <form method="post" data-bind="submit: save">
+                {% csrf_token %}
+                <div class="well">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12">
+                            <label for="voucher-no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
+                            <input type="text" data-bind="value: voucher_no" class="form-control" id="voucher-no">
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <label for="date">{% trans 'Date' %}</label>
+                            <input type="text" data-bind="value: date" class="form-control {% calendar_class %}" id="date">
+                        </div>
+                    </div>
+                </div>
 
-		    <div data-bind="with: table_view" class="well">
-		    	<table class="table table-striped">
-		    		<thead>
-		    			<tr>
-		    			    <th>{% trans "Dr/Cr" %}</th>
-		                    <th>{% trans "Particular" %}</th>
-		                    <th>{% trans "Description" %}</th>
-		                    <th>{% trans "Dr Amount" %}</th>
-		                    <th>{% trans "Cr Amount" %}</th>
-		                    <th class="span1"></th>
-		                </tr>
-		    		</thead>
+                <div data-bind="with: table_view" class="well">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>{% trans "Dr/Cr" %}</th>
+                            <th>{% trans "Particular" %}</th>
+                            <th>{% trans "Description" %}</th>
+                            <th>{% trans "Dr Amount" %}</th>
+                            <th>{% trans "Cr Amount" %}</th>
+                            <th class="span1"></th>
+                        </tr>
+                        </thead>
 
-		    		<tbody>
-		    			<!-- ko foreach: rows -->
-		    			<tr>
-		    				<td>
-		    					<select class="form-control" data-bind="options: account_type, value: type"></select>
-		    				</td>
-		    				<td>
-		    					<select data-bind="selectize: $root.accounts, value: account"></select>
-		    				</td>
-		    				<td data-bind="editableText: description"></td>
-		    				<td data-bind="editableText: dr_amount, attr : {'contenteditable' : is_dr}, on_tab: $root.add_row"></td>
-		    				<td data-bind="editableText: cr_amount, attr : {'contenteditable' : is_cr}, on_tab: $root.add_row"></td>
-			                <td class="hide-on-print text-center">
-			                    <a href="#" class="red fa fa-trash-o fa-2x" data-bind="click: $parent.removeRow"></a>
-			                </td>
-		                </tr>
-		    			<!-- /ko -->
-		    			<tr>
-		    				<td colspan="3">{% trans "Total" %}</td>
-		    				<td data-bind="text: $root.total_dr_amount"></td>
-		    				<td data-bind="text: $root.total_cr_amount"></td>
+                        <tbody>
+                        <!-- ko foreach: rows -->
+                        <tr>
+                            <td>
+                                <select class="form-control" data-bind="options: account_type, value: type"></select>
+                            </td>
+                            <td class="account">
+                                <select data-bind="selectize: $root.accounts, value: account"></select>
+                            </td>
+                            <td data-bind="editableText: description"></td>
+                            <td data-bind="editableText: dr_amount, attr : {'contenteditable' : is_dr}, on_tab: $root.add_row"></td>
+                            <td data-bind="editableText: cr_amount, attr : {'contenteditable' : is_cr}, on_tab: $root.add_row"></td>
+                            <td class="hide-on-print text-center">
+                                <a href="#" class="red fa fa-trash-o fa-2x" data-bind="click: $parent.removeRow"></a>
+                            </td>
+                        </tr>
+                        <!-- /ko -->
+                        <tr>
+                            <td colspan="3">{% trans "Total" %}</td>
+                            <td data-bind="text: $root.total_dr_amount"></td>
+                            <td data-bind="text: $root.total_cr_amount"></td>
 
-		    			</tr>
-		    		</tbody>
-		    </table>
-		    <a class="btn btn-default btn-raised" data-bind="click: addRow">
-		    	{% trans 'Add New Row' %}
-		    </a>
-		</div>
-		<div class="well">
-	        <div class="row">
-	            <div class="col-md-12 col-sm-12">
-	                <label for="party">{% trans 'Narration' %}</label>
-	                <input type="textarea" id="narration" data-bind="value: narration" class="form-control" id="date">
-	            </div>
-	        </div>
-		</div>
-		<input type="submit" class="btn btn-raised btn-info btn-lg" value="{% trans 'Save' %}">
-		</form>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <a class="btn btn-default btn-raised" data-bind="click: addRow">
+                        {% trans 'Add New Row' %}
+                    </a>
+                </div>
+                <div class="well">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12">
+                            <label for="party">{% trans 'Narration' %}</label>
+                            <input type="textarea" id="narration" data-bind="value: narration" class="form-control" id="date">
+                        </div>
+                    </div>
+                </div>
+                <input type="submit" class="btn btn-raised btn-info btn-lg" value="{% trans 'Save' %}">
+            </form>
 
-	</div>
-</div>
+        </div>
+    </div>
 
 {% endblock %}

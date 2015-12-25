@@ -4,14 +4,14 @@ $(document).ready(function () {
     $('.change-on-ready').trigger('change');
 });
 
-function JournalVoucherViewModel(data){
-	var self = this;
+function JournalVoucherViewModel(data) {
+    var self = this;
 
-	self.id =  ko.observable();
-	self.voucher_no = ko.observable();
-	self.date = ko.observable();
-	self.narration = ko.observable();
-	self.status = ko.observable();
+    self.id = ko.observable();
+    self.voucher_no = ko.observable();
+    self.date = ko.observable();
+    self.narration = ko.observable();
+    self.status = ko.observable();
 
     $.ajax({
         url: '/ledger/api/account/?format=json',
@@ -27,32 +27,34 @@ function JournalVoucherViewModel(data){
     for (var k in data)
         self[k] = ko.observable(data[k]);
 
-    self.total_dr_amount = ko.computed(function() {
+    self.total_dr_amount = ko.computed(function () {
         total = 0;
         for (o in self.table_view.rows()) {
             if (self.table_view.rows()[o].dr_amount()) {
                 total += parseInt(self.table_view.rows()[o].dr_amount());
-            };
+            }
+            ;
         }
         return total;
     });
 
-    self.total_cr_amount = ko.computed(function() {
+    self.total_cr_amount = ko.computed(function () {
         total = 0;
         for (o in self.table_view.rows()) {
             if (self.table_view.rows()[o].cr_amount()) {
                 total += parseInt(self.table_view.rows()[o].cr_amount());
-            };
+            }
+            ;
         }
         return total;
     });
 
-    self.check_description = function() {
+    self.check_description = function () {
         arr = [];
-        for ( i in self.table_view.rows() ){
+        for (i in self.table_view.rows()) {
             arr.push(self.table_view.rows()[i].description());
         }
-        if ( $.inArray("", arr) >= 0 || $.inArray(undefined, arr) >= 0  )
+        if ($.inArray("", arr) >= 0 || $.inArray(undefined, arr) >= 0)
             return true
         return false
     }
@@ -75,6 +77,9 @@ function JournalVoucherViewModel(data){
 
         if ($(element).closest("tr").is(":nth-last-child(2)") && self.total_dr_amount() != self.total_cr_amount())
             self.table_view.rows.push(new JournalVoucherRowViewModel({type: type, cr_amount: cr_amount, dr_amount: dr_amount}));
+
+        //focus on account selectize of next row
+        $(element).closest('tr').next('tr').find('td.account .selectize-control input').click();
     }
 
     self.save = function (item, event) {
@@ -83,10 +88,10 @@ function JournalVoucherViewModel(data){
             return false;
         }
 
-        if (self.check_description()){
-            bsalert.error('Description isn\'t provided!');
-            return false;
-        }
+        //if (self.check_description()){
+        //    bsalert.error('Description isn\'t provided!');
+        //    return false;
+        //}
 
         $.ajax({
             type: "POST",
@@ -116,33 +121,33 @@ function JournalVoucherViewModel(data){
 }
 
 function JournalVoucherRowViewModel(row) {
-	var self = this;
+    var self = this;
 
-    self.account_type = ko.observableArray(['Dr','Cr']);
-	self.id = ko.observable();
-	self.type = ko.observable();
-	self.description = ko.observable();
-	self.cr_amount = ko.observable();
-	self.dr_amount = ko.observable();
-	self.account = ko.observable();
+    self.account_type = ko.observableArray(['Dr', 'Cr']);
+    self.id = ko.observable();
+    self.type = ko.observable();
+    self.description = ko.observable();
+    self.cr_amount = ko.observable();
+    self.dr_amount = ko.observable();
+    self.account = ko.observable();
 
     for (var k in row)
         self[k] = ko.observable(row[k]);
 
-    self.is_dr = ko.computed(function() {
-        if(self.type() == "Dr")
+    self.is_dr = ko.computed(function () {
+        if (self.type() == "Dr")
             return true
         return false
     });
 
-    self.is_cr = ko.computed(function() {
-        if(self.type() == "Cr")
+    self.is_cr = ko.computed(function () {
+        if (self.type() == "Cr")
             return true
         return false
     });
 
-    self.type.subscribe(function(type) {
+    self.type.subscribe(function (type) {
         self.dr_amount(0);
         self.cr_amount(0);
-    }); 
+    });
 }
