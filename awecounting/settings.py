@@ -24,7 +24,6 @@ INSTALLED_APPS = (
     'apps.users',
     'apps.share',
     # 'apps.bank',
-    'apps.account',
     'apps.bank',
 
     'njango',
