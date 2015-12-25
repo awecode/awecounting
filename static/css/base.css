@@ -504,16 +504,20 @@ label.required:after {
     min-height: 36px;
 }
 
-.red, .red:hover{
+.red, .red:hover {
     color: red;
     text-decoration: none;
 }
 
-td+td
-{
-  border-left: 1px solid #ddd;
+td + td {
+    border-left: 1px solid #ddd;
 }
 
-tr.total td{
+tr.total td {
     font-weight: bold;
+}
+
+.form-group input[type=file] {
+    opacity: 1;
+    position: relative;
 }
