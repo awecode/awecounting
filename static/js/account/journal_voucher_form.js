@@ -95,7 +95,7 @@ function JournalVoucherViewModel(data) {
 
         $.ajax({
             type: "POST",
-            url: '/account/save/journal_voucher/',
+            url: '/ledger/save/journal_voucher/',
             data: ko.toJSON(self),
             success: function (msg) {
                 if (typeof (msg.error_message) != 'undefined') {
