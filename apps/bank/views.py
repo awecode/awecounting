@@ -60,9 +60,9 @@ def cash_deposit(request, id=None):
         )
         receipt.status = 'Approved'
         receipt.save()
-        return redirect(reverse_lazy('update_cash_deposit', kwargs={'id': receipt.id}))
+        return redirect(reverse_lazy('bank:update_cash_deposit', kwargs={'id': receipt.id}))
     if request.POST:
-        form = BankCashDepositForm(request.POST, initial={'voucher_no': 20}, instance=receipt, company=request.company)
+        form = BankCashDepositForm(request.POST, instance=receipt, company=request.company)
         if form.is_valid():
             receipt = form.save(commit=False)
             receipt.company = request.company
@@ -70,7 +70,7 @@ def cash_deposit(request, id=None):
                 receipt.attachment = request.FILES['attachment']
             receipt.status = 'Unapproved'
             receipt.save()
-            return redirect(reverse_lazy('update_cash_deposit', kwargs={'id': receipt.id}))
+            return redirect(reverse_lazy('bank:update_cash_deposit', kwargs={'id': receipt.id}))
     else:
         form = BankCashDepositForm(instance=receipt, company=request.company)
     return render(request, 'cash_deposit.html', {'form': form, 'scenario': scenario})

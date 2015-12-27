@@ -3,6 +3,11 @@
 
 {% block page-title %}{{ scenario }} {% trans 'Bank Cash Deposit' %}{% endblock %}
 
+{% block breadcrumbs %}
+    <li><a href="{% url 'bank:list_cash_deposits' %}">{% trans 'Bank Cash Deposit' %}</a></li>
+    <li>{{ scenario }}</li>
+{% endblock %}
+
 {% block content %}
     <div class="well">
     <form method="post" enctype="multipart/form-data">
@@ -65,10 +70,10 @@
         {% if scenario == 'Update' %}
             {% if form.instance.status == 'Unapproved' %}
                 {% ifusergroup 'Owner' 'SuperOwner' 'Supervisor' %}
-                    <input class="btn" type="submit" value="Approve" name="action">
+                    <input class="btn btn-info btn-raised" type="submit" value="Approve" name="action">
                 {% endifusergroup %}
             {% endif %}
-            <a class="btn btn-danger" href="{% url 'bank:delete_cash_deposit' form.instance.id %}">Delete!</a>
+            <a class="btn btn-danger btn-raised" href="{% url 'bank:delete_cash_deposit' form.instance.id %}">{% trans 'Delete!' %}</a>
         {% endif %}
 
     </form>
