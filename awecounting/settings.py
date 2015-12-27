@@ -10,6 +10,7 @@ STATICFILES_DIRS = (
 )
 
 INSTALLED_APPS = (
+    'apps.users',
     'modeltranslation',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -21,15 +22,14 @@ INSTALLED_APPS = (
     # apps
     'apps.inventory',
     'apps.ledger',
-    'apps.users',
-    'apps.share',
-    # 'apps.bank',
-    'apps.bank',
 
-    'njango',
-    'rest_framework',
-    'linaro_django_pagination',
-    'webstack_django_sorting',
+    'apps.share',
+    'apps.bank',
+    #
+    # 'njango',
+    # 'rest_framework',
+    # 'linaro_django_pagination',
+    # 'webstack_django_sorting',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -43,8 +43,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
     'linaro_django_pagination.middleware.PaginationMiddleware',
     'webstack_django_sorting.middleware.SortingMiddleware',
-    'apps.users.middleware.RoleMiddleware',
-    'njango.middleware.CalendarMiddleware',
+    # 'apps.users.middleware.RoleMiddleware',
+    # 'njango.middleware.CalendarMiddleware',
 )
 
 TEMPLATES = [
