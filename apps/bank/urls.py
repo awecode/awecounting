@@ -1,7 +1,7 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 import views
 
-urlpatterns = patterns('',
+urlpatterns = [
                        # url(r'^settings/$', views.bank_settings, name='bank_settings'),
                        # url(r'^accounts/$', views.list_bank_accounts, name='list_bank_accounts'),
                        # url(r'^account/create/$', views.bank_account_form, name='create_bank_account'),
@@ -55,5 +55,4 @@ urlpatterns = patterns('',
                        url(r'^account/edit/(?P<pk>\d+)/$', views.BankAccountUpdate.as_view(), name='bankaccount_edit'),
                        url(r'^account/delete/(?P<pk>\d+)/$', views.BankAccountDelete.as_view(), name='bankaccount_delete'),
 
-)
-
+]

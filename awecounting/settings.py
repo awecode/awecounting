@@ -10,6 +10,7 @@ STATICFILES_DIRS = (
 )
 
 INSTALLED_APPS = (
+    'apps.users',
     'modeltranslation',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -18,12 +19,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # apps
     'apps.inventory',
     'apps.ledger',
-    'apps.users',
     'apps.share',
-    # 'apps.bank',
     'apps.bank',
 
     'njango',
