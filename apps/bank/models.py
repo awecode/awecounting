@@ -3,6 +3,7 @@ from apps.ledger.models import Account
 from apps.users.models import Company
 from awecounting.utils.helpers import get_next_voucher_no
 from django.utils.translation import ugettext_lazy as _
+from njango.fields import BSDateField, today
 
 
 class BankAccount(models.Model):
@@ -74,7 +75,7 @@ class ChequeDepositRow(models.Model):
 
 class BankCashDeposit(models.Model):
     voucher_no = models.IntegerField()
-    date = models.DateField()
+    date = BSDateField(default=today)
     bank_account = models.ForeignKey(Account, related_name='cash_deposits')
     benefactor = models.ForeignKey(Account)
     amount = models.FloatField()
@@ -88,10 +89,10 @@ class BankCashDeposit(models.Model):
     def __init__(self, *args, **kwargs):
         super(BankCashDeposit, self).__init__(*args, **kwargs)
         if not self.pk and not self.voucher_no:
-            self.voucher_no = get_next_voucher_no(BankCashDeposit, self.company)
+            self.voucher_no = get_next_voucher_no(BankCashDeposit, self.company_id)
 
-    def get_absolute_url(self):
-        return '/bank/cash-deposit/' + str(self.id)
+    # def get_absolute_url(self):
+    #     return '/bank/cash-deposit/' + str(self.id)
 
     def get_voucher_no(self):
         return self.id
