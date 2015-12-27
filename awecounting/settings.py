@@ -19,17 +19,15 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # apps
     'apps.inventory',
     'apps.ledger',
-
     'apps.share',
     'apps.bank',
-    #
-    # 'njango',
-    # 'rest_framework',
-    # 'linaro_django_pagination',
-    # 'webstack_django_sorting',
+
+    'njango',
+    'rest_framework',
+    'linaro_django_pagination',
+    'webstack_django_sorting',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -43,8 +41,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
     'linaro_django_pagination.middleware.PaginationMiddleware',
     'webstack_django_sorting.middleware.SortingMiddleware',
-    # 'apps.users.middleware.RoleMiddleware',
-    # 'njango.middleware.CalendarMiddleware',
+    'apps.users.middleware.RoleMiddleware',
+    'njango.middleware.CalendarMiddleware',
 )
 
 TEMPLATES = [
