@@ -1,0 +1,70 @@
+{% extends "_base.html" %}
+{% load i18n %}
+
+{% block page-title %}{% trans 'Cash Deposits' %}{% endblock %}
+
+{% block header-buttons %}
+    <a href="{% url 'bank:new_cash_deposit' %}" class="btn btn-success btn-raised">{% trans 'New' %} {% trans 'Cash Deposit' %}</a>
+{% endblock %}
+
+{% block content %}
+
+    {% load pagination_tags %}
+    {% load sorting_tags %}
+
+    <!--div class="widget-box collapsed">
+        <div class="widget-header">
+            <div class="widget-toolbar" >
+                <a href="#" data-action="collapse">
+                    <i class="icon-chevron-up"></i>
+                </a>
+            </div>
+            <h4>Search</h4>
+        </div>
+        <div class="widget-body"><div class="widget-body-inner">
+            <div class="widget-main">
+                <br>
+                <form action="" method="get">
+                    {{ objects.form.as_p }}
+                    <input type="submit" value="Search" class="btn"/>
+                </form>
+            </div>
+            <!-- /widget-main -->
+        <!--/div>
+        </div>
+        <!-- /widget-body -->
+    <!--/div-->    
+    <br>
+
+    {% autosort objects as sorted_objects %}
+    {% autopaginate sorted_objects 25 as paginated_objects %}
+    <div class="well">
+    <table class="table table-striped">
+        <thead>
+        <th>{% anchor date 'Date' %}</th>
+        <th>{% anchor bank_account 'Bank Account' %}</th>
+        <th>{% anchor benefactor 'Benefactor (Given By)' %}</th>
+        <th>{% anchor amount 'Amount' %}</th>
+        <th>{% trans 'Actions' %}</th>
+        </thead>
+        <tbody>
+        {% for item in paginated_objects %}
+            <tr>
+                <td>
+                    {{ item.date }}
+                </td>
+                <td>{{ item.bank_account }}</td>
+                <td>{{ item.benefactor }}</td>
+                <td>{{ item.amount }}</td>
+                <td>
+                    <a href="{% url 'bank:update_cash_deposit' item.id %}">Edit</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% paginate %}
+
+
+{% endblock %}

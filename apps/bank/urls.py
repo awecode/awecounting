@@ -18,11 +18,11 @@ urlpatterns = patterns('',
                        # url(r'^cheque-deposit/approve/$', views.approve_cheque_deposit, name='approve_cheque_deposit'),
 
 
-                       # url(r'^cash-deposits/$', views.list_cash_deposits, name='list_cash_deposits'),
-                       # url(r'^cash-deposit/$', views.cash_deposit, name='new_cash_deposit'),
-                       # url(r'^cash-deposit/(?P<id>[0-9]+)$', views.cash_deposit, name='update_cash_deposit'),
-                       # url(r'^cash-deposit/delete/(?P<id>[0-9]+)$', views.delete_cash_deposit,
-                       #     name='delete_cash_deposit'),
+                       url(r'^cash-deposits/$', views.list_cash_deposits, name='list_cash_deposits'),
+                       url(r'^cash-deposit/$', views.cash_deposit, name='new_cash_deposit'),
+                       url(r'^cash-deposit/(?P<id>[0-9]+)$', views.cash_deposit, name='update_cash_deposit'),
+                       url(r'^cash-deposit/delete/(?P<id>[0-9]+)$', views.delete_cash_deposit,
+                           name='delete_cash_deposit'),
 
                        # url(r'^cheque-payments/$', views.list_cheque_payments, name='list_cheque_payments'),
                        # url(r'^cheque-payment/$', views.cheque_payment, name='new_cheque_payment'),
