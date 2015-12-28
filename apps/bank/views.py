@@ -1,8 +1,9 @@
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView
-from .models import BankAccount, BankCashDeposit
+from .models import BankAccount, BankCashDeposit, ChequeDeposit
 from .forms import BankAccountForm, BankCashDepositForm
+from .serializer import ChequeDepositSerializer
 from apps.ledger.models import Account
 from datetime import date
 from django.shortcuts import render, get_object_or_404, redirect
@@ -41,10 +42,12 @@ def delete_cash_deposit(request, id):
     obj.delete()
     return reverse_lazy('bank:list_cash_deposits')
 
+
 def list_cash_deposits(request):
     items = BankCashDeposit.objects.filter(company=request.company)
     # filtered_items = CashDepositFilter(request.GET, queryset=items, company=request.company)
     return render(request, 'list_cash_deposits.html', {'objects': items})
+
 
 def cash_deposit(request, id=None):
     if id:
@@ -74,6 +77,30 @@ def cash_deposit(request, id=None):
     else:
         form = BankCashDepositForm(instance=receipt, company=request.company)
     return render(request, 'cash_deposit.html', {'form': form, 'scenario': scenario})
+
+
+class ChequeDepositView(object):
+    model = ChequeDeposit
+    success_url = reverse_lazy('bank:cheque_deposit_list')
+
+
+class ChequeDepositList(ChequeDepositView, ListView):
+    pass
+
+
+def cheque_deposit_create(request, id=None):
+    if id:
+        cheque_deposit = get_object_or_404(ChequeDeposit, id=id)
+        scenario = 'Update'
+    else:
+        cheque_deposit = ChequeDeposit(company=request.company)
+        scenario = 'Create'
+    data = ChequeDepositSerializer(cheque_deposit).data
+    return render(request, 'bank/cheque_deposit_form.html', {'data': data, 'scenario': scenario})
+
+
+def cheque_deposit_save(request):
+    pass
 
 # @login_required
 # def bank_settings(request):

@@ -54,5 +54,10 @@ urlpatterns = [
                        url(r'^account/add/$', views.BankAccountCreate.as_view(), name='bankaccount_add'),
                        url(r'^account/edit/(?P<pk>\d+)/$', views.BankAccountUpdate.as_view(), name='bankaccount_edit'),
                        url(r'^account/delete/(?P<pk>\d+)/$', views.BankAccountDelete.as_view(), name='bankaccount_delete'),
+                   
+                       url(r'^cheque_deposit/$', views.ChequeDepositList.as_view(), name='cheque_deposit_list'),
+                       url(r'^cheque_deposit/add/$', views.cheque_deposit_create, name='cheque_deposit_add'),
+                       url(r'^cheque_deposit/(?P<id>[0-9]+)/$', views.cheque_deposit_create, name='cheque_deposit_edit'),
+                       url(r'^save/cheque_deposit/$', views.cheque_deposit_save, name='cheque_deposit_save'),
 
 ]
