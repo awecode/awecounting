@@ -96,4 +96,11 @@ def journal_voucher_save(request):
 # rest_framework API
 class AccountListAPI(generics.ListCreateAPIView):
     serializer_class = AccountSerializer
-    queryset = Account.objects.all()
+    # queryset = Account.objects.all()
+
+    def get_queryset(self):
+        queryset = Account.objects.all()
+        if 'category' in self.kwargs:
+            category_name = self.kwargs['category'].replace('_', ' ').title()
+            queryset = queryset.filter(category__name=category_name)
+        return queryset

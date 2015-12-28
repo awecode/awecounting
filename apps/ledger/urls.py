@@ -13,7 +13,7 @@ urlpatterns = [
 
     # rest_framework api
     url(r'^api/account/$', views.AccountListAPI.as_view()),
-
+    url(r'^api/(?P<category>.+)/account/$', views.AccountListAPI.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
