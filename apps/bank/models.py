@@ -45,7 +45,7 @@ class ChequeDeposit(models.Model):
     def __init__(self, *args, **kwargs):
         super(ChequeDeposit, self).__init__(*args, **kwargs)
         if not self.pk and not self.voucher_no:
-            self.voucher_no = get_next_voucher_no(ChequeDeposit, self.company)
+            self.voucher_no = get_next_voucher_no(ChequeDeposit, self.company_id)
 
     # def get_absolute_url(self):
     #     return '/bank/cheque-deposit/' + str(self.id)
