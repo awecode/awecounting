@@ -60,7 +60,7 @@ class ChequeDeposit(models.Model):
 class ChequeDepositRow(models.Model):
     sn = models.IntegerField()
     cheque_number = models.CharField(max_length=50, blank=True, null=True)
-    cheque_date = models.DateField(blank=True, null=True)
+    cheque_date = BSDateField(default=today, null=True, blank=True)
     drawee_bank = models.CharField(max_length=254, blank=True, null=True)
     drawee_bank_address = models.CharField(max_length=254, blank=True, null=True)
     amount = models.FloatField()
