@@ -31,9 +31,9 @@ class BankAccount(models.Model):
 
 class ChequeDeposit(models.Model):
     voucher_no = models.IntegerField()
-    date = models.DateField()
+    date = BSDateField(default=today)
     bank_account = models.ForeignKey(Account, related_name='cheque_deposits')
-    clearing_date = models.DateField(null=True, blank=True)
+    clearing_date = BSDateField(default=today, null=True, blank=True)
     benefactor = models.ForeignKey(Account)
     deposited_by = models.CharField(max_length=254, blank=True, null=True)
     attachment = models.FileField(upload_to='cheque_deposits/%Y/%m/%d', blank=True, null=True)
