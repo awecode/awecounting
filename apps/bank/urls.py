@@ -18,10 +18,10 @@ urlpatterns = [
                        # url(r'^cheque-deposit/approve/$', views.approve_cheque_deposit, name='approve_cheque_deposit'),
 
 
-                       url(r'^cash-deposits/$', views.list_cash_deposits, name='cash_deposit_list'),
-                       url(r'^cash-deposit/add$', views.cash_deposit, name='cash_deposit_add'),
-                       url(r'^cash-deposit/(?P<id>[0-9]+)$', views.cash_deposit, name='cash_deposit_edit'),
-                       url(r'^cash-deposit/delete/(?P<id>[0-9]+)$', views.delete_cash_deposit,
+                       url(r'^cash_deposits/$', views.list_cash_deposits, name='cash_deposit_list'),
+                       url(r'^cash_deposit/add$', views.cash_deposit, name='cash_deposit_add'),
+                       url(r'^cash_deposit/(?P<id>[0-9]+)$', views.cash_deposit, name='cash_deposit_edit'),
+                       url(r'^cash_deposit/delete/(?P<id>[0-9]+)$', views.delete_cash_deposit,
                            name='cash_deposit_delete'),
 
                        # url(r'^cheque-payments/$', views.list_cheque_payments, name='list_cheque_payments'),
