@@ -14,7 +14,7 @@ function JournalVoucherViewModel(data) {
     self.status = ko.observable();
 
     $.ajax({
-        url: '/ledger/api/account/?format=json',
+        url: '/ledger/api/account.json',
         dataType: 'json',
         async: false,
         success: function (data) {
