@@ -43,10 +43,6 @@ class JournalVoucherList(JournalVoucherView, ListView):
     pass
 
 
-class JournalVoucherCreate(JournalVoucherView, CreateView):
-    pass
-
-
 def journal_voucher_create(request, id=None):
     if id:
         journal_voucher = get_object_or_404(JournalVoucher, id=id)
