@@ -4,7 +4,7 @@
 {% block page-title %}{% trans 'Cash Deposits' %}{% endblock %}
 
 {% block header-buttons %}
-    <a href="{% url 'bank:new_cash_deposit' %}" class="btn btn-success btn-raised">{% trans 'New' %} {% trans 'Cash Deposit' %}</a>
+    <a href="{% url 'bank:cash_deposit_add' %}" class="btn btn-success btn-raised">{% trans 'New' %} {% trans 'Cash Deposit' %}</a>
 {% endblock %}
 
 {% block content %}
@@ -57,7 +57,7 @@
                 <td>{{ item.benefactor }}</td>
                 <td>{{ item.amount }}</td>
                 <td>
-                    <a href="{% url 'bank:update_cash_deposit' item.id %}">Edit</a>
+                    <a href="{% url 'bank:cash_deposit_edit' item.id %}">Edit</a>
                 </td>
             </tr>
         {% endfor %}

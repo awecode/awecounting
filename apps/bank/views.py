@@ -40,7 +40,7 @@ class BankAccountDelete(BankAccountView, DeleteView):
 def delete_cash_deposit(request, id):
     obj = get_object_or_404(BankCashDeposit, id=id, company=request.company)
     obj.delete()
-    return reverse_lazy('bank:list_cash_deposits')
+    return reverse_lazy('bank:cash_deposit_list')
 
 
 def list_cash_deposits(request):
@@ -63,7 +63,7 @@ def cash_deposit(request, id=None):
         )
         receipt.status = 'Approved'
         receipt.save()
-        return redirect(reverse_lazy('bank:update_cash_deposit', kwargs={'id': receipt.id}))
+        return redirect(reverse_lazy('bank:cash_deposit_edit', kwargs={'id': receipt.id}))
     if request.POST:
         form = BankCashDepositForm(request.POST, instance=receipt, company=request.company)
         if form.is_valid():
@@ -73,7 +73,7 @@ def cash_deposit(request, id=None):
                 receipt.attachment = request.FILES['attachment']
             receipt.status = 'Unapproved'
             receipt.save()
-            return redirect(reverse_lazy('bank:update_cash_deposit', kwargs={'id': receipt.id}))
+            return redirect(reverse_lazy('bank:cash_deposit_edit', kwargs={'id': receipt.id}))
     else:
         form = BankCashDepositForm(instance=receipt, company=request.company)
     return render(request, 'cash_deposit.html', {'form': form, 'scenario': scenario})
