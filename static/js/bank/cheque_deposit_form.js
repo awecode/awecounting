@@ -13,7 +13,8 @@ function ChequeDepositViewModel(data) {
     self.narration = ko.observable();
     self.status = ko.observable();
     self.benefactor = ko.observable();
-    self.bank_account = ko.observable()
+    self.bank_account = ko.observable();
+
     $.ajax({
         url: '/ledger/api/bank_account/account.json/',
         dataType: 'json',
@@ -36,6 +37,16 @@ function ChequeDepositViewModel(data) {
 
     for (var k in data)
         self[k] = ko.observable(data[k]);
+
+    self.total = function() {
+        var sum = 0;
+        self.table_view.rows().forEach(function (i) {
+            if (i.amount())
+                sum += i.amount();
+        });
+        console.log
+        return round2(sum);
+    };
 
     self.save = function (item, event) {
         if (self.total_cr_amount() !== self.total_dr_amount()) {

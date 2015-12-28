@@ -86,6 +86,10 @@
                             </td>
                         </tr>
                         <!-- /ko -->
+                        <tr>
+                            <td colspan="5">{% trans "Grand Total" %}</td>
+                            <td data-bind="text: $root.total()"></td>
+                        </tr>
                         </tbody>
                     </table>
                     <a class="btn btn-default btn-raised" data-bind="click: addRow">
