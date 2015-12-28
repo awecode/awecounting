@@ -44,7 +44,6 @@ function ChequeDepositViewModel(data) {
             if (i.amount())
                 sum += i.amount();
         });
-        console.log
         return round2(sum);
     };
 
