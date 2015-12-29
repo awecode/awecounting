@@ -1,12 +1,15 @@
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView
-from .models import BankAccount, BankCashDeposit, ChequeDeposit
+from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRow
 from .forms import BankAccountForm, BankCashDepositForm
 from .serializer import ChequeDepositSerializer
-from apps.ledger.models import Account
+from apps.ledger.models import Account, delete_rows
 from datetime import date
 from django.shortcuts import render, get_object_or_404, redirect
+import json
+from awecounting.utils.helpers import save_model, invalid
+from django.http import JsonResponse
 
 
 class BankAccountView(object):
@@ -100,7 +103,44 @@ def cheque_deposit_create(request, id=None):
 
 
 def cheque_deposit_save(request):
-    pass
+    if request.is_ajax():
+        params = json.loads(request.body)
+    dct = {'rows': {}}
+    company = request.company
+    if params.get('voucher_no') == '':
+        params['voucher_no'] = None
+    object_values = {'voucher_no': int(params.get('voucher_no')), 'date': params.get('date'), 'bank_account_id': params.get('bank_account'),
+                    'clearing_date': params.get('clearing_date'), 'benefactor_id':params.get('benefactor'), 'deposited_by':params.get('deposited_by'),
+                    'narration': params.get('narration'), 'status': params.get('status'), 'company': company}
+    if params.get('id'):
+        obj = ChequeDeposit.objects.get(id=params.get('id'), company=request.company)
+    else:
+        obj = ChequeDeposit(company=request.company)
+    try:
+        obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = ChequeDepositRow
+        for ind, row in enumerate(params.get('table_view').get('rows')):
+            if invalid(row, ['cheque_number', 'amount']):
+                continue
+            else:
+                values = {'sn': ind + 1, 'cheque_number': row.get('cheque_number'),
+                          'cheque_date': row.get('cheque_date'), 'drawee_bank': row.get('drawee_bank'), 'drawee_bank_address': row.get('drawee_bank_address'),
+                          'amount': row.get('amount'), 'cheque_deposit': obj}
+                submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+                if not created:
+                    submodel = save_model(submodel, values)
+                dct['rows'][ind] = submodel.id
+    except Exception as e:
+        if hasattr(e, 'messages'):
+            dct['error_message'] = '; '.join(e.messages)
+        elif str(e) != '':
+            dct['error_message'] = str(e)
+        else:
+            dct['error_message'] = 'Error in form data!'
+    delete_rows(params.get('table_view').get('deleted_rows'), model)
+    return JsonResponse(dct)
+
 
 # @login_required
 # def bank_settings(request):

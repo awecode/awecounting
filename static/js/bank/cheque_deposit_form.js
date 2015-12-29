@@ -38,6 +38,10 @@ function ChequeDepositViewModel(data) {
     for (var k in data)
         self[k] = ko.observable(data[k]);
 
+    self.id.subscribe(function (id) {
+        history.pushState(id, id, window.location.href + id + '/');
+    });
+
     self.total = function() {
         var sum = 0;
         self.table_view.rows().forEach(function (i) {
@@ -48,19 +52,9 @@ function ChequeDepositViewModel(data) {
     };
 
     self.save = function (item, event) {
-        if (self.total_cr_amount() !== self.total_dr_amount()) {
-            bsalert.error('Total Dr and Cr amounts don\'t tally!');
-            return false;
-        }
-
-        //if (self.check_description()){
-        //    bsalert.error('Description isn\'t provided!');
-        //    return false;
-        //}
-
         $.ajax({
             type: "POST",
-            url: '/ledger/save/journal_voucher/',
+            url: '/bank/save/cheque_deposit/',
             data: ko.toJSON(self),
             success: function (msg) {
                 if (typeof (msg.error_message) != 'undefined') {
