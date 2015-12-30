@@ -65,7 +65,7 @@ def cash_deposit(request, id=None):
         set_transactions(receipt, receipt.date,
                          ['dr', receipt.bank_account, receipt.amount],
                          ['cr', receipt.benefactor, receipt.amount],
-        )
+                         )
         receipt.status = 'Approved'
         receipt.save()
         return redirect(reverse_lazy('bank:cash_deposit_edit', kwargs={'id': receipt.id}))
@@ -112,9 +112,11 @@ def cheque_deposit_save(request):
     company = request.company
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
-    object_values = {'voucher_no': int(params.get('voucher_no')), 'date': params.get('date'), 'bank_account_id': params.get('bank_account'),
-                    'clearing_date': params.get('clearing_date'), 'benefactor_id':params.get('benefactor'), 'deposited_by':params.get('deposited_by'),
-                    'narration': params.get('narration'), 'status': params.get('status'), 'company': company}
+    object_values = {'voucher_no': int(params.get('voucher_no')), 'date': params.get('date'),
+                     'bank_account_id': params.get('bank_account'),
+                     'clearing_date': params.get('clearing_date'), 'benefactor_id': params.get('benefactor'),
+                     'deposited_by': params.get('deposited_by'),
+                     'narration': params.get('narration'), 'status': params.get('status'), 'company': company}
     if params.get('id'):
         obj = ChequeDeposit.objects.get(id=params.get('id'), company=request.company)
     else:
@@ -130,7 +132,8 @@ def cheque_deposit_save(request):
                 continue
             else:
                 values = {'sn': ind + 1, 'cheque_number': row.get('cheque_number'),
-                          'cheque_date': row.get('cheque_date'), 'drawee_bank': row.get('drawee_bank'), 'drawee_bank_address': row.get('drawee_bank_address'),
+                          'cheque_date': row.get('cheque_date'), 'drawee_bank': row.get('drawee_bank'),
+                          'drawee_bank_address': row.get('drawee_bank_address'),
                           'amount': row.get('amount'), 'cheque_deposit': obj}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
@@ -145,7 +148,6 @@ def cheque_deposit_save(request):
             dct['error_message'] = 'Error in form data!'
     delete_rows(params.get('table_view').get('deleted_rows'), model)
     return JsonResponse(dct)
-
 
 # @login_required
 # def bank_settings(request):

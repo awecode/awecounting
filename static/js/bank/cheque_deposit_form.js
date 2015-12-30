@@ -17,9 +17,9 @@ function ChequeDepositViewModel(data) {
 
     self.file = ko.observable()
 
-    $('input[type=file]').on('change', prepareUpload);
+    $('input[type=file]').on('change', prepare_upload);
 
-    function prepareUpload(event) {
+    function prepare_upload(event) {
         var form_data = new FormData();
         self.file(event.target.files[0]);
     }
@@ -61,15 +61,15 @@ function ChequeDepositViewModel(data) {
     };
 
     self.save = function (item, event) {
-        var formdata = new FormData()
+        var form_data = new FormData()
         if (typeof(self.file()) != 'undefined') {
-            formdata.append('attachment', self.file())
+            form_data.append('attachment', self.file());
         };
-        formdata.append('self', ko.toJSON(self))
+        form_data.append('self', ko.toJSON(self));
         $.ajax({
             type: "POST",
             url: '/bank/save/cheque_deposit/',
-            data: formdata,
+            data: form_data,
             // data: ko.toJSON(self),
             processData: false,
             contentType: false,
