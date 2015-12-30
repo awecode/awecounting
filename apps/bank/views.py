@@ -119,7 +119,6 @@ def cheque_deposit_save(request):
         obj = ChequeDeposit.objects.get(id=params.get('id'), company=request.company)
     else:
         obj = ChequeDeposit(company=request.company)
-    import ipdb; ipdb.set_trace()
     if 'attachment' in request.FILES:
         obj.attachment = request.FILES.get('attachment')
     try:
