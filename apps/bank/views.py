@@ -10,6 +10,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 import json
 from awecounting.utils.helpers import save_model, invalid
 from django.http import JsonResponse
+from django.core.files import File
+from io import FileIO, BufferedWriter
 
 
 class BankAccountView(object):
@@ -104,7 +106,8 @@ def cheque_deposit_create(request, id=None):
 
 def cheque_deposit_save(request):
     if request.is_ajax():
-        params = json.loads(request.body)
+        # params = json.loads(request.body)
+        params = json.loads(request.POST.get('self'))
     dct = {'rows': {}}
     company = request.company
     if params.get('voucher_no') == '':
@@ -116,6 +119,9 @@ def cheque_deposit_save(request):
         obj = ChequeDeposit.objects.get(id=params.get('id'), company=request.company)
     else:
         obj = ChequeDeposit(company=request.company)
+    import ipdb; ipdb.set_trace()
+    if 'attachment' in request.FILES:
+        obj.attachment = request.FILES.get('attachment')
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id

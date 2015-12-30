@@ -15,6 +15,15 @@ function ChequeDepositViewModel(data) {
     self.benefactor = ko.observable();
     self.bank_account = ko.observable();
 
+    self.file = ko.observable()
+
+    $('input[type=file]').on('change', prepareUpload);
+
+    function prepareUpload(event) {
+        var form_data = new FormData();
+        self.file(event.target.files[0]);
+    }
+
     $.ajax({
         url: '/ledger/api/bank_account/account.json/',
         dataType: 'json',
@@ -52,10 +61,18 @@ function ChequeDepositViewModel(data) {
     };
 
     self.save = function (item, event) {
+        var formdata = new FormData()
+        if (typeof(self.file()) != 'undefined') {
+            formdata.append('attachment', self.file())
+        };
+        formdata.append('self', ko.toJSON(self))
         $.ajax({
             type: "POST",
             url: '/bank/save/cheque_deposit/',
-            data: ko.toJSON(self),
+            data: formdata,
+            // data: ko.toJSON(self),
+            processData: false,
+            contentType: false,
             success: function (msg) {
                 if (typeof (msg.error_message) != 'undefined') {
                     bsalert.error(msg.error_message);

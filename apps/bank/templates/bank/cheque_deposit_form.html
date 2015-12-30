@@ -18,7 +18,7 @@
 {% endblock %}
 
 {% block content %}
-            <form method="post" data-bind="submit: save">
+            <form method="post" data-bind="submit: save" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="well">
                     <div class="row">
@@ -101,8 +101,14 @@
                         <div class="col-md-12 col-sm-12">
                             <label for="party">{% trans 'Narration' %}</label>
                             <input type="textarea" id="narration" data-bind="value: narration" class="form-control" id="date">
+                            <a data-bind="attr:{href: attachment}, visible: attachment">attachment</a>
                         </div>
-                        <p><a data-bind="attr:{href: attachment}">asdf</a></p>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12">
+                            <label class="control-label">{% trans "Select File" %}</label>
+                            <input id="attachment" type="file" class="file">
+                         </div>
                     </div>
                 </div>
                 <input type="submit" class="btn btn-raised btn-info btn-lg" value="{% trans 'Save' %}">
