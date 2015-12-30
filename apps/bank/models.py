@@ -3,6 +3,7 @@ from apps.ledger.models import Account
 from apps.users.models import Company
 from awecounting.utils.helpers import get_next_voucher_no
 from django.utils.translation import ugettext_lazy as _
+from njango.fields import BSDateField, today
 
 
 class BankAccount(models.Model):
@@ -30,9 +31,9 @@ class BankAccount(models.Model):
 
 class ChequeDeposit(models.Model):
     voucher_no = models.IntegerField()
-    date = models.DateField()
+    date = BSDateField(default=today)
     bank_account = models.ForeignKey(Account, related_name='cheque_deposits')
-    clearing_date = models.DateField(null=True, blank=True)
+    clearing_date = BSDateField(default=today, null=True, blank=True)
     benefactor = models.ForeignKey(Account)
     deposited_by = models.CharField(max_length=254, blank=True, null=True)
     attachment = models.FileField(upload_to='cheque_deposits/%Y/%m/%d', blank=True, null=True)
@@ -44,10 +45,10 @@ class ChequeDeposit(models.Model):
     def __init__(self, *args, **kwargs):
         super(ChequeDeposit, self).__init__(*args, **kwargs)
         if not self.pk and not self.voucher_no:
-            self.voucher_no = get_next_voucher_no(ChequeDeposit, self.company)
+            self.voucher_no = get_next_voucher_no(ChequeDeposit, self.company_id)
 
-    def get_absolute_url(self):
-        return '/bank/cheque-deposit/' + str(self.id)
+    # def get_absolute_url(self):
+    #     return '/bank/cheque-deposit/' + str(self.id)
 
     def get_voucher_no(self):
         return self.id
@@ -59,7 +60,7 @@ class ChequeDeposit(models.Model):
 class ChequeDepositRow(models.Model):
     sn = models.IntegerField()
     cheque_number = models.CharField(max_length=50, blank=True, null=True)
-    cheque_date = models.DateField(blank=True, null=True)
+    cheque_date = BSDateField(default=today, null=True, blank=True)
     drawee_bank = models.CharField(max_length=254, blank=True, null=True)
     drawee_bank_address = models.CharField(max_length=254, blank=True, null=True)
     amount = models.FloatField()
@@ -74,7 +75,7 @@ class ChequeDepositRow(models.Model):
 
 class BankCashDeposit(models.Model):
     voucher_no = models.IntegerField()
-    date = models.DateField()
+    date = BSDateField(default=today)
     bank_account = models.ForeignKey(Account, related_name='cash_deposits')
     benefactor = models.ForeignKey(Account)
     amount = models.FloatField()
@@ -88,10 +89,10 @@ class BankCashDeposit(models.Model):
     def __init__(self, *args, **kwargs):
         super(BankCashDeposit, self).__init__(*args, **kwargs)
         if not self.pk and not self.voucher_no:
-            self.voucher_no = get_next_voucher_no(BankCashDeposit, self.company)
+            self.voucher_no = get_next_voucher_no(BankCashDeposit, self.company_id)
 
-    def get_absolute_url(self):
-        return '/bank/cash-deposit/' + str(self.id)
+    # def get_absolute_url(self):
+    #     return '/bank/cash-deposit/' + str(self.id)
 
     def get_voucher_no(self):
         return self.id

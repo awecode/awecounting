@@ -14,6 +14,7 @@ from awecounting.utils.helpers import zero_for_none, none_for_zero
 from awecounting.utils.helpers import get_next_voucher_no
 from njango.fields import BSDateField, today
 
+
 class Category(MPTTModel):
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=254, null=True, blank=True)
@@ -287,7 +288,7 @@ class JournalVoucherRow(models.Model):
     types = [('Dr', 'Dr'), ('Cr', 'Cr')]
     type = models.CharField(choices=types, default='Dr', max_length=2)
     account = models.ForeignKey(Account, related_name='account_rows')
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     dr_amount = models.FloatField(null=True, blank=True)
     cr_amount = models.FloatField(null=True, blank=True)
     journal_voucher = models.ForeignKey(JournalVoucher, related_name='rows')

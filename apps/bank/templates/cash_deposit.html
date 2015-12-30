@@ -1,0 +1,82 @@
+{% extends "_base.html" %}
+{% load filters i18n %}
+
+{% block page-title %}{{ scenario }} {% trans 'Bank Cash Deposit' %}{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'bank:cash_deposit_list' %}">{% trans 'Bank Cash Deposit' %}</a></li>
+    <li>{{ scenario }}</li>
+{% endblock %}
+
+{% block content %}
+    <div class="well">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <p>
+            {{ form.voucher_no.label_tag }}
+
+        <div class="input-append input-prepend input-mini dissolve">
+            <span class="add-on">{{ request.company.voucher_settings.bank_cash_deposit_prefix }}</span>
+            {{ form.voucher_no }}
+            <span class="add-on">{{ request.company.voucher_settings.bank_cash_deposit_suffix }}</span>
+        </div>
+        {{ form.voucher_no.error }}
+        </p>
+
+        <p>
+            {{ form.date.label_tag }}
+            {{ form.date }}
+            {{ form.date.errors }}
+        </p>
+
+        <p>
+            {{ form.bank_account.label_tag }}
+            {{ form.bank_account }}
+            {{ form.bank_account.errors }}
+        </p>
+
+        <p>
+            {{ form.benefactor.label_tag }}
+            {{ form.benefactor }}
+            {{ form.benefactor.errors }}
+        </p>
+
+        <p>
+            {{ form.amount.label_tag }}
+            {{ form.amount }}
+            {{ form.amount.errors }}
+        </p>
+
+        <p>
+            {{ form.deposited_by.label_tag }}
+            {{ form.deposited_by }}
+            {{ form.deposited_by.errors }}
+        </p>
+
+        <p>
+            {{ form.attachment.label_tag }}
+            {{ form.attachment }}
+            {{ form.attachment.errors }}
+        </p>
+
+        <p>
+            {{ form.narration.label_tag }}
+            {{ form.narration }}
+            {{ form.narration.errors }}
+        </p>
+        </div>
+        <input class="btn btn-info btn-raised" type="submit" value="Save" name="action">
+        {% if scenario == 'Update' %}
+            {% if form.instance.status == 'Unapproved' %}
+                {% ifusergroup 'Owner' 'SuperOwner' 'Supervisor' %}
+                    <input class="btn btn-info btn-raised" type="submit" value="Approve" name="action">
+                {% endifusergroup %}
+            {% endif %}
+            <a class="btn btn-danger btn-raised" href="{% url 'bank:cash_deposit_delete' form.instance.id %}">{% trans 'Delete!' %}</a>
+        {% endif %}
+
+    </form>
+
+
+{% endblock %}

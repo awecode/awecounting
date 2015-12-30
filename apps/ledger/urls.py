@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
-
+from rest_framework.urlpatterns import format_suffix_patterns
 from apps.ledger import views
 
 urlpatterns = [
@@ -13,5 +13,7 @@ urlpatterns = [
 
     # rest_framework api
     url(r'^api/account/$', views.AccountListAPI.as_view()),
-
+    url(r'^api/(?P<category>.+)/account/$', views.AccountListAPI.as_view()),
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)
