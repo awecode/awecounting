@@ -3,7 +3,7 @@ from modeltranslation.forms import TranslationModelForm
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
-from apps.inventory.models import Item, Party, Unit, InventoryAccount, UnitConverter
+from .models import Item, Party, Unit, InventoryAccount, UnitConverter
 from awecounting.utils.forms import HTML5BootstrapModelForm, KOModelForm
 
 

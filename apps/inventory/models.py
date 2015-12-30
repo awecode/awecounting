@@ -9,8 +9,8 @@ from jsonfield import JSONField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db.models import F
-from apps.ledger.models import Account
-from apps.users.models import Company
+from ..ledger.models import Account
+from ..users.models import Company
 from awecounting.utils.helpers import get_next_voucher_no, none_for_zero, zero_for_none
 
 
@@ -261,7 +261,6 @@ class Sale(models.Model):
         super(Sale, self).__init__(*args, **kwargs)
 
         if not self.pk and not self.voucher_no:
-            print self.company
             self.voucher_no = get_next_voucher_no(Sale, self.company)
 
     def get_absolute_url(self):

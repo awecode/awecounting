@@ -1,7 +1,7 @@
 from django.contrib import admin
 from modeltranslation.admin import TranslationAdmin
 
-from apps.inventory.models import Unit, Item, Purchase, PurchaseRow, Party, Sale, SaleRow, InventoryAccount, Transaction, \
+from .models import Unit, Item, Purchase, PurchaseRow, Party, Sale, SaleRow, InventoryAccount, Transaction, \
     JournalEntry, UnitConverter
 
 
