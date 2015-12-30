@@ -20,11 +20,11 @@ from apps.inventory import views
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^$', views.index, name='home'),
+
     url(r'^users/', include('apps.users.urls', namespace='users')),
     url(r'^share/', include('apps.share.urls', namespace='share')),
-    # url(r'^account/', include('apps.account.urls', namespace='account')),
-
     url(r'^inventory/', include('apps.inventory.urls')),
     url(r'^ledger/', include('apps.ledger.urls')),
     url(r'^bank/', include('apps.bank.urls', namespace='bank')),
