@@ -239,12 +239,12 @@ if 'rest_framework.authtoken' in settings.INSTALLED_APPS:
 
 class CompanySetting(models.Model):
     company = models.OneToOneField(Company, related_name='settings')
-    use_nepali_fy_system = models.BooleanField(default=True)
     unique_voucher_number = models.BooleanField(default=True)
+    use_nepali_fy_system = models.BooleanField(default=True)
     voucher_number_start_date = BSDateField(default=today)
-    voucher_number_restart_years = models.IntegerField(default=1)
-    voucher_number_restart_months = models.IntegerField(default=0)
-    voucher_number_restart_days = models.IntegerField(default=0)
+    # voucher_number_restart_years = models.IntegerField(default=1)
+    # voucher_number_restart_months = models.IntegerField(default=0)
+    # voucher_number_restart_days = models.IntegerField(default=0)
 
     def save(self, *args, **kwargs):
         # if self.use_nepali_fy_system:
@@ -252,8 +252,7 @@ class CompanySetting(models.Model):
         ret = super(CompanySetting, self).save(*args, **kwargs)
         return ret
 
-    @staticmethod
-    def get_fy_from_date(date):
+    def get_fy_from_date(self, date):
         calendar = get_calendar()
         if type(date) == str or type(date) == unicode:
             date = tuple_from_string(date)
@@ -263,29 +262,42 @@ class CompanySetting(models.Model):
             date = string_from_tuple(date)
         month = int(date.split('-')[1])
         year = int(date.split('-')[0])
-        if month < 4:
-            year -= 1
+        if self.use_nepali_fy_system:
+            if month < 4:
+                year -= 1
+        else:
+            day = int(date.split('-')[2])
+            if month <= self.voucher_number_start_date.month and day < self.voucher_number_start_date.day:
+                year -= 1
         return year
 
     def get_fy_start(self, date=None):
+        year = self.get_fy_from_date(date)
         if self.use_nepali_fy_system:
-            year = CompanySetting.get_fy_from_date(date)
             fiscal_year_start = str(year) + '-04-01'
-            tuple_value = tuple_from_string(fiscal_year_start)
-            calendar = get_calendar()
-            if calendar == 'ad':
-                tuple_value = bs2ad(tuple_value)
-            return tuple_value
+        else:
+            fiscal_year_start = str(year) + '-' + str(self.voucher_number_start_date.month) + '-' + str(
+                self.voucher_number_start_date.day)
+        tuple_value = tuple_from_string(fiscal_year_start)
+        calendar = get_calendar()
+        if calendar == 'ad':
+            tuple_value = bs2ad(tuple_value)
+        return tuple_value
 
     def get_fy_end(self, date=None):
+
+        year = self.get_fy_from_date(date)
         if self.use_nepali_fy_system:
-            year = CompanySetting.get_fy_from_date(date)
             fiscal_year_end = str(int(year) + 1) + '-03-' + str(bs[int(year) + 1][2])
-            tuple_value = tuple_from_string(fiscal_year_end)
-            calendar = get_calendar()
-            if calendar == 'ad':
-                tuple_value = bs2ad(tuple_value)
-            return tuple_value
+        else:
+            # import ipdb
+            # ipdb.set_trace()
+            fiscal_year_end = str(int(year) + 1) + '-' + str(self.voucher_number_start_date.month) + '-' + str(12)
+        tuple_value = tuple_from_string(fiscal_year_end)
+        calendar = get_calendar()
+        if calendar == 'ad':
+            tuple_value = bs2ad(tuple_value)
+        return tuple_value
 
     def __unicode__(self):
         return self.company.name
