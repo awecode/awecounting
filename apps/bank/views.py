@@ -93,6 +93,10 @@ class ChequeDepositList(ChequeDepositView, ListView):
     pass
 
 
+class ChequeDepositDelete(ChequeDepositView, DeleteView):
+    pass
+
+
 def cheque_deposit_create(request, id=None):
     if id:
         cheque_deposit = get_object_or_404(ChequeDeposit, id=id)
@@ -101,7 +105,7 @@ def cheque_deposit_create(request, id=None):
         cheque_deposit = ChequeDeposit(company=request.company)
         scenario = 'Create'
     data = ChequeDepositSerializer(cheque_deposit).data
-    return render(request, 'bank/cheque_deposit_form.html', {'data': data, 'scenario': scenario})
+    return render(request, 'bank/cheque_deposit_form.html', {'data': data, 'scenario': scenario, 'cheque_deposit': cheque_deposit})
 
 
 def cheque_deposit_save(request):
