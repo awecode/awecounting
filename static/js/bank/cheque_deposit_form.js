@@ -48,7 +48,7 @@ function ChequeDepositViewModel(data) {
         self[k] = ko.observable(data[k]);
 
     self.id.subscribe(function (id) {
-        history.pushState(id, id, window.location.href + id + '/');
+        update_url_with_id(id);
     });
 
     self.total = function() {
@@ -82,12 +82,12 @@ function ChequeDepositViewModel(data) {
                     bsalert.success('Saved!');
                     if (msg.id)
                         self.id(msg.id);
-                    $("#tbody > tr").each(function (i) {
-                        $($("#tbody > tr")[i]).addClass('invalid-row');
+                    $("tbody > tr").each(function (i) {
+                        $($("tbody > tr:not(.total)")[i]).addClass('invalid-row');
                     });
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];
-                        $($("#tbody > tr")[i]).removeClass('invalid-row');
+                        $($("tbody > tr")[i]).removeClass('invalid-row');
                     }
                 }
             }
