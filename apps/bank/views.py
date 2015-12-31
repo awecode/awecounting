@@ -129,6 +129,9 @@ def cheque_deposit_save(request):
         obj.attachment = request.FILES.get('attachment')
     try:
         obj = save_model(obj, object_values)
+        if bool(obj.attachment):
+            dct['attachment'] = {}
+            dct['attachment']['url'] = obj.attachment.url
         dct['id'] = obj.id
         model = ChequeDepositRow
         for ind, row in enumerate(params.get('table_view').get('rows')):

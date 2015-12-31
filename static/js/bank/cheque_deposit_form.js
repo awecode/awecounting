@@ -14,7 +14,7 @@ function ChequeDepositViewModel(data) {
     self.status = ko.observable();
     self.benefactor = ko.observable();
     self.bank_account = ko.observable();
-
+    self.attachment_name = ko.observable();
     self.file = ko.observable()
 
     $.ajax({
@@ -39,6 +39,11 @@ function ChequeDepositViewModel(data) {
 
     for (var k in data)
         self[k] = ko.observable(data[k]);
+
+    if(self.attachment()) {
+        var attachment_name = self.attachment().split('/').pop();
+        self.attachment_name(attachment_name);
+    }
 
     self.id.subscribe(function (id) {
         update_url_with_id(id);
@@ -78,6 +83,12 @@ function ChequeDepositViewModel(data) {
                     $("tbody > tr").each(function (i) {
                         $($("tbody > tr:not(.total)")[i]).addClass('invalid-row');
                     });
+
+                    if(typeof(msg.attachment) != "undefined") {
+                        self.attachment(msg.attachment.url);
+                        var attachment_name = self.attachment().split('/').pop()
+                        self.attachment_name(attachment_name)
+                    }
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];
                         $($("tbody > tr")[i]).removeClass('invalid-row');
