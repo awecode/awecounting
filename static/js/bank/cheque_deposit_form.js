@@ -65,7 +65,7 @@ function ChequeDepositViewModel(data) {
         if (typeof(self.file()) != 'undefined') {
             form_data.append('attachment', self.file());
         };
-        form_data.append('self', ko.toJSON(self));
+        form_data.append('cheque_deposit', ko.toJSON(self));
         $.ajax({
             type: "POST",
             url: '/bank/save/cheque_deposit/',

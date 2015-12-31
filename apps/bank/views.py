@@ -111,7 +111,7 @@ def cheque_deposit_create(request, id=None):
 def cheque_deposit_save(request):
     if request.is_ajax():
         # params = json.loads(request.body)
-        params = json.loads(request.POST.get('self'))
+        params = json.loads(request.POST.get('cheque_deposit'))
     dct = {'rows': {}}
     company = request.company
     if params.get('voucher_no') == '':
