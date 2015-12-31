@@ -17,13 +17,6 @@ function ChequeDepositViewModel(data) {
 
     self.file = ko.observable()
 
-    $('input[type=file]').on('change', prepare_upload);
-
-    function prepare_upload(event) {
-        var form_data = new FormData();
-        self.file(event.target.files[0]);
-    }
-
     $.ajax({
         url: '/ledger/api/bank_account/account.json/',
         dataType: 'json',
