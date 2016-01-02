@@ -1,5 +1,5 @@
 {% extends "_base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block page-title %}{{ scenario }} {% trans 'Cash Receipt' %}{% endblock %}
 
@@ -10,7 +10,7 @@
 
 {% load filters %}
 {% block extrahead %}
-    <script src="{{ STATIC_URL }}js/cash_receipt.js"></script>
+    <script src={% static "voucher/js/cash_receipt.js" %}></script>
     <script>
         ko_data =
         {{ data|jsonify }}
@@ -97,12 +97,12 @@
                     <tr>
                         <th>{% trans 'Invoice No.' %}</th>
                         <th>{% trans 'Date' %}</th>
-                        <th class="span3">{% trans 'Total Amount' %}</th>
-                        <th class="span2">{% trans 'Pending Amount' %}</th>
-                        <th class="span1">{% trans 'Due Date' %}</th>
-                        <th class="span1">{% trans 'Overdue Days' %}</th>
-                        <th class="span1">{% trans 'Receipt' %}</th>
-                        <th class="span1">{% trans 'Discount' %}</th>
+                        <th>{% trans 'Total Amount' %}</th>
+                        <th>{% trans 'Pending Amount' %}</th>
+                        <th>{% trans 'Due Date' %}</th>
+                        <th>{% trans 'Overdue Days' %}</th>
+                        <th>{% trans 'Receipt' %}</th>
+                        <th>{% trans 'Discount' %}</th>
                     </tr>
                     </thead>
 
@@ -133,13 +133,11 @@
             </div>
 
             <div>
-
                 <input class="btn btn-raised btn-info" type="submit" value="Save" data-bind="click: $root.save">
                 {% if scenario == 'Update' %}
-                    <a class="btn btn-raised btn-danger" href="{% url 'delete_invoice' form.instance.invoice_no %}">Delete</a>
+                    <a class="btn btn-raised btn-danger"
+                       href="{% url 'delete_invoice' form.instance.invoice_no %}">{% trans 'Delete' %}</a>
                 {% endif %}
-
-
             </div>
         </div>
 
