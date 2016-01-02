@@ -8,8 +8,7 @@
 {% block extrahead %}
     <script src="{% static 'js/bank/cheque_deposit_form.js' %}"></script>
     <script>
-        ko_data =
-        {{ data |jsonify }}
+        ko_data = {{ data |jsonify }}
     </script>
 {% endblock %}
 

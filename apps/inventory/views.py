@@ -132,13 +132,13 @@ def purchase_list(request):
 
 def purchase(request, id=None):
     if id:
-        purchase = get_object_or_404(Purchase, id=id)
+        obj = get_object_or_404(Purchase, id=id)
         scenario = 'Update'
     else:
-        purchase = Purchase(company=request.company)
+        obj = Purchase(company=request.company)
         scenario = 'Create'
-    data = PurchaseSerializer(purchase).data
-    return render(request, 'purchase-form.html', {'data': data, 'scenario': scenario, 'purchase': purchase})
+    data = PurchaseSerializer(obj).data
+    return render(request, 'purchase-form.html', {'data': data, 'scenario': scenario, 'purchase': obj})
 
 
 def save_purchase(request):

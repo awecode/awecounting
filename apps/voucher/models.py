@@ -4,12 +4,13 @@ from django.db import models
 from ..inventory.models import Party, Sale
 from ..users.models import Company
 from awecounting.utils.helpers import get_next_voucher_no
+from django.utils.translation import ugettext_lazy as _
 
 
 class CashReceipt(models.Model):
     voucher_no = models.IntegerField()
-    party = models.ForeignKey(Party, verbose_name='Receipt From')
-    receipt_on = models.DateField()
+    party = models.ForeignKey(Party, verbose_name=_('Receipt From'))
+    date = models.DateField()
     reference = models.CharField(max_length=50, null=True, blank=True)
     amount = models.FloatField(null=True, blank=True)
     description = models.TextField()
