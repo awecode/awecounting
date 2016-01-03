@@ -8,7 +8,7 @@ function CashReceiptVM(data) {
     var self = this;
 
     $.ajax({
-        url: '/inventory/api/parties.json',
+        url: '/ledger/api/parties.json',
         dataType: 'json',
         async: false,
         success: function (data) {

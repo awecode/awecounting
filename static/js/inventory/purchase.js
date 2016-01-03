@@ -19,7 +19,7 @@ function PurchaseViewModel(data) {
     });
 
     $.ajax({
-        url: '/inventory/api/parties.json',
+        url: '/ledger/api/parties.json',
         dataType: 'json',
         async: false,
         success: function (data) {
