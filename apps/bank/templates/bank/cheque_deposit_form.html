@@ -101,19 +101,12 @@
                         <div class="col-md-12 col-sm-12">
                             <label for="party">{% trans 'Narration' %}</label>
                             <input type="textarea" id="narration" data-bind="value: narration" class="form-control" id="date">
-                            {# <a data-bind="attr:{href: attachment}, visible: attachment, text: attachment_name"></a> #}
                             <div data-bind="foreach: file">
                                 <a data-bind="attr:{href: attachment}, visible: attachment, text: attachment_name"></a> 
                                 <a href="#" class="red fa fa-trash-o" data-bind="click: $root.remove_file"></a><br>
                             </div>
                         </div>
                     </div>
-                    <!--div class="row">
-                        <div class="col-md-12 col-sm-12">
-                            <label class="control-label">{% trans "Select File" %}</label>
-                            <input id="attachment" data-bind="attachment: attach_file" type="file" class="file" multiple>
-                         </div>
-                    </div-->
                     <label class="control-label">{% trans "Select File" %} <span data-bind="click: add_upload_file"><i class="fa fa-plus"></i></span></label>
                     <!-- ko foreach: upload_file -->
                     <div class="row">

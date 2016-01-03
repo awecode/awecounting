@@ -14,8 +14,6 @@ function ChequeDepositViewModel(data) {
     self.status = ko.observable();
     self.benefactor = ko.observable();
     self.bank_account = ko.observable();
-    self.attachment_name = ko.observable();
-    self.attach_file = ko.observable()
     
     self.file = ko.observableArray();
     self.deleted_file = ko.observableArray();
@@ -59,17 +57,12 @@ function ChequeDepositViewModel(data) {
         if ( k == 'file') {
             for ( i in data[k]) {
                 self.file.push( new FileViewModel( data[k][i] ));
-                // self.file.push( new FileViewModel().attachment_url(data[k][i].attachment));
             };
         } else {
             self[k] = ko.observable(data[k]);
         }
     };
 
-    if(self.attachment()) {
-        var attachment_name = self.attachment().split('/').pop();
-        self.attachment_name(attachment_name);
-    }
 
     self.id.subscribe(function (id) {
         update_url_with_id(id);
@@ -86,9 +79,6 @@ function ChequeDepositViewModel(data) {
 
     self.save = function (item, event) {
         var form_data = new FormData()
-        // if (typeof(self.attach_file()) != 'undefined') {
-        //     form_data.append('attachment', self.attach_file());
-        // };
 
         for ( index in self.upload_file()){
             if (typeof(self.upload_file()[index].upload_file()) != 'undefined') {
@@ -101,7 +91,6 @@ function ChequeDepositViewModel(data) {
             type: "POST",
             url: '/bank/save/cheque_deposit/',
             data: form_data,
-            // data: ko.toJSON(self),
             processData: false,
             contentType: false,
             success: function (msg) {
@@ -121,10 +110,6 @@ function ChequeDepositViewModel(data) {
                         for ( i in msg.attachment ) {
                             self.file.push( new FileViewModel( msg.attachment[i] ));
                         };
-                        // self.file.push( new FileViewModel( msg.attachment ))
-                        // self.attachment(msg.attachment.url);
-                        // var attachment_name = self.attachment().split('/').pop()
-                        // self.attachment_name(attachment_name)
                     }
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];
