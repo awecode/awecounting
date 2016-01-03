@@ -47,6 +47,9 @@ class ChequeDeposit(models.Model):
         if not self.pk and not self.voucher_no:
             self.voucher_no = get_next_voucher_no(ChequeDeposit, self.company_id)
 
+    def __str__(self):
+        return str(self.voucher_no) + ': ' + self.deposited_by
+
     # def get_absolute_url(self):
     #     return '/bank/cheque-deposit/' + str(self.id)
 

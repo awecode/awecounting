@@ -7,6 +7,7 @@ $(document).ready(function () {
 function ChequeDepositViewModel(data) {
     var self = this;
 
+
     self.id = ko.observable();
     self.voucher_no = ko.observable();
     self.date = ko.observable();
@@ -15,7 +16,7 @@ function ChequeDepositViewModel(data) {
     self.benefactor = ko.observable();
     self.bank_account = ko.observable();
     self.attachment_name = ko.observable();
-    self.file = ko.observable()
+    self.attach_file = ko.observable()
 
     $.ajax({
         url: '/ledger/api/bank_account/account.json/',
@@ -60,8 +61,8 @@ function ChequeDepositViewModel(data) {
 
     self.save = function (item, event) {
         var form_data = new FormData()
-        if (typeof(self.file()) != 'undefined') {
-            form_data.append('attachment', self.file());
+        if (typeof(self.attach_file()) != 'undefined') {
+            form_data.append('attachment', self.attach_file());
         };
         form_data.append('cheque_deposit', ko.toJSON(self));
         $.ajax({
