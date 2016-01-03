@@ -2,8 +2,9 @@ from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView
 from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRow
+from apps.bank.models import File as AttachFile
 from .forms import BankAccountForm, BankCashDepositForm
-from .serializer import ChequeDepositSerializer
+from .serializer import ChequeDepositSerializer, FileSerializer
 from apps.ledger.models import Account, delete_rows
 from datetime import date
 from django.shortcuts import render, get_object_or_404, redirect
@@ -125,13 +126,13 @@ def cheque_deposit_save(request):
         obj = ChequeDeposit.objects.get(id=params.get('id'), company=request.company)
     else:
         obj = ChequeDeposit(company=request.company)
-    if 'attachment' in request.FILES:
-        obj.attachment = request.FILES.get('attachment')
     try:
         obj = save_model(obj, object_values)
-        if bool(obj.attachment):
-            dct['attachment'] = {}
-            dct['attachment']['url'] = obj.attachment.url
+        if request.FILES:
+            dct['attachment'] = []
+            for _file in request.FILES.getlist('file'): 
+                attach_file = AttachFile.objects.create(attachment = _file, cheque_deposit = obj)
+                dct['attachment'].append(FileSerializer(attach_file).data)
         dct['id'] = obj.id
         model = ChequeDepositRow
         for ind, row in enumerate(params.get('table_view').get('rows')):

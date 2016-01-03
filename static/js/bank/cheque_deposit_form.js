@@ -18,6 +18,16 @@ function ChequeDepositViewModel(data) {
     self.attach_file = ko.observable()
     self.file = ko.observableArray();
 
+    self.upload_file = ko.observableArray([ new UploadFileVM() ]);
+
+    self.add_upload_file = function() {
+        self.upload_file.push( new UploadFileVM() );
+    }
+
+    self.remove_upload_file = function(file){
+        self.upload_file.remove(file);
+    };
+
     $.ajax({
         url: '/ledger/api/bank_account/account.json/',
         dataType: 'json',
@@ -38,8 +48,16 @@ function ChequeDepositViewModel(data) {
 
     self.table_view = new TableViewModel({rows: data.rows}, ChequeDepositRowViewModel);
 
-    for (var k in data)
-        self[k] = ko.observable(data[k]);
+    for (var k in data){
+        if ( k == 'file') {
+            for ( i in data[k]) {
+                self.file.push( new FileViewModel( data[k][i] ));
+                // self.file.push( new FileViewModel().attachment_url(data[k][i].attachment));
+            };
+        } else {
+            self[k] = ko.observable(data[k]);
+        }
+    };
 
     if(self.attachment()) {
         var attachment_name = self.attachment().split('/').pop();
@@ -61,9 +79,16 @@ function ChequeDepositViewModel(data) {
 
     self.save = function (item, event) {
         var form_data = new FormData()
-        if (typeof(self.attach_file()) != 'undefined') {
-            form_data.append('attachment', self.attach_file());
+        // if (typeof(self.attach_file()) != 'undefined') {
+        //     form_data.append('attachment', self.attach_file());
+        // };
+
+        for ( index in self.upload_file()){
+            if (typeof(self.upload_file()[index].upload_file()) != 'undefined') {
+                form_data.append('file', self.upload_file()[index].upload_file())
+            };
         };
+
         form_data.append('cheque_deposit', ko.toJSON(self));
         $.ajax({
             type: "POST",
@@ -86,9 +111,13 @@ function ChequeDepositViewModel(data) {
                     });
 
                     if(typeof(msg.attachment) != "undefined") {
-                        self.attachment(msg.attachment.url);
-                        var attachment_name = self.attachment().split('/').pop()
-                        self.attachment_name(attachment_name)
+                        for ( i in msg.attachment ) {
+                            self.file.push( new FileViewModel( msg.attachment[i] ));
+                        };
+                        // self.file.push( new FileViewModel( msg.attachment ))
+                        // self.attachment(msg.attachment.url);
+                        // var attachment_name = self.attachment().split('/').pop()
+                        // self.attachment_name(attachment_name)
                     }
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];
@@ -102,12 +131,26 @@ function ChequeDepositViewModel(data) {
 }
 
 
-function FileViewModel(){
+function UploadFileVM(){
     var self = this;
 
-    self.file = ko.observable();
-    self.attachment_url = ko.observable();
+    self.upload_file = ko.observable(); 
+};
+
+function FileViewModel(data){
+    var self = this;
+
+    self.id = ko.observable();
+    self.attachment = ko.observable();
     self.attachment_name = ko.observable();
+
+    for (var k in data)
+        self[k] = ko.observable(data[k]);
+
+    if(self.attachment()) {
+        var attachment_name = self.attachment().split('/').pop();
+        self.attachment_name(attachment_name);
+    }
 }
 
 function ChequeDepositRowViewModel(row) {

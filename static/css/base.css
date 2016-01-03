@@ -522,3 +522,7 @@ table tbody tr td input[type="text"].form-control, table tbody tr td input[type=
     background: none; 
     background-image: none;
 }
+
+input.attachment {
+    display: inline-block;
+}
