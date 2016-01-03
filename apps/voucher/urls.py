@@ -1,6 +1,7 @@
 from django.conf.urls import url
 
 import views
+import api
 
 urlpatterns = [
 
@@ -26,4 +27,6 @@ urlpatterns = [
     url(r'^journal/save/$', views.journal_voucher_save, name='journal_voucher_save'),
 
     url(r'^cash_receipt/$', views.cash_receipt, name='create_cash_receipt'),
+
+    url(r'^api/sale/(?P<party_pk>[0-9]+)/$', api.PendingSaleListAPI.as_view()),
 ]

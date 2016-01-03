@@ -15,9 +15,9 @@ from .models import CashReceipt, Purchase, JournalVoucher, JournalVoucherRow, Pu
 
 
 @login_required
-def cash_receipt(request, id=None):
-    if id:
-        voucher = get_object_or_404(CashReceipt, id=id, company=request.company)
+def cash_receipt(request, pk=None):
+    if pk:
+        voucher = get_object_or_404(CashReceipt, pk=pk, company=request.company)
         scenario = 'Update'
     else:
         voucher = CashReceipt(company=request.company)
