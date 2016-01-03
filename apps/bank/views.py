@@ -4,7 +4,7 @@ from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, Company
 from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRow
 from apps.bank.models import File as AttachFile
 from .forms import BankAccountForm, BankCashDepositForm
-from .serializer import ChequeDepositSerializer, FileSerializer
+from .serializers import ChequeDepositSerializer, FileSerializer
 from apps.ledger.models import Account, delete_rows
 from datetime import date
 from django.shortcuts import render, get_object_or_404, redirect
