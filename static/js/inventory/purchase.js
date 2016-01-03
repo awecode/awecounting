@@ -78,7 +78,7 @@ function PurchaseViewModel(data) {
         }
         $.ajax({
             type: "POST",
-            url: '/voucher/save/purchase/',
+            url: '/voucher/purchase/save/',
             data: ko.toJSON(self),
             success: function (msg) {
                 if (typeof (msg.error_message) != 'undefined') {

@@ -95,7 +95,7 @@ function JournalVoucherViewModel(data) {
 
         $.ajax({
             type: "POST",
-            url: '/voucher/save/journal_voucher/',
+            url: '/voucher/journal/save/',
             data: ko.toJSON(self),
             success: function (msg) {
                 if (typeof (msg.error_message) != 'undefined') {
@@ -107,7 +107,7 @@ function JournalVoucherViewModel(data) {
                     if (msg.id)
                         self.id(msg.id);
                     $("tbody > tr").each(function (i) {
-                        $($("tbody > tr")[i]).addClass('invalid-row');
+                        $($("tbody > tr:not(.total)")[i]).addClass('invalid-row');
                     });
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];

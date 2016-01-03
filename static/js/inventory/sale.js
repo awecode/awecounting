@@ -84,7 +84,7 @@ function SaleViewModel(data) {
         }
         $.ajax({
             type: "POST",
-            url: '/voucher/save/sale/',
+            url: '/voucher/sale/save/',
             data: ko.toJSON(self),
             success: function (msg) {
                 if (msg.id)
