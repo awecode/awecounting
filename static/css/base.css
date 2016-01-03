@@ -526,3 +526,7 @@ table tbody tr td input[type="text"].form-control, table tbody tr td input[type=
     background: none;
     background-image: none;
 }
+
+input.ad-date:after, input.bs-date:after {
+  background: transparent url(../img/calendar.png) center right no-repeat !important;
+}
