@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block extrahead %}
-    <script src="{% static 'js/inventory/sale.js' %}"></script>
+    <script src="{% static 'voucher/js/sale.js' %}"></script>
     <script>
         ko_data = {{data|jsonify}};
     </script>
@@ -95,7 +95,7 @@
                         <span class="wid-pad pull-left" data-bind="text:  $index()+1, localize: 1"> </span>
                     </td>
                     <td>
-                        <select data-url="{% url 'item_add' %}" data-script="/static/js/inventory/item.js"
+                        <select data-url="{% url 'item_add' %}" data-script="/static/inventory/js/item.js"
                                 data-bind="selectize: $root.items, value: item_id, object:item, event: {change: $root.item_changed}, options:{render: {'option': render_option, 'item':render_option}}">
                         </select>
                     </td>

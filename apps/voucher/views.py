@@ -330,7 +330,7 @@ def journal_voucher_create(request, id=None):
         journal_voucher = JournalVoucher(company=request.company)
         scenario = 'Create'
     data = JournalVoucherSerializer(journal_voucher).data
-    return render(request, 'ledger/journal_voucher_form.html', {'data': data, 'scenario': scenario})
+    return render(request, 'voucher/journal_voucher_form.html', {'data': data, 'scenario': scenario})
 
 def journal_voucher_save(request):
     if request.is_ajax():
