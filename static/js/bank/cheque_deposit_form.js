@@ -16,7 +16,9 @@ function ChequeDepositViewModel(data) {
     self.bank_account = ko.observable();
     self.attachment_name = ko.observable();
     self.attach_file = ko.observable()
+    
     self.file = ko.observableArray();
+    self.deleted_file = ko.observableArray();
 
     self.upload_file = ko.observableArray([ new UploadFileVM() ]);
 
@@ -26,6 +28,11 @@ function ChequeDepositViewModel(data) {
 
     self.remove_upload_file = function(file){
         self.upload_file.remove(file);
+    };
+
+    self.remove_file = function(file) {
+        self.file.remove(file)
+        self.deleted_file.push(file)
     };
 
     $.ajax({

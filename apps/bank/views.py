@@ -155,6 +155,7 @@ def cheque_deposit_save(request):
         else:
             dct['error_message'] = 'Error in form data!'
     delete_rows(params.get('table_view').get('deleted_rows'), model)
+    delete_rows(params.get('deleted_file'), AttachFile)
     return JsonResponse(dct)
 
 # @login_required

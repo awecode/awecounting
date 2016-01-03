@@ -103,7 +103,8 @@
                             <input type="textarea" id="narration" data-bind="value: narration" class="form-control" id="date">
                             {# <a data-bind="attr:{href: attachment}, visible: attachment, text: attachment_name"></a> #}
                             <div data-bind="foreach: file">
-                                <a data-bind="attr:{href: attachment}, visible: attachment, text: attachment_name"></a> |
+                                <a data-bind="attr:{href: attachment}, visible: attachment, text: attachment_name"></a> 
+                                <a href="#" class="red fa fa-trash-o" data-bind="click: $root.remove_file"></a><br>
                             </div>
                         </div>
                     </div>
