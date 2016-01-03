@@ -255,6 +255,7 @@ class Sale(models.Model):
     credit = models.BooleanField(default=False)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     date = BSDateField(default=today)
+    due_date = BSDateField(blank=True, null=True)
     company = models.ForeignKey(Company)
 
     def __init__(self, *args, **kwargs):
