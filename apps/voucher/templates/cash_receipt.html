@@ -35,9 +35,10 @@
 
                 <div class="col-md-6 col-xs-12">
                     {{ form.party.label_tag }}
-                    <input class="form-control"
-                           data-url="{% url 'party_add' %}?type=Customer"
-                           data-bind="value: party, select2: $root.parties, event: {change: $root.party_changed}">
+                    <select class="form-control" data-name="Party"
+                            data-url="{% url 'party_add' %}?type=Customer"
+                            data-bind="selectize: $root.parties, value: party">
+                    </select>
                 </div>
 
                 <div class="col-md-6 col-xs-12">
@@ -88,7 +89,7 @@
             <div class="well">
 
                 <a href="#" class="btn btn-raised btn-default"
-                   data-bind="click: load_related_invoices, visible: party() && !table_vm().rows()">
+                   data-bind="click: $parent.load_related_invoices, visible: $parent.party() && !table_vm().rows()">
                     {% trans 'Load Invoices' %}</a>
 
                 <table class="table table-striped" id="voucher_table"

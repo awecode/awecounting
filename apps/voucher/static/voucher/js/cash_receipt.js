@@ -36,9 +36,11 @@ function CashReceiptVM(data) {
         self[k] = ko.observable(data[k]);
     }
 
+
+
     self.party_changed = function (vm) {
         var selected_obj = $.grep(self.parties, function (i) {
-            return i.id == vm.party();
+            return i.id == self.party();
         })[0];
         self.party_address(selected_obj.address);
         self.current_balance(selected_obj.customer_balance);
@@ -46,6 +48,8 @@ function CashReceiptVM(data) {
 //            self.table_vm().rows(null);
 //        }
     }
+
+    //self.party.subscribe(self.party_changed);
 
     self.load_related_invoices = function () {
         if (self.party()) {
