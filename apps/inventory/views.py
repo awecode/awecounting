@@ -148,7 +148,7 @@ def save_purchase(request):
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
-                     'party_id': params.get('party'),
+                     'party_id': params.get('party'), 'due_date': params.get('due_date'),
                      'credit': params.get('credit'), 'company': request.company}
 
     if params.get('id'):
@@ -218,7 +218,7 @@ def save_sale(request):
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
-                     'party_id': params.get('party'),
+                     'party_id': params.get('party'), 'due_date': params.get('due_date'),
                      'credit': params.get('credit'), 'company': request.company}
     if params.get('id'):
         obj = Sale.objects.get(id=params.get('id'), company=request.company)

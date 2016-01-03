@@ -201,6 +201,7 @@ class Purchase(models.Model):
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     credit = models.BooleanField(default=False)
     date = BSDateField(default=today)
+    due_date = BSDateField(blank=True, null=True)
     company = models.ForeignKey(Company)
 
     def type(self):
@@ -263,6 +264,13 @@ class Sale(models.Model):
 
         if not self.pk and not self.voucher_no:
             self.voucher_no = get_next_voucher_no(Sale, self.company)
+
+    def clean(self):
+        if self.company.settings.unique_voucher_number:
+            if self.__class__.objects.filter(voucher_no=self.voucher_no).filter(
+                    date__gte=self.company.settings.get_fy_start(self.date),
+                    date__lte=self.company.settings.get_fy_end(self.date)).exclude(pk=self.pk):
+                raise ValidationError(_('Voucher no. already exists for the fiscal year!'))
 
     def get_absolute_url(self):
         return reverse_lazy('sale-detail', kwargs={'id': self.pk})

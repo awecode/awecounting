@@ -32,17 +32,17 @@ function PurchaseViewModel(data) {
     self.party_address = ko.observable();
     self.party_pan_no = ko.observable();
 
-    self.party_changed = function (obj) {
-        if (typeof(obj.party()) == 'undefined')
-            return false;
-        var selected_obj = $.grep(self.parties(), function (i) {
-            return i.id == obj.party();
-        })[0];
-        if (!selected_obj) return;
-        obj.party_address(selected_obj.address);
-        obj.party_name(selected_obj.name);
-        obj.party_pan_no(selected_obj.pan_no);
-    }
+    //self.party_changed = function (obj) {
+    //    if (typeof(obj.party()) == 'undefined')
+    //        return false;
+    //    var selected_obj = $.grep(self.parties(), function (i) {
+    //        return i.id == obj.party();
+    //    })[0];
+    //    if (!selected_obj) return;
+    //    obj.party_address(selected_obj.address);
+    //    obj.party_name(selected_obj.name);
+    //    obj.party_pan_no(selected_obj.pan_no);
+    //}
 
     $.ajax({
         url: '/inventory/api/units.json',
