@@ -19,6 +19,7 @@ function CashReceiptVM(data) {
     self.id = ko.observable('');
     self.message = ko.observable();
     self.state = ko.observable('standby');
+    self.party_id = ko.observable();
     self.party = ko.observable();
     self.receipt_on = ko.observable();
     self.party_address = ko.observable();
@@ -32,10 +33,17 @@ function CashReceiptVM(data) {
         }
     });
 
+    self.id.subscribe(function (id) {
+        update_url_with_id(id);
+    });
+
     for (var k in data) {
         self[k] = ko.observable(data[k]);
     }
 
+    self.party.subscribe(function (party) {
+        self.party_address(party.address);
+    });
 
 
 //    self.party_changed = function (vm) {
@@ -54,7 +62,7 @@ function CashReceiptVM(data) {
     self.load_related_invoices = function () {
         if (self.party()) {
             $.ajax({
-                url: '/voucher/invoice/party/' + self.party() + '.json',
+                url: '/voucher/api/sale/' + self.party() + '.json',
                 dataType: 'json',
                 async: false,
                 success: function (data) {
@@ -121,13 +129,10 @@ function CashReceiptVM(data) {
                 data: data,
                 success: function (msg) {
                     if (typeof (msg.error_message) != 'undefined') {
-                        bs_alert.error(msg.error_message);
-                        self.state('error');
+                        bsalert.error(msg.error_message);
                     }
                     else {
-                        bs_alert.success('Saved!');
-                        self.status('Unapproved');
-                        self.state('success');
+                        bsalert.success('Saved!');
                         if (msg.id)
                             self.id(msg.id);
                         if (msg.redirect_to) {

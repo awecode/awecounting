@@ -7,11 +7,11 @@ from django.views.generic import ListView
 import json
 from ..inventory.models import set_transactions
 from ..ledger.models import set_transactions as set_ledger_transactions, Account
-from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows
+from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none
 
 from .forms import CashReceiptForm, JournalVoucherForm
 from .serializers import CashReceiptSerializer, JournalVoucherSerializer, PurchaseSerializer, SaleSerializer
-from .models import CashReceipt, Purchase, JournalVoucher, JournalVoucherRow, PurchaseRow, Sale, SaleRow
+from .models import CashReceipt, Purchase, JournalVoucher, JournalVoucherRow, PurchaseRow, Sale, SaleRow, CashReceiptRow
 
 
 @login_required
@@ -110,6 +110,53 @@ def purchase(request, id=None):
         scenario = 'Create'
     data = PurchaseSerializer(obj).data
     return render(request, 'purchase-form.html', {'data': data, 'scenario': scenario, 'purchase': obj})
+
+
+@login_required
+def save_cash_receipt(request):
+    params = json.loads(request.body)
+    dct = {'rows': {}}
+    if params.get('voucher_no') == '':
+        params['voucher_no'] = None
+    object_values = {'party_id': params.get('party_id'), 'receipt_on': params.get('receipt_on'),
+                     'voucher_no': params.get('voucher_no'),
+                     'reference': params.get('reference'), 'company': request.company}
+    if params.get('id'):
+        obj = CashReceipt.objects.get(id=params.get('id'), company=request.company)
+    else:
+        obj = CashReceipt(company=request.company)
+        # if not created:
+    try:
+        obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = CashReceiptRow
+        if params.get('table_vm').get('rows'):
+            for index, row in enumerate(params.get('table_vm').get('rows')):
+                if invalid(row, ['payment']):
+                    continue
+                row['payment'] = zero_for_none(empty_to_none(row['payment']))
+                invoice = Sale.objects.get(voucher_no=row.get('voucher_no'), company=request.company)
+                values = {'receipt': row.get('payment'), 'cash_receipt': obj, 'invoice': invoice}
+                submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+                if not created:
+                    submodel = save_model(submodel, values)
+                dct['rows'][index] = submodel.id
+            total = float(params.get('total_payment'))
+            obj.amount = total
+            # obj.status = 'Unapproved'
+            obj.save()
+        else:
+            obj.amount = params.get('amount')
+            # obj.status = 'Unapproved'
+            obj.save()
+    except Exception as e:
+        if hasattr(e, 'messages'):
+            dct['error_message'] = '; '.join(e.messages)
+        elif str(e) != '':
+            dct['error_message'] = str(e)
+        else:
+            dct['error_message'] = 'Error in form data!'
+    return JsonResponse(dct)
 
 
 def save_purchase(request):
@@ -332,6 +379,7 @@ def journal_voucher_create(request, id=None):
     data = JournalVoucherSerializer(journal_voucher).data
     return render(request, 'voucher/journal_voucher_form.html', {'data': data, 'scenario': scenario})
 
+
 def journal_voucher_save(request):
     if request.is_ajax():
         params = json.loads(request.body)
@@ -339,7 +387,8 @@ def journal_voucher_save(request):
     company = request.company
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
-    object_values = {'voucher_no': int(params.get('voucher_no')), 'date': params.get('date'), 'narration': params.get('narration'),
+    object_values = {'voucher_no': int(params.get('voucher_no')), 'date': params.get('date'),
+                     'narration': params.get('narration'),
                      'status': params.get('status'), 'company': company}
 
     if params.get('id'):
@@ -356,7 +405,8 @@ def journal_voucher_save(request):
                 continue
             else:
                 values = {'type': row.get('type'), 'account_id': row.get('account'),
-                          'description': row.get('description'), 'dr_amount': empty_to_none(float(row.get('dr_amount'))), 'cr_amount': empty_to_none(float(row.get('cr_amount'))),
+                          'description': row.get('description'), 'dr_amount': empty_to_none(float(row.get('dr_amount'))),
+                          'cr_amount': empty_to_none(float(row.get('cr_amount'))),
                           'journal_voucher': obj}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:

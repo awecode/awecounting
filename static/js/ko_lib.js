@@ -117,8 +117,15 @@ ko.bindingHandlers.selectize = {
 
         if (allBindingsAccessor.has('object')) {
             var optionsValue = allBindingsAccessor.get('optionsValue') || 'id';
-            var value_accessor = valueAccessor();
+
+            if (typeof valueAccessor() == 'function') {
+                var value_accessor = valueAccessor();
+            } else {
+                var value_accessor = valueAccessor;
+            }
+
             var selected_obj = $.grep(value_accessor(), function (i) {
+
                 if (typeof i[optionsValue] == 'function')
                     var id = i[optionsValue]
                 else

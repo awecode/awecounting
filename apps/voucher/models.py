@@ -179,5 +179,5 @@ class CashReceipt(models.Model):
 class CashReceiptRow(models.Model):
     invoice = models.ForeignKey(Sale, related_name='receipts')
     receipt = models.FloatField()
-    discount = models.FloatField()
+    discount = models.FloatField(blank=True, null=True)
     cash_receipt = models.ForeignKey(CashReceipt, related_name='rows')

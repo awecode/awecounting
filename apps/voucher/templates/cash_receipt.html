@@ -37,7 +37,7 @@
                     {{ form.party.label_tag }}
                     <select class="form-control" data-name="Party"
                             data-url="{% url 'party_add' %}?type=Customer"
-                            data-bind="selectize: $root.parties, value: party">
+                            data-bind="selectize: $root.parties, value: party_id, object:party">
                     </select>
                 </div>
 
@@ -102,8 +102,7 @@
                         <th>{% trans 'Pending Amount' %}</th>
                         <th>{% trans 'Due Date' %}</th>
                         <th>{% trans 'Overdue Days' %}</th>
-                        <th>{% trans 'Receipt' %}</th>
-                        <th>{% trans 'Discount' %}</th>
+                        <th>{% trans 'Received' %}</th>
                     </tr>
                     </thead>
 
@@ -111,21 +110,19 @@
                     <!-- ko foreach:rows -->
                     <div id="particulars-body">
                         <tr>
-                            <td data-bind="text: bill_no"></td>
+                            <td data-bind="text: voucher_no"></td>
                             <td data-bind="text: date"></td>
                             <td data-bind="text: total_amount"></td>
                             <td data-bind="text: pending_amount"></td>
                             <td data-bind="text: due_date"></td>
                             <td data-bind="text: overdue_days()"></td>
                             <td data-bind="editableText: payment, numeric: true"></td>
-                            <td data-bind="editableText: discount, numeric: true"></td>
                         </tr>
                         <!-- /ko -->
                     </div>
                     <tr class="total">
-                        <td colspan="6" class="pull-right">{% trans 'TOTAL' %}</td>
+                        <td colspan="6">{% trans 'TOTAL' %}</td>
                         <td data-bind="text: get_total('payment')"></td>
-                        <td data-bind="text: get_total('discount')"></td>
                     </tr>
 
                     </tbody>
