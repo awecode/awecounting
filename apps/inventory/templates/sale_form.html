@@ -71,23 +71,20 @@
                 </div>
 
             </div>
-
-
         </div>
-        <br>
 
         <div data-bind="with: table_view" class="well">
 
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <td>{% trans "S.N" %}</td>
-                    <td>{% trans "Items" %}</td>
-                    <td>{% trans "Quantity" %}</td>
-                    <td>{% trans "Rate" %}</td>
-                    <td>{% trans "Unit" %}</td>
-                    <td>{% trans 'Discount' %}</td>
-                    <td>{% trans 'Total' %}</td>
+                    <th>{% trans "S.N." %}</th>
+                    <th>{% trans "Item" %}</th>
+                    <th>{% trans "Quantity" %}</th>
+                    <th>{% trans "Rate" %}</th>
+                    <th>{% trans "Unit" %}</th>
+                    <th>{% trans 'Discount' %}</th>
+                    <th>{% trans 'Total' %}</th>
                 </tr>
                 </thead>
 
@@ -116,9 +113,9 @@
                 </tr>
 
                 <!-- /ko -->
-                <tr>
+                <tr class="total">
                     <td colspan="6">
-                        {% trans 'Grand total' %}
+                        {% trans 'Grand Total' %}
                     </td>
                     <td data-bind="text: $root.sub_total(), localize: 1"></td>
                 </tr>
