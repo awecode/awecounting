@@ -16,7 +16,7 @@ INSTALLED_APPS += (
 
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'ENGINE': 'django.db.backends.postgresql',
 #         'NAME': 'awecounting',
 #         'USER': 'awecounting',
 #         'PASSWORD': 'password',

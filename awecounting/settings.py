@@ -10,6 +10,7 @@ STATICFILES_DIRS = (
 )
 
 INSTALLED_APPS = (
+    'apps.users',
     'modeltranslation',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -18,12 +19,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # apps
     'apps.inventory',
     'apps.ledger',
-    'apps.users',
     'apps.share',
-    # 'apps.bank',
     'apps.bank',
 
     'njango',
@@ -41,6 +39,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'linaro_django_pagination.middleware.PaginationMiddleware',
     'webstack_django_sorting.middleware.SortingMiddleware',
     'apps.users.middleware.RoleMiddleware',

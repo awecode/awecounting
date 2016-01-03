@@ -1,9 +1,17 @@
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView
-from .models import BankAccount
-from .forms import BankAccountForm
-from apps.ledger.models import Account
+from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRow
+from .forms import BankAccountForm, BankCashDepositForm
+from .serializer import ChequeDepositSerializer
+from apps.ledger.models import Account, delete_rows
+from datetime import date
+from django.shortcuts import render, get_object_or_404, redirect
+import json
+from awecounting.utils.helpers import save_model, invalid
+from django.http import JsonResponse
+from django.core.files import File
+from io import FileIO, BufferedWriter
 
 
 class BankAccountView(object):
@@ -33,6 +41,114 @@ class BankAccountUpdate(BankAccountView, UpdateView):
 class BankAccountDelete(BankAccountView, DeleteView):
     pass
 
+
+def delete_cash_deposit(request, id):
+    obj = get_object_or_404(BankCashDeposit, id=id, company=request.company)
+    obj.delete()
+    return reverse_lazy('bank:cash_deposit_list')
+
+
+def list_cash_deposits(request):
+    items = BankCashDeposit.objects.filter(company=request.company)
+    # filtered_items = CashDepositFilter(request.GET, queryset=items, company=request.company)
+    return render(request, 'list_cash_deposits.html', {'objects': items})
+
+
+def cash_deposit(request, id=None):
+    if id:
+        receipt = get_object_or_404(BankCashDeposit, id=id, company=request.company)
+        scenario = 'Update'
+    else:
+        receipt = BankCashDeposit(date=date.today(), company=request.company)
+        scenario = 'Create'
+    if request.POST.get('action') == 'Approve':
+        set_transactions(receipt, receipt.date,
+                         ['dr', receipt.bank_account, receipt.amount],
+                         ['cr', receipt.benefactor, receipt.amount],
+                         )
+        receipt.status = 'Approved'
+        receipt.save()
+        return redirect(reverse_lazy('bank:cash_deposit_edit', kwargs={'id': receipt.id}))
+    if request.POST:
+        form = BankCashDepositForm(request.POST, instance=receipt, company=request.company)
+        if form.is_valid():
+            receipt = form.save(commit=False)
+            receipt.company = request.company
+            if 'attachment' in request.FILES:
+                receipt.attachment = request.FILES['attachment']
+            receipt.status = 'Unapproved'
+            receipt.save()
+            return redirect(reverse_lazy('bank:cash_deposit_edit', kwargs={'id': receipt.id}))
+    else:
+        form = BankCashDepositForm(instance=receipt, company=request.company)
+    return render(request, 'cash_deposit.html', {'form': form, 'scenario': scenario})
+
+
+class ChequeDepositView(object):
+    model = ChequeDeposit
+    success_url = reverse_lazy('bank:cheque_deposit_list')
+
+
+class ChequeDepositList(ChequeDepositView, ListView):
+    pass
+
+
+def cheque_deposit_create(request, id=None):
+    if id:
+        cheque_deposit = get_object_or_404(ChequeDeposit, id=id)
+        scenario = 'Update'
+    else:
+        cheque_deposit = ChequeDeposit(company=request.company)
+        scenario = 'Create'
+    data = ChequeDepositSerializer(cheque_deposit).data
+    return render(request, 'bank/cheque_deposit_form.html', {'data': data, 'scenario': scenario})
+
+
+def cheque_deposit_save(request):
+    if request.is_ajax():
+        # params = json.loads(request.body)
+        params = json.loads(request.POST.get('self'))
+    dct = {'rows': {}}
+    company = request.company
+    if params.get('voucher_no') == '':
+        params['voucher_no'] = None
+    object_values = {'voucher_no': int(params.get('voucher_no')), 'date': params.get('date'),
+                     'bank_account_id': params.get('bank_account'),
+                     'clearing_date': params.get('clearing_date'), 'benefactor_id': params.get('benefactor'),
+                     'deposited_by': params.get('deposited_by'),
+                     'narration': params.get('narration'), 'status': params.get('status'), 'company': company}
+    if params.get('id'):
+        obj = ChequeDeposit.objects.get(id=params.get('id'), company=request.company)
+    else:
+        obj = ChequeDeposit(company=request.company)
+    if 'attachment' in request.FILES:
+        obj.attachment = request.FILES.get('attachment')
+    try:
+        obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = ChequeDepositRow
+        for ind, row in enumerate(params.get('table_view').get('rows')):
+            if invalid(row, ['cheque_number', 'amount']):
+                continue
+            else:
+                values = {'sn': ind + 1, 'cheque_number': row.get('cheque_number'),
+                          'cheque_date': row.get('cheque_date'), 'drawee_bank': row.get('drawee_bank'),
+                          'drawee_bank_address': row.get('drawee_bank_address'),
+                          'amount': row.get('amount'), 'cheque_deposit': obj}
+                submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+                if not created:
+                    submodel = save_model(submodel, values)
+                dct['rows'][ind] = submodel.id
+    except Exception as e:
+        if hasattr(e, 'messages'):
+            dct['error_message'] = '; '.join(e.messages)
+        elif str(e) != '':
+            dct['error_message'] = str(e)
+        else:
+            dct['error_message'] = 'Error in form data!'
+    delete_rows(params.get('table_view').get('deleted_rows'), model)
+    return JsonResponse(dct)
+
 # @login_required
 # def bank_settings(request):
 #     items = BankAccount.objects.filter(company=request.company)
@@ -51,14 +167,6 @@ class BankAccountDelete(BankAccountView, DeleteView):
 #     obj = get_object_or_404(ElectronicFundTransferIn, id=id, company=request.company)
 #     obj.delete()
 #     return redirect('/bank/electronic-fund-transfers-in/')
-
-
-# @login_required
-# def delete_cash_deposit(request, id):
-#     obj = get_object_or_404(BankCashDeposit, id=id, company=request.company)
-#     obj.delete()
-#     return redirect('/bank/cash-deposits/')
-
 
 # @login_required
 # def delete_cheque_payment(request, id):
@@ -101,43 +209,6 @@ class BankAccountDelete(BankAccountView, DeleteView):
 #     filtered_items = ElectronicFundTransferOutFilter(request.GET, queryset=items, company=request.company)
 #     return render(request, 'list_electronic_fund_transfers_out.html', {'objects': filtered_items})
 
-
-# @login_required
-# def list_cash_deposits(request):
-#     items = BankCashDeposit.objects.filter(company=request.company)
-#     filtered_items = CashDepositFilter(request.GET, queryset=items, company=request.company)
-#     return render(request, 'list_cash_deposits.html', {'objects': filtered_items})
-
-
-# @login_required
-# def cash_deposit(request, id=None):
-#     if id:
-#         receipt = get_object_or_404(BankCashDeposit, id=id, company=request.company)
-#         scenario = 'Update'
-#     else:
-#         receipt = BankCashDeposit(date=date.today(), company=request.company)
-#         scenario = 'New'
-#     if request.POST.get('action') == 'Approve':
-#         set_transactions(receipt, receipt.date,
-#                          ['dr', receipt.bank_account, receipt.amount],
-#                          ['cr', receipt.benefactor, receipt.amount],
-#         )
-#         receipt.status = 'Approved'
-#         receipt.save()
-#         return redirect(reverse_lazy('update_cash_deposit', kwargs={'id': receipt.id}))
-#     if request.POST:
-#         form = BankCashDepositForm(request.POST, initial={'voucher_no': 20}, instance=receipt, company=request.company)
-#         if form.is_valid():
-#             receipt = form.save(commit=False)
-#             receipt.company = request.company
-#             if 'attachment' in request.FILES:
-#                 receipt.attachment = request.FILES['attachment']
-#             receipt.status = 'Unapproved'
-#             receipt.save()
-#             return redirect(reverse_lazy('update_cash_deposit', kwargs={'id': receipt.id}))
-#     else:
-#         form = BankCashDepositForm(instance=receipt, company=request.company)
-#     return render(request, 'cash_deposit.html', {'form': form, 'scenario': scenario})
 
 
 # @login_required

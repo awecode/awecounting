@@ -1,7 +1,7 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 import views
 
-urlpatterns = patterns('',
+urlpatterns = [
                        # url(r'^settings/$', views.bank_settings, name='bank_settings'),
                        # url(r'^accounts/$', views.list_bank_accounts, name='list_bank_accounts'),
                        # url(r'^account/create/$', views.bank_account_form, name='create_bank_account'),
@@ -18,11 +18,11 @@ urlpatterns = patterns('',
                        # url(r'^cheque-deposit/approve/$', views.approve_cheque_deposit, name='approve_cheque_deposit'),
 
 
-                       # url(r'^cash-deposits/$', views.list_cash_deposits, name='list_cash_deposits'),
-                       # url(r'^cash-deposit/$', views.cash_deposit, name='new_cash_deposit'),
-                       # url(r'^cash-deposit/(?P<id>[0-9]+)$', views.cash_deposit, name='update_cash_deposit'),
-                       # url(r'^cash-deposit/delete/(?P<id>[0-9]+)$', views.delete_cash_deposit,
-                       #     name='delete_cash_deposit'),
+                       url(r'^cash_deposits/$', views.list_cash_deposits, name='cash_deposit_list'),
+                       url(r'^cash_deposit/add$', views.cash_deposit, name='cash_deposit_add'),
+                       url(r'^cash_deposit/(?P<id>[0-9]+)$', views.cash_deposit, name='cash_deposit_edit'),
+                       url(r'^cash_deposit/delete/(?P<id>[0-9]+)$', views.delete_cash_deposit,
+                           name='cash_deposit_delete'),
 
                        # url(r'^cheque-payments/$', views.list_cheque_payments, name='list_cheque_payments'),
                        # url(r'^cheque-payment/$', views.cheque_payment, name='new_cheque_payment'),
@@ -54,6 +54,10 @@ urlpatterns = patterns('',
                        url(r'^account/add/$', views.BankAccountCreate.as_view(), name='bankaccount_add'),
                        url(r'^account/edit/(?P<pk>\d+)/$', views.BankAccountUpdate.as_view(), name='bankaccount_edit'),
                        url(r'^account/delete/(?P<pk>\d+)/$', views.BankAccountDelete.as_view(), name='bankaccount_delete'),
+                   
+                       url(r'^cheque_deposit/$', views.ChequeDepositList.as_view(), name='cheque_deposit_list'),
+                       url(r'^cheque_deposit/add/$', views.cheque_deposit_create, name='cheque_deposit_add'),
+                       url(r'^cheque_deposit/add/(?P<id>[0-9]+)/$', views.cheque_deposit_create, name='cheque_deposit_edit'),
+                       url(r'^save/cheque_deposit/$', views.cheque_deposit_save, name='cheque_deposit_save'),
 
-)
-
+]

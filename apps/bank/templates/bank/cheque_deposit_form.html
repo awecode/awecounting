@@ -1,0 +1,120 @@
+{% extends "_base.html" %}
+{% load i18n filters staticfiles njango_filters %}
+
+{% block page-title %}
+    {% trans "Cheque Deposit" %}
+{% endblock %}
+
+{% block extrahead %}
+    <script src="{% static 'js/bank/cheque_deposit_form.js' %}"></script>
+    <script>
+        ko_data =
+        {{ data |jsonify }}
+    </script>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'bank:cheque_deposit_list' %}">{% trans 'Cheque Deposit' %}</a></li>
+    <li>{{ scenario }}</li>
+{% endblock %}
+
+{% block content %}
+    <form method="post" data-bind="submit: save" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="well">
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <label for="voucher-no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
+                    <input type="text" data-bind="value: voucher_no" class="form-control" id="voucher-no">
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <label for="date">{% trans 'Date' %}</label>
+                    <input type="text" data-bind="value: date" class="form-control {% calendar_class %}" id="date">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <label for="deposited_by">{% trans 'Deposited By' %}</label>
+                    <input type="text" data-bind="value: deposited_by" class="form-control" id="deposited_by">
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <label for="clearing_date">{% trans 'Clearing' %} {% trans 'Date' %}</label>
+                    <input type="text" data-bind="value: clearing_date" class="form-control {% calendar_class %}"
+                           id="clearing_date">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <label for="bank_account">{% trans 'Bank' %} {% trans 'Account' %}</label>
+                    <select data-bind="selectize: $root.bank_account_array, value: bank_account"
+                            id="bank_account"></select>
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <label for="benefactor">{% trans 'Benefactor' %}</label>
+                    <select data-bind="selectize: $root.benefactor_array, value: benefactor" id="benefactor"></select>
+                </div>
+            </div>
+
+        </div>
+
+        <div data-bind="with: table_view" class="well">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>{% trans "SN" %}</th>
+                    <th>{% trans "Cheque Number" %}</th>
+                    <th>{% trans "Cheque Date" %}</th>
+                    <th>{% trans "Drawee Bank" %}</th>
+                    <th>{% trans "Branch/Address" %}</th>
+                    <th>{% trans "Amount" %}</th>
+                    <th></th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <!-- ko foreach: rows -->
+                <tr>
+                    <td>
+                        <span class="wid-pad pull-left" data-bind="text:  $index()+1, localize: 1"> </span>
+                    </td>
+                    <td data-bind="editableText: cheque_number"></td>
+                    <td>
+                        <input type="text" data-bind="value: cheque_date" class="form-control {% calendar_class %}">
+                    </td>
+                    <td data-bind="editableText: drawee_bank"></td>
+                    <td data-bind="editableText: drawee_bank_address"></td>
+                    <td data-bind="editableText: amount"></td>
+                    <td class="hide-on-print text-center">
+                        <a href="#" class="red fa fa-trash-o fa-2x" data-bind="click: $parent.removeRow"></a>
+                    </td>
+                </tr>
+                <!-- /ko -->
+                <tr>
+                    <td colspan="5">{% trans "Grand Total" %}</td>
+                    <td data-bind="text: $root.total()"></td>
+                </tr>
+                </tbody>
+            </table>
+            <a class="btn btn-default btn-raised" data-bind="click: addRow">
+                {% trans 'Add New Row' %}
+            </a>
+        </div>
+        <div class="well">
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                    <label for="party">{% trans 'Narration' %}</label>
+                    <input type="textarea" id="narration" data-bind="value: narration" class="form-control" id="date">
+                    <a data-bind="attr:{href: attachment}, visible: attachment">attachment</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                    <label class="control-label">{% trans "Select File" %}</label>
+                    <input id="attachment" type="file" class="file">
+                </div>
+            </div>
+        </div>
+        <input type="submit" class="btn btn-raised btn-info btn-lg" value="{% trans 'Save' %}">
+    </form>
+
+{% endblock %}

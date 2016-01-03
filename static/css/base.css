@@ -521,3 +521,8 @@ tr.total td {
     opacity: 1;
     position: relative;
 }
+
+table tbody tr td input[type="text"].form-control, table tbody tr td input[type="text"].form-control:focus {
+    background: none;
+    background-image: none;
+}
