@@ -9,8 +9,8 @@ from jsonfield import JSONField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db.models import F
-from apps.ledger.models import Account
-from apps.users.models import Company
+from ..ledger.models import Account
+from ..users.models import Company
 from awecounting.utils.helpers import get_next_voucher_no, none_for_zero, zero_for_none
 
 
@@ -201,6 +201,7 @@ class Purchase(models.Model):
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     credit = models.BooleanField(default=False)
     date = BSDateField(default=today)
+    due_date = BSDateField(blank=True, null=True)
     company = models.ForeignKey(Company)
 
     def type(self):
@@ -255,14 +256,21 @@ class Sale(models.Model):
     credit = models.BooleanField(default=False)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     date = BSDateField(default=today)
+    due_date = BSDateField(blank=True, null=True)
     company = models.ForeignKey(Company)
 
     def __init__(self, *args, **kwargs):
         super(Sale, self).__init__(*args, **kwargs)
 
         if not self.pk and not self.voucher_no:
-            print self.company
             self.voucher_no = get_next_voucher_no(Sale, self.company)
+
+    def clean(self):
+        if self.company.settings.unique_voucher_number:
+            if self.__class__.objects.filter(voucher_no=self.voucher_no).filter(
+                    date__gte=self.company.settings.get_fy_start(self.date),
+                    date__lte=self.company.settings.get_fy_end(self.date)).exclude(pk=self.pk):
+                raise ValidationError(_('Voucher no. already exists for the fiscal year!'))
 
     def get_absolute_url(self):
         return reverse_lazy('sale-detail', kwargs={'id': self.pk})

@@ -1,8 +1,8 @@
 from django.conf.urls import patterns, url
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from apps.inventory import views
-from apps.inventory import api
+import views
+import api
 
 urlpatterns = [
     url(r'^item/add/$', views.item, name='item_add'),

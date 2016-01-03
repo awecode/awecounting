@@ -78,6 +78,10 @@ function SaleViewModel(data) {
         self[k] = ko.observable(data[k]);
 
     self.save = function (item, event) {
+        if (self.credit() && !self.party()) {
+            bsalert.error('Party is required for credit sale!');
+            return false;
+        }
         $.ajax({
             type: "POST",
             url: '/inventory/save/sale/',
@@ -91,12 +95,12 @@ function SaleViewModel(data) {
                 }
                 else {
                     bsalert.success('Saved!');
-                    $("#tbody > tr").each(function (i) {
-                        $($("#tbody > tr")[i]).addClass('invalid-row');
+                    $("tbody > tr").each(function (i) {
+                        $($("tbody > tr")[i]).addClass('invalid-row');
                     });
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];
-                        $($("#tbody > tr")[i]).removeClass('invalid-row');
+                        $($("tbody > tr")[i]).removeClass('invalid-row');
                     }
                 }
             }
@@ -131,11 +135,11 @@ function SaleRow(row, sale_vm) {
     for (var k in row)
         self[k] = ko.observable(row[k]);
 
-    self.item.subscribe(function(item){
+    self.item.subscribe(function (item) {
         var unit = get_by_id(sale_vm.units(), item.unit.id);
-        if (unit){
-            self.unit_id(unit.id);    
-        }else{
+        if (unit) {
+            self.unit_id(unit.id);
+        } else {
             purchase_vm.units.push(unit);
             self.unit_id(unit.id);
         }
