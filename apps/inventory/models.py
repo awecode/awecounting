@@ -288,7 +288,7 @@ class Sale(models.Model):
     def total(self):
         grand_total = 0
         for obj in self.rows.all():
-            total = obj.quantity * obj.rate
+            total = obj.quantity * obj.rate - obj.discount
             grand_total += total
         return grand_total
 
@@ -301,6 +301,9 @@ class SaleRow(models.Model):
     discount = models.FloatField(default=0)
     unit = models.ForeignKey(Unit)
     sale = models.ForeignKey(Sale, related_name='rows')
+
+    def get_total(self):
+        return float(self.quantity) * float(self.rate) - float(self.discount)
 
     def get_voucher_no(self):
         return self.sale.voucher_no

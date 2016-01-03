@@ -228,18 +228,20 @@ def save_sale(request):
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = SaleRow
+        grand_total = 0
         for ind, row in enumerate(params.get('table_view').get('rows')):
             invalid_check = invalid(row, ['item_id', 'quantity', 'unit_id'])
             if invalid_check:
                 continue
                 # dct['error_message'] = 'These fields must be filled: ' + ', '.join(invalid_check)
             # else:
-            values = {'sn': ind + 1, 'item_id': row.get('item_id'), 'quantity': row.get('quantity'),
+            values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'quantity': row.get('quantity'),
                       'rate': row.get('rate'), 'unit_id': row.get('unit_id'), 'discount': row.get('discount'),
                       'sale': obj}
             submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
             if not created:
                 submodel = save_model(submodel, values)
+            grand_total += submodel.get_total()
             dct['rows'][ind] = submodel.id
             set_transactions(submodel, obj.date,
                              ['cr', submodel.item.account, submodel.quantity],
@@ -247,17 +249,21 @@ def save_sale(request):
             if obj.credit:
                 set_ledger_transactions(submodel, obj.date,
                                         ['cr', obj.party.account, obj.total],
-                                        ['dr', 'cash', obj.total],
+                                        ['dr', Account.objects.get(name='Cash', company=request.company), obj.total],
                                         # ['cr', sales_tax_account, tax_amount],
                                         )
             else:
                 set_ledger_transactions(submodel, obj.date,
                                         ['cr', obj.party.account, obj.total],
-                                        ['dr', 'cash', obj.total],
+                                        ['dr', Account.objects.get(name='Cash', company=request.company), obj.total],
                                         # ['cr', sales_tax_account, tax_amount],
                                         )
                 # delete_rows(params.get('table_view').get('deleted_rows'), model)
-
+        obj.total_amount = grand_total
+        if obj.credit:
+            obj.pending_amount = grand_total
+        obj.save()
+        
     except Exception as e:
         if hasattr(e, 'messages'):
             dct['error_message'] = '; '.join(e.messages)
