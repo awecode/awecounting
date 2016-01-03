@@ -7,7 +7,6 @@ $(document).ready(function () {
 function ChequeDepositViewModel(data) {
     var self = this;
 
-
     self.id = ko.observable();
     self.voucher_no = ko.observable();
     self.date = ko.observable();
@@ -17,6 +16,7 @@ function ChequeDepositViewModel(data) {
     self.bank_account = ko.observable();
     self.attachment_name = ko.observable();
     self.attach_file = ko.observable()
+    self.file = ko.observableArray();
 
     $.ajax({
         url: '/ledger/api/bank_account/account.json/',
@@ -99,6 +99,15 @@ function ChequeDepositViewModel(data) {
         });
     }
 
+}
+
+
+function FileViewModel(){
+    var self = this;
+
+    self.file = ko.observable();
+    self.attachment_url = ko.observable();
+    self.attachment_name = ko.observable();
 }
 
 function ChequeDepositRowViewModel(row) {
