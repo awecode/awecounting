@@ -180,3 +180,9 @@ class ElectronicFundTransferInRow(models.Model):
 
     def get_voucher_no(self):
         return self.electronic_fund_transfer_in.id
+
+
+class File(models.Model):
+    attachment = models.FileField(upload_to='cheque_payments/%Y/%m/%d', blank=True, null=True)
+    narration = models.TextField(null=True, blank=True)
+    cheque_deposit = models.ForeignKey(ChequeDeposit)
