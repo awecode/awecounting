@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
+from apps.inventory.models import Sale, Party
 from ..voucher.forms import CashReceiptForm
 from ..voucher.serializers import CashReceiptSerializer
 from .models import CashReceipt
@@ -19,14 +20,14 @@ def cash_receipt(request, id=None):
     return render(request, 'cash_receipt.html', {'form': form, 'scenario': scenario, 'data': data})
 
 
-# @login_required
-# def party_invoices(request, id):
-#     objs = Invoice.objects.filter(company=request.company, party=Party.objects.get(id=id), pending_amount__gt=0)
-#     lst = []
-#     for obj in objs:
-#         lst.append({'id': obj.id, 'bill_no': obj.invoice_no, 'date': obj.date, 'total_amount': obj.total_amount,
-#                     'pending_amount': obj.pending_amount, 'due_date': obj.due_date})
-#     return HttpResponse(json.dumps(lst, default=handler), mimetype="application/json")
+@login_required
+def party_invoices(request, id):
+    objs = Sale.objects.filter(company=request.company, party=Party.objects.get(id=id), pending_amount__gt=0)
+    lst = []
+    for obj in objs:
+        lst.append({'id': obj.id, 'bill_no': obj.invoice_no, 'date': obj.date, 'total_amount': obj.total_amount,
+                    'pending_amount': obj.pending_amount, 'due_date': obj.due_date})
+    return HttpResponse(json.dumps(lst, default=handler), mimetype="application/json")
 #
 #
 # @login_required

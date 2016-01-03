@@ -38,16 +38,16 @@ function CashReceiptVM(data) {
 
 
 
-    self.party_changed = function (vm) {
-        var selected_obj = $.grep(self.parties, function (i) {
-            return i.id == self.party();
-        })[0];
-        self.party_address(selected_obj.address);
-        self.current_balance(selected_obj.customer_balance);
-//        if (self.table_vm()){
-//            self.table_vm().rows(null);
-//        }
-    }
+//    self.party_changed = function (vm) {
+//        var selected_obj = $.grep(self.parties, function (i) {
+//            return i.id == self.party();
+//        })[0];
+//        self.party_address(selected_obj.address);
+//        self.current_balance(selected_obj.customer_balance);
+////        if (self.table_vm()){
+////            self.table_vm().rows(null);
+////        }
+//    }
 
     //self.party.subscribe(self.party_changed);
 
@@ -73,11 +73,11 @@ function CashReceiptVM(data) {
                             rows: self.invoices
                         };
                         self.table_vm(new TableViewModel(options, CashReceiptRowVM));
-                        bs_alert.success('Invoices loaded!');
+                        bsalert.success('Invoices loaded!');
                         self.state('success');
                     }
                     else {
-                        bs_alert.warning('No pending invoices found for the customer!');
+                        bsalert.warning('No pending invoices found for the customer!');
                         self.state('error');
                     }
                 }
@@ -100,7 +100,7 @@ function CashReceiptVM(data) {
 
     self.validate = function () {
         if (!self.party()) {
-            bs_alert.error('"Party" field is required!')
+            bsalert.error('"Party" field is required!')
             self.state('error');
             return false;
         }

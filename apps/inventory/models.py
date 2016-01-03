@@ -257,7 +257,10 @@ class Sale(models.Model):
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     date = BSDateField(default=today)
     due_date = BSDateField(blank=True, null=True)
+    pending_amount = models.FloatField(null=True, blank=True)
+    total_amount = models.FloatField(null=True, blank=True)
     company = models.ForeignKey(Company)
+    description = models.TextField(null=True, blank=True)
 
     def __init__(self, *args, **kwargs):
         super(Sale, self).__init__(*args, **kwargs)

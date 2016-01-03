@@ -84,12 +84,12 @@
         </div>
 
 
-        <div data-bind="with: table_vm()">
+        <div data-bind="with: table_vm(), visible: party()">
 
             <div class="well">
 
                 <a href="#" class="btn btn-raised btn-default"
-                   data-bind="click: $parent.load_related_invoices, visible: $parent.party() && !table_vm().rows()">
+                   data-bind="click: $parent.load_related_invoices, visible: !rows()">
                     {% trans 'Load Invoices' %}</a>
 
                 <table class="table table-striped" id="voucher_table"
