@@ -96,7 +96,7 @@ function SaleViewModel(data) {
                 else {
                     bsalert.success('Saved!');
                     $("tbody > tr").each(function (i) {
-                        $($("tbody > tr")[i]).addClass('invalid-row');
+                        $($("tbody > tr:not(.total)")[i]).addClass('invalid-row');
                     });
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];
