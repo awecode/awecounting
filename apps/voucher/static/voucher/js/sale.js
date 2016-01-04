@@ -32,7 +32,7 @@ function SaleViewModel(data) {
     }
 
     $.ajax({
-        url: '/inventory/api/parties.json',
+        url: '/ledger/api/parties.json',
         dataType: 'json',
         async: false,
         success: function (data) {
@@ -84,7 +84,7 @@ function SaleViewModel(data) {
         }
         $.ajax({
             type: "POST",
-            url: '/inventory/save/sale/',
+            url: '/voucher/sale/save/',
             data: ko.toJSON(self),
             success: function (msg) {
                 if (msg.id)
@@ -96,7 +96,7 @@ function SaleViewModel(data) {
                 else {
                     bsalert.success('Saved!');
                     $("tbody > tr").each(function (i) {
-                        $($("tbody > tr")[i]).addClass('invalid-row');
+                        $($("tbody > tr:not(.total)")[i]).addClass('invalid-row');
                     });
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];

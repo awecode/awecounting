@@ -530,3 +530,11 @@ table tbody tr td input[type="text"].form-control, table tbody tr td input[type=
 input.attachment {
     display: inline-block;
 }
+
+input.ad-date:after, input.bs-date:after {
+  background: transparent url(../img/calendar.png) center right no-repeat !important;
+}
+
+td.link a{
+    display: block;
+}

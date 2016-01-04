@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block extrahead %}
-    <script src="{% static 'js/inventory/sale.js' %}"></script>
+    <script src="{% static 'voucher/js/sale.js' %}"></script>
     <script>
         ko_data = {{data|jsonify}};
     </script>
@@ -71,23 +71,20 @@
                 </div>
 
             </div>
-
-
         </div>
-        <br>
 
         <div data-bind="with: table_view" class="well">
 
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <td>{% trans "S.N" %}</td>
-                    <td>{% trans "Items" %}</td>
-                    <td>{% trans "Quantity" %}</td>
-                    <td>{% trans "Rate" %}</td>
-                    <td>{% trans "Unit" %}</td>
-                    <td>{% trans 'Discount' %}</td>
-                    <td>{% trans 'Total' %}</td>
+                    <th>{% trans "S.N." %}</th>
+                    <th>{% trans "Item" %}</th>
+                    <th>{% trans "Quantity" %}</th>
+                    <th>{% trans "Rate" %}</th>
+                    <th>{% trans "Unit" %}</th>
+                    <th>{% trans 'Discount' %}</th>
+                    <th>{% trans 'Total' %}</th>
                 </tr>
                 </thead>
 
@@ -98,7 +95,7 @@
                         <span class="wid-pad pull-left" data-bind="text:  $index()+1, localize: 1"> </span>
                     </td>
                     <td>
-                        <select data-url="{% url 'item_add' %}" data-script="/static/js/inventory/item.js"
+                        <select data-url="{% url 'item_add' %}" data-script="/static/inventory/js/item.js"
                                 data-bind="selectize: $root.items, value: item_id, object:item, event: {change: $root.item_changed}, options:{render: {'option': render_option, 'item':render_option}}">
                         </select>
                     </td>
@@ -116,11 +113,11 @@
                 </tr>
 
                 <!-- /ko -->
-                <tr>
+                <tr class="total">
                     <td colspan="6">
-                        {% trans 'Grand total' %}
+                        {% trans 'Grand Total' %}
                     </td>
-                    <td data-bind="text: $root.sub_total(), localize: 1"></td>
+                    <td colspan="2" data-bind="text: $root.sub_total(), localize: 1"></td>
                 </tr>
 
                 </tbody>

@@ -95,7 +95,7 @@ function JournalVoucherViewModel(data) {
 
         $.ajax({
             type: "POST",
-            url: '/ledger/save/journal_voucher/',
+            url: '/voucher/journal/save/',
             data: ko.toJSON(self),
             success: function (msg) {
                 if (typeof (msg.error_message) != 'undefined') {
@@ -106,12 +106,12 @@ function JournalVoucherViewModel(data) {
                     bsalert.success('Saved!');
                     if (msg.id)
                         self.id(msg.id);
-                    $("#tbody > tr").each(function (i) {
-                        $($("#tbody > tr")[i]).addClass('invalid-row');
+                    $("tbody > tr").each(function (i) {
+                        $($("tbody > tr:not(.total)")[i]).addClass('invalid-row');
                     });
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];
-                        $($("#tbody > tr")[i]).removeClass('invalid-row');
+                        $($("tbody > tr")[i]).removeClass('invalid-row');
                     }
                 }
             }

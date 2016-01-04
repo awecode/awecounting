@@ -1,5 +1,6 @@
 import datetime
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.core.urlresolvers import reverse_lazy
 
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
@@ -10,9 +11,6 @@ from django.db.models import F
 
 from apps.users.models import Company
 from awecounting.utils.helpers import zero_for_none, none_for_zero
-
-from awecounting.utils.helpers import get_next_voucher_no
-from njango.fields import BSDateField, today
 
 
 class Category(MPTTModel):
@@ -265,35 +263,34 @@ def handle_company_creation(sender, **kwargs):
 
 company_creation.connect(handle_company_creation)
 
-
-class JournalVoucher(models.Model):
-    voucher_no = models.IntegerField()
-    date = BSDateField(default=today)
+class Party(models.Model):
+    name = models.CharField(max_length=254)
+    address = models.CharField(max_length=254, blank=True, null=True)
+    phone_no = models.CharField(max_length=100, blank=True, null=True)
+    pan_no = models.CharField(max_length=50, blank=True, null=True)
+    account = models.ForeignKey(Account, null=True)
     company = models.ForeignKey(Company)
-    narration = models.TextField()
-    statuses = [('Cancelled', 'Cancelled'), ('Approved', 'Approved'), ('Unapproved', 'Unapproved')]
-    status = models.CharField(max_length=10, choices=statuses, default='Unapproved')
 
-    def __init__(self, *args, **kwargs):
-        super(JournalVoucher, self).__init__(*args, **kwargs)
+    # def clean(self):
+    #     if self.pan_no:
+    #         conflicting_instance = Party.objects.filter(pan_no=self.pan_no, company=self.company).exclude(pk=self.pk)
+    #         if conflicting_instance.exists():
+    #             raise forms.ValidationError(_('Company with this PAN already exists.'))
 
-        if not self.pk and not self.voucher_no:
-            self.voucher_no = get_next_voucher_no(JournalVoucher, self.company_id)
+    def get_absolute_url(self):
+        return reverse_lazy('party_edit', kwargs={'pk': self.pk})
 
-    def get_voucher_no(self):
-        return self.voucher_no
+    def save(self, *args, **kwargs):
+        if not self.account_id:
+            account = Account(name=self.name, company=self.company)
+            account.save()
+            self.account = account
 
+        super(Party, self).save(*args, **kwargs)
 
-class JournalVoucherRow(models.Model):
-    types = [('Dr', 'Dr'), ('Cr', 'Cr')]
-    type = models.CharField(choices=types, default='Dr', max_length=2)
-    account = models.ForeignKey(Account, related_name='account_rows')
-    description = models.TextField(null=True, blank=True)
-    dr_amount = models.FloatField(null=True, blank=True)
-    cr_amount = models.FloatField(null=True, blank=True)
-    journal_voucher = models.ForeignKey(JournalVoucher, related_name='rows')
+    def __unicode__(self):
+        return self.name
 
-    def get_voucher_no(self):
-        return self.journal_voucher.voucher_no
-
-
+    class Meta:
+        verbose_name_plural = 'Parties'
+        # unique_together = ['pan_no', 'company']

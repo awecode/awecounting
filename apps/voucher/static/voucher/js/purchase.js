@@ -19,7 +19,7 @@ function PurchaseViewModel(data) {
     });
 
     $.ajax({
-        url: '/inventory/api/parties.json',
+        url: '/ledger/api/parties.json',
         dataType: 'json',
         async: false,
         success: function (data) {
@@ -78,7 +78,7 @@ function PurchaseViewModel(data) {
         }
         $.ajax({
             type: "POST",
-            url: '/inventory/save/purchase/',
+            url: '/voucher/purchase/save/',
             data: ko.toJSON(self),
             success: function (msg) {
                 if (typeof (msg.error_message) != 'undefined') {

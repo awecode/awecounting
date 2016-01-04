@@ -1,5 +1,6 @@
 from ..voucher.models import CashReceipt
 from awecounting.utils.forms import HTML5BootstrapModelForm, KOModelForm
+from .models import JournalVoucher
 
 
 class CashReceiptForm(HTML5BootstrapModelForm, KOModelForm):
@@ -10,3 +11,9 @@ class CashReceiptForm(HTML5BootstrapModelForm, KOModelForm):
     class Meta:
         model = CashReceipt
         exclude = ['company']
+
+
+class JournalVoucherForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = JournalVoucher
+        fields = '__all__'
