@@ -26,6 +26,7 @@ def cash_receipt(request, pk=None):
     data = CashReceiptSerializer(voucher).data
     return render(request, 'cash_receipt.html', {'form': form, 'scenario': scenario, 'data': data})
 
+
 def purchase_list(request):
     obj = Purchase.objects.all()
     return render(request, 'purchase_list.html', {'objects': obj})
@@ -59,12 +60,15 @@ def save_cash_receipt(request):
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = CashReceiptRow
+        cash_account = Account.objects.get(name='Cash', company=request.company)
         if params.get('table_vm').get('rows'):
             for index, row in enumerate(params.get('table_vm').get('rows')):
                 if invalid(row, ['payment']):
                     continue
                 row['payment'] = zero_for_none(empty_to_none(row['payment']))
                 invoice = Sale.objects.get(voucher_no=row.get('voucher_no'), company=request.company)
+                invoice.pending_amount -= float(row.get('payment'))
+                invoice.save()
                 values = {'receipt': row.get('payment'), 'cash_receipt': obj, 'invoice': invoice}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
@@ -74,6 +78,10 @@ def save_cash_receipt(request):
             obj.amount = total
         else:
             obj.amount = params.get('amount')
+        set_ledger_transactions(obj, obj.date,
+                         ['dr', cash_account, obj.amount],
+                         ['cr', obj.party.account, obj.amount]
+                         )
         # obj.status = 'Unapproved'
         obj.save()
     except Exception as e:
@@ -117,8 +125,8 @@ def save_purchase(request):
                                  )
                 if obj.credit:
                     set_ledger_transactions(submodel, obj.date,
-                                            ['cr', obj.party.account, obj.total],
-                                            ['dr', submodel.item.ledger, obj.total],
+                                            ['dr', obj.party.account, obj.total],
+                                            ['cr', submodel.item.ledger, obj.total],
                                             # ['cr', sales_tax_account, tax_amount],
                                             )
                 else:
