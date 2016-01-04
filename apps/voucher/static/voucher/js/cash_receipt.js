@@ -57,8 +57,10 @@ function CashReceiptVM(data) {
 
     self.load_related_invoices = function () {
         if (self.party()) {
+            var receipt_id = self.id() || 0;
             $.ajax({
-                url: '/voucher/api/sale/' + self.party_id() + '.json',
+
+                url: '/voucher/api/sale/' + self.party_id() + '/' + receipt_id + '.json',
                 dataType: 'json',
                 async: false,
                 success: function (data) {

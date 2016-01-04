@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^cash_receipt/(?P<pk>[0-9]+)/$', views.cash_receipt, name='cash_receipt_edit'),
     url(r'^cash-receipt/save/$', views.save_cash_receipt, name='cash_receipt_save'),
 
-    url(r'^api/sale/(?P<party_pk>[0-9]+)/$', api.PendingSaleListAPI.as_view()),
+    url(r'^api/sale/(?P<party_pk>[0-9]+)/(?P<receipt_pk>[0-9]+)$', api.PendingSaleListAPI.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

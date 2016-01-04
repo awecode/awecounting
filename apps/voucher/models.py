@@ -100,6 +100,9 @@ class Sale(models.Model):
         else:
             return _('Cash')
 
+    def __str__(self):
+        return str(self.voucher_no)
+
     @property
     def total(self):
         grand_total = 0
