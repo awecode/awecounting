@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.inventory.models import Purchase, PurchaseRow, Item, Party, Unit, Sale, SaleRow, JournalEntry, UnitConverter
+from .models import Item, Unit, JournalEntry, UnitConverter
 
 
 class UnitSerializer(serializers.ModelSerializer):
@@ -21,46 +21,6 @@ class ItemSerializer(serializers.ModelSerializer):
         # exclude = ['unit']
 
 
-class PartySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Party
-
-
-class PurchaseRowSerializer(serializers.ModelSerializer):
-    item_id = serializers.ReadOnlyField(source='item.id')
-    unit_id = serializers.ReadOnlyField(source='unit.id')
-
-    class Meta:
-        model = PurchaseRow
-        exclude = ['item', 'unit']
-
-
-class PurchaseSerializer(serializers.ModelSerializer):
-    rows = PurchaseRowSerializer(many=True)
-    date = serializers.DateField(format=None)
-
-    class Meta:
-        model = Purchase
-        # exclude = ['date']
-
-
-class SaleRowSerializer(serializers.ModelSerializer):
-    item_id = serializers.ReadOnlyField(source='item.id')
-    unit_id = serializers.ReadOnlyField(source='unit.id')
-
-    class Meta:
-        model = SaleRow
-        exclude = ['item', 'unit']
-
-
-class SaleSerializer(serializers.ModelSerializer):
-    rows = SaleRowSerializer(many=True)
-    date = serializers.DateField(format=None)
-
-    class Meta:
-        model = Sale
-
-
 class InventoryAccountRowSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
     voucher_no = serializers.ReadOnlyField(source='creator.get_voucher_no')
@@ -74,7 +34,7 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
         model = JournalEntry
 
     def get_income_quantity(self, obj):
-        if obj.creator.__class__ == SaleRow:
+        if obj.creator.__class__.__name__ == 'SaleRow':
             return ''
         else:
             default_unit = self.context.get('default_unit')
@@ -95,7 +55,7 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
                     return obj.creator.quantity
 
     def get_income_rate(self, obj):
-        if obj.creator.__class__ == SaleRow:
+        if obj.creator.__class__.__name__ == 'SaleRow':
             return ''
         else:
             default_unit = self.context.get('default_unit')
@@ -116,7 +76,7 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
                     return obj.creator.rate
 
     def get_expense_quantity(self, obj):
-        if obj.creator.__class__ == PurchaseRow:
+        if obj.creator.__class__.__name__ == 'PurchaseRow':
             return ''
         else:
             default_unit = self.context.get('default_unit')
@@ -137,7 +97,7 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
                     return obj.creator.quantity
 
     def get_expense_rate(self, obj):
-        if obj.creator.__class__ == PurchaseRow:
+        if obj.creator.__class__.__name__ == 'PurchaseRow':
             return ''
         return obj.creator.rate
 

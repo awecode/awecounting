@@ -23,6 +23,7 @@ INSTALLED_APPS = (
     'apps.ledger',
     'apps.share',
     'apps.bank',
+    'apps.voucher',
 
     'njango',
     'rest_framework',

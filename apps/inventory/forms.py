@@ -1,9 +1,8 @@
 from django import forms
 from modeltranslation.forms import TranslationModelForm
-from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
-from apps.inventory.models import Item, Party, Unit, InventoryAccount, UnitConverter
+from .models import Item, Unit, InventoryAccount, UnitConverter
 from awecounting.utils.forms import HTML5BootstrapModelForm, KOModelForm
 
 
@@ -36,25 +35,6 @@ class ItemForm(KOModelForm, TranslationModelForm):
         model = Item
         fields = '__all__'
         exclude = ['other_properties', 'account', 'unit', 'ledger', 'company']
-
-
-class PartyForm(HTML5BootstrapModelForm):
-    address = forms.CharField(label=_('Address'), required=False)
-    phone_no = forms.CharField(label=_('Phone No.'), required=False)
-    pan_no = forms.CharField(label=_('PAN No.'), required=False)
-
-    # def clean(self):
-    #     import ipdb
-    #     ipdb.set_trace()
-    #     pan_no = self.cleaned_data['pan_no']
-    #     if pan_no:
-    #         conflicting_instance = Party.objects.filter(pan_no=pan_no, company=self.company).exclude(pk=self.pk)
-    #         if conflicting_instance.exists():
-    #             raise ValidationError(_('Company with this PAN already exists.'))
-
-    class Meta:
-        model = Party
-        exclude = ('account', 'company')
 
 
 class UnitForm(HTML5BootstrapModelForm):

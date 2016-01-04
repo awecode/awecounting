@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^share/', include('apps.share.urls', namespace='share')),
     url(r'^inventory/', include('apps.inventory.urls')),
     url(r'^ledger/', include('apps.ledger.urls')),
+    url(r'^voucher/', include('apps.voucher.urls')),
     url(r'^bank/', include('apps.bank.urls', namespace='bank')),
     url(r'^njango/', include('njango.urls')),
 
@@ -35,5 +36,5 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += [
         url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
-        'document_root': settings.MEDIA_ROOT})
-        ]
+            'document_root': settings.MEDIA_ROOT})
+    ]

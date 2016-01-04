@@ -5,7 +5,7 @@
 {% block page-title %}{% trans 'Item' %}{% endblock %}
 
 {% block extrahead %}
-    <script src="{% static 'js/inventory/item.js' %}"></script>
+    <script src="{% static 'inventory/js/item.js' %}"></script>
     <script>
         item_data = {{ item_data| jsonify }};
         {% if item_unit_id %}
