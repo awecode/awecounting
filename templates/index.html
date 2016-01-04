@@ -100,12 +100,12 @@
                     <input type="text" name="from" id="date-from" class="pull-left {% calendar_class %}" data-date-format="yyyy-mm-dd">
                     <label class="pull-left">{% trans 'To' %}:</label>
                     <input type="text" name="to" id="date-to" class="pull-left {% calendar_class %}" data-date-format="yyyy-mm-dd">
-                    <input type="submit" value="Go" class="btn">
+                    <input type="submit" value="Go" class="btn btn-default btn-raised">
                 </form>
                 <form class="sales-report-form" id="sales-report-day" action="{% url 'sale-report-router' %}">
                     <label class="pull-left">{% trans 'Day' %}:&nbsp;&nbsp;</label>
-                    <input type="text" name="date" id="sale-date" class="pull-left form-contorl {% calendar_class %}" data-date-format="yyyy-mm-dd">
-                    <input type="submit" value="Go" class="btn">
+                    <input type="text" name="date" id="sale-date" class="pull-left {% calendar_class %}" data-date-format="yyyy-mm-dd">
+                    <input type="submit" value="Go" class="btn btn-default btn-raised">
                 </form>
             </div>
         </div>
