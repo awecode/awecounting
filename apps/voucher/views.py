@@ -68,12 +68,16 @@ def save_cash_receipt(request):
                     continue
                 row['payment'] = zero_for_none(empty_to_none(row['payment']))
                 invoice = Sale.objects.get(voucher_no=row.get('voucher_no'), company=request.company)
-                invoice.pending_amount -= float(row.get('payment'))
-                invoice.save()
+
                 values = {'receipt': row.get('payment'), 'cash_receipt': obj, 'invoice': invoice}
+                old_value = model.objects.get(id=row.get('id')).receipt if row.get('id') else 0
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
-                if not created:
+                if created:
+                    invoice.pending_amount -= float(row.get('payment'))
+                else:
                     submodel = save_model(submodel, values)
+                    invoice.pending_amount -= float(row.get('payment')) - old_value
+                    invoice.save()
                 dct['rows'][index] = submodel.id
                 total += float(row.get('payment'))
             obj.amount = total
@@ -126,8 +130,8 @@ def save_purchase(request):
                                  )
                 if obj.credit:
                     set_ledger_transactions(submodel, obj.date,
-                                            ['dr', obj.party.account, obj.total],
-                                            ['cr', submodel.item.ledger, obj.total],
+                                            ['cr', obj.party.account, obj.total],
+                                            ['dr', submodel.item.ledger, obj.total],
                                             # ['cr', sales_tax_account, tax_amount],
                                             )
                 else:
