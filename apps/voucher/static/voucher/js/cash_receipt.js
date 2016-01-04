@@ -161,7 +161,7 @@ function CashReceiptVM(data) {
                         self.state('error');
                     }
                     else {
-                        bs_alert.success('Approved!');
+                        bsalert.success('Approved!');
                         self.status('Approved');
                         self.state('success');
                         if (msg.id)
