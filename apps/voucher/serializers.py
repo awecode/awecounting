@@ -9,9 +9,11 @@ class CashReceiptRowSerializer(serializers.ModelSerializer):
 
 class CashReceiptSerializer(serializers.ModelSerializer):
     rows = CashReceiptRowSerializer(many=True)
+    party_id = serializers.ReadOnlyField()
 
     class Meta:
         model = CashReceipt
+        exclude = ['party']
 
 
 class PurchaseRowSerializer(serializers.ModelSerializer):

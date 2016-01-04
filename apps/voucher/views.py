@@ -62,6 +62,7 @@ def save_cash_receipt(request):
         model = CashReceiptRow
         cash_account = Account.objects.get(name='Cash', company=request.company)
         if params.get('table_vm').get('rows'):
+            total = 0
             for index, row in enumerate(params.get('table_vm').get('rows')):
                 if invalid(row, ['payment']):
                     continue
@@ -74,14 +75,14 @@ def save_cash_receipt(request):
                 if not created:
                     submodel = save_model(submodel, values)
                 dct['rows'][index] = submodel.id
-            total = float(params.get('total_payment'))
+                total += float(row.get('payment'))
             obj.amount = total
         else:
             obj.amount = params.get('amount')
         set_ledger_transactions(obj, obj.date,
-                         ['dr', cash_account, obj.amount],
-                         ['cr', obj.party.account, obj.amount]
-                         )
+                                ['dr', cash_account, obj.amount],
+                                ['cr', obj.party.account, obj.amount]
+                                )
         # obj.status = 'Unapproved'
         obj.save()
     except Exception as e:
@@ -191,14 +192,14 @@ def save_sale(request):
                              )
             if obj.credit:
                 set_ledger_transactions(submodel, obj.date,
-                                        ['cr', obj.party.account, obj.total],
-                                        ['dr', Account.objects.get(name='Cash', company=request.company), obj.total],
+                                        ['dr', obj.party.account, obj.total],
+                                        ['cr', submodel.item.ledger, obj.total],
                                         # ['cr', sales_tax_account, tax_amount],
                                         )
             else:
                 set_ledger_transactions(submodel, obj.date,
-                                        ['cr', obj.party.account, obj.total],
                                         ['dr', Account.objects.get(name='Cash', company=request.company), obj.total],
+                                        ['cr', submodel.item.ledger, obj.total],
                                         # ['cr', sales_tax_account, tax_amount],
                                         )
                 # delete_rows(params.get('table_view').get('deleted_rows'), model)

@@ -27,8 +27,9 @@ urlpatterns = [
     url(r'^journal/(?P<id>[0-9]+)/$', views.journal_voucher_create, name='journal_voucher_edit'),
     url(r'^journal/save/$', views.journal_voucher_save, name='journal_voucher_save'),
 
-    url(r'^cash_receipt/$', views.cash_receipt, name='create_cash_receipt'),
-    url(r'^cash-receipt/save/$', views.save_cash_receipt, name='save_cash_receipt'),
+    url(r'^cash_receipt/$', views.cash_receipt, name='cash_receipt_add'),
+    url(r'^cash_receipt/(?P<pk>[0-9]+)/$', views.cash_receipt, name='cash_receipt_edit'),
+    url(r'^cash-receipt/save/$', views.save_cash_receipt, name='cash_receipt_save'),
 
     url(r'^api/sale/(?P<party_pk>[0-9]+)/$', api.PendingSaleListAPI.as_view()),
 ]

@@ -4,7 +4,7 @@
 {% block page-title %}{{ scenario }} {% trans 'Cash Receipt' %}{% endblock %}
 
 {% block breadcrumbs %}
-    <li><a href="{% url "create_cash_receipt" %}">{% trans 'Cash Receipts' %}</a></li>
+    <li><a href="{% url "cash_receipt_add" %}">{% trans 'Cash Receipts' %}</a></li>
     <li>{{ scenario }} {% trans 'Cash Receipt' %}</li>
 {% endblock %}
 
@@ -133,8 +133,8 @@
             <div>
                 <input class="btn btn-raised btn-info" type="submit" value="Save" data-bind="click: $root.save">
                 {% if scenario == 'Update' %}
-                    <a class="btn btn-raised btn-danger"
-                       href="{% url 'delete_invoice' form.instance.invoice_no %}">{% trans 'Delete' %}</a>
+{#                    <a class="btn btn-raised btn-danger"#}
+{#                       href="{% url 'delete_invoice' form.instance.invoice_no %}">{% trans 'Delete' %}</a>#}
                 {% endif %}
             </div>
         </div>

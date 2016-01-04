@@ -11,6 +11,7 @@ from ..users.models import Company
 from awecounting.utils.helpers import get_next_voucher_no
 from django.utils.translation import ugettext_lazy as _
 
+
 class Purchase(models.Model):
     party = models.ForeignKey(Party)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
@@ -158,7 +159,6 @@ class JournalVoucherRow(models.Model):
         return self.journal_voucher.voucher_no
 
 
-
 class CashReceipt(models.Model):
     voucher_no = models.IntegerField()
     party = models.ForeignKey(Party, verbose_name=_('Receipt From'))
@@ -175,9 +175,21 @@ class CashReceipt(models.Model):
         if not self.pk and not self.voucher_no:
             self.voucher_no = get_next_voucher_no(CashReceipt, self.company)
 
+    def get_voucher_no(self):
+        return self.voucher_no
+
+    def get_absolute_url(self):
+        return reverse_lazy('cash_receipt_edit', kwargs={'pk': self.pk})
+
 
 class CashReceiptRow(models.Model):
     invoice = models.ForeignKey(Sale, related_name='receipts')
     receipt = models.FloatField()
     discount = models.FloatField(blank=True, null=True)
     cash_receipt = models.ForeignKey(CashReceipt, related_name='rows')
+
+    def get_voucher_no(self):
+        return self.cash_receipt.voucher_no
+
+    def get_absolute_url(self):
+        return reverse_lazy('cash_receipt_edit', kwargs={'pk': self.cash_receipt_id})
