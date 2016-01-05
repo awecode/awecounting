@@ -196,3 +196,32 @@ class CashReceiptRow(models.Model):
 
     def get_absolute_url(self):
         return reverse_lazy('cash_receipt_edit', kwargs={'pk': self.cash_receipt_id})
+
+
+class CashPayment(models.Model):
+    voucher_no = models.IntegerField()
+    party = models.ForeignKey(Party, verbose_name='Paid To')
+    date = BSDateField(default=today)
+    reference = models.CharField(max_length=50, null=True, blank=True)
+    amount = models.FloatField(null=True, blank=True)
+    description = models.TextField()
+    company = models.ForeignKey(Company)
+    # statuses = [('Approved', 'Approved'), ('Unapproved', 'Unapproved')]
+    # status = models.CharField(max_length=10, choices=statuses, default='Unapproved')
+
+    def __init__(self, *args, **kwargs):
+        super(CashPayment, self).__init__(*args, **kwargs)
+        if not self.pk and not self.voucher_no:
+            self.voucher_no = get_next_voucher_no(CashPayment, self.company)
+
+    def get_voucher_no(self):
+        return self.voucher_no
+
+class CashPaymentRow(models.Model):
+    invoice = models.ForeignKey(Purchase, related_name="receipts")
+    payment = models.FloatField()
+    discount = models.FloatField()
+    cash_payment = models.ForeignKey(CashPayment, related_name='rows')
+
+    def get_voucher_no(self):
+        return self.cash_payment.voucher_no
