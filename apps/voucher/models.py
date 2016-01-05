@@ -62,6 +62,9 @@ class PurchaseRow(models.Model):
     unit = models.ForeignKey(Unit)
     purchase = models.ForeignKey(Purchase, related_name='rows')
 
+    def get_total(self):
+        return float(self.quantity) * float(self.rate) - float(self.discount)
+   
     def get_voucher_no(self):
         return self.purchase.voucher_no
 
