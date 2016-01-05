@@ -36,6 +36,9 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['awecounting.com', 'localhost', '127.0.0.1']
 
 TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
+
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, '..', 'emails')
