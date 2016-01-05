@@ -538,3 +538,7 @@ input.ad-date:after, input.bs-date:after {
 td.link a{
     display: block;
 }
+
+.highlighted{
+    background-color: #ffa !important;
+}
