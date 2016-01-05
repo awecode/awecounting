@@ -8,7 +8,7 @@ function CashReceiptVM(data) {
     var self = this;
 
     $.ajax({
-        url: '/ledger/api/parties.json',
+        url: '/ledger/api/parties_with_balance.json',
         dataType: 'json',
         async: false,
         success: function (data) {
@@ -39,7 +39,7 @@ function CashReceiptVM(data) {
 
     self.party.subscribe(function (party) {
         self.party_address(party.address);
-        self.current_balance(party.current_dr);
+        self.current_balance(party.balance);
     });
 
 

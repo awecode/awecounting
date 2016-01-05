@@ -39,7 +39,7 @@ function CashPaymentVM(data) {
 
     self.party.subscribe(function (party) {
         self.party_address(party.address);
-        self.current_balance(party.current_cr);
+        self.current_balance(-1 * party.balance);
     });
 
 
