@@ -14,6 +14,7 @@ urlpatterns = [
 
     url(r'^api/account/$', api.AccountListAPI.as_view()),
     url(r'^api/parties/$', api.PartyListAPI.as_view()),
+    url(r'^api/parties_with_balance/$', api.PartyBalanceListAPI.as_view()),
     url(r'^api/(?P<category>.+)/account/$', api.AccountListAPI.as_view()),
 ]
 

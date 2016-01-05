@@ -39,6 +39,7 @@ function CashReceiptVM(data) {
 
     self.party.subscribe(function (party) {
         self.party_address(party.address);
+        self.current_balance(party.current_dr);
     });
 
 
