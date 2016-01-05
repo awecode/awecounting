@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView
 import json
+from awecounting.utils.mixins import CompanyView
 from ..inventory.models import set_transactions
 from ..ledger.models import set_transactions as set_ledger_transactions, Account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
@@ -92,7 +93,7 @@ def save_cash_payment(request):
 
 
 def purchase_list(request):
-    obj = Purchase.objects.all()
+    obj = Purchase.objects.filter(company=request.company)
     return render(request, 'purchase_list.html', {'objects': obj})
 
 
@@ -289,12 +290,12 @@ def save_sale(request):
 
 
 def sale_list(request):
-    objects = Sale.objects.all().prefetch_related('rows')
+    objects = Sale.objects.filter(company=request.company).prefetch_related('rows')
     return render(request, 'sale_list.html', {'objects': objects})
 
 
 def sale_day(request, voucher_date):
-    objects = Sale.objects.filter(date=voucher_date).prefetch_related('rows')
+    objects = Sale.objects.filter(date=voucher_date, company=request.company).prefetch_related('rows')
     total_amount = 0
     total_quantity = 0
     total_items = 0
@@ -314,7 +315,7 @@ def sale_day(request, voucher_date):
 
 
 def sale_date_range(request, from_date, to_date):
-    objects = Sale.objects.filter(date__gte=from_date, date__lte=to_date).prefetch_related('rows')
+    objects = Sale.objects.filter(date__gte=from_date, date__lte=to_date, company=request.company).prefetch_related('rows')
     total_amount = 0
     total_quantity = 0
     total_items = 0
@@ -355,7 +356,7 @@ def daily_sale_yesterday(request):
     return sale_day(request, yesterday)
 
 
-class JournalVoucherView(object):
+class JournalVoucherView(CompanyView):
     model = JournalVoucher
     success_url = reverse_lazy('journal_voucher_list')
     form_class = JournalVoucherForm

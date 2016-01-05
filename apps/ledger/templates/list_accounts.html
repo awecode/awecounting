@@ -33,7 +33,7 @@
                     </a>
                 </td>
                 <td>
-                    {{ account.category }}
+                    {{ account.category|default:'-' }}
                 </td>
                 <td>
                     <a href="{% url "view_account" account.id %}">

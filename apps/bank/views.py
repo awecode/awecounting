@@ -15,7 +15,7 @@ from django.core.files import File
 from io import FileIO, BufferedWriter
 
 
-class BankAccountView(object):
+class BankAccountView(CompanyView):
     model = BankAccount
     success_url = reverse_lazy('bank:bankaccount_list')
     form_class = BankAccountForm
@@ -85,7 +85,7 @@ def cash_deposit(request, id=None):
     return render(request, 'cash_deposit.html', {'form': form, 'scenario': scenario})
 
 
-class ChequeDepositView(object):
+class ChequeDepositView(CompanyView):
     model = ChequeDeposit
     success_url = reverse_lazy('bank:cheque_deposit_list')
 
@@ -100,13 +100,14 @@ class ChequeDepositDelete(ChequeDepositView, DeleteView):
 
 def cheque_deposit_create(request, id=None):
     if id:
-        cheque_deposit = get_object_or_404(ChequeDeposit, id=id)
+        cheque_deposit = get_object_or_404(ChequeDeposit, id=id, company=request.company)
         scenario = 'Update'
     else:
         cheque_deposit = ChequeDeposit(company=request.company)
         scenario = 'Create'
     data = ChequeDepositSerializer(cheque_deposit).data
-    return render(request, 'bank/cheque_deposit_form.html', {'data': data, 'scenario': scenario, 'cheque_deposit': cheque_deposit})
+    return render(request, 'bank/cheque_deposit_form.html',
+                  {'data': data, 'scenario': scenario, 'cheque_deposit': cheque_deposit})
 
 
 def cheque_deposit_save(request):
@@ -130,8 +131,8 @@ def cheque_deposit_save(request):
         obj = save_model(obj, object_values)
         if request.FILES:
             dct['attachment'] = []
-            for _file in request.FILES.getlist('file'): 
-                attach_file = AttachFile.objects.create(attachment = _file, cheque_deposit = obj)
+            for _file in request.FILES.getlist('file'):
+                attach_file = AttachFile.objects.create(attachment=_file, cheque_deposit=obj)
                 dct['attachment'].append(FileSerializer(attach_file).data)
         dct['id'] = obj.id
         model = ChequeDepositRow

@@ -11,12 +11,12 @@ from .serializers import ItemSerializer, InventoryAccountRowSerializer
 from ..voucher.models import Sale
 from .models import Item, UnitConverter, Unit, JournalEntry, InventoryAccount
 from .forms import ItemForm, UnitForm, UnitConverterForm
-from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView
 
 
 @login_required
 def index(request):
-    objects = Sale.objects.filter(date=datetime.date.today()).prefetch_related('rows')
+    objects = Sale.objects.filter(company=request.company, date=datetime.date.today()).prefetch_related('rows')
     total_amount = 0
     total_quantity = 0
     total_items = 0
@@ -35,10 +35,10 @@ def index(request):
 
 def item_search(request):
     code = request.POST.get('search-code')
-    obj = Item.objects.filter(code=code)
+    obj = Item.objects.filter(code=code, company=request.company)
     if len(obj) == 1:
         itm = obj[0]
-        inventory_account = InventoryAccount.objects.get(item__name=itm.name)
+        inventory_account = InventoryAccount.objects.get(item__name=itm.name, company=request.company)
         url = reverse('view_inventory_account', kwargs={'id': inventory_account.id})
         return redirect(url)
     else:
@@ -47,7 +47,7 @@ def item_search(request):
 
 def item(request, pk=None):
     if pk:
-        item_obj = get_object_or_404(Item, id=pk)
+        item_obj = get_object_or_404(Item, id=pk, company=request.company)
         scenario = 'Update'
         unit = item_obj.unit.id
     else:
@@ -85,7 +85,7 @@ def item(request, pk=None):
                    'item_unit_id': unit})
 
 
-class ItemView(object):
+class ItemView(CompanyView):
     model = Item
     form_class = ItemForm
     success_url = reverse_lazy('item_list')
@@ -99,7 +99,7 @@ class ItemDelete(ItemView, DeleteView):
     pass
 
 
-class UnitConverterView(object):
+class UnitConverterView(CompanyView):
     model = UnitConverter
     form_class = UnitConverterForm
     success_url = reverse_lazy('unitconverter_list')
@@ -122,7 +122,7 @@ class UnitConverterDelete(UnitConverterView, DeleteView):
 
 
 # Unit CRUD with mixins
-class UnitView(object):
+class UnitView(CompanyView):
     model = Unit
     success_url = reverse_lazy('unit_list')
     form_class = UnitForm
@@ -133,15 +133,11 @@ class UnitList(UnitView, ListView):
 
 
 class UnitCreate(AjaxableResponseMixin, UnitView, CreateView):
-    def form_valid(self, form):
-        form.instance.company = self.request.company
-        return super(UnitCreate, self).form_valid(form)
+    pass
 
 
 class UnitUpdate(UnitView, UpdateView):
-    def form_valid(self, form):
-        form.instance.company = self.request.company
-        return super(UnitUpdate, self).form_valid(form)
+    pass
 
 
 class UnitDelete(UnitView, DeleteView):
@@ -149,15 +145,15 @@ class UnitDelete(UnitView, DeleteView):
 
 
 def list_inventory_accounts(request):
-    objects = InventoryAccount.objects.all()
+    objects = InventoryAccount.objects.filter(company=request.company)
     return render(request, 'list_inventory_accounts.html', {'objects': objects})
 
 
 def view_inventory_account(request, id):
-    obj = get_object_or_404(InventoryAccount, id=id)
+    obj = get_object_or_404(InventoryAccount, id=id, company=request.company)
     if hasattr(obj, 'item'):
         if request.POST:
-            unit = Unit.objects.get(pk=request.POST.get('unit_id'))
+            unit = Unit.objects.get(pk=request.POST.get('unit_id'), company=request.company)
         else:
             unit = obj.item.unit
     else:
@@ -179,7 +175,7 @@ def view_inventory_account(request, id):
 
 
 def view_inventory_account_with_rate(request, id):
-    obj = get_object_or_404(InventoryAccount, id=id)
+    obj = get_object_or_404(InventoryAccount, id=id, company=request.company)
     # units = Unit.objects.all()
     units_to_convert = UnitConverter.objects.filter(base_unit__name=obj.item.unit.name).values_list(
         'unit_to_convert__pk',

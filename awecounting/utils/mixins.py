@@ -60,11 +60,15 @@ class AjaxableResponseMixin(object):
         else:
             return response
 
+
 class CompanyView(object):
     def form_valid(self, form):
         form.instance.company = self.request.company
         return super(CompanyView, self).form_valid(form)
-    
+
+    def get_queryset(self):
+        return super(CompanyView, self).get_queryset().filter(company=self.request.company)
+
 
 class StaffOnlyMixin(object):
     def dispatch(self, request, *args, **kwargs):

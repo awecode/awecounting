@@ -9,12 +9,12 @@ from .forms import PartyForm
 
 
 def list_accounts(request):
-    objects = Account.objects.filter()
+    objects = Account.objects.filter(company=request.company)
     return render(request, 'list_accounts.html', {'accounts': objects})
 
 
 def view_account(request, id):
-    account = get_object_or_404(Account, id=id)
+    account = get_object_or_404(Account, id=id, company=request.company)
     # transactions = account.transactions
     base_template = 'dashboard.html'
     journal_entries = JournalEntry.objects.filter(transactions__account_id=account.id).order_by('id',
@@ -29,7 +29,7 @@ def view_account(request, id):
 
 
 # Party CRUD with mixins
-class PartyView(object):
+class PartyView(CompanyView):
     model = Party
     success_url = reverse_lazy('party_list')
     form_class = PartyForm
@@ -39,16 +39,13 @@ class PartyList(PartyView, ListView):
     pass
 
 
-class PartyCreate(CompanyView, AjaxableResponseMixin, PartyView, CreateView):
+class PartyCreate(AjaxableResponseMixin, PartyView, CreateView):
     pass
 
 
-class PartyUpdate(CompanyView, PartyView, UpdateView):
-    def form_valid(self, form):
-        form.instance.company = self.request.company
-        return super(PartyUpdate, self).form_valid(form)
+class PartyUpdate(PartyView, UpdateView):
+    pass
 
 
 class PartyDelete(PartyView, DeleteView):
     pass
-
