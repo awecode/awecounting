@@ -9,9 +9,9 @@ from ..inventory.models import set_transactions
 from ..ledger.models import set_transactions as set_ledger_transactions, Account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
 
-from .forms import CashReceiptForm, JournalVoucherForm
-from .serializers import CashReceiptSerializer, JournalVoucherSerializer, PurchaseSerializer, SaleSerializer
-from .models import CashReceipt, Purchase, JournalVoucher, JournalVoucherRow, PurchaseRow, Sale, SaleRow, CashReceiptRow
+from .forms import CashReceiptForm, JournalVoucherForm, CashPaymentForm
+from .serializers import CashReceiptSerializer, CashPaymentSerializer, JournalVoucherSerializer, PurchaseSerializer, SaleSerializer
+from .models import CashReceipt, Purchase, JournalVoucher, JournalVoucherRow, PurchaseRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow
 
 
 @login_required
@@ -25,6 +25,67 @@ def cash_receipt(request, pk=None):
     form = CashReceiptForm(instance=voucher, company=request.company)
     data = CashReceiptSerializer(voucher).data
     return render(request, 'cash_receipt.html', {'form': form, 'scenario': scenario, 'data': data})
+
+@login_required
+def cash_payment(request, pk=None):
+    if pk:
+        voucher = get_object_or_404(CashPayment, pk=pk, company=request.company)
+        scenario = 'Update'
+    else:
+        voucher = CashPayment(company=request.company)
+        scenario = 'Create'
+    form = CashPaymentForm(instance=voucher, company=request.company)
+    data = CashPaymentSerializer(voucher).data
+    return render(request, 'cash_payment.html', {'form': form, 'scenario': scenario, 'data': data})
+
+def save_cash_payment(request):
+    params = json.loads(request.body)
+    dct = {'rows': {}}
+    if params.get('voucher_no') == '':
+        params['voucher_no'] = None
+    object_values = {'party_id': params.get('party_id'), 'payment': params.get('payment'),
+                     'voucher_no': params.get('voucher_no'),
+                     'reference': params.get('reference'), 'company': request.company}
+    if params.get('id'):
+        obj = CashPayment.objects.get(id=params.get('id'), company=request.company)
+    else:
+        obj = CashPayment(company=request.company)
+    try:
+        obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = CashPaymentRow
+        cash_account = Account.objects.get(name='Cash', company=request.company)
+        if params.get('table_vm').get('rows'):
+            total = 0
+            for index, row in enumerate(params.get('table_vm').get('rows')):
+                if invalid(row, ['payment']):
+                    continue
+                row['payment'] = zero_for_none(empty_to_none(row['payment']))
+                invoice = Purchase.objects.get(voucher_no=row.get('voucher_no'), company=request.company)
+
+                values = {'payment': row.get('payment'), 'cash_payment': obj, 'invoice': invoice}
+                old_value = model.objects.get(id=row.get('id')).payment if row.get('id') else 0
+                submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+                if created:
+                    invoice.pending_amount -= float(row.get('payment'))
+                else:
+                    submodel = save_model(submodel, values)
+                    invoice.pending_amount -= float(row.get('payment')) - old_value
+                    invoice.save()
+                dct['rows'][index] = submodel.id
+                total += float(row.get('payment'))
+            obj.amount = total
+        else:
+            obj.amount = params.get('amount')
+        set_ledger_transactions(obj, obj.date,
+                                ['cr', cash_account, obj.amount],
+                                ['dr', obj.party.account, obj.amount]
+                                )
+        # obj.status = 'Unapproved'
+        obj.save()
+    except Exception as e:
+        dct = write_error(dct, e)
+    return JsonResponse(dct)
 
 
 def purchase_list(request):
@@ -114,6 +175,8 @@ def save_purchase(request):
         dct['id'] = obj.id
 
         model = PurchaseRow
+        grand_total = 0
+
         for ind, row in enumerate(params.get('table_view').get('rows')):
             if invalid(row, ['item_id', 'quantity', 'unit_id']):
                 continue
@@ -124,6 +187,7 @@ def save_purchase(request):
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
+                grand_total += submodel.get_total()
                 dct['rows'][ind] = submodel.id
                 set_transactions(submodel, obj.date,
                                  ['dr', submodel.item.account, submodel.quantity],
@@ -142,7 +206,10 @@ def save_purchase(request):
                                             # ['cr', sales_tax_account, tax_amount],
                                             )
                     delete_rows(params.get('table_view').get('deleted_rows'), model)
-
+        obj.total_amount = grand_total
+        if obj.credit:
+            obj.pending_amount = grand_total
+        obj.save()
     except Exception as e:
         dct = write_error(dct, e)
     return JsonResponse(dct)

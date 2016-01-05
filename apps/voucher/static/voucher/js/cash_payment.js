@@ -21,7 +21,7 @@ function CashPaymentVM(data) {
     self.state = ko.observable('standby');
     self.party_id = ko.observable();
     self.party = ko.observable();
-    self.payment_on = ko.observable();
+    self.payment = ko.observable();
     self.party_address = ko.observable();
     self.reference = ko.observable();
     self.current_balance = ko.observable();
@@ -145,32 +145,32 @@ function CashPaymentVM(data) {
     }
 
 
-    self.approve = function (item, event) {
-        if (!self.validate())
-            return false;
-        if (get_form(event).checkValidity()) {
-            $.ajax({
-                type: "POST",
-                url: '/voucher/cash_payment/approve/',
-                data: ko.toJSON(self),
-                success: function (msg) {
-                    if (typeof (msg.error_message) != 'undefined') {
-                        bs_alert.error(msg.error_message);
-                        self.state('error');
-                    }
-                    else {
-                        bsalert.success('Approved!');
-                        self.status('Approved');
-                        self.state('success');
-                        if (msg.id)
-                            self.id(msg.id);
-                    }
-                }
-            });
-        }
-        else
-            return true;
-    }
+    // self.approve = function (item, event) {
+    //     if (!self.validate())
+    //         return false;
+    //     if (get_form(event).checkValidity()) {
+    //         $.ajax({
+    //             type: "POST",
+    //             url: '/voucher/cash_payment/approve/',
+    //             data: ko.toJSON(self),
+    //             success: function (msg) {
+    //                 if (typeof (msg.error_message) != 'undefined') {
+    //                     bs_alert.error(msg.error_message);
+    //                     self.state('error');
+    //                 }
+    //                 else {
+    //                     bsalert.success('Approved!');
+    //                     self.status('Approved');
+    //                     self.state('success');
+    //                     if (msg.id)
+    //                         self.id(msg.id);
+    //                 }
+    //             }
+    //         });
+    //     }
+    //     else
+    //         return true;
+    // }
 
     if (self.rows().length) {
         setTimeout(self.load_related_invoices, 500);
