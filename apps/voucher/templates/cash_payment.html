@@ -1,0 +1,148 @@
+{% extends "_base.html" %}
+{% load i18n static %}
+
+{% block page-title %}{{ scenario }} {% trans 'Cash Payment' %}{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url "cash_payment_add" %}">{% trans 'Cash Payment' %}</a></li>
+    <li>{{ scenario }} {% trans 'Cash Payment' %}</li>
+{% endblock %}
+
+{% load filters %}
+{% block extrahead %}
+    <script src={% static "voucher/js/cash_payment.js" %}></script>
+    <script>
+        ko_data =
+        {{ data|jsonify }}
+    </script>
+{% endblock %}
+
+{% block content %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="well">
+
+            <div classs="row">
+                {{ form.voucher_no.label_tag }}
+                {{ form.voucher_no }}
+                {{ form.voucher_no.errors }}
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 col-xs-12">
+                    {{ form.party.label_tag }}
+                    <select class="form-control" data-name="Party"
+                            data-url="{% url 'party_add' %}?type=Customer"
+                            data-bind="selectize: $root.parties, value: party_id, object:party">
+                    </select>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    {{ form.date.label_tag }}
+                    {{ form.date }}
+                    {{ form.date.errors }}
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 col-xs-12">
+                    <label>{% trans 'Customer Address' %}</label>
+                    <input type="text" class="form-control" data-bind="value: party_address" disabled>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    {{ form.reference.label_tag }}
+                    {{ form.reference }}
+                    {{ form.reference.errors }}
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 col-xs-12">
+                    <label>{% trans 'Current Balance' %}</label>
+                    <input type="text" class="form-control" data-bind="value: current_balance" disabled>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    {{ form.amount.label_tag }}
+                    <!-- ko if:!table_vm().rows() -->
+                    {{ form.amount }}
+                    <!-- /ko -->
+                    <input data-bind="value: table_vm().get_total('payment'), visible:table_vm().rows()" class="form-control"
+                           style="width: auto" disabled>
+                    {{ form.amount.errors }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div data-bind="with: table_vm(), visible: party()">
+
+            <div class="well">
+
+                <a href="#" class="btn btn-raised btn-default"
+                   data-bind="click: $parent.load_related_invoices, visible: !rows()">
+                    {% trans 'Load Invoices' %}</a>
+
+                <table class="table table-striped" id="voucher_table"
+                       data-bind="visible: $parent.table_vm().rows()">
+                    <thead>
+                    <tr>
+                        <th>{% trans 'Invoice No.' %}</th>
+                        <th>{% trans 'Date' %}</th>
+                        <th>{% trans 'Total Amount' %}</th>
+                        <th>{% trans 'Pending Amount' %}</th>
+                        <th>{% trans 'Due Date' %}</th>
+                        <th>{% trans 'Overdue Days' %}</th>
+                        <th>{% trans 'Received' %}</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <!-- ko foreach:rows -->
+                    <div id="particulars-body">
+                        <tr>
+                            <td data-bind="text: voucher_no"></td>
+                            <td data-bind="text: date"></td>
+                            <td data-bind="text: total_amount"></td>
+                            <td data-bind="text: pending_amount"></td>
+                            <td data-bind="text: due_date"></td>
+                            <td data-bind="text: overdue_days()"></td>
+                            <td data-bind="editableText: payment, numeric: true"></td>
+                        </tr>
+                        <!-- /ko -->
+                    </div>
+                    <tr class="total">
+                        <td colspan="6">{% trans 'TOTAL' %}</td>
+                        <td data-bind="text: get_total('payment')"></td>
+                    </tr>
+
+                    </tbody>
+                </table>
+
+            </div>
+
+            <div>
+                <input class="btn btn-raised btn-info" type="submit" value="Save" data-bind="click: $root.save">
+                {% if scenario == 'Update' %}
+{#                    <a class="btn btn-raised btn-danger"#}
+{#                       href="{% url 'delete_invoice' form.instance.invoice_no %}">{% trans 'Delete' %}</a>#}
+                {% endif %}
+            </div>
+        </div>
+
+
+    </form>
+
+
+{% endblock %}
