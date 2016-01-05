@@ -220,6 +220,18 @@ ko.bindingHandlers.max = {
 };
 
 
+ko.bindingHandlers.attachment = {
+    init: function (element, valueAccessor) {
+    },
+    update: function (element, valueAccessor) {
+        $(element).on('change', function(){
+            var value = valueAccessor()
+            value($(element)[0].files[0])
+        });
+    },
+};
+
+
 ko.bindingHandlers.editableText = {
     init: function (element, valueAccessor) {
         $(element).attr('contenteditable', true);

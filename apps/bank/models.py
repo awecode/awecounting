@@ -47,6 +47,9 @@ class ChequeDeposit(models.Model):
         if not self.pk and not self.voucher_no:
             self.voucher_no = get_next_voucher_no(ChequeDeposit, self.company_id)
 
+    def __str__(self):
+        return str(self.voucher_no) + ': ' + self.deposited_by
+
     # def get_absolute_url(self):
     #     return '/bank/cheque-deposit/' + str(self.id)
 
@@ -180,3 +183,8 @@ class ElectronicFundTransferInRow(models.Model):
 
     def get_voucher_no(self):
         return self.electronic_fund_transfer_in.id
+
+
+class File(models.Model):
+    attachment = models.FileField(upload_to='cheque_payments/%Y/%m/%d', blank=True, null=True)
+    cheque_deposit = models.ForeignKey(ChequeDeposit, related_name="file")
