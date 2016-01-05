@@ -49,7 +49,7 @@ def save_cash_receipt(request):
     dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
-    object_values = {'party_id': params.get('party_id'), 'receipt_on': params.get('receipt_on'),
+    object_values = {'party_id': params.get('party_id'), 'date': params.get('date'),
                      'voucher_no': params.get('voucher_no'),
                      'reference': params.get('reference'), 'company': request.company}
     if params.get('id'):
@@ -68,10 +68,12 @@ def save_cash_receipt(request):
                     continue
                 row['payment'] = zero_for_none(empty_to_none(row['payment']))
                 invoice = Sale.objects.get(voucher_no=row.get('voucher_no'), company=request.company)
-
                 values = {'receipt': row.get('payment'), 'cash_receipt': obj, 'invoice': invoice}
-                old_value = model.objects.get(id=row.get('id')).receipt if row.get('id') else 0
-                submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+                try:
+                    old_value = model.objects.get(invoice_id=row.get('id'), cash_receipt_id=obj.id).receipt or 0
+                except CashReceiptRow.DoesNotExist:
+                    old_value = 0
+                submodel, created = model.objects.get_or_create(invoice=invoice, cash_receipt=obj, defaults=values)
                 if created:
                     invoice.pending_amount -= float(row.get('payment'))
                 else:
