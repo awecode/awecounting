@@ -1,10 +1,12 @@
 from django.http import JsonResponse
 
+
 def save_model(model, values):
     for key, value in values.items():
         setattr(model, key, value)
     model.save()
     return model
+
 
 def invalid(row, required_fields):
     invalid_attrs = []
@@ -16,10 +18,12 @@ def invalid(row, required_fields):
         return False
     return invalid_attrs
 
+
 def empty_to_none(o):
     if o == '':
         return None
     return o
+
 
 def zero_for_none(obj):
     if obj is None:
@@ -27,11 +31,23 @@ def zero_for_none(obj):
     else:
         return obj
 
+
 def none_for_zero(obj):
     if not obj:
         return None
     else:
         return obj
+
+
+def write_error(dct, e):
+    if hasattr(e, 'messages'):
+        dct['error_message'] = '; '.join(e.messages)
+    elif str(e) != '':
+        dct['error_message'] = str(e)
+    else:
+        dct['error_message'] = 'Error in form data!'
+    return dct
+
 
 def get_next_voucher_no(cls, attr):
     from django.db.models import Max
@@ -41,6 +57,7 @@ def get_next_voucher_no(cls, attr):
         return max_voucher_no + 1
     else:
         return 1
+
 
 def json_from_object(obj):
     data = {
@@ -84,6 +101,7 @@ def save_model(model, values):
     model.clean()
     model.save()
     return model
+
 
 def invalid(row, required_fields):
     invalid_attrs = []

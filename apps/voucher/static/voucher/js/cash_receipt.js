@@ -33,10 +33,6 @@ function CashReceiptVM(data) {
         }
     });
 
-    self.id.subscribe(function (id) {
-        update_url_with_id(id);
-    });
-
     for (var k in data) {
         self[k] = ko.observable(data[k]);
     }
@@ -61,8 +57,10 @@ function CashReceiptVM(data) {
 
     self.load_related_invoices = function () {
         if (self.party()) {
+            var receipt_id = self.id() || 0;
             $.ajax({
-                url: '/voucher/api/sale/' + self.party() + '.json',
+
+                url: '/voucher/api/sale/' + self.party_id() + '/' + receipt_id + '.json',
                 dataType: 'json',
                 async: false,
                 success: function (data) {
@@ -85,7 +83,7 @@ function CashReceiptVM(data) {
                         self.state('success');
                     }
                     else {
-                        bsalert.warning('No pending invoices found for the customer!');
+                        bsalert.info('No pending invoices found for the customer!');
                         self.state('error');
                     }
                 }
@@ -94,9 +92,6 @@ function CashReceiptVM(data) {
 
     }
 
-    if (self.rows().length) {
-        self.load_related_invoices();
-    }
 
     self.total_payment = ko.computed(function () {
         return self.table_vm().get_total('payment');
@@ -133,8 +128,11 @@ function CashReceiptVM(data) {
                     }
                     else {
                         bsalert.success('Saved!');
-                        if (msg.id)
+                        if (msg.id) {
+                            if (!self.id())
+                                update_url_with_id(msg.id);
                             self.id(msg.id);
+                        }
                         if (msg.redirect_to) {
                             window.location = msg.redirect_to;
                         }
@@ -161,7 +159,7 @@ function CashReceiptVM(data) {
                         self.state('error');
                     }
                     else {
-                        bs_alert.success('Approved!');
+                        bsalert.success('Approved!');
                         self.status('Approved');
                         self.state('success');
                         if (msg.id)
@@ -172,6 +170,10 @@ function CashReceiptVM(data) {
         }
         else
             return true;
+    }
+
+    if (self.rows().length) {
+        setTimeout(self.load_related_invoices, 500);
     }
 }
 

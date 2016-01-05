@@ -1645,5 +1645,5 @@ $(document).on('show.bs.modal', '.modal', function () {
 });
 
 function update_url_with_id(id) {
-    history.pushState(id, id, window.location.href.replace('/create/', '').replace('/add/', '').replace('/create', '').replace('/add', '') + '/' + id + '/');
+    history.pushState(id, id, window.location.href.replace('/create/', '').replace('/add/', '').replace('/create', '').replace('/add', '').replace(/\/+$/, "") + '/' + id + '/');
 }
