@@ -21,7 +21,7 @@ function CashReceiptVM(data) {
     self.state = ko.observable('standby');
     self.party_id = ko.observable();
     self.party = ko.observable();
-    self.receipt_on = ko.observable();
+    self.date = ko.observable();
     self.party_address = ko.observable();
     self.reference = ko.observable();
     self.current_balance = ko.observable();

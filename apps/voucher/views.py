@@ -49,7 +49,7 @@ def save_cash_receipt(request):
     dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
-    object_values = {'party_id': params.get('party_id'), 'receipt_on': params.get('receipt_on'),
+    object_values = {'party_id': params.get('party_id'), 'date': params.get('date'),
                      'voucher_no': params.get('voucher_no'),
                      'reference': params.get('reference'), 'company': request.company}
     if params.get('id'):
