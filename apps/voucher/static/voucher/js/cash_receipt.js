@@ -21,7 +21,7 @@ function CashReceiptVM(data) {
     self.state = ko.observable('standby');
     self.party_id = ko.observable();
     self.party = ko.observable();
-    self.receipt_on = ko.observable();
+    self.date = ko.observable();
     self.party_address = ko.observable();
     self.reference = ko.observable();
     self.current_balance = ko.observable();
@@ -69,9 +69,9 @@ function CashReceiptVM(data) {
                         for (k in self.rows()) {
                             var row = self.rows()[k];
                             $.each(self.invoices, function (i, o) {
-                                if (o.id == row.id) {
+                                if (o.id == row.invoice) {
                                     o.payment = row.receipt;
-                                    o.discount = row.discount;
+                                    //o.discount = row.discount;
                                 }
                             });
                         }

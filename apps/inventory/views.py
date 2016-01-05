@@ -1,4 +1,5 @@
 import datetime
+from django.contrib.auth.decorators import login_required
 
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render, get_object_or_404, redirect
@@ -13,6 +14,7 @@ from .forms import ItemForm, UnitForm, UnitConverterForm
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin
 
 
+@login_required
 def index(request):
     objects = Sale.objects.filter(date=datetime.date.today()).prefetch_related('rows')
     total_amount = 0

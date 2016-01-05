@@ -73,10 +73,12 @@
 
                 <div class="col-md-6 col-xs-12">
                     {{ form.amount.label_tag }}
+                    <!-- ko if:!table_vm().rows() -->
                     {{ form.amount }}
+                    <!-- /ko -->
+                    <input data-bind="value: table_vm().get_total('payment'), visible:table_vm().rows()" class="form-control"
+                           style="width: auto" disabled>
                     {{ form.amount.errors }}
-                    {#                    <label>Amount</label>#}
-                    {#                    <input type="text" data-bind="value: amount, enable:!table_vm().rows()" required>#}
                 </div>
 
             </div>

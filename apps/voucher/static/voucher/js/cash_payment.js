@@ -21,7 +21,7 @@ function CashPaymentVM(data) {
     self.state = ko.observable('standby');
     self.party_id = ko.observable();
     self.party = ko.observable();
-    self.payment = ko.observable();
+    self.date = ko.observable();
     self.party_address = ko.observable();
     self.reference = ko.observable();
     self.current_balance = ko.observable();
@@ -69,9 +69,9 @@ function CashPaymentVM(data) {
                         for (k in self.rows()) {
                             var row = self.rows()[k];
                             $.each(self.invoices, function (i, o) {
-                                if (o.id == row.id) {
+                                if (o.id == row.invoice) {
                                     o.payment = row.payment;
-                                    o.discount = row.discount;
+                                    // o.discount = row.discount;
                                 }
                             });
                         }

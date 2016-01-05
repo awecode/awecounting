@@ -202,6 +202,9 @@ class CashReceiptRow(models.Model):
     def get_absolute_url(self):
         return reverse_lazy('cash_receipt_edit', kwargs={'pk': self.cash_receipt_id})
 
+    class Meta:
+        unique_together = ('invoice', 'cash_receipt')
+
 
 class CashPayment(models.Model):
     voucher_no = models.IntegerField()
@@ -228,7 +231,7 @@ class CashPayment(models.Model):
 class CashPaymentRow(models.Model):
     invoice = models.ForeignKey(Purchase, related_name="receipts")
     payment = models.FloatField()
-    discount = models.FloatField()
+    discount = models.FloatField(blank=True, null=True)
     cash_payment = models.ForeignKey(CashPayment, related_name='rows')
 
     def get_voucher_no(self):
@@ -236,3 +239,6 @@ class CashPaymentRow(models.Model):
 
     def get_absolute_url(self):
         return reverse_lazy('cash_payment_edit', kwargs={'pk': self.cash_payment_id})
+
+    class Meta:
+        unique_together = ('invoice', 'cash_payment')
