@@ -69,7 +69,6 @@ def save_cash_payment(request):
                 except CashPaymentRow.DoesNotExist:
                     old_value = 0
                 submodel, created = model.objects.get_or_create(invoice=invoice, cash_payment=obj, defaults=values)
-                import ipdb; ipdb.set_trace()
                 if created:
                     invoice.pending_amount -= float(row.get('payment'))
                 else:
