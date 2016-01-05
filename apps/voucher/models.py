@@ -18,6 +18,8 @@ class Purchase(models.Model):
     credit = models.BooleanField(default=False)
     date = BSDateField(default=today)
     due_date = BSDateField(blank=True, null=True)
+    pending_amount = models.FloatField(null=True, blank=True)
+    total_amount = models.FloatField(null=True, blank=True)
     company = models.ForeignKey(Company)
 
     def type(self):
@@ -217,6 +219,9 @@ class CashPayment(models.Model):
     def get_voucher_no(self):
         return self.voucher_no
 
+    def get_absolute_url(self):
+        return reverse_lazy('cash_payment_edit', kwargs={'pk': self.pk})
+
 class CashPaymentRow(models.Model):
     invoice = models.ForeignKey(Purchase, related_name="receipts")
     payment = models.FloatField()
@@ -225,3 +230,6 @@ class CashPaymentRow(models.Model):
 
     def get_voucher_no(self):
         return self.cash_payment.voucher_no
+
+    def get_absolute_url(self):
+        return reverse_lazy('cash_payment_edit', kwargs={'pk': self.cash_payment_id})
