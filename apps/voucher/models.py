@@ -176,7 +176,7 @@ class CashReceipt(models.Model):
     def __init__(self, *args, **kwargs):
         super(CashReceipt, self).__init__(*args, **kwargs)
         if not self.pk and not self.voucher_no:
-            self.voucher_no = get_next_voucher_no(CashReceipt, self.company)
+            self.voucher_no = get_next_voucher_no(CashReceipt, self.company_id)
 
     def get_voucher_no(self):
         return self.voucher_no
@@ -212,7 +212,7 @@ class CashPayment(models.Model):
     def __init__(self, *args, **kwargs):
         super(CashPayment, self).__init__(*args, **kwargs)
         if not self.pk and not self.voucher_no:
-            self.voucher_no = get_next_voucher_no(CashPayment, self.company)
+            self.voucher_no = get_next_voucher_no(CashPayment, self.company_id)
 
     def get_voucher_no(self):
         return self.voucher_no

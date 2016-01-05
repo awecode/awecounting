@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PurchaseRow, SaleRow, Purchase, Sale, JournalVoucher, JournalVoucherRow, CashReceipt, CashReceiptRow
+from .models import PurchaseRow, SaleRow, Purchase, Sale, JournalVoucher, JournalVoucherRow, CashReceipt, CashReceiptRow, CashPayment, CashPaymentRow
 
 
 class PurchaseRowInline(admin.TabularInline):
@@ -48,7 +48,19 @@ class CashReceiptAdmin(admin.ModelAdmin):
     ]
 
 
+class CashPaymentRowInline(admin.TabularInline):
+    model = CashPaymentRow
+
+
+class CashPaymentAdmin(admin.ModelAdmin):
+    inlines = [
+        CashPaymentRowInline,
+    ]
+
 admin.site.register(JournalVoucher, JournalVoucherAdmin)
 admin.site.register(JournalVoucherRow)
 admin.site.register(CashReceipt, CashReceiptAdmin)
 admin.site.register(CashReceiptRow)
+admin.site.register(CashPayment, CashPaymentAdmin)
+admin.site.register(CashPaymentRow)
+
