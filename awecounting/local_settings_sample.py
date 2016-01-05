@@ -2,6 +2,9 @@ from settings import *
 
 SECRET_KEY = '=s0$)ng6s4x@tt=e+v3hygikjuwn3d_m1ihz$m07e(g#bhj)pp'
 
+ADMINS = [('Dipesh Acharya', 'xxtranophilist@gmail.com')]
+SERVER_EMAIL = 'webmaster@xawecounting.com'
+
 DEBUG = True
 MODELTRANSLATION_DEBUG = DEBUG
 
