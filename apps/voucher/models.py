@@ -196,3 +196,6 @@ class CashReceiptRow(models.Model):
 
     def get_absolute_url(self):
         return reverse_lazy('cash_receipt_edit', kwargs={'pk': self.cash_receipt_id})
+
+    class Meta:
+        unique_together = ('invoice', 'cash_receipt')

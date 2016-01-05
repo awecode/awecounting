@@ -69,9 +69,9 @@ function CashReceiptVM(data) {
                         for (k in self.rows()) {
                             var row = self.rows()[k];
                             $.each(self.invoices, function (i, o) {
-                                if (o.id == row.id) {
+                                if (o.id == row.invoice) {
                                     o.payment = row.receipt;
-                                    o.discount = row.discount;
+                                    //o.discount = row.discount;
                                 }
                             });
                         }
