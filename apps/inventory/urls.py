@@ -4,7 +4,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 import views
 import api
 
-urlpatterns = [
+web_urls = [
     url(r'^item/add/$', views.item, name='item_add'),
     url(r'^item/$', views.ItemList.as_view(), name='item_list'),
     url(r'^item/(?P<pk>[0-9]+)/$', views.item, name='item_edit'),
@@ -25,14 +25,13 @@ urlpatterns = [
     url(r'^accounts/(?P<id>[0-9]+)/$', views.view_inventory_account, name='view_inventory_account'),
     url(r'^accounts/(?P<id>[0-9]+)/rate/$', views.view_inventory_account_with_rate,
         name='view_inventory_account_with_rate'),
-
-    
-
-    # rest_framework api
-    url(r'^api/items/$', api.ItemListAPI.as_view()),
-    
-    url(r'^api/units/$', api.UnitListAPI.as_view()),
-
 ]
 
-urlpatterns = format_suffix_patterns(urlpatterns)
+api_urls = [
+    url(r'^api/items/$', api.ItemListAPI.as_view()),
+    url(r'^api/units/$', api.UnitListAPI.as_view()),
+]
+
+api_urls = format_suffix_patterns(api_urls)
+
+urlpatterns = web_urls + api_urls

@@ -4,8 +4,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 import views
 import api
 
-urlpatterns = [
-
+web_urls = [
     url(r'^purchase/create/$', views.purchase, name='purchase-create'),
     url(r'^purchase/save/$', views.save_purchase, name='purchase-save'),
     url(r'^purchase/list/$', views.purchase_list, name='purchase-list'),
@@ -34,9 +33,13 @@ urlpatterns = [
     url(r'^cash_payment/$', views.cash_payment, name='cash_payment_add'),
     url(r'^cash_payment/(?P<pk>[0-9]+)/$', views.cash_payment, name='cash_payment_edit'),
     url(r'^cash_payment/save/$', views.save_cash_payment, name='cash_payment_save'),
+]
 
+api_urls = [
     url(r'^api/sale/(?P<party_pk>[0-9]+)/(?P<receipt_pk>[0-9]+)$', api.PendingSaleListAPI.as_view()),
     url(r'^api/purchase/(?P<party_pk>[0-9]+)/(?P<payment_pk>[0-9]+)$', api.PendingPurchaseListAPI.as_view()),
 ]
 
-urlpatterns = format_suffix_patterns(urlpatterns)
+api_urls = format_suffix_patterns(api_urls)
+
+urlpatterns = web_urls + api_urls
