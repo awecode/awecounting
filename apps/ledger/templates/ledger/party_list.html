@@ -1,5 +1,5 @@
 {% extends "_base.html" %}
-{% load i18n staticfiles filters%}
+{% load i18n staticfiles filters %}
 
 {% block page-title %}{% trans 'Parties' %}{% endblock %}
 
@@ -22,6 +22,7 @@
             <th>{% anchor name _('Name') %}</th>
             <th>{% anchor phone_no _('Phone No.') %}</th>
             <th>{% anchor pan_no _('PAN No.') %}</th>
+            <th>{% trans 'Ledgers' %}</th>
             </thead>
             <tbody>
             {% for party in paginated_objects %}
@@ -34,6 +35,10 @@
                     </td>
                     <td>
                         {{ party.pan_no }}
+                    </td>
+                    <td>
+                        <a href="{% url 'view_account' party.ledger.pk %}">{% trans 'View Ledger' %}</a>
+                        
                     </td>
                 </tr>
             {% endfor %}

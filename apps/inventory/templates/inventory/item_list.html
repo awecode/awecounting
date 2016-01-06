@@ -12,7 +12,6 @@
 
     <div class="well">
 
-
         {% load pagination_tags %}
         {% load sorting_tags %}
         {% load filters %}
@@ -24,7 +23,7 @@
             <thead>
             <th>{% anchor name _('Name') %}</th>
             <th>{% trans 'Other Properties' %}</th>
-
+            <th>{% trans 'Ledger' %}</th>
             </thead>
             <tbody>
             {% for item in paginated_objects %}
@@ -36,6 +35,10 @@
                         {% for key, value in item.other_properties.items %}
                             <span><b>{{ key }}</b>: <i>{{ value }}</i></span>{% if not forloop.last %},{% endif %}
                         {% endfor %}
+                    </td>
+                    <td>
+                        <a href="{% url 'view_account' item.account.pk %}">{% trans 'View Ledger' %}</a>
+                        <a href="{% url 'view_inventory_account' party.account.pk %}">{% trans 'View Inventory Ledger' %}</a>
                     </td>
                 </tr>
             {% endfor %}

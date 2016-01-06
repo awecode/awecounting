@@ -1,10 +1,12 @@
 {% extends "_base.html" %}
-{% load i18n %}
-{% load staticfiles %}
+{% load i18n staticfiles filters %}
 
-{% block title %}{{ obj.name }}{% endblock %}
+{% block page-title %}{{ obj.name }}{% endblock %}
 
-{% load filters %}
+{% block breadcrumbs %}
+    <li><a href="{% url 'list_inventory_accounts' %}">{% trans 'Inventory Accounts' %}</a></li>
+    <li>{{ obj.name }}</li>
+{% endblock %}
 
 {% block extrahead %}
     <script src="{% static 'inventory/js/inventory_account.js' %}"></script>
@@ -14,63 +16,67 @@
 {% endblock %}
 
 {% block content %}
+    <div class="well">
+        {% trans 'Unit' %} : {{ current_unit }}
 
-    <h1>{{ obj.item.name }}</h1>
-    <br>
-    {% trans 'Unit' %} : {{ current_unit }}
-    <br>
-    <form method="POST">
-        {% csrf_token %}
-        <label for="unit-convert">{% trans 'Convert to' %}:</label>
-        <select name="unit-convert-option" id="unit-convert">
-            {% for unit in units %}
-            <option value="{{ unit.id }}">{{ unit.name }}</option>
-            {% endfor %}
-        </select>
-        <input type="submit">
-    </form>
-    <br><br>
+        <form method="POST" class="form-inline">
+            {% csrf_token %}
+            <label for="unit-convert">{% trans 'Convert to' %}:</label>
+            &nbsp;
+            <select name="unit-convert-option" id="unit-convert" class="form-control">
+                {% for unit in units %}
+                    <option value="{{ unit.id }}">{{ unit.name }}</option>
+                {% endfor %}
+            </select>
+            &nbsp;
+            <input type="submit" class="btn btn-info btn-raised" value="{% trans 'Convert' %}">
+        </form>
+    </div>
 
-    <table class="table table-striped table-bordered">
-        <thead>
-        <tr>
-            <th rowspan="2">{% trans 'Date' %}</th>
-            <th rowspan="2">{% trans 'Voucher No.' %}</th>
-            <th colspan="3">{% trans 'In' %}</th>
-            <th colspan="3">{% trans 'Out' %}</th>
-            <th rowspan="2">{% trans 'Current Balance' %}</th>
+    <div class="well">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th rowspan="2">{% trans 'Date' %}</th>
+                <th rowspan="2">{% trans 'Voucher No.' %}</th>
+                <th colspan="3" class="right-bordered">{% trans 'In' %}</th>
+                <th colspan="3">{% trans 'Out' %}</th>
+                <th rowspan="2">{% trans 'Current Balance' %}</th>
 
-        </tr>
-        <tr>
-            <th>{% trans "Quantity" %}</th>
-            <th>{% trans "Rate" %}</th>
-            <th>{% trans "Total" %}</th>
-            <th>{% trans "Quantity" %}</th>
-            <th>{% trans "Rate" %}</th>
-            <th>{% trans "Total" %}</th>
+            </tr>
+            <tr>
+                <th>{% trans "Quantity" %}</th>
+                <th>{% trans "Rate" %}</th>
+                <th>{% trans "Total" %}</th>
+                <th>{% trans "Quantity" %}</th>
+                <th>{% trans "Rate" %}</th>
+                <th>{% trans "Total" %}</th>
 
-        </tr>
-        </thead>
-        <tbody data-bind="with: table_vm">
-        <!-- ko foreach:rows -->
-        <tr>
-            <td data-bind="text: date(), localize: 1"></td>
-            <td data-bind="text: voucher_no(), localize: 1"></td>
-            <td data-bind="text: income_quantity(), localize: 1"></td>
-            <td data-bind="text: income_rate(), localize: 1"></td>
-            <td data-bind="text: income_total(), localize: 1"></td>
+            </tr>
+            </thead>
+            <tbody data-bind="with: table_vm">
+            <!-- ko foreach:rows -->
+            <tr>
+                <td data-bind="text: date(), localize: 1"></td>
+                <td data-bind="text: voucher_no(), localize: 1"></td>
+                <td data-bind="text: income_quantity(), localize: 1"></td>
+                <td data-bind="text: income_rate(), localize: 1"></td>
+                <td data-bind="text: income_total(), localize: 1"></td>
 
-            <td data-bind="text: expense_quantity(), localize: 1"></td>
-            <td data-bind="text: expense_rate(), localize: 1"></td>
-            <td data-bind="text: expense_total(), localize: 1"></td>
+                <td data-bind="text: expense_quantity(), localize: 1"></td>
+                <td data-bind="text: expense_rate(), localize: 1"></td>
+                <td data-bind="text: expense_total(), localize: 1"></td>
 
-            <td data-bind="text: current_balance(), localize: 1"></td>
-            <td data-bind="visible:expense_flag">(<span data-bind="text:e1">a</span>:<span data-bind="text:r1">a</span>) (<span data-bind="text:e2">a</span>:<span data-bind="text:r2">a</span>)</td>
+                <td data-bind="text: current_balance(), localize: 1"></td>
+                <td data-bind="visible:expense_flag">(<span data-bind="text:e1">a</span>:<span data-bind="text:r1">a</span>)
+                    (<span data-bind="text:e2">a</span>:<span data-bind="text:r2">a</span>)
+                </td>
 
-        </tr>
-        <!-- /ko -->
-        </tbody>
-    </table>
+            </tr>
+            <!-- /ko -->
+            </tbody>
+        </table>
+    </div>
 
 
 {% endblock %}

@@ -60,7 +60,7 @@ td .select2-container {
     width: 100%
 }
 
-.inline-fields input {
+.inline-fields input, .inline-fields select {
     display: inline;
     margin: 0;
 }
@@ -541,4 +541,8 @@ td.link a{
 
 .highlighted{
     background-color: #ffa !important;
+}
+
+.right-bordered{
+      border-right: 1px solid #ccc;
 }
