@@ -6,7 +6,7 @@ from .models import Item, Unit, InventoryAccount, UnitConverter
 from awecounting.utils.forms import HTML5BootstrapModelForm, KOModelForm
 
 
-class ItemForm(KOModelForm, TranslationModelForm):
+class ItemForm(HTML5BootstrapModelForm, KOModelForm, TranslationModelForm):
     account_no = forms.Field(widget=forms.TextInput(), label=_('Inventory Account No.'))
 
     def __init__(self, *args, **kwargs):

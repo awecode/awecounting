@@ -67,8 +67,9 @@ def item(request, pk=None):
                 item_obj.image = request.FILES['image']
             other_properties = {}
             for key, value in zip(property_name, item_property):
-                other_properties[key] = value
-            item_obj.other_properties = other_properties
+                if key and value:
+                    other_properties[key] = value
+            if other_properties: item_obj.other_properties = other_properties 
             item_obj.save(account_no=form.cleaned_data['account_no'])
             if request.is_ajax():
                 return JsonResponse(ItemSerializer(item_obj).data)
