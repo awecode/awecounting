@@ -1514,7 +1514,6 @@ bsalert.danger = bsalert.error;
 
 //http://stackoverflow.com/questions/346021/how-do-i-remove-objects-from-a-javascript-associative-array/9973592#9973592
 Object.remove_item = function (obj, key) {
-    console.log(obj);
     if (!obj.hasOwnProperty(key))
         return obj;
     if (isNaN(parseInt(key)) || !(obj instanceof Array))
