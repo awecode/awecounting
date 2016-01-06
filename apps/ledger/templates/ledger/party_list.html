@@ -37,8 +37,7 @@
                         {{ party.pan_no }}
                     </td>
                     <td>
-                        <a href="{% url 'view_account' party.ledger.pk %}">{% trans 'View Ledger' %}</a>
-                        
+                        <a href="{% url 'view_account' party.account.pk %}">{% trans 'View Ledger' %}</a>
                     </td>
                 </tr>
             {% endfor %}

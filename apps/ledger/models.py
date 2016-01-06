@@ -1,5 +1,6 @@
 import datetime
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse_lazy
 
 from django.db import models
@@ -116,6 +117,19 @@ class Account(models.Model):
         if len(transactions) > 0:
             return transactions[0].current_dr
         return 0
+
+    def save(self, *args, **kwargs):
+        queryset = Account.objects.filter(company=self.company)
+        original_name = self.name
+        nxt = 2
+        while queryset.filter(**{'name': self.name}):
+            self.name = original_name
+            end = '%s%s' % ('-', nxt)
+            if len(self.name) + len(end) > 100:
+                self.name = self.name[:100 - len(end)]
+            self.name = '%s%s' % (self.name, end)
+            nxt += 1
+        return super(Account, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.name
