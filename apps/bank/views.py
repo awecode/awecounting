@@ -9,7 +9,7 @@ from apps.ledger.models import Account, delete_rows
 from datetime import date
 from django.shortcuts import render, get_object_or_404, redirect
 import json
-from awecounting.utils.helpers import save_model, invalid
+from awecounting.utils.helpers import save_model, invalid, write_error
 from django.http import JsonResponse
 from django.core.files import File
 from io import FileIO, BufferedWriter
@@ -149,12 +149,7 @@ def cheque_deposit_save(request):
                     submodel = save_model(submodel, values)
                 dct['rows'][ind] = submodel.id
     except Exception as e:
-        if hasattr(e, 'messages'):
-            dct['error_message'] = '; '.join(e.messages)
-        elif str(e) != '':
-            dct['error_message'] = str(e)
-        else:
-            dct['error_message'] = 'Error in form data!'
+        dct = write_error(dct, e)
     delete_rows(params.get('table_view').get('deleted_rows'), model)
     delete_rows(params.get('deleted_file'), AttachFile)
     return JsonResponse(dct)
