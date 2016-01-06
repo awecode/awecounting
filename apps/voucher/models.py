@@ -49,6 +49,10 @@ class Purchase(models.Model):
             grand_total += total
         return grand_total
 
+    @property
+    def voucher_type(self):
+        return _('Purchase')
+
     def get_absolute_url(self):
         return reverse_lazy('purchase-detail', kwargs={'id': self.pk})
 
@@ -64,12 +68,16 @@ class PurchaseRow(models.Model):
 
     def get_total(self):
         return float(self.quantity) * float(self.rate) - float(self.discount)
-   
+
     def get_voucher_no(self):
         return self.purchase.voucher_no
 
     def get_absolute_url(self):
         return reverse_lazy('purchase-detail', kwargs={'id': self.purchase.pk})
+
+    @property
+    def voucher_type(self):
+        return _('Purchase')
 
 
 class Sale(models.Model):
@@ -109,6 +117,10 @@ class Sale(models.Model):
         return str(self.voucher_no)
 
     @property
+    def voucher_type(self):
+        return _('Sale')
+
+    @property
     def total(self):
         grand_total = 0
         for obj in self.rows.all():
@@ -131,6 +143,10 @@ class SaleRow(models.Model):
 
     def get_voucher_no(self):
         return self.sale.voucher_no
+
+    @property
+    def voucher_type(self):
+        return _('Sale')
 
     def get_absolute_url(self):
         return reverse_lazy('sale-detail', kwargs={'id': self.sale.pk})
@@ -227,6 +243,7 @@ class CashPayment(models.Model):
 
     def get_absolute_url(self):
         return reverse_lazy('cash_payment_edit', kwargs={'pk': self.pk})
+
 
 class CashPaymentRow(models.Model):
     invoice = models.ForeignKey(Purchase, related_name="receipts")

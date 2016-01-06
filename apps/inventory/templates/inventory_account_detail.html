@@ -36,7 +36,7 @@
             <thead>
             <tr>
                 <th>{% trans 'Date' %}</th>
-                <th>{% trans 'Voucher No.' %}</th>
+                <th>{% trans 'Voucher' %}</th>
                 <th>{% trans 'In' %}</th>
                 <th>{% trans 'Out' %}</th>
                 <th>{% trans 'Current Balance' %}</th>
@@ -62,7 +62,7 @@
             {% for entry in paginated_objects %}
                 <tr>
                     <td>{{ entry.date }}</td>
-                    <td><a href="{{ entry.creator.get_absolute_url }}">{{ entry.creator.get_voucher_no }}</a></td>
+                    <td><a href="{{ entry.creator.get_absolute_url }}">{{ entry.creator.voucher_type }} #{{ entry.creator.get_voucher_no }}</a></td>
                     {% for transaction in entry.transactions.all %}
 
 
