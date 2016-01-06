@@ -28,7 +28,7 @@
 
                 <div class="form-group">
 
-                    <label for="id_units">{% trans 'Units' %}</label>
+                    <label for="id_units" class="required">{% trans 'Units' %}</label>
                     <select id="id_units" data-bind="selectize: $root.units, value: unit_id, event: {change: unit_changed}"
                             data-url="{% url 'unit_add' %}" name="unit" required></select>
 

@@ -1,12 +1,15 @@
 $(document).ready(function () {
     vm = new SaleViewModel(ko_data);
     ko.applyBindings(vm);
-    $('.change-on-ready').trigger('change');
 });
 
 function SaleViewModel(data) {
     var self = this;
 
+    for (var k in data)
+        self[k] = ko.observable(data[k]);
+
+    self.party = ko.observable();
     self.status = ko.observable();
 
     $.ajax({
@@ -15,46 +18,17 @@ function SaleViewModel(data) {
         async: false,
         success: function (data) {
             self.items = ko.observableArray(data);
-
         }
     });
 
-    self.item_changed = function (row) {
-        var selected_item = $.grep(self.items(), function (i) {
-            return i.id == row.item_id();
-        })[0];
-        if (selected_item.selling_rate)
-            row.rate(selected_item.selling_rate)
-        else
-            row.rate('')
-        row.unit_id(selected_item.unit_id)
-        if (!selected_item) return;
-    }
-
     $.ajax({
-        url: '/ledger/api/parties.json',
+        url: '/ledger/api/parties_with_balance.json',
         dataType: 'json',
         async: false,
         success: function (data) {
             self.parties = ko.observableArray(data);
         }
     });
-    self.party = ko.observable()
-    self.party_name = ko.observable();
-    self.party_address = ko.observable();
-    self.party_pan_no = ko.observable();
-
-    self.party_changed = function (obj) {
-        if (typeof(obj.party()) == 'undefined')
-            return false;
-        var selected_obj = $.grep(self.parties(), function (i) {
-            return i.id == obj.party();
-        })[0];
-        if (!selected_obj) return;
-        obj.party_address(selected_obj.address);
-        obj.party_name(selected_obj.name);
-        obj.party_pan_no(selected_obj.pan_no);
-    }
 
     $.ajax({
         url: '/inventory/api/units.json',
@@ -65,17 +39,12 @@ function SaleViewModel(data) {
         }
     });
 
-    //self.unit_changed = function (row) {
-    //    var selected_item = $.grep(self.units(), function (i) {
-    //        return i.id == row.unit_id();
-    //    })[0];
-    //    if (!selected_item) return;
-    //}
+    self.party_balance = ko.computed(function () {
+        if (self.party())
+            return self.party().balance;
+    });
 
     self.table_view = new TableViewModel({rows: data.rows, argument: self}, SaleRow);
-
-    for (var k in data)
-        self[k] = ko.observable(data[k]);
 
     self.save = function (item, event) {
         if (self.credit() && !self.party()) {
@@ -108,7 +77,7 @@ function SaleViewModel(data) {
     }
 
     self.id.subscribe(function (id) {
-        history.pushState(id, id, window.location.href + id + '/');
+        update_url_with_id(id);
     });
 
     self.sub_total = function () {
@@ -129,7 +98,7 @@ function SaleRow(row, sale_vm) {
     self.quantity = ko.observable();
     self.rate = ko.observable();
     self.discount = ko.observable(0);
-
+    self.unit = ko.observable();
     self.unit_id = ko.observable();
 
     for (var k in row)
@@ -137,11 +106,10 @@ function SaleRow(row, sale_vm) {
 
     self.item.subscribe(function (item) {
         var unit = get_by_id(sale_vm.units(), item.unit.id);
-        if (unit) {
+        if (!self.unit_id())
             self.unit_id(unit.id);
-        } else {
-            purchase_vm.units.push(unit);
-            self.unit_id(unit.id);
+        if (!self.rate()) {
+            self.rate(item.selling_rate);
         }
     });
 

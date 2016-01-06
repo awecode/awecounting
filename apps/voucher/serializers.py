@@ -60,9 +60,11 @@ class SaleRowSerializer(serializers.ModelSerializer):
 class SaleSerializer(serializers.ModelSerializer):
     rows = SaleRowSerializer(many=True)
     date = serializers.DateField(format=None)
+    party_id = serializers.ReadOnlyField()
 
     class Meta:
         model = Sale
+        exclude = ['party']
 
 
 class JournalVoucherRowSerializer(serializers.ModelSerializer):

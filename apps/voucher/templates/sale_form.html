@@ -36,19 +36,14 @@
             <div class="row">
                 <div class="col-md-6 col-sm-12">
                     <label for="party">{% trans 'Party' %}</label>
-                    <select data-bind="selectize: $root.parties, value: party, event: {change: $root.party_changed}"
+                    <select data-bind="selectize: $root.parties, value: party_id, object: party"
                             data-url="{% url 'party_add' %}" id="party"></select>
                 </div>
-                {#                <div class="col-md-6 col-sm-12">#}
-                {#                    <div class="form-group">#}
-                {#                        <div class="checkbox">#}
-                {#                            <label>#}
-                {#                                <input type="checkbox" data-bind="checked: credit"> {% trans 'Credit' %}#}
-                {#                            </label>#}
-                {#                        </div>#}
-                {#                        <p class="help-block">{% trans 'Check if this is a credit purchase.' %}</p>#}
-                {#                    </div>#}
-                {#                </div>#}
+                
+                <div class="col-md-6 col-sm-12 hidden-print" data-bind="if: party_balance">
+                    <label>Due</label>
+                    <div data-bind="text: party_balance"></div>
+                </div>
             </div>
 
             <div class="row">
@@ -92,17 +87,17 @@
                 <!-- ko foreach: rows -->
                 <tr>
                     <td>
-                        <span class="wid-pad pull-left" data-bind="text:  $index()+1, localize: 1"> </span>
+                        <span data-bind="text:  $index()+1, localize: 1"> </span>
                     </td>
                     <td>
                         <select data-url="{% url 'item_add' %}" data-script="/static/inventory/js/item.js"
-                                data-bind="selectize: $root.items, value: item_id, object:item, event: {change: $root.item_changed}, options:{render: {'option': render_option, 'item':render_option}}">
+                                data-bind="selectize: $root.items, value: item_id, object:item, options:{render: {'option': render_option, 'item':render_option}}">
                         </select>
                     </td>
                     <td data-bind="editableText: quantity, numeric: true"></td>
                     <td data-bind="editableText: rate, numeric: true"></td>
                     <td>
-                        <select data-bind="selectize: $root.units, value: unit_id, event: {change: $root.unit_changed}"
+                        <select data-bind="selectize: $root.units, value: unit_id, object:unit"
                                 data-url="{% url 'unit_add' %}"></select>
                     </td>
                     <td data-bind="editableText: discount"></td>

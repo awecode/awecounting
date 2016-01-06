@@ -239,7 +239,7 @@ def save_sale(request):
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
-                     'party_id': params.get('party'), 'due_date': params.get('due_date'),
+                     'party_id': params.get('party_id'), 'due_date': params.get('due_date'),
                      'credit': params.get('credit'), 'company': request.company}
     if params.get('id'):
         obj = Sale.objects.get(id=params.get('id'), company=request.company)
@@ -254,10 +254,8 @@ def save_sale(request):
             invalid_check = invalid(row, ['item_id', 'quantity', 'unit_id'])
             if invalid_check:
                 continue
-                # dct['error_message'] = 'These fields must be filled: ' + ', '.join(invalid_check)
-            # else:
             values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'quantity': row.get('quantity'),
-                      'rate': row.get('rate'), 'unit_id': row.get('unit_id'), 'discount': row.get('discount'),
+                      'rate': row.get('rate'), 'unit_id': row.get('unit')['id'], 'discount': row.get('discount'),
                       'sale': obj}
             submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
             if not created:
