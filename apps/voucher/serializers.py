@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CashReceipt, CashReceiptRow, PurchaseRow, Purchase, SaleRow, Sale, JournalVoucherRow, JournalVoucher
+from .models import CashPayment, CashPaymentRow, CashReceipt, CashReceiptRow, PurchaseRow, Purchase, SaleRow, Sale, JournalVoucherRow, JournalVoucher
 
 
 class CashReceiptRowSerializer(serializers.ModelSerializer):
@@ -13,6 +13,20 @@ class CashReceiptSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CashReceipt
+        exclude = ['party']
+
+
+class CashPaymentRowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CashPaymentRow
+
+
+class CashPaymentSerializer(serializers.ModelSerializer):
+    rows = CashPaymentRowSerializer(many=True)
+    party_id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = CashPayment
         exclude = ['party']
 
 

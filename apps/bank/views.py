@@ -2,8 +2,9 @@ from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView
 from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRow
+from apps.bank.models import File as AttachFile
 from .forms import BankAccountForm, BankCashDepositForm
-from .serializer import ChequeDepositSerializer
+from .serializers import ChequeDepositSerializer, FileSerializer
 from apps.ledger.models import Account, delete_rows
 from datetime import date
 from django.shortcuts import render, get_object_or_404, redirect
@@ -93,6 +94,10 @@ class ChequeDepositList(ChequeDepositView, ListView):
     pass
 
 
+class ChequeDepositDelete(ChequeDepositView, DeleteView):
+    pass
+
+
 def cheque_deposit_create(request, id=None):
     if id:
         cheque_deposit = get_object_or_404(ChequeDeposit, id=id)
@@ -101,13 +106,13 @@ def cheque_deposit_create(request, id=None):
         cheque_deposit = ChequeDeposit(company=request.company)
         scenario = 'Create'
     data = ChequeDepositSerializer(cheque_deposit).data
-    return render(request, 'bank/cheque_deposit_form.html', {'data': data, 'scenario': scenario})
+    return render(request, 'bank/cheque_deposit_form.html', {'data': data, 'scenario': scenario, 'cheque_deposit': cheque_deposit})
 
 
 def cheque_deposit_save(request):
     if request.is_ajax():
         # params = json.loads(request.body)
-        params = json.loads(request.POST.get('self'))
+        params = json.loads(request.POST.get('cheque_deposit'))
     dct = {'rows': {}}
     company = request.company
     if params.get('voucher_no') == '':
@@ -121,10 +126,13 @@ def cheque_deposit_save(request):
         obj = ChequeDeposit.objects.get(id=params.get('id'), company=request.company)
     else:
         obj = ChequeDeposit(company=request.company)
-    if 'attachment' in request.FILES:
-        obj.attachment = request.FILES.get('attachment')
     try:
         obj = save_model(obj, object_values)
+        if request.FILES:
+            dct['attachment'] = []
+            for _file in request.FILES.getlist('file'): 
+                attach_file = AttachFile.objects.create(attachment = _file, cheque_deposit = obj)
+                dct['attachment'].append(FileSerializer(attach_file).data)
         dct['id'] = obj.id
         model = ChequeDepositRow
         for ind, row in enumerate(params.get('table_view').get('rows')):
@@ -147,6 +155,7 @@ def cheque_deposit_save(request):
         else:
             dct['error_message'] = 'Error in form data!'
     delete_rows(params.get('table_view').get('deleted_rows'), model)
+    delete_rows(params.get('deleted_file'), AttachFile)
     return JsonResponse(dct)
 
 # @login_required

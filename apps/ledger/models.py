@@ -51,6 +51,9 @@ class Account(models.Model):
     #     if len(transactions) > 0:
     #         return transactions[0]
     #
+    @property
+    def balance(self):
+        return self.get_balance()
 
     def get_balance(self):
         return zero_for_none(self.current_dr) - zero_for_none(self.current_cr)
@@ -262,6 +265,7 @@ def handle_company_creation(sender, **kwargs):
 
 
 company_creation.connect(handle_company_creation)
+
 
 class Party(models.Model):
     name = models.CharField(max_length=254)

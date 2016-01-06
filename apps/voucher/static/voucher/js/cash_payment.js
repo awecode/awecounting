@@ -1,10 +1,10 @@
 $(document).ready(function () {
-    vm = new CashReceiptVM(ko_data);
+    vm = new CashPaymentVM(ko_data);
     ko.applyBindings(vm);
 });
 
 
-function CashReceiptVM(data) {
+function CashPaymentVM(data) {
     var self = this;
 
     $.ajax({
@@ -39,7 +39,7 @@ function CashReceiptVM(data) {
 
     self.party.subscribe(function (party) {
         self.party_address(party.address);
-        self.current_balance(party.balance);
+        self.current_balance(-1 * party.balance);
     });
 
 
@@ -58,10 +58,10 @@ function CashReceiptVM(data) {
 
     self.load_related_invoices = function () {
         if (self.party()) {
-            var receipt_id = self.id() || 0;
+            var payment_id = self.id() || 0;
             $.ajax({
 
-                url: '/voucher/api/sale/' + self.party_id() + '/' + receipt_id + '.json',
+                url: '/voucher/api/purchase/' + self.party_id() + '/' + payment_id + '.json',
                 dataType: 'json',
                 async: false,
                 success: function (data) {
@@ -71,15 +71,15 @@ function CashReceiptVM(data) {
                             var row = self.rows()[k];
                             $.each(self.invoices, function (i, o) {
                                 if (o.id == row.invoice) {
-                                    o.payment = row.receipt;
-                                    //o.discount = row.discount;
+                                    o.payment = row.payment;
+                                    // o.discount = row.discount;
                                 }
                             });
                         }
                         var options = {
                             rows: self.invoices
                         };
-                        self.table_vm(new TableViewModel(options, CashReceiptRowVM));
+                        self.table_vm(new TableViewModel(options, CashPaymentRowVM));
                         bsalert.success('Invoices loaded!');
                         self.state('success');
                     }
@@ -121,7 +121,7 @@ function CashReceiptVM(data) {
             var data = ko.toJSON(self);
             $.ajax({
                 type: "POST",
-                url: '/voucher/cash-receipt/save/',
+                url: '/voucher/cash_payment/save/',
                 data: data,
                 success: function (msg) {
                     if (typeof (msg.error_message) != 'undefined') {
@@ -146,32 +146,32 @@ function CashReceiptVM(data) {
     }
 
 
-    self.approve = function (item, event) {
-        if (!self.validate())
-            return false;
-        if (get_form(event).checkValidity()) {
-            $.ajax({
-                type: "POST",
-                url: '/voucher/cash-receipt/approve/',
-                data: ko.toJSON(self),
-                success: function (msg) {
-                    if (typeof (msg.error_message) != 'undefined') {
-                        bs_alert.error(msg.error_message);
-                        self.state('error');
-                    }
-                    else {
-                        bsalert.success('Approved!');
-                        self.status('Approved');
-                        self.state('success');
-                        if (msg.id)
-                            self.id(msg.id);
-                    }
-                }
-            });
-        }
-        else
-            return true;
-    }
+    // self.approve = function (item, event) {
+    //     if (!self.validate())
+    //         return false;
+    //     if (get_form(event).checkValidity()) {
+    //         $.ajax({
+    //             type: "POST",
+    //             url: '/voucher/cash_payment/approve/',
+    //             data: ko.toJSON(self),
+    //             success: function (msg) {
+    //                 if (typeof (msg.error_message) != 'undefined') {
+    //                     bs_alert.error(msg.error_message);
+    //                     self.state('error');
+    //                 }
+    //                 else {
+    //                     bsalert.success('Approved!');
+    //                     self.status('Approved');
+    //                     self.state('success');
+    //                     if (msg.id)
+    //                         self.id(msg.id);
+    //                 }
+    //             }
+    //         });
+    //     }
+    //     else
+    //         return true;
+    // }
 
     if (self.rows().length) {
         setTimeout(self.load_related_invoices, 500);
@@ -179,7 +179,7 @@ function CashReceiptVM(data) {
 }
 
 
-function CashReceiptRowVM(row) {
+function CashPaymentRowVM(row) {
     var self = this;
 
     self.payment = ko.observable();

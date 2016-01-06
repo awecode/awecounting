@@ -31,7 +31,12 @@ urlpatterns = [
     url(r'^cash_receipt/(?P<pk>[0-9]+)/$', views.cash_receipt, name='cash_receipt_edit'),
     url(r'^cash-receipt/save/$', views.save_cash_receipt, name='cash_receipt_save'),
 
+    url(r'^cash_payment/$', views.cash_payment, name='cash_payment_add'),
+    url(r'^cash_payment/(?P<pk>[0-9]+)/$', views.cash_payment, name='cash_payment_edit'),
+    url(r'^cash_payment/save/$', views.save_cash_payment, name='cash_payment_save'),
+
     url(r'^api/sale/(?P<party_pk>[0-9]+)/(?P<receipt_pk>[0-9]+)$', api.PendingSaleListAPI.as_view()),
+    url(r'^api/purchase/(?P<party_pk>[0-9]+)/(?P<payment_pk>[0-9]+)$', api.PendingPurchaseListAPI.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

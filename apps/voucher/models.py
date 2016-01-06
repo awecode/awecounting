@@ -18,6 +18,8 @@ class Purchase(models.Model):
     credit = models.BooleanField(default=False)
     date = BSDateField(default=today)
     due_date = BSDateField(blank=True, null=True)
+    pending_amount = models.FloatField(null=True, blank=True)
+    total_amount = models.FloatField(null=True, blank=True)
     company = models.ForeignKey(Company)
 
     def type(self):
@@ -60,6 +62,9 @@ class PurchaseRow(models.Model):
     unit = models.ForeignKey(Unit)
     purchase = models.ForeignKey(Purchase, related_name='rows')
 
+    def get_total(self):
+        return float(self.quantity) * float(self.rate) - float(self.discount)
+   
     def get_voucher_no(self):
         return self.purchase.voucher_no
 
@@ -176,7 +181,7 @@ class CashReceipt(models.Model):
     def __init__(self, *args, **kwargs):
         super(CashReceipt, self).__init__(*args, **kwargs)
         if not self.pk and not self.voucher_no:
-            self.voucher_no = get_next_voucher_no(CashReceipt, self.company)
+            self.voucher_no = get_next_voucher_no(CashReceipt, self.company_id)
 
     def get_voucher_no(self):
         return self.voucher_no
@@ -199,3 +204,41 @@ class CashReceiptRow(models.Model):
 
     class Meta:
         unique_together = ('invoice', 'cash_receipt')
+
+
+class CashPayment(models.Model):
+    voucher_no = models.IntegerField()
+    party = models.ForeignKey(Party, verbose_name='Paid To')
+    date = BSDateField(default=today)
+    reference = models.CharField(max_length=50, null=True, blank=True)
+    amount = models.FloatField(null=True, blank=True)
+    description = models.TextField()
+    company = models.ForeignKey(Company)
+    # statuses = [('Approved', 'Approved'), ('Unapproved', 'Unapproved')]
+    # status = models.CharField(max_length=10, choices=statuses, default='Unapproved')
+
+    def __init__(self, *args, **kwargs):
+        super(CashPayment, self).__init__(*args, **kwargs)
+        if not self.pk and not self.voucher_no:
+            self.voucher_no = get_next_voucher_no(CashPayment, self.company_id)
+
+    def get_voucher_no(self):
+        return self.voucher_no
+
+    def get_absolute_url(self):
+        return reverse_lazy('cash_payment_edit', kwargs={'pk': self.pk})
+
+class CashPaymentRow(models.Model):
+    invoice = models.ForeignKey(Purchase, related_name="receipts")
+    payment = models.FloatField()
+    discount = models.FloatField(blank=True, null=True)
+    cash_payment = models.ForeignKey(CashPayment, related_name='rows')
+
+    def get_voucher_no(self):
+        return self.cash_payment.voucher_no
+
+    def get_absolute_url(self):
+        return reverse_lazy('cash_payment_edit', kwargs={'pk': self.cash_payment_id})
+
+    class Meta:
+        unique_together = ('invoice', 'cash_payment')

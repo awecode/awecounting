@@ -1,16 +1,16 @@
 {% extends "_base.html" %}
 {% load i18n static %}
 
-{% block page-title %}{{ scenario }} {% trans 'Cash Receipt' %}{% endblock %}
+{% block page-title %}{{ scenario }} {% trans 'Cash Payment' %}{% endblock %}
 
 {% block breadcrumbs %}
-    <li><a href="{% url "cash_receipt_add" %}">{% trans 'Cash Receipts' %}</a></li>
-    <li>{{ scenario }} {% trans 'Cash Receipt' %}</li>
+    <li><a href="{% url "cash_payment_add" %}">{% trans 'Cash Payment' %}</a></li>
+    <li>{{ scenario }} {% trans 'Cash Payment' %}</li>
 {% endblock %}
 
 {% load filters %}
 {% block extrahead %}
-    <script src={% static "voucher/js/cash_receipt.js" %}></script>
+    <script src={% static "voucher/js/cash_payment.js" %}></script>
     <script>
         ko_data =
         {{ data|jsonify }}
@@ -28,14 +28,13 @@
                 {{ form.voucher_no.label_tag }}
                 {{ form.voucher_no }}
                 {{ form.voucher_no.errors }}
-
             </div>
 
             <div class="row">
 
                 <div class="col-md-6 col-xs-12">
                     {{ form.party.label_tag }}
-                    <select class="form-control" data-name="Party" id="id_party"
+                    <select class="form-control" data-name="Party"
                             data-url="{% url 'party_add' %}?type=Customer"
                             data-bind="selectize: $root.parties, value: party_id, object:party">
                     </select>
@@ -135,8 +134,8 @@
             <div>
                 <input class="btn btn-raised btn-info" type="submit" value="Save" data-bind="click: $root.save">
                 {% if scenario == 'Update' %}
-                    {#                    <a class="btn btn-raised btn-danger"#}
-                    {#                       href="{% url 'delete_invoice' form.instance.invoice_no %}">{% trans 'Delete' %}</a>#}
+{#                    <a class="btn btn-raised btn-danger"#}
+{#                       href="{% url 'delete_invoice' form.instance.invoice_no %}">{% trans 'Delete' %}</a>#}
                 {% endif %}
             </div>
         </div>
