@@ -7,6 +7,9 @@ $(document).ready(function () {
 function PurchaseViewModel(data) {
     var self = this;
 
+    for (var k in data)
+        self[k] = ko.observable(data[k]);
+
     self.status = ko.observable();
 
     $.ajax({
@@ -19,30 +22,13 @@ function PurchaseViewModel(data) {
     });
 
     $.ajax({
-        url: '/ledger/api/parties.json',
+        url: '/ledger/api/parties_with_balance.json',
         dataType: 'json',
         async: false,
         success: function (data) {
             self.parties = ko.observableArray(data);
         }
     });
-
-    self.party = ko.observable();
-    self.party_name = ko.observable();
-    self.party_address = ko.observable();
-    self.party_pan_no = ko.observable();
-
-    //self.party_changed = function (obj) {
-    //    if (typeof(obj.party()) == 'undefined')
-    //        return false;
-    //    var selected_obj = $.grep(self.parties(), function (i) {
-    //        return i.id == obj.party();
-    //    })[0];
-    //    if (!selected_obj) return;
-    //    obj.party_address(selected_obj.address);
-    //    obj.party_name(selected_obj.name);
-    //    obj.party_pan_no(selected_obj.pan_no);
-    //}
 
     $.ajax({
         url: '/inventory/api/units.json',
@@ -53,11 +39,14 @@ function PurchaseViewModel(data) {
         }
     });
 
+    self.party = ko.observable();
+
+    self.party_balance = ko.computed(function () {
+        if (self.party())
+            return -1 * self.party().balance;
+    });
+
     self.table_view = new TableViewModel({rows: data.rows, argument: self}, PurchaseRow);
-
-
-    for (var k in data)
-        self[k] = ko.observable(data[k]);
 
     self.id.subscribe(function (id) {
         update_url_with_id(id);
@@ -111,7 +100,7 @@ function PurchaseRow(row, purchase_vm) {
     self.quantity = ko.observable();
     self.rate = ko.observable();
     self.discount = ko.observable(0);
-
+    self.unit = ko.observable();
     self.unit_id = ko.observable();
 
     for (var k in row)
@@ -119,12 +108,8 @@ function PurchaseRow(row, purchase_vm) {
 
     self.item.subscribe(function (item) {
         var unit = get_by_id(purchase_vm.units(), item.unit.id);
-        if (unit) {
+        if (!self.unit_id())
             self.unit_id(unit.id);
-        } else {
-            purchase_vm.units.push(unit);
-            self.unit_id(unit.id);
-        }
     });
 
     self.total = ko.computed(function () {

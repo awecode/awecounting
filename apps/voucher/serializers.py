@@ -42,10 +42,11 @@ class PurchaseRowSerializer(serializers.ModelSerializer):
 class PurchaseSerializer(serializers.ModelSerializer):
     rows = PurchaseRowSerializer(many=True)
     date = serializers.DateField(format=None)
+    party_id = serializers.ReadOnlyField()
 
     class Meta:
         model = Purchase
-        # exclude = ['date']
+        exclude = ['party']
 
 
 class SaleRowSerializer(serializers.ModelSerializer):

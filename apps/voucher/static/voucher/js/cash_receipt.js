@@ -42,20 +42,6 @@ function CashReceiptVM(data) {
         self.current_balance(party.balance);
     });
 
-
-//    self.party_changed = function (vm) {
-//        var selected_obj = $.grep(self.parties, function (i) {
-//            return i.id == self.party();
-//        })[0];
-//        self.party_address(selected_obj.address);
-//        self.current_balance(selected_obj.customer_balance);
-////        if (self.table_vm()){
-////            self.table_vm().rows(null);
-////        }
-//    }
-
-    //self.party.subscribe(self.party_changed);
-
     self.load_related_invoices = function () {
         if (self.party()) {
             var receipt_id = self.id() || 0;
