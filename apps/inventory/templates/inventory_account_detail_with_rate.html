@@ -17,20 +17,24 @@
 
 {% block content %}
     <div class="well">
-        {% trans 'Unit' %} : {{ current_unit }}
+        {% trans 'Unit' %} : {{ unit }}
 
-        <form method="POST" class="form-inline">
-            {% csrf_token %}
-            <label for="unit-convert">{% trans 'Convert to' %}:</label>
-            &nbsp;
-            <select name="unit-convert-option" id="unit-convert" class="form-control">
-                {% for unit in units %}
-                    <option value="{{ unit.id }}">{{ unit.name }}</option>
-                {% endfor %}
-            </select>
-            &nbsp;
-            <input type="submit" class="btn btn-info btn-raised" value="{% trans 'Convert' %}">
-        </form>
+        {% if unit_conversions %}
+            <form method="POST" class="form-inline">
+                {% csrf_token %}
+                <label for="unit-convert">{% trans 'Convert to' %}:</label>
+                <select name="unit_id" id="unit-convert" class="form-control">
+                    {% for conversion in unit_conversions %}
+                        {% if unit.id == conversion.unit_to_convert.id %}
+                            <option value="{{ conversion.base_unit.id }}">{{ conversion.base_unit.name }}</option>
+                        {% else %}
+                            <option value="{{ conversion.unit_to_convert.id }}">{{ conversion.unit_to_convert.name }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <input type="submit" class="btn btn-info btn-raised" value="{% trans 'Convert' %}">
+            </form>
+        {% endif %}
     </div>
 
     <div class="well">

@@ -177,33 +177,20 @@ def view_inventory_account(request, id):
 
 def view_inventory_account_with_rate(request, id):
     obj = get_object_or_404(InventoryAccount, id=id, company=request.company)
-    # units = Unit.objects.all()
-    units_to_convert = UnitConverter.objects.filter(base_unit__name=obj.item.unit.name).values_list(
-        'unit_to_convert__pk',
-        flat=True)
-    units_to_convert_list = Unit.objects.filter(pk__in=units_to_convert)
-    units_list = [o for o in units_to_convert_list]
-    units_list.append(Unit.objects.get(pk=obj.item.unit.pk))
-    if request.POST:
-        unit_id = request.POST.get('unit-convert-option')
-        unit = Unit.objects.get(pk=unit_id)
-        if unit.name != obj.item.unit.name:
-            unit_convert = UnitConverter.objects.get(base_unit__name=obj.item.unit.name,
-                                                     unit_to_convert__name=unit.name)
-            multiple = unit_convert.multiple
-            journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
-                .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
-            data = InventoryAccountRowSerializer(journal_entries, many=True,
-                                                 context={'unit_multiple': multiple,
-                                                          'default_unit': obj.item.unit.name}).data
-            current_unit = unit.name
-            return render(request, 'inventory_account_detail_with_rate.html',
-                          {'obj': obj, 'entries': journal_entries, 'data': data, 'units': units_list,
-                           'current_unit': current_unit})
+    if hasattr(obj, 'item'):
+        if request.POST:
+            unit = Unit.objects.get(pk=request.POST.get('unit_id'), company=request.company)
+        else:
+            unit = obj.item.unit
+    else:
+        unit = None
+    conversions = UnitConverter.objects.filter(Q(base_unit=unit) | Q(unit_to_convert=unit)).select_related('base_unit',
+                                                                                                           'unit_to_convert')
+    multiple = 1
     journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
         .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
     data = InventoryAccountRowSerializer(journal_entries, many=True, context={'default_unit': obj.item.unit.name}).data
-    current_unit = obj.item.unit
+    
     return render(request, 'inventory_account_detail_with_rate.html',
-                  {'obj': obj, 'entries': journal_entries, 'data': data, 'units': units_list,
-                   'current_unit': current_unit})
+                  {'obj': obj, 'entries': journal_entries, 'data': data, 'unit_conversions': conversions, 'unit': unit,
+                   'multiple': multiple})
