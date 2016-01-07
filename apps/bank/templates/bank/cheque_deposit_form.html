@@ -14,7 +14,7 @@
 
 {% block breadcrumbs %}
     <li><a href="{% url 'bank:cheque_deposit_list' %}">{% trans 'Cheque Deposit' %}</a></li>
-    <li>{{ scenario }}</li>
+    <li>{{ scenario }} {% trans 'Cheque Deposit' %}</li>
 {% endblock %}
 
 {% block content %}
@@ -111,7 +111,7 @@
                     <!-- ko foreach: upload_file -->
                     <div class="row">
                         <div class="col-md-12 col-sm-12 pull-left">
-                            <input class="attachment" data-bind="attachment: upload_file" type="file" class="file" multiple>
+                            <input class="attachment" data-bind="attachment: upload_file" type="file" class="file">
                             <a href="#" data-bind="click: $root.remove_upload_file">x</a>
                          </div>
                     </div>
