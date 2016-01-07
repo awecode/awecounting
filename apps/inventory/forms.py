@@ -1,4 +1,5 @@
 from django import forms
+from django.core.urlresolvers import reverse_lazy
 from modeltranslation.forms import TranslationModelForm
 from django.utils.translation import ugettext_lazy as _
 
@@ -34,7 +35,10 @@ class ItemForm(HTML5BootstrapModelForm, KOModelForm, TranslationModelForm):
     class Meta:
         model = Item
         fields = '__all__'
-        exclude = ['other_properties', 'account', 'unit', 'ledger', 'company']
+        exclude = ['other_properties', 'account', 'ledger', 'company']
+        widgets = {
+            'unit': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('unit_add')}),
+        }
 
 
 class UnitForm(HTML5BootstrapModelForm):

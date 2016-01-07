@@ -2,7 +2,12 @@
 {% load staticfiles i18n %}
 {% load filters %}
 
-{% block page-title %}{% trans 'Item' %}{% endblock %}
+{% block page-title %}{{ scenario }} {% trans 'Item' %}{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'item_list' %}">{% trans 'Items' %}</a></li>
+    <li>{{ scenario }}</li>
+{% endblock %}
 
 {% block extrahead %}
     <script src="{% static 'inventory/js/item.js' %}"></script>
@@ -22,17 +27,73 @@
         {% csrf_token %}
 
         <div class="well">
-            {{ form.as_p }}
+
+            <div class="row">
+                <div class="col-lg-6 col-sm-12">
+                    {{ form.name.label_tag }}
+                    {{ form.name }}
+                    {{ form.name.errors }}
+                </div>
+
+                <div class="col-lg-6 col-sm-12">
+                    {{ form.code.label_tag }}
+                    {{ form.code }}
+                    {{ form.code.errors }}
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-lg-6 col-sm-12">
+
+                    <div>
+                        {{ form.size.label_tag }}
+                        {{ form.size }}
+                        {{ form.size.errors }}
+                    </div>
+                    <div>
+                        {{ form.selling_rate.label_tag }}
+                        {{ form.selling_rate }}
+                        {{ form.selling_rate.errors }}
+                    </div>
+                    <div>
+                        {{ form.image.label_tag }}
+                        {{ form.image }}
+                        {{ form.image.errors }}
+                    </div>
+
+                </div>
+
+                <div class="col-lg-6 col-sm-12">
+                    {{ form.description.label_tag }}
+                    {{ form.description }}
+                    {{ form.description.errors }}
+                </div>
+
+
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6 col-sm-12">
+                    {{ form.unit.label_tag }}
+                    {{ form.unit }}
+                    {{ form.unit.errors }}
+                </div>
+
+                <div class="col-lg-6 col-sm-12">
+                    {{ form.account_no.label_tag }}
+                    {{ form.account_no }}
+                    {{ form.account_no.errors }}
+                </div>
+            </div>
+
+
+            {#                <label for="id_units" class="required">{% trans 'Units' %}</label>#}
+            {#                <select id="id_units" data-bind="selectize: units, value: unit_id, event: {change: unit_changed}"#}
+            {#                        data-url="{% url 'unit_add' %}" name="unit" required></select>#}
 
             <div id="other-properties">
 
-                <div class="form-group">
-
-                    <label for="id_units" class="required">{% trans 'Units' %}</label>
-                    <select id="id_units" data-bind="selectize: $root.units, value: unit_id, event: {change: unit_changed}"
-                            data-url="{% url 'unit_add' %}" name="unit" required></select>
-
-                </div>
 
                 <label for="id_other_properties">{% trans "Other properties" %}</label>
                 <label>
@@ -42,12 +103,13 @@
                 </label>
 
                 <div id="id_other_properties" data-bind="foreach: other_properties" class="form-inline">
-                    <div>
+                    <div class="property-row">
                         <input type="text" class="form-control test" id="id_property_name" name="property_name"
                                placeholder="Property name" data-bind="value: property_name">
                         <input type="text" class="form-control" id="id_property" name="property" placeholder="Property"
                                data-bind="value: property">
-                        <a href="#" data-bind="click: $parent.removeOtherProperty"><i class="red fa fa-trash-o"></i></a>
+                        <button href="#" class="btn" data-bind="click: $parent.removeOtherProperty"><i
+                                class="red fa fa-trash-o"></i></button>
                     </div>
                 </div>
 
