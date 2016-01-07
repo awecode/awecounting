@@ -4,7 +4,6 @@ from .models import Sale, CashReceipt, Purchase
 
 
 class PendingSaleListAPI(generics.ListCreateAPIView):
-    # queryset = Sale.objects.all()
     serializer_class = SaleSerializer
 
     def get_queryset(self):
@@ -21,7 +20,6 @@ class PendingSaleListAPI(generics.ListCreateAPIView):
 
 
 class PendingPurchaseListAPI(generics.ListCreateAPIView):
-    # queryset = Sale.objects.all()
     serializer_class = PurchaseSerializer
 
     def get_queryset(self):

@@ -1,6 +1,6 @@
 from rest_framework import generics
 from awecounting.utils.mixins import CompanyAPI
-from .models import Account, Party
+from .models import Account
 from .serializers import AccountSerializer, PartySerializer, PartyBalanceSerializer
 
 

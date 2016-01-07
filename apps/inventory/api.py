@@ -1,25 +1,12 @@
 from rest_framework import generics
 from .models import Item, Unit
 from .serializers import ItemSerializer, UnitSerializer
+from awecounting.utils.mixins import CompanyAPI
 
 
-class ItemListAPI(generics.ListCreateAPIView):
-    # queryset = Item.objects.all()
+class ItemListAPI(CompanyAPI, generics.ListCreateAPIView):
     serializer_class = ItemSerializer
 
-    def get_queryset(self):
-        queryset = Item.objects.all()
-        if self.request.company:
-            queryset = queryset.filter(company=self.request.company)
-        return queryset
 
-
-class UnitListAPI(generics.ListCreateAPIView):
-    # queryset = Unit.objects.all()
+class UnitListAPI(CompanyAPI, generics.ListCreateAPIView):
     serializer_class = UnitSerializer
-
-    def get_queryset(self):
-        queryset = Unit.objects.all()
-        if self.request.company:
-            queryset = queryset.filter(company=self.request.company)
-        return queryset
