@@ -29,7 +29,7 @@ class Collection(models.Model):
     count = models.PositiveIntegerField()
     interest_rate = models.FloatField()
     start_date = BSDateField(blank=True, null=True, default=today)
-    end_date = models.DateField(blank=True, null=True)
+    end_date = BSDateField(blank=True, null=True, default=today)
     company = models.ForeignKey(Company)
 
     def __str__(self):
@@ -41,6 +41,7 @@ class Collection(models.Model):
 
 class Investment(models.Model):
     share_holder = models.ForeignKey(ShareHolder)
-    date = models.DateField(default=datetime.date.today)
+    date = BSDateField(default=today)
     amount = models.FloatField()
     collection = models.ForeignKey(Collection)
+    company = models.ForeignKey(Company)
