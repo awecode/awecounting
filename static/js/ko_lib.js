@@ -225,8 +225,8 @@ ko.bindingHandlers.attachment = {
     },
     update: function (element, valueAccessor) {
         $(element).on('change', function(){
-            var value = valueAccessor()
-            value($(element)[0].files[0])
+            var value = valueAccessor();
+            value($(element)[0].files[0]);
         });
     },
 };

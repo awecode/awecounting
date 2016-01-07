@@ -86,6 +86,16 @@ function ChequeDepositViewModel(data) {
             };
         };
 
+        if ( !self.bank_account() ) {
+            bsalert.error('Bank account field is required');
+            return false;
+        }
+
+        if ( !self.benefactor() ) {
+            bsalert.error('Benefactor field is required');
+            return false;
+        }
+
         form_data.append('cheque_deposit', ko.toJSON(self));
         $.ajax({
             type: "POST",
