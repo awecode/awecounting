@@ -452,3 +452,11 @@ def do_usemacro(parser, token):
 @register.filter
 def tel(no):
     return mark_safe('<a href="tel:%s">%s</a>' % (no, no))
+
+@register.filter
+def remove_lines(string):
+    return str(string).replace('\n', '')
+
+@register.filter
+def last_word(string):
+    return str(string).split()[-1]
