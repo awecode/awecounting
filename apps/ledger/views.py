@@ -34,6 +34,11 @@ class PartyView(CompanyView):
     success_url = reverse_lazy('party_list')
     form_class = PartyForm
 
+    def get_form_kwargs(self):
+        kwargs = super(PartyView, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
 
 class PartyList(PartyView, ListView):
     pass

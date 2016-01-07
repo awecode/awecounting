@@ -13,8 +13,6 @@
     <form method="post" id='form'>
 
         <div class="well">
-            {{ form.non_field_errors }}
-            {{ form.errors }}
             {% csrf_token %}
             {{ form.as_p }}
         </div>
