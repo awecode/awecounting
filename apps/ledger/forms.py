@@ -1,14 +1,11 @@
 from django.core.exceptions import ValidationError
+from awecounting.utils.mixins import CompanyKwargs
 from ..ledger.models import Party
 from awecounting.utils.forms import HTML5BootstrapModelForm
 from django.utils.translation import ugettext_lazy as _
 
 
 class PartyForm(HTML5BootstrapModelForm):
-    def __init__(self, *args, **kwargs):
-        self.company = kwargs.pop('request').company
-        return super(PartyForm, self).__init__(*args, **kwargs)
-
     def clean_pan_no(self):
         pan_no = self.cleaned_data['pan_no']
         if pan_no:

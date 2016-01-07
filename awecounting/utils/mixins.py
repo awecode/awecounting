@@ -4,6 +4,7 @@ from django.views.generic.edit import UpdateView as BaseUpdateView, CreateView a
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
+from apps.share.models import ShareHolder, Collection
 from .helpers import json_from_object
 from django.core.exceptions import PermissionDenied
 
@@ -69,6 +70,23 @@ class CompanyView(object):
     def get_queryset(self):
         return super(CompanyView, self).get_queryset().filter(company=self.request.company)
 
+    # def get_form_kwargs(self):
+    #     kwargs = super(CompanyView, self).get_form_kwargs()
+    #     kwargs['request'] = self.request
+    #     return kwargs
+
+    # def get_form_class(self, *args, **kwargs):
+    #     form_class = super(CompanyView, self).get_form_class(*args, **kwargs)
+    #     return form_class
+
+    def get_form(self, *args, **kwargs):
+        form = super(CompanyView, self).get_form(*args, **kwargs)
+        form.company = self.request.company
+        if hasattr(form.Meta, 'company_filters'):
+            for field in form.Meta.company_filters:
+                form.fields[field].queryset = form.fields[field].queryset.filter(company=form.company)
+        return form
+
 
 class StaffOnlyMixin(object):
     def dispatch(self, request, *args, **kwargs):
@@ -79,3 +97,9 @@ class StaffOnlyMixin(object):
             if bool(u.groups.filter(name='Staff')):
                 return super(StaffOnlyMixin, self).dispatch(request, *args, **kwargs)
         raise PermissionDenied()
+
+
+class CompanyKwargs(object):
+    def __init__(self, *args, **kwargs):
+        self.company = kwargs.pop('request').company
+        return super(CompanyKwargs, self).__init__(*args, **kwargs)

@@ -17,12 +17,6 @@ class CollectionForm(HTML5BootstrapModelForm):
 
 
 class InvestmentForm(HTML5BootstrapModelForm):
-    def __init__(self, *args, **kwargs):
-        self.company = kwargs.pop('company', None)
-        super(InvestmentForm, self).__init__(*args, **kwargs)
-        self.fields['share_holder'].queryset = ShareHolder.objects.filter(company=self.company)
-        self.fields['collection'].queryset = Collection.objects.filter(company=self.company)
-
     class Meta:
         model = Investment
         exclude = ('company',)
@@ -30,3 +24,4 @@ class InvestmentForm(HTML5BootstrapModelForm):
             'share_holder': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('share:shareholder_add')}),
             'collection': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('share:collection_add')}),
         }
+        company_filters = ('share_holder', 'collection')

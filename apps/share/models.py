@@ -45,3 +45,4 @@ class Investment(models.Model):
     amount = models.FloatField()
     collection = models.ForeignKey(Collection)
     company = models.ForeignKey(Company)
+

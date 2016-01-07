@@ -1,11 +1,11 @@
 {% extends "_base.html" %}
 {% load i18n staticfiles %}
 
-{% block page-title %}{{ scenario }} {{ form.instance }}{% endblock %}
+{% block page-title %}{{ scenario }} {% trans 'Investment' %}{% endblock %}
 
 {% block breadcrumbs %}
     <li><a href="{% url 'share:investment_list' %}">{% trans 'Investments' %}</a></li>
-    <li>{{ scenario }} {{ form.instance }}</li>
+    <li>{{ scenario }} {% trans 'Investment' %}</li>
 {% endblock %}
 
 {% block content %}
