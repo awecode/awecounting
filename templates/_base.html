@@ -64,9 +64,15 @@
     {% endif %}
 
     {% block messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message|capfirst }}</div>
-        {% endfor %}
+        {% if messages %}
+            <script>
+                $(function () {
+                    {% for message in messages %}
+                        bsalert.message('{{ message|remove_lines|safe }}', '{{ message.tags|last_word }}');
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
     {% endblock %}
 
     <div class="row">
@@ -75,7 +81,7 @@
         </div>
         <div class="col-lg-3 col-md-3 col-sm-3">
             <div class="pull-right">
-            {% block header-buttons %}{% endblock %}
+                {% block header-buttons %}{% endblock %}
             </div>
         </div>
     </div>

@@ -292,12 +292,6 @@ class Party(models.Model):
     account = models.ForeignKey(Account, null=True)
     company = models.ForeignKey(Company)
 
-    # def clean(self):
-    #     if self.pan_no:
-    #         conflicting_instance = Party.objects.filter(pan_no=self.pan_no, company=self.company).exclude(pk=self.pk)
-    #         if conflicting_instance.exists():
-    #             raise forms.ValidationError(_('Company with this PAN already exists.'))
-
     def get_absolute_url(self):
         return reverse_lazy('party_edit', kwargs={'pk': self.pk})
 
