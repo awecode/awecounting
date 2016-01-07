@@ -1,11 +1,11 @@
 from rest_framework import generics
+from awecounting.utils.mixins import CompanyAPI
 from .models import Account, Party
 from .serializers import AccountSerializer, PartySerializer, PartyBalanceSerializer
 
 
 class AccountListAPI(generics.ListCreateAPIView):
     serializer_class = AccountSerializer
-    # queryset = Account.objects.all()
 
     def get_queryset(self):
         queryset = Account.objects.all()
@@ -14,22 +14,10 @@ class AccountListAPI(generics.ListCreateAPIView):
             queryset = queryset.filter(category__name=category_name)
         return queryset
 
-class PartyListAPI(generics.ListCreateAPIView):
-    # queryset = Party.objects.all()
+
+class PartyListAPI(CompanyAPI, generics.ListCreateAPIView):
     serializer_class = PartySerializer
 
-    def get_queryset(self):
-        queryset = Party.objects.all()
-        if self.request.company:
-            queryset = queryset.filter(company=self.request.company)
-        return queryset
 
-class PartyBalanceListAPI(generics.ListCreateAPIView):
-    # queryset = Party.objects.all()
+class PartyBalanceListAPI(CompanyAPI, generics.ListCreateAPIView):
     serializer_class = PartyBalanceSerializer
-
-    def get_queryset(self):
-        queryset = Party.objects.all()
-        if self.request.company:
-            queryset = queryset.filter(company=self.request.company)
-        return queryset

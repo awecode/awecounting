@@ -1,5 +1,4 @@
 from django.core.exceptions import ValidationError
-from awecounting.utils.mixins import CompanyKwargs
 from ..ledger.models import Party
 from awecounting.utils.forms import HTML5BootstrapModelForm
 from django.utils.translation import ugettext_lazy as _
