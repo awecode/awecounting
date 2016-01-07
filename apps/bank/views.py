@@ -131,9 +131,14 @@ def cheque_deposit_save(request):
         obj = save_model(obj, object_values)
         if request.FILES:
             dct['attachment'] = []
-            for _file in request.FILES.getlist('file'):
-                attach_file = AttachFile.objects.create(attachment=_file, cheque_deposit=obj)
+            for _file, description in zip(request.FILES.getlist('file'), request.POST.getlist('file_description')):
+                attach_file = AttachFile.objects.create(attachment=_file, description=description, cheque_deposit=obj)
                 dct['attachment'].append(FileSerializer(attach_file).data)
+        if params.get('file'):
+            for i, o in enumerate(params.get('file')):
+                attach_file_update = get_object_or_404(AttachFile, id=o.get('id'))
+                attach_file_update.description = o.get('description')
+                attach_file_update.save()
         dct['id'] = obj.id
         model = ChequeDepositRow
         for ind, row in enumerate(params.get('table_view').get('rows')):

@@ -187,4 +187,5 @@ class ElectronicFundTransferInRow(models.Model):
 
 class File(models.Model):
     attachment = models.FileField(upload_to='cheque_payments/%Y/%m/%d', blank=True, null=True)
+    description = models.TextField(max_length=254, null=True, blank=True)
     cheque_deposit = models.ForeignKey(ChequeDeposit, related_name="file")

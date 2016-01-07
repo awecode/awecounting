@@ -101,10 +101,34 @@
                         <div class="col-md-12 col-sm-12">
                             <label for="party">{% trans 'Narration' %}</label>
                             <input type="textarea" id="narration" data-bind="value: narration" class="form-control" id="date">
-                            <div data-bind="foreach: file">
-                                <a data-bind="attr:{href: attachment}, visible: attachment, text: attachment_name"></a> 
-                                <a href="#" class="red fa fa-trash-o" data-bind="click: $root.remove_file"></a><br>
-                            </div>
+                            <table class="table table-striped" data-bind="if: file">
+                                <thead>
+                                    <th>{% trans "File" %}</th>
+                                    <th>{% trans "Description"%}</th>
+                                    <th></th>
+                                </thead>
+                                <tbody data-bind="foreach: file">
+                                        <tr class="file">
+                                            <td>
+                                                <a data-bind="attr:{href: attachment}, text: attachment_name"></a>
+                                            </td>
+                                            <td data-bind="editableText: description"></td>                              
+                                            <td><a href="#" class="red fa fa-2x fa-trash-o" data-bind="click: $root.remove_file"></a></td>
+                                        </tr>
+                                </tbody>
+                            </table>
+                            <!--div data-bind="foreach: file">
+                                <div class="col-md-3 col-sm-3">
+                                    <a data-bind="attr:{href: attachment}, visible: attachment, text: attachment_name"></a> 
+                                </div>
+                                <div class="col-md-8 col-sm-8">
+                                    <p data-bind="text: description"></p>
+                                </div>
+                                <div class="col-md-1 col-sm-1">
+                                    <a href="#" class="red fa fa-2x fa-trash-o" data-bind="click: $root.remove_file"></a><br>
+                                </div>
+                            </div-->
+
                         </div>
                     </div>
                     <label class="control-label">{% trans "Select File" %} <span data-bind="click: add_upload_file"><i class="fa fa-plus"></i></span></label>
@@ -112,8 +136,12 @@
                     <div class="row">
                         <div class="col-md-12 col-sm-12 pull-left">
                             <input class="attachment" data-bind="attachment: upload_file" type="file" class="file">
-                            <a href="#" data-bind="click: $root.remove_upload_file">x</a>
-                         </div>
+                            <a href="#" data-bind="click: $root.remove_upload_file" class="fa fa-trash-o red"></a>
+                        </div>
+                        <div class="col-md-12 col-sm-12">
+                            <input type="textarea" name="descritpion" class="form-control" data-bind="value: description" placeholder="Description">
+                        </div>
+
                     </div>
                     <!-- /ko -->
                 </div>

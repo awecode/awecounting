@@ -82,7 +82,8 @@ function ChequeDepositViewModel(data) {
 
         for ( index in self.upload_file()){
             if (typeof(self.upload_file()[index].upload_file()) != 'undefined') {
-                form_data.append('file', self.upload_file()[index].upload_file())
+                form_data.append('file', self.upload_file()[index].upload_file());
+                form_data.append('file_description', self.upload_file()[index].description());
             };
         };
 
@@ -113,7 +114,7 @@ function ChequeDepositViewModel(data) {
                     if (msg.id)
                         self.id(msg.id);
                     $("tbody > tr").each(function (i) {
-                        $($("tbody > tr:not(.total)")[i]).addClass('invalid-row');
+                        $($("tbody > tr:not(.total, .file)")[i]).addClass('invalid-row');
                     });
 
                     if(typeof(msg.attachment) != "undefined") {
@@ -137,6 +138,7 @@ function UploadFileVM(){
     var self = this;
 
     self.upload_file = ko.observable(); 
+    self.description = ko.observable();
 };
 
 function FileViewModel(data){
@@ -145,6 +147,7 @@ function FileViewModel(data){
     self.id = ko.observable();
     self.attachment = ko.observable();
     self.attachment_name = ko.observable();
+    self.description = ko.observable();
 
     for (var k in data)
         self[k] = ko.observable(data[k]);
