@@ -7,7 +7,7 @@ from .models import ShareHolder, Collection, Investment
 class ShareHolderForm(HTML5BootstrapModelForm):
     class Meta:
         model = ShareHolder
-        exclude = ('company',)
+        exclude = ('company', 'account')
 
 
 class CollectionForm(HTML5BootstrapModelForm):
