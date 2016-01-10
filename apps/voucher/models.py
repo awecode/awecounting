@@ -45,7 +45,7 @@ class Purchase(models.Model):
     def total(self):
         grand_total = 0
         for obj in self.rows.all():
-            total = obj.quantity * obj.rate
+            total = obj.quantity * obj.rate - obj.discount
             grand_total += total
         return grand_total
 
@@ -54,7 +54,7 @@ class Purchase(models.Model):
         return _('Purchase')
 
     def get_absolute_url(self):
-        return reverse_lazy('purchase-detail', kwargs={'id': self.pk})
+        return reverse_lazy('purchase-edit', kwargs={'id': self.pk})
 
 
 class PurchaseRow(models.Model):
@@ -73,7 +73,7 @@ class PurchaseRow(models.Model):
         return self.purchase.voucher_no
 
     def get_absolute_url(self):
-        return reverse_lazy('purchase-detail', kwargs={'id': self.purchase.pk})
+        return reverse_lazy('purchase-edit', kwargs={'id': self.purchase.pk})
 
     @property
     def voucher_type(self):
@@ -105,7 +105,7 @@ class Sale(models.Model):
                 raise ValidationError(_('Voucher no. already exists for the fiscal year!'))
 
     def get_absolute_url(self):
-        return reverse_lazy('sale-detail', kwargs={'id': self.pk})
+        return reverse_lazy('sale-edit', kwargs={'id': self.pk})
 
     def type(self):
         if self.credit:
@@ -149,7 +149,7 @@ class SaleRow(models.Model):
         return _('Sale')
 
     def get_absolute_url(self):
-        return reverse_lazy('sale-detail', kwargs={'id': self.sale.pk})
+        return reverse_lazy('sale-edit', kwargs={'id': self.sale.pk})
 
 
 class JournalVoucher(models.Model):

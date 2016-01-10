@@ -8,12 +8,14 @@ web_urls = [
     url(r'^purchase/create/$', views.purchase, name='purchase-create'),
     url(r'^purchase/save/$', views.save_purchase, name='purchase-save'),
     url(r'^purchase/list/$', views.purchase_list, name='purchase-list'),
-    url(r'^purchase/(?P<id>[0-9]+)/$', views.purchase, name='purchase-detail'),
+    url(r'^purchase/(?P<id>[0-9]+)/$', views.purchase, name='purchase-edit'),
+    url(r'^purchase/detail/(?P<id>[0-9]+)/$', views.purchase_detail, name='purchase-detail'),
+
 
     url(r'^sale/$', views.sale, name='sale-create'),
     url(r'^sale/save/$', views.save_sale, name='sale-save'),
     url(r'^sale/list/$', views.sale_list, name='sale-list'),
-    url(r'^sale/(?P<id>[0-9]+)/$', views.sale, name='sale-detail'),
+    url(r'^sale/(?P<id>[0-9]+)/$', views.sale, name='sale-edit'),
     url(r'^sale/(?P<voucher_date>\d{4}-\d{2}-\d{2})/$', views.sale_day, name='sale-day'),
     url(r'^sale/(?P<from_date>\d{4}-\d{2}-\d{2})/(?P<to_date>\d{4}-\d{2}-\d{2})/$', views.sale_date_range,
         name='sale-date-range'),
