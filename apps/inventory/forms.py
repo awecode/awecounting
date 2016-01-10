@@ -51,3 +51,8 @@ class UnitConverterForm(HTML5BootstrapModelForm, KOModelForm):
     class Meta:
         model = UnitConverter
         exclude = ()
+        widgets = {
+            'base_unit': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('unitconverter_add')}),
+            'unit_to_convert': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('unitconverter_add')}),
+        }
+        company_filters = ('base_unit', 'unit_to_convert')

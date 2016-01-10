@@ -100,7 +100,7 @@ class ItemDelete(ItemView, DeleteView):
     pass
 
 
-class UnitConverterView(object):
+class UnitConverterView(CompanyView):
     model = UnitConverter
     form_class = UnitConverterForm
     success_url = reverse_lazy('unitconverter_list')
