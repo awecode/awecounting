@@ -54,7 +54,7 @@ class Purchase(models.Model):
         return _('Purchase')
 
     def get_absolute_url(self):
-        return reverse_lazy('purchase-detail', kwargs={'id': self.pk})
+        return reverse_lazy('purchase-edit', kwargs={'id': self.pk})
 
 
 class PurchaseRow(models.Model):
@@ -73,7 +73,7 @@ class PurchaseRow(models.Model):
         return self.purchase.voucher_no
 
     def get_absolute_url(self):
-        return reverse_lazy('purchase-detail', kwargs={'id': self.purchase.pk})
+        return reverse_lazy('purchase-edit', kwargs={'id': self.purchase.pk})
 
     @property
     def voucher_type(self):
