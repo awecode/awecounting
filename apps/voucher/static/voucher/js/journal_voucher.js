@@ -49,6 +49,10 @@ function JournalVoucherViewModel(data) {
         return total;
     });
 
+    self.id.subscribe(function (id) {
+        update_url_with_id(id);
+    });
+
     self.check_description = function () {
         arr = [];
         for (i in self.table_view.rows()) {
