@@ -105,7 +105,7 @@ class Sale(models.Model):
                 raise ValidationError(_('Voucher no. already exists for the fiscal year!'))
 
     def get_absolute_url(self):
-        return reverse_lazy('sale-detail', kwargs={'id': self.pk})
+        return reverse_lazy('sale-edit', kwargs={'id': self.pk})
 
     def type(self):
         if self.credit:
@@ -149,7 +149,7 @@ class SaleRow(models.Model):
         return _('Sale')
 
     def get_absolute_url(self):
-        return reverse_lazy('sale-detail', kwargs={'id': self.sale.pk})
+        return reverse_lazy('sale-edit', kwargs={'id': self.sale.pk})
 
 
 class JournalVoucher(models.Model):

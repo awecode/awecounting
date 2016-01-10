@@ -49,7 +49,7 @@
                     {% for sale in paginated_objects %}
                         <tr>
                             <td>
-                                <a href="{% url 'sale-detail' sale.pk %}">{{ sale.voucher_no }}</a>
+                                <a href="{% url 'sale-edit' sale.pk %}">{{ sale.voucher_no }}</a>
                             </td>
                             <td>
                                 {{ sale.date }}
