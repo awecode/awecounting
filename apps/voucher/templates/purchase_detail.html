@@ -38,6 +38,15 @@
             </p>
         </div>
         <div class="col-md-6 col-sm-12">
+            <label>{% trans 'Due' %}</label>
+            <p>
+                {% multiply obj.party.account.balance -1 %}
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
             <div class="form-group">
                 <div class="checkbox">
                     <label>
@@ -49,24 +58,15 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    {% if obj.due_date %}
-    <div class="row">
+        {% if obj.due_date %}
         <div class="col-md-6 col-sm-12">
             <label>{% trans 'Due Date' %}</label>
             <p>
                 {{ obj.due_date }}
             </p>
         </div>
-        <div class="col-md-6 col-sm-12">
-            <label>{% trans 'Due' %}</label>
-            <p>
-                {% multiply obj.party.account.balance -1 %}
-            </p>
-        </div>
+        {% endif %}
    </div>
-    {% endif %}
 
 </div>
 <div class="well">
