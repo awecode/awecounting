@@ -25,6 +25,7 @@
             <th>{% anchor date _('Date') %}</th>
             <th>{% anchor party _('Party') %}</th>
             <th>{% anchor credit _('Credit/Cash') %}</th>
+            <th></th>
             </thead>
             <tbody>
             {% for purchase in paginated_objects %}
@@ -42,6 +43,9 @@
                     </td>
                     <td>
                         {{ purchase.type }}
+                    </td>
+                    <td>
+                        <a href="{% url 'purchase-detail' purchase.id %}">{% trans "Detail" %}</a>
                     </td>
                 </tr>
             {% endfor %}

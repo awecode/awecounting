@@ -45,7 +45,7 @@ class Purchase(models.Model):
     def total(self):
         grand_total = 0
         for obj in self.rows.all():
-            total = obj.quantity * obj.rate
+            total = obj.quantity * obj.rate - obj.discount
             grand_total += total
         return grand_total
 

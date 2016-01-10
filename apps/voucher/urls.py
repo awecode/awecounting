@@ -9,6 +9,8 @@ web_urls = [
     url(r'^purchase/save/$', views.save_purchase, name='purchase-save'),
     url(r'^purchase/list/$', views.purchase_list, name='purchase-list'),
     url(r'^purchase/(?P<id>[0-9]+)/$', views.purchase, name='purchase-edit'),
+    url(r'^purchase/detail/(?P<id>[0-9]+)/$', views.purchase_detail, name='purchase-detail'),
+
 
     url(r'^sale/$', views.sale, name='sale-create'),
     url(r'^sale/save/$', views.save_sale, name='sale-save'),

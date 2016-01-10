@@ -96,6 +96,10 @@ def purchase_list(request):
     obj = Purchase.objects.filter(company=request.company)
     return render(request, 'purchase_list.html', {'objects': obj})
 
+def purchase_detail(request, id):
+    obj = get_object_or_404(Purchase, id=id)
+    return render(request, 'purchase_detail.html', {'obj': obj})
+
 
 def purchase(request, id=None):
     if id:
