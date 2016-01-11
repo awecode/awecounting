@@ -22,6 +22,7 @@ web_urls = [
     url(r'^sale/report/$', views.sales_report_router, name='sale-report-router'),
     url(r'^sale/today/$', views.daily_sale_today, name='today_sale'),
     url(r'^sale/yesterday/$', views.daily_sale_yesterday, name='yesterday_sale'),
+    url(r'^sale/detail/(?P<id>[0-9]+)/$', views.sale_detail, name='sale_detail'),
 
     url(r'^journal/$', views.JournalVoucherList.as_view(), name='journal_voucher_list'),
     url(r'^journal/add/$', views.journal_voucher_create, name='journal_voucher_add'),

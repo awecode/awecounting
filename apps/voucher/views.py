@@ -100,6 +100,9 @@ def purchase_detail(request, id):
     obj = get_object_or_404(Purchase, id=id)
     return render(request, 'purchase_detail.html', {'obj': obj})
 
+def sale_detail(request, id):
+    obj = get_object_or_404(Sale, id=id)
+    return render(request, 'sale_detail.html', {'obj': obj})
 
 def purchase(request, id=None):
     if id:
