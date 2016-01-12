@@ -96,13 +96,27 @@ def save_cash_payment(request):
 class PurchaseDetailView(DetailView):
     model = Purchase
 
+    def get_context_data(self, **kwargs):
+        context = super(PurchaseDetailView, self).get_context_data(**kwargs)
+        context['rows'] = PurchaseRow.objects.select_related('item', 'unit').filter(purchase = self.object)
+        return context
 
 class SaleDetailView(DetailView):
     model = Sale
 
+    def get_context_data(self, **kwargs):
+        context = super(SaleDetailView, self).get_context_data(**kwargs)
+        context['rows'] = SaleRow.objects.select_related('item', 'unit').filter(sale = self.object)
+        return context
+
 
 class JournalVoucherDetailView(DetailView):
     model = JournalVoucher
+
+    def get_context_data(self, **kwargs):
+        context = super(JournalVoucherDetailView, self).get_context_data(**kwargs)
+        context['rows'] = JournalVoucherRow.objects.filter(journal_voucher = self.object).select_related('account')
+        return context
 
 
 def purchase_list(request):
