@@ -101,6 +101,10 @@ class SaleDetailView(DetailView):
     model = Sale
 
 
+class JournalVoucherDetailView(DetailView):
+    model = JournalVoucher
+
+
 def purchase_list(request):
     obj = Purchase.objects.filter(company=request.company)
     return render(request, 'purchase_list.html', {'objects': obj})

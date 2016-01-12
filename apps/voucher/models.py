@@ -166,6 +166,18 @@ class JournalVoucher(models.Model):
         if not self.pk and not self.voucher_no:
             self.voucher_no = get_next_voucher_no(JournalVoucher, self.company_id)
 
+    def get_total_dr_amount(self):
+        total_dr_amount = 0
+        for o in self.rows.all():
+            total_dr_amount += o.dr_amount
+        return total_dr_amount
+
+    def get_total_cr_amount(self):
+        total_cr_amount = 0
+        for o in self.rows.all():
+            total_cr_amount += o.cr_amount
+        return total_cr_amount
+
     def get_voucher_no(self):
         return self.voucher_no
 

@@ -1,0 +1,88 @@
+{% extends "_base.html" %}
+{% load staticfiles i18n filters %}
+
+{% block page-title %}
+    {% trans 'Detail' %} {% trans 'Journal' %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'journal_voucher_list' %}">{% trans 'Journal' %}</a></li>
+    <li>{% trans 'Detail' %} {% trans 'Journal' %}</li>
+{% endblock %}
+
+
+{% block content %}
+<div class="well">
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <div>
+            <label for="voucher-no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
+            <p>
+                {{ object.voucher_no }}
+            </p>
+            </div>
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <label for="date">{% trans 'Date' %}</label>
+            <p>
+                {{ object.date }}
+            </p>
+        </div>
+    </div>
+</div>
+<div class="well">
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>{% trans "Dr/Cr" %}</th>
+				<th>{% trans "Particular" %}</th>
+				<th>{% trans "Description" %}</th>
+				<th>{% trans "Dr Amount" %}</th>
+				<th>{% trans "Cr Amount" %}</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			{% for row in object.rows.all %}
+			<tr>
+				<td>
+				{{ row.type }}
+				</td>
+				<td>
+					{{ row.account }}
+				</td>
+				<td>
+					{{ row.description }}
+				</td>
+				<td>
+					{{ row.dr_amount }}
+				</td>
+				<td>
+					{{ row.cr_amount }}
+				</td>
+			</tr>
+			{% endfor %}
+            <tr class="total">
+                <td colspan="3">{% trans "Total" %}</td>
+                <td>{{ object.get_total_dr_amount }}</td>
+                <td>{{ object.get_total_cr_amount }}</td>
+            </tr>
+		</tbody>
+	</table>
+</div>
+
+{% if object.narration %}
+<div class="well">
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <label for="party">{% trans 'Narration' %}</label>
+			<p>
+				{{ object.narration }}
+			</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+{% endblock %}

@@ -24,6 +24,7 @@
                 <th>{% anchor date _('Date') %}</th>
                 <th>{% anchor narration _('Narration') %}</th>
                 <th>{% anchor status _('Status') %}</th>
+                <th></th>
                 </thead>
                 <tbody>
                 {% for object in sorted_objects %}
@@ -37,6 +38,9 @@
                             <a href="{% url 'journal_voucher_edit' object.pk %}">{{ object.narration }}</a>
                         </td>   <td>
                             <a href="#">{{ object.status }}</a>
+                        </td>
+                        <td>
+                            <a href="{% url 'journal_detail' object.id %}">{% trans "Detail" %}</a>
                         </td>
                     </tr>
                 {% endfor %}

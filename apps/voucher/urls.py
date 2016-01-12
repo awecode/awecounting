@@ -28,6 +28,7 @@ web_urls = [
     url(r'^journal/add/$', views.journal_voucher_create, name='journal_voucher_add'),
     url(r'^journal/(?P<id>[0-9]+)/$', views.journal_voucher_create, name='journal_voucher_edit'),
     url(r'^journal/save/$', views.journal_voucher_save, name='journal_voucher_save'),
+    url(r'^journal/detail/(?P<pk>[0-9]+)/$', views.JournalVoucherDetailView.as_view(), name='journal_detail'),
 
     url(r'^cash_receipt/$', views.cash_receipt, name='cash_receipt_add'),
     url(r'^cash_receipt/(?P<pk>[0-9]+)/$', views.cash_receipt, name='cash_receipt_edit'),
