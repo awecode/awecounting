@@ -2,12 +2,12 @@
 {% load staticfiles i18n filters %}
 
 {% block page-title %}
-    {% trans 'Detail' %} {% trans 'Sale' %}
+    {% trans 'Detail' %} {% trans 'Purchase' %}
 {% endblock %}
 
 {% block breadcrumbs %}
-    <li><a href="{% url 'sale-list' %}">{% trans 'Sale' %}</a></li>
-    <li>{% trans 'Detail' %} {% trans 'Sale' %}</li>
+    <li><a href="{% url 'purchase-list' %}">{% trans 'Purchases' %}</a></li>
+    <li>{% trans 'Detail' %} {% trans 'Purchases' %}</li>
 {% endblock %}
 
 
@@ -18,14 +18,14 @@
             <div>
             <label for="voucher-no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
             <p>
-                {{ obj.voucher_no }}
+                {{ object.voucher_no }}
             </p>
             </div>
         </div>
         <div class="col-md-6 col-sm-12">
             <label for="date">{% trans 'Date' %}</label>
             <p>
-                {{ obj.date }}
+                {{ object.date }}
             </p>
         </div>
     </div>
@@ -34,13 +34,13 @@
         <div class="col-md-6 col-sm-12">
             <label for="party">{% trans 'Party' %}</label>
             <p>
-                {{ obj.party.name }}
+                {{ object.party.name }}
             </p>
         </div>
         <div class="col-md-6 col-sm-12">
             <label>{% trans 'Due' %}</label>
             <p>
-                {% multiply obj.party.account.balance -1 %}
+                {% multiply object.party.account.balance -1 %}
             </p>
         </div>
     </div>
@@ -53,16 +53,16 @@
                         {% trans 'Type' %}
                     </label>
                     <p>
-                        {{ obj.type }}
+                        {{ object.type }}
                     </p> 
                 </div>
             </div>
         </div>
-        {% if obj.due_date %}
+        {% if object.due_date %}
         <div class="col-md-6 col-sm-12">
             <label>{% trans 'Due Date' %}</label>
             <p>
-                {{ obj.due_date }}
+                {{ object.due_date }}
             </p>
         </div>
         {% endif %}
@@ -84,7 +84,7 @@
         </thead>
 
         <tbody>
-            {% for row in obj.rows.all %}
+            {% for row in object.rows.all %}
             <tr>
                 <td>
                     {{ row.sn }}
@@ -113,7 +113,7 @@
                 <td colspan="6">
                     {% trans 'Grand Total' %}
                 </td>
-                <td colspan="2">{{ obj.total }}</td>
+                <td colspan="2">{{ object.total }}</td>
 
             </tr>
         </tbody>

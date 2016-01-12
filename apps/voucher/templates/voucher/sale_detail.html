@@ -1,0 +1,124 @@
+{% extends "_base.html" %}
+{% load staticfiles i18n filters %}
+
+{% block page-title %}
+    {% trans 'Detail' %} {% trans 'Sale' %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'sale-list' %}">{% trans 'Sale' %}</a></li>
+    <li>{% trans 'Detail' %} {% trans 'Sale' %}</li>
+{% endblock %}
+
+
+{% block content %}
+<div class="well">
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <div>
+            <label for="voucher-no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
+            <p>
+                {{ object.voucher_no }}
+            </p>
+            </div>
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <label for="date">{% trans 'Date' %}</label>
+            <p>
+                {{ object.date }}
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <label for="party">{% trans 'Party' %}</label>
+            <p>
+                {{ object.party.name }}
+            </p>
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <label>{% trans 'Due' %}</label>
+            <p>
+                {% multiply object.party.account.balance -1 %}
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        {% trans 'Type' %}
+                    </label>
+                    <p>
+                        {{ object.type }}
+                    </p> 
+                </div>
+            </div>
+        </div>
+        {% if object.due_date %}
+        <div class="col-md-6 col-sm-12">
+            <label>{% trans 'Due Date' %}</label>
+            <p>
+                {{ object.due_date }}
+            </p>
+        </div>
+        {% endif %}
+   </div>
+
+</div>
+<div class="well">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>{% trans "S.N." %}</th>
+                <th>{% trans "Item" %}</th>
+                <th>{% trans "Quantity" %}</th>
+                <th>{% trans "Rate" %}</th>
+                <th>{% trans "Unit" %}</th>
+                <th>{% trans 'Discount' %}</th>
+                <th>{% trans 'Total' %}</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for row in object.rows.all %}
+            <tr>
+                <td>
+                    {{ row.sn }}
+                </td>
+                <td>
+                    {{ row.item }}
+                </td>
+                <td>
+                    {{ row.quantity }}
+                </td>
+                <td>
+                    {{ row.rate }}
+                </td>
+                <td>
+                    {{ row.unit }}
+                </td>
+                <td>
+                    {{ row.discount }}
+                </td>
+                <td>
+                    {{ row.get_total }}
+                </td>
+            </tr>
+            {% endfor %}
+            <tr class="total">
+                <td colspan="6">
+                    {% trans 'Grand Total' %}
+                </td>
+                <td colspan="2">{{ object.total }}</td>
+
+            </tr>
+        </tbody>
+
+    </table>
+</div>
+
+{% endblock %}

@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView
 import json
+from django.views.generic.detail import DetailView
 from awecounting.utils.mixins import CompanyView
 from ..inventory.models import set_transactions
 from ..ledger.models import set_transactions as set_ledger_transactions, Account
@@ -92,17 +93,17 @@ def save_cash_payment(request):
     return JsonResponse(dct)
 
 
+class PurchaseDetailView(DetailView):
+    model = Purchase
+
+
+class SaleDetailView(DetailView):
+    model = Sale
+
+
 def purchase_list(request):
     obj = Purchase.objects.filter(company=request.company)
     return render(request, 'purchase_list.html', {'objects': obj})
-
-def purchase_detail(request, id):
-    obj = get_object_or_404(Purchase, id=id)
-    return render(request, 'purchase_detail.html', {'obj': obj})
-
-def sale_detail(request, id):
-    obj = get_object_or_404(Sale, id=id)
-    return render(request, 'sale_detail.html', {'obj': obj})
 
 def purchase(request, id=None):
     if id:
