@@ -4,6 +4,7 @@ from apps.users.models import Company
 from awecounting.utils.helpers import get_next_voucher_no
 from django.utils.translation import ugettext_lazy as _
 from njango.fields import BSDateField, today
+import os
 
 
 class BankAccount(models.Model):
@@ -58,6 +59,14 @@ class ChequeDeposit(models.Model):
 
     class Meta:
         unique_together = ('voucher_no', 'company')
+
+    @property
+    def total(self):
+        grand_total = 0
+        for obj in self.rows.all():
+            total = obj.amount
+            grand_total += total
+        return grand_total
 
 
 class ChequeDepositRow(models.Model):
@@ -189,3 +198,6 @@ class File(models.Model):
     attachment = models.FileField(upload_to='cheque_payments/%Y/%m/%d', blank=True, null=True)
     description = models.TextField(max_length=254, null=True, blank=True)
     cheque_deposit = models.ForeignKey(ChequeDeposit, related_name="file")
+
+    def filename(self):
+        return os.path.basename(self.attachment.name)

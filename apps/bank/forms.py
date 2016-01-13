@@ -12,7 +12,7 @@ class BankAccountForm(HTML5BootstrapModelForm):
         exclude = ('account', 'company')
 
 
-class BankCashDepositForm(KOModelForm):
+class BankCashDepositForm(HTML5BootstrapModelForm, KOModelForm):
     date = forms.DateField(widget=forms.TextInput(attrs={'class': 'date-picker', 'data-date-format': "yyyy-mm-dd"}))
     bank_account = forms.ModelChoiceField(Account.objects.filter(category__name='Bank Account'), empty_label=None,
                                           widget=forms.Select(attrs={'class': 'select2', 'data-name': 'Bank Acc.',

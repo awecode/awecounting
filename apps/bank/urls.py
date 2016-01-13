@@ -57,5 +57,6 @@ urlpatterns = [
     url(r'^cheque_deposit/(?P<id>[0-9]+)/$', views.cheque_deposit_create, name='cheque_deposit_edit'),
     url(r'^save/cheque_deposit/$', views.cheque_deposit_save, name='cheque_deposit_save'),
     url(r'^cheque_deposit/delete/(?P<pk>[0-9]+)$', views.ChequeDepositDelete.as_view(), name='cheque_deposit_delete'),
+    url(r'^cheque_deposit/detail/(?P<pk>[0-9]+)/$', views.ChequeDepositDetailView.as_view(), name='cheque_deposit_detail'),
 
 ]
