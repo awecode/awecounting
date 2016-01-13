@@ -239,7 +239,6 @@ ko.bindingHandlers.datepicker = {
             });
         } else if (element.classList.contains('bs-date')) {
             $(element).nepaliDatePicker();
-            $(element).attr('id', 'cheque_date');
         };
     },
     update: function (element, valueAccessor) {
