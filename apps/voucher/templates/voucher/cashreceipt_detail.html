@@ -1,0 +1,137 @@
+{% extends "_base.html" %}
+{% load staticfiles i18n filters %}
+
+{% block page-title %}
+    {% trans 'Detail' %} {% trans 'Cash Receipt' %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'cash_receipt_list' %}">{% trans 'Cash Receipts' %}</a></li>
+    <li>{% trans 'Detail' %} {% trans 'Cash Receipts' %}</li>
+{% endblock %}
+
+
+{% block content %}
+<div class="well">
+
+    <div classs="row">
+        <label>{% trans 'Voucher No.' %}</label>
+        <p>
+            {{ object.voucher_no}}
+        </p>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-6 col-xs-12">
+            <label>{% trans "Party" %}</label>
+            <p>
+                {{ object.party }}
+            </p>
+    </div>
+
+    <div class="col-md-6 col-xs-12">
+            <label>{% trans "Date" %}</label>
+            <p>
+                {{ object.date }}
+            </p>
+    </div>
+
+    </div>
+
+<div class="row">
+
+    <div class="col-md-6 col-xs-12">
+        <label>{% trans 'Party Address' %}</label>
+        <p>
+            {{ object.party.address }}
+        </p>
+    </div>
+
+    <div class="col-md-6 col-xs-12">
+        <label>{% trans 'Reference' %}</label>
+        <p>
+            {{ object.reference | default:''}}
+        </p>
+    </div>
+</div>
+
+<div class="row">
+
+    <div class="col-md-6 col-xs-12">
+        <label>{% trans 'Current Balance' %}</label>
+        <p>
+            {% multiply object.party.account.balance -1 %}
+        </p>
+    </div>
+
+    <div class="col-md-6 col-xs-12">
+        <label>{% trans 'Amount' %}</label>
+        <p>
+            {{ object.amount |default:''}}
+        </p>
+    </div>
+
+</div>
+
+</div>
+<div class="well">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>{% trans 'Invoice No.' %}</th>
+                <th>{% trans 'Date' %}</th>
+                <th>{% trans 'Total Amount' %}</th>
+                <th>{% trans 'Pending Amount' %}</th>
+                <th>{% trans 'Due Date' %}</th>
+                <th>{% trans 'Overdue Days' %}</th>
+                <th>{% trans 'Received' %}</th>
+                <th>{% trans 'Discount' %}</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for row in rows %}
+            {% if row %}
+            <tr>
+                <td>
+                    {{ row.invoice.voucher_no }}
+                </td>
+                <td>
+                    {{ row.invoice.date }}
+                </td>
+                <td>
+                    {{ row.invoice.total }}
+                </td>
+                <td>
+                    {{ row.invoice.pending_amount }}
+                </td>
+                <td>
+                    {{ row.invoice.due_date }}
+                </td>
+                <td>
+                    {{ row.overdue_days }}
+                </td>
+                <td>
+                    {{ row.receipt }}
+                </td>
+
+                <td>
+                    {{ row.disount }}
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+            <tr class="total">
+                <td colspan="6">
+                    {% trans 'Grand Total' %}
+                </td>
+                <td colspan="2">{{ object.total }}</td>
+
+            </tr>
+        </tbody>
+
+    </table>
+</div>
+
+{% endblock %}

@@ -16,6 +16,32 @@ from .serializers import CashReceiptSerializer, CashPaymentSerializer, JournalVo
 from .models import CashReceipt, Purchase, JournalVoucher, JournalVoucherRow, PurchaseRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow
 
 
+class CashReceiptList(CompanyView, ListView):
+    model = CashReceipt
+
+
+class CashReceiptDetailView(DetailView):
+    model = CashReceipt
+
+    def get_context_data(self, **kwargs):
+        context = super(CashReceiptDetailView, self).get_context_data(**kwargs)
+        context['rows'] = CashReceiptRow.objects.select_related('invoice').filter(cash_receipt = self.object)
+        return context
+
+
+class CashPaymentList(CompanyView, ListView):
+    model = CashPayment
+
+
+class CashPaymentDetailView(DetailView):
+    model = CashPayment
+
+    def get_context_data(self, **kwargs):
+        context = super(CashPaymentDetailView, self).get_context_data(**kwargs)
+        context['rows'] = CashPaymentRow.objects.select_related('invoice').filter(cash_payment = self.object)
+        return context
+
+
 @login_required
 def cash_receipt(request, pk=None):
     if pk:
