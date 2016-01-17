@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView
 import json
+from django.views.generic.detail import DetailView
 from awecounting.utils.mixins import CompanyView
 from ..inventory.models import set_transactions
 from ..ledger.models import set_transactions as set_ledger_transactions, Account
@@ -13,6 +14,32 @@ from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete
 from .forms import CashReceiptForm, JournalVoucherForm, CashPaymentForm
 from .serializers import CashReceiptSerializer, CashPaymentSerializer, JournalVoucherSerializer, PurchaseSerializer, SaleSerializer
 from .models import CashReceipt, Purchase, JournalVoucher, JournalVoucherRow, PurchaseRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow
+
+
+class CashReceiptList(CompanyView, ListView):
+    model = CashReceipt
+
+
+class CashReceiptDetailView(DetailView):
+    model = CashReceipt
+
+    def get_context_data(self, **kwargs):
+        context = super(CashReceiptDetailView, self).get_context_data(**kwargs)
+        context['rows'] = CashReceiptRow.objects.select_related('invoice').filter(cash_receipt = self.object)
+        return context
+
+
+class CashPaymentList(CompanyView, ListView):
+    model = CashPayment
+
+
+class CashPaymentDetailView(DetailView):
+    model = CashPayment
+
+    def get_context_data(self, **kwargs):
+        context = super(CashPaymentDetailView, self).get_context_data(**kwargs)
+        context['rows'] = CashPaymentRow.objects.select_related('invoice').filter(cash_payment = self.object)
+        return context
 
 
 @login_required
@@ -92,14 +119,35 @@ def save_cash_payment(request):
     return JsonResponse(dct)
 
 
+class PurchaseDetailView(DetailView):
+    model = Purchase
+
+    def get_context_data(self, **kwargs):
+        context = super(PurchaseDetailView, self).get_context_data(**kwargs)
+        context['rows'] = PurchaseRow.objects.select_related('item', 'unit').filter(purchase = self.object)
+        return context
+
+class SaleDetailView(DetailView):
+    model = Sale
+
+    def get_context_data(self, **kwargs):
+        context = super(SaleDetailView, self).get_context_data(**kwargs)
+        context['rows'] = SaleRow.objects.select_related('item', 'unit').filter(sale = self.object)
+        return context
+
+
+class JournalVoucherDetailView(DetailView):
+    model = JournalVoucher
+
+    def get_context_data(self, **kwargs):
+        context = super(JournalVoucherDetailView, self).get_context_data(**kwargs)
+        context['rows'] = JournalVoucherRow.objects.filter(journal_voucher = self.object).select_related('account')
+        return context
+
+
 def purchase_list(request):
     obj = Purchase.objects.filter(company=request.company)
     return render(request, 'purchase_list.html', {'objects': obj})
-
-def purchase_detail(request, id):
-    obj = get_object_or_404(Purchase, id=id)
-    return render(request, 'purchase_detail.html', {'obj': obj})
-
 
 def purchase(request, id=None):
     if id:

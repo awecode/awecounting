@@ -1,5 +1,5 @@
 {% extends "_base.html" %}
-{% load staticfiles i18n filters njango_filters %}
+{% load staticfiles i18n filters %}
 
 {% block page-title %}
     {% trans 'Detail' %} {% trans 'Purchase' %}
@@ -18,14 +18,14 @@
             <div>
             <label for="voucher-no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
             <p>
-                {{ obj.voucher_no }}
+                {{ object.voucher_no }}
             </p>
             </div>
         </div>
         <div class="col-md-6 col-sm-12">
             <label for="date">{% trans 'Date' %}</label>
             <p>
-                {{ obj.date }}
+                {{ object.date }}
             </p>
         </div>
     </div>
@@ -34,9 +34,18 @@
         <div class="col-md-6 col-sm-12">
             <label for="party">{% trans 'Party' %}</label>
             <p>
-                {{ obj.party.name }}
+                {{ object.party.name }}
             </p>
         </div>
+        <div class="col-md-6 col-sm-12">
+            <label>{% trans 'Due' %}</label>
+            <p>
+                {% multiply object.party.account.balance -1 %}
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-md-6 col-sm-12">
             <div class="form-group">
                 <div class="checkbox">
@@ -44,29 +53,20 @@
                         {% trans 'Type' %}
                     </label>
                     <p>
-                        {{ obj.type }}
+                        {{ object.type }}
                     </p> 
                 </div>
             </div>
         </div>
-    </div>
-
-    {% if obj.due_date %}
-    <div class="row">
+        {% if object.due_date %}
         <div class="col-md-6 col-sm-12">
             <label>{% trans 'Due Date' %}</label>
             <p>
-                {{ obj.due_date }}
+                {{ object.due_date }}
             </p>
         </div>
-        <div class="col-md-6 col-sm-12">
-            <label>{% trans 'Due' %}</label>
-            <p>
-                {% multiply obj.party.account.balance -1 %}
-            </p>
-        </div>
+        {% endif %}
    </div>
-    {% endif %}
 
 </div>
 <div class="well">
@@ -84,7 +84,7 @@
         </thead>
 
         <tbody>
-            {% for row in obj.rows.all %}
+            {% for row in rows %}
             <tr>
                 <td>
                     {{ row.sn }}
@@ -113,7 +113,7 @@
                 <td colspan="6">
                     {% trans 'Grand Total' %}
                 </td>
-                <td colspan="2">{{ obj.total }}</td>
+                <td colspan="2">{{ object.total }}</td>
 
             </tr>
         </tbody>

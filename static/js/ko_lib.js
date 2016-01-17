@@ -231,6 +231,21 @@ ko.bindingHandlers.attachment = {
     },
 };
 
+ko.bindingHandlers.datepicker = {
+    init: function (element) {
+        if (element.classList.contains('ad-date')) {
+            $(element).datepicker({
+                format: 'yyyy-mm-dd',
+            });
+        } else if (element.classList.contains('bs-date')) {
+            $(element).nepaliDatePicker();
+        };
+    },
+    update: function (element, valueAccessor) {
+    },
+};
+
+
 
 ko.bindingHandlers.editableText = {
     init: function (element, valueAccessor) {

@@ -23,7 +23,7 @@
                 <th>{% anchor voucher_no _('Voucher No') %}</th>
                 <th>{% anchor date _('Date') %}</th>
                 <th>{% anchor narration _('Narration') %}</th>
-                <th>{% anchor status _('Status') %}</th>
+                <th></th>
                 </thead>
                 <tbody>
                 {% for object in sorted_objects %}
@@ -36,7 +36,7 @@
                         </td>   <td>
                             <a href="{% url 'bank:cheque_deposit_edit' object.pk %}">{{ object.narration }}</a>
                         </td>   <td>
-                            <a href="#">{{ object.status }}</a>
+                            <a href="{% url 'bank:cheque_deposit_detail' object.pk %}">{% trans "Detail" %}</a>
                         </td>
                     </tr>
                 {% endfor %}

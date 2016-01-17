@@ -13,6 +13,11 @@ from awecounting.utils.helpers import save_model, invalid, write_error
 from django.http import JsonResponse
 from django.core.files import File
 from io import FileIO, BufferedWriter
+from django.views.generic.detail import DetailView
+
+
+class ChequeDepositDetailView(DetailView):
+    model = ChequeDeposit
 
 
 class BankAccountView(CompanyView):

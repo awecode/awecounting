@@ -10,6 +10,7 @@ from ..ledger.models import Party, Account
 from ..users.models import Company
 from awecounting.utils.helpers import get_next_voucher_no
 from django.utils.translation import ugettext_lazy as _
+from datetime import date
 
 
 class Purchase(models.Model):
@@ -166,6 +167,18 @@ class JournalVoucher(models.Model):
         if not self.pk and not self.voucher_no:
             self.voucher_no = get_next_voucher_no(JournalVoucher, self.company_id)
 
+    def get_total_dr_amount(self):
+        total_dr_amount = 0
+        for o in self.rows.all():
+            total_dr_amount += o.dr_amount
+        return total_dr_amount
+
+    def get_total_cr_amount(self):
+        total_cr_amount = 0
+        for o in self.rows.all():
+            total_cr_amount += o.cr_amount
+        return total_cr_amount
+
     def get_voucher_no(self):
         return self.voucher_no
 
@@ -199,6 +212,14 @@ class CashReceipt(models.Model):
         if not self.pk and not self.voucher_no:
             self.voucher_no = get_next_voucher_no(CashReceipt, self.company_id)
 
+    @property
+    def total(self):
+        grand_total = 0
+        for obj in self.rows.all():
+            total = obj.receipt
+            grand_total += total
+        return grand_total
+
     def get_voucher_no(self):
         return self.voucher_no
 
@@ -217,6 +238,12 @@ class CashReceiptRow(models.Model):
 
     def get_absolute_url(self):
         return reverse_lazy('cash_receipt_edit', kwargs={'pk': self.cash_receipt_id})
+
+    def overdue_days(self):
+        if self.invoice.due_date < date.today():
+            overdue_days = date.today() - self.invoice.due_date
+            return overdue_days.days
+        return ''
 
     class Meta:
         unique_together = ('invoice', 'cash_receipt')
@@ -238,6 +265,14 @@ class CashPayment(models.Model):
         if not self.pk and not self.voucher_no:
             self.voucher_no = get_next_voucher_no(CashPayment, self.company_id)
 
+    @property
+    def total(self):
+        grand_total = 0
+        for obj in self.rows.all():
+            total = obj.payment
+            grand_total += total
+        return grand_total
+
     def get_voucher_no(self):
         return self.voucher_no
 
@@ -256,6 +291,11 @@ class CashPaymentRow(models.Model):
 
     def get_absolute_url(self):
         return reverse_lazy('cash_payment_edit', kwargs={'pk': self.cash_payment_id})
+
+    def overdue_days(self):
+        if self.invoice.due_date < date.today():
+            overdue_days = date.today() - self.invoice.due_date
+        return overdue_days.days
 
     class Meta:
         unique_together = ('invoice', 'cash_payment')
