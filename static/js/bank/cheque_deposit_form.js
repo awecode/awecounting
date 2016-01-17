@@ -82,8 +82,14 @@ function ChequeDepositViewModel(data) {
 
         for ( index in self.upload_file()){
             if (typeof(self.upload_file()[index].upload_file()) != 'undefined') {
+                var description;
                 form_data.append('file', self.upload_file()[index].upload_file());
-                form_data.append('file_description', self.upload_file()[index].description());
+                if (typeof(self.upload_file()[index].description()) == 'undefined') {
+                    description = '';
+                } else {
+                    description = self.upload_file()[index].description();
+                };
+                form_data.append('file_description', description);
             };
         };
 
@@ -121,6 +127,7 @@ function ChequeDepositViewModel(data) {
                         for ( i in msg.attachment ) {
                             self.file.push( new FileViewModel( msg.attachment[i] ));
                         };
+                        self.upload_file([ new UploadFileVM() ])
                     }
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];

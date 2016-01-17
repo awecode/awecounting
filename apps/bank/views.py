@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
-from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView, AjaxableResponseMixin
 from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRow
 from apps.bank.models import File as AttachFile
 from .forms import BankAccountForm, BankCashDepositForm
@@ -30,7 +30,7 @@ class BankAccountList(BankAccountView, ListView):
     pass
 
 
-class BankAccountCreate(BankAccountView, CreateView):
+class BankAccountCreate(AjaxableResponseMixin, BankAccountView, CreateView):
     def form_valid(self, form):
         form.instance.company = self.request.company
         form.instance.account = Account.objects.create(
