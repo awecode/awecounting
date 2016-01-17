@@ -19,8 +19,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-12-lg col-12-md col-12-sm col-12-xs">
+    
             <form method="post" data-bind="submit: save">
                 {% csrf_token %}
                 <div class="well">
@@ -82,14 +81,10 @@
                     <div class="row">
                         <div class="col-md-12 col-sm-12">
                             <label for="party">{% trans 'Narration' %}</label>
-                            <input type="textarea" id="narration" data-bind="value: narration" class="form-control" id="date">
+                            <textarea id="narration" data-bind="value: narration" class="form-control" id="date"></textarea>
                         </div>
                     </div>
                 </div>
                 <input type="submit" class="btn btn-raised btn-info btn-lg" value="{% trans 'Save' %}">
             </form>
-
-        </div>
-    </div>
-
 {% endblock %}
