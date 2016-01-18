@@ -47,7 +47,7 @@ class UnitForm(HTML5BootstrapModelForm):
         exclude = ('company',)
 
 
-class UnitConversionForm(HTML5BootstrapModelForm, KOModelForm):
+class UnitConversionForm(HTML5BootstrapModelForm):
     class Meta:
         model = UnitConversion
         exclude = ('company',)

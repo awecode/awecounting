@@ -91,11 +91,12 @@ appended_link_clicked = function (e) {
 }
 
 handle_ajax_response = function (obj) {
+
     var no_of_modals = $('.reveal-modal').length;
     $('#reveal-modal' + $('.reveal-modal').length).find($('.close-reveal-modal')).click();
     $select = window.last_active_select.pop();
-
-    if ($select.$input.data('bind')) {
+    
+    if ($select.$input.data('bind') && $select.$input.data('bind').indexOf('selectize') != -1) {
         var matches = $select.$input.data('bind').match(/selectize: \$root\.([a-z_]+)/);
         if ($select.$input.data('to')) {
         }
@@ -112,7 +113,6 @@ handle_ajax_response = function (obj) {
                 vm[match].push(obj);
             }
             $select.addItem(obj.id);
-
         }
     }
     else {
