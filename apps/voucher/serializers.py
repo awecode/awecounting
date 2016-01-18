@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CashPayment, CashPaymentRow, CashReceipt, CashReceiptRow, PurchaseRow, Purchase, SaleRow, Sale, JournalVoucherRow, JournalVoucher
+from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashPayment, CashPaymentRow, CashReceipt, CashReceiptRow, PurchaseRow, Purchase, SaleRow, Sale, JournalVoucherRow, JournalVoucher
 
 
 class CashReceiptRowSerializer(serializers.ModelSerializer):
@@ -78,3 +78,20 @@ class JournalVoucherSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = JournalVoucher
+
+
+class AdditionalDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AdditionalDetail
+
+class FixedAssetRowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FixedAssetRow
+
+
+class FixedAssetSerializer(serializers.ModelSerializer):
+    rows = FixedAssetRowSerializer()
+    additional_details = AdditionalDetailSerializer()
+
+    class Meta:
+        model = FixedAsset
