@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import login
@@ -48,6 +49,7 @@ class UserUpdate(UserView, UpdateView):
     form_class = UserUpdateForm
 
 
+@login_required
 def index(request):
     if request.user.is_authenticated():
         return render(request, 'index.html')
@@ -105,7 +107,6 @@ def set_role(request, pk):
 @group_required('Owner', 'SuperOwner')
 def roles(request):
     if request.POST:
-        print request.POST
         from django.core.validators import validate_email
         from django.core.exceptions import ValidationError
 

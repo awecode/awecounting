@@ -1,0 +1,145 @@
+{% extends "_base.html" %}
+{% load staticfiles i18n filters %}
+
+{% block page-title %}
+    {% trans 'Detail' %} {% trans 'Fixed Asset' %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'fixed_asset_list' %}">{% trans 'Fixed Asset' %}</a></li>
+    <li>{% trans 'Detail' %} {% trans 'Fixed Asset' %}</li>
+{% endblock %}
+
+
+{% block content %}
+<div class="well">
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <div>
+            <label for="voucher-no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
+            <p>
+                {{ object.voucher_no }}
+            </p>
+            </div>
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <label for="date">{% trans 'Date' %}</label>
+            <p>
+                {{ object.date }}
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <label for="from_account">{% trans 'From' %}</label>
+            <p>
+            	{{ object.from_account }}
+            </p>
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <label for="reference">{% trans 'Reference' %}</label>
+            <p>
+            	{{ object.reference }}
+            </p>
+        </div>
+    </div>
+</div>
+<div class="well">
+	<table class="table table-striped">
+        <thead>
+        <tr>
+            <th>{% trans "Assets Ledger" %}</th>
+            <th>{% trans "Description" %}</th>
+            <th>{% trans "Amount" %}</th>
+        </tr>
+        </thead>
+
+		<tbody>
+			{% for row in rows %}
+			<tr>
+				<td>
+				{{ row.asset_ledger }}
+				</td>
+				<td>
+					{{ row.description }}
+				</td>
+				<td>
+					{{ row.amount }}
+				</td>
+			</tr>
+			{% endfor %}
+            <tr class="total">
+                <td colspan="2">{% trans "Total" %}</td>
+                <td>{{ object.total }}</td>
+            </tr>
+		</tbody>
+	</table>
+</div>
+
+<div class="well">
+	<table class="table table-striped">
+        <thead>
+        <tr>
+            <th>{% trans "Assets Code" %}</th>
+            <th>{% trans "Assets Type" %}</th>
+            <th>{% trans "Vendor Name" %}</th>
+            <th>{% trans "Vendor Address" %}</th>
+            <th>{% trans "Amount" %}</th>
+            <th>{% trans "Useful Life" %}</th>
+            <th>{% trans "Description" %}</th>
+            <th>{% trans "Warranty Period" %}</th>
+            <th>{% trans "Maintenance" %}</th>
+        </tr>
+        </thead>
+
+		<tbody>
+			{% for row in object.additional_details.all %}
+			<tr>
+				<td>
+					{{ row.assets_code }}
+				</td>
+				<td>
+					{{ row.assets_type }}
+				</td>
+				<td>
+					{{ row.vendor_name }}
+				</td>
+				<td>
+					{{ row.vendor_address }}
+				</td>
+				<td>
+					{{ row.amount }}
+				</td>
+				<td>
+					{{ row.useful_life }}
+				</td>
+				<td>
+					{{ row.description }}
+				</td>
+				<td>
+					{{ row.warranty_period }}
+				</td>
+				<td>
+					{{ row.maintenance }}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+
+{% if object.description %}
+<div class="well">
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <label>{% trans 'Description' %}</label>
+			<p>
+				{{ object.description }}
+			</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+{% endblock %}

@@ -9,8 +9,8 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
 
-
 INSTALLED_APPS = (
+    'apps.users',
     'modeltranslation',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -19,13 +19,13 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # apps
     'apps.inventory',
     'apps.ledger',
-    'apps.users',
     'apps.share',
     'apps.bank',
+    'apps.voucher',
 
+    'njango',
     'rest_framework',
     'linaro_django_pagination',
     'webstack_django_sorting',
@@ -40,9 +40,38 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'linaro_django_pagination.middleware.PaginationMiddleware',
     'webstack_django_sorting.middleware.SortingMiddleware',
     'apps.users.middleware.RoleMiddleware',
+    'njango.middleware.CalendarMiddleware',
+)
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.core.context_processors.i18n',
+                'django.core.context_processors.media',
+                'django.core.context_processors.static',
+                'django.core.context_processors.tz',
+                'django.core.context_processors.request',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 
 ROOT_URLCONF = 'awecounting.urls'
@@ -57,6 +86,7 @@ LANGUAGES = [
 ]
 
 AUTH_USER_MODEL = 'users.User'
+LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = '/'
 
 MESSAGE_TAGS = {

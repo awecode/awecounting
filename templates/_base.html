@@ -21,19 +21,22 @@
     </title>
 
     <link rel="stylesheet" href='{% static "css/bootstrap.min.css" %}' type="text/css" media="all">
-    <link rel="stylesheet" href='{% static "css/bootstrap-flat.min.css" %}' type="text/css" media="all">
     <link rel="stylesheet" href="{% static 'css/selectize.default.css' %}">
     <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
     <link rel="stylesheet" href="{% static 'fontawesome/css/font-awesome.min.css' %}">
     <link rel="stylesheet" href='{% static "css/selectize.css" %}' type="text/css" media="all">
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/datepicker3.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-material-design.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ripples.min.css' %}">
+    <link rel="stylesheet" href="{% static 'njango/css/nepali.datepicker.v2.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/material.awe.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
     <script src='{% static "js/libs/jquery-2.1.4.min.js" %}'></script>
     <script src="{% static 'js/libs/jquery.autosize.input.js' %}"></script>
     <script src="{% static 'js/libs/selectize.js' %}"></script>
     <script src="{% static 'js/libs/knockout.js' %}"></script>
-    <script src="{% static 'js/libs/bootstrap-datepicker.js' %}"></script>
     <script src="{% static 'js/base.js' %}"></script>
     <script src="{% static 'js/ko_lib.js' %}"></script>
 
@@ -50,7 +53,7 @@
     {% if not is_popup %}
         {% include 'partials/_header.html' %}
 
-        <ol class="breadcrumb hidden-print">
+        <ol class="breadcrumb hidden-print well">
             {% block breadcrumbs_container %}
                 <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
                 {% block breadcrumbs %}
@@ -61,17 +64,25 @@
     {% endif %}
 
     {% block messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message|capfirst }}</div>
-        {% endfor %}
+        {% if messages %}
+            <script>
+                $(function () {
+                    {% for message in messages %}
+                        bsalert.message('{{ message|remove_lines|safe }}', '{{ message.tags|last_word }}');
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
     {% endblock %}
 
     <div class="row">
-        <div class="col-lg-10 col-md-10 col-sm-10">
+        <div class="col-lg-9 col-md-9 col-sm-9">
             <h1>{% block page-header %}{% usekwacro page-title %}{% endblock %}</h1>
         </div>
-        <div class="col-lg-2 col-md-2 col-sm-2">
-            {% block header-buttons %}{% endblock %}
+        <div class="col-lg-3 col-md-3 col-sm-3">
+            <div class="pull-right">
+                {% block header-buttons %}{% endblock %}
+            </div>
         </div>
     </div>
 
@@ -88,8 +99,24 @@
     {% endblock %}
 
 </div>
-<script type="text/javascript" src='{% static "js/libs/bootstrap.min.js" %}'></script>
-<script type="text/javascript" src='{% static "js/libs/selectize.min.js" %}'></script>
+<script src='{% static "js/libs/bootstrap.min.js" %}'></script>
+<script src='{% static "js/libs/selectize.min.js" %}'></script>
+<script src="{% static 'js/libs/bootstrap-datepicker.js' %}"></script>
+<script src="{% static 'js/libs/bootstrap-notify.min.js' %}"></script>
+<script src="{% static 'js/libs/material.min.js' %}"></script>
+<script src="{% static 'js/libs/ripples.min.js' %}"></script>
+<script src="{% static 'njango/js/nepali.datepicker.v2.min.js' %}"></script>
+
+
+<script>
+    $.material.init();
+    $(function () {
+        $('.ad-date').datepicker({
+            format: 'yyyy-mm-dd',
+        });
+        $('.bs-date').nepaliDatePicker();
+    });
+</script>
 
 {% block extrabody %}
 {% endblock %}

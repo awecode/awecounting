@@ -9,18 +9,19 @@
 {% endblock %}
 
 {% block content %}
-    <form method="POST">
+<form method="POST">
+    <div class="well">
         {% csrf_token %}
 
         {{ form.non_field_errors }}
 
         {{ form.as_p }}
+    </div>
+    <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
 
-        <input type="submit" class='btn btn-default' value="{% trans 'Save' %}">
-
-        {% if form.instance.id %}
-            <a href="{% url 'share:shareholder_delete' form.instance.id %}" class="btn btn-danger">{% trans 'Delete' %}</a>
-        {% endif %}
-    </form>
+    {% if form.instance.id %}
+    <a href="{% url 'share:shareholder_delete' form.instance.id %}" class="btn btn-danger btn-raised">{% trans 'Delete' %}</a>
+    {% endif %}
+</form>
 
 {% endblock %}

@@ -60,7 +60,7 @@ td .select2-container {
     width: 100%
 }
 
-.inline-fields input {
+.inline-fields input, .inline-fields select {
     display: inline;
     margin: 0;
 }
@@ -159,7 +159,7 @@ input[type="text"] {
 }
 
 .appended-link + .selectize-input {
-    display: none;
+    display: none !important;
 }
 
 .selectize-input {
@@ -488,10 +488,61 @@ form {
 }
 
 label.required:after {
-    content: '*';
+    content: ' *';
     color: red;
 }
 
 .selectize-control.invalid > .selectize-input {
-    border-color: red;
+    border: 1px solid red !important;
+}
+
+.selectize-control.invalid > button.appended-link {
+    border: 1px solid red !important;
+}
+
+.selectize-input {
+    min-height: 36px;
+}
+
+.red, .red:hover {
+    color: red;
+    text-decoration: none;
+}
+
+td + td {
+    border-left: 1px solid #ddd;
+}
+
+tr.total td {
+    font-weight: bold;
+}
+
+.form-group input[type=file] {
+    opacity: 1;
+    position: relative;
+}
+
+table tbody tr td input[type="text"].form-control, table tbody tr td input[type="text"].form-control:focus {
+    background: none;
+    background-image: none;
+}
+
+input.attachment {
+    display: inline-block;
+}
+
+input.ad-date:after, input.bs-date:after {
+  background: transparent url(../img/calendar.png) center right no-repeat !important;
+}
+
+td.link a{
+    display: block;
+}
+
+.highlighted{
+    background-color: #ffa !important;
+}
+
+.right-bordered{
+      border-right: 1px solid #ccc;
 }

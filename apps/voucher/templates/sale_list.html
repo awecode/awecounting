@@ -1,0 +1,67 @@
+{% extends "_base.html" %}
+{% load i18n staticfiles %}
+{% load filters %}
+
+{% block page-title %}{% trans 'Sales' %}{% endblock %}
+
+{% block header-buttons %}
+    <a class="btn btn-success btn-raised"
+       href="{% url 'sale-create' %}">{% trans 'New' %} {% trans 'Sale' %}</a>
+{% endblock %}
+
+{% block content %}
+
+    {% load pagination_tags %}
+    {% load sorting_tags %}
+    {% load filters %}
+
+    {% autosort objects as sorted_objects %}
+    {% autopaginate sorted_objects 25 as paginated_objects %}
+
+    <div class="well">
+        <table class="table table-striped">
+            <thead>
+            <th>{% anchor voucher_no _('Voucher No.') %}</th>
+            <th>{% anchor date _('Date') %}</th>
+            <th>{% anchor party _('Party') %}</th>
+            <th>{% anchor credit _('Credit/Cash') %}</th>
+            <th>{% anchor pending _('Pending') %}</th>
+            <th>{% anchor total _('Total') %}</th>
+            <th></th>
+            </thead>
+            <tbody>
+            {% for sale in paginated_objects %}
+                <tr>
+                    <td class="link">
+                        <a href="{% url 'sale-edit' sale.pk %}">{{ sale.voucher_no }}</a>
+                    </td>
+                    <td>
+                        {{ sale.date }}
+                    </td>
+                    <td>
+                        <a href="{{ purchase.party.get_absolute_url }}">
+                            {{ sale.party }}
+                        </a>
+                    </td>
+                    <td>
+                        {{ sale.type }}
+                    </td>
+                    <td>
+                        {{ sale.pending_amount }}
+                    </td>
+                    <td>
+                        {{ sale.total_amount }}
+                    </td>
+                    <td>
+                        <a href="{% url 'sale_detail' sale.id %}">{% trans "Detail" %}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% paginate %}
+
+
+{% endblock %}

@@ -1,5 +1,7 @@
 import datetime
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse_lazy
 
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
@@ -50,6 +52,9 @@ class Account(models.Model):
     #     if len(transactions) > 0:
     #         return transactions[0]
     #
+    @property
+    def balance(self):
+        return self.get_balance()
 
     def get_balance(self):
         return zero_for_none(self.current_dr) - zero_for_none(self.current_cr)
@@ -113,8 +118,25 @@ class Account(models.Model):
             return transactions[0].current_dr
         return 0
 
+    def save(self, *args, **kwargs):
+        queryset = Account.objects.filter(company=self.company)
+        original_name = self.name
+        nxt = 2
+        if not self.pk:
+            while queryset.filter(**{'name': self.name}):
+                self.name = original_name
+                end = '%s%s' % ('-', nxt)
+                if len(self.name) + len(end) > 100:
+                    self.name = self.name[:100 - len(end)]
+                self.name = '%s%s' % (self.name, end)
+                nxt += 1
+        return super(Account, self).save(*args, **kwargs)
+
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        unique_together = ('name', 'company')
 
 
 class JournalEntry(models.Model):
@@ -246,7 +268,6 @@ def _transaction_delete(sender, instance, **kwargs):
     if transaction.cr_amount:
         transaction.account.current_cr -= transaction.cr_amount
 
-    print transaction.dr_amount
     alter(transaction.account, transaction.journal_entry.date, float(zero_for_none(transaction.dr_amount)) * -1,
           float(zero_for_none(transaction.cr_amount)) * -1)
 
@@ -262,3 +283,30 @@ def handle_company_creation(sender, **kwargs):
 
 
 company_creation.connect(handle_company_creation)
+
+
+class Party(models.Model):
+    name = models.CharField(max_length=254)
+    address = models.CharField(max_length=254, blank=True, null=True)
+    phone_no = models.CharField(max_length=100, blank=True, null=True)
+    pan_no = models.CharField(max_length=50, blank=True, null=True)
+    account = models.ForeignKey(Account, null=True)
+    company = models.ForeignKey(Company)
+
+    def get_absolute_url(self):
+        return reverse_lazy('party_edit', kwargs={'pk': self.pk})
+
+    def save(self, *args, **kwargs):
+        if not self.account_id:
+            account = Account(name=self.name, company=self.company)
+            account.save()
+            self.account = account
+
+        super(Party, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = 'Parties'
+        # unique_together = ['pan_no', 'company']

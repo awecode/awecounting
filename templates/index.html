@@ -1,5 +1,5 @@
 {% extends "_base.html" %}
-{% load staticfiles i18n %}
+{% load staticfiles i18n njango_filters %}
 
 {% block title %}
     {% trans 'Awecounting' %}
@@ -56,7 +56,7 @@
                 <h2>{% trans 'Inventory' %}</h2>
                 <a href="{% url 'item_list' %}">{% trans 'Items' %}</a>
                 <a href="{% url 'unit_list' %}">{% trans 'Units' %}</a>
-                <a href="{% url 'parties_list' %}">{% trans 'Parties' %}</a>
+                <a href="{% url 'party_list' %}">{% trans 'Parties' %}</a>
                 <a href="{% url 'list_inventory_accounts' %}">{% trans 'Accounts' %}</a>
                 <a href="{% url 'yesterday_sale' %}">{% trans "Yesterday's Sales" %}</a>
             </div>
@@ -97,15 +97,15 @@
 
                 <form class="sales-report-form" id="sales-report-range" action="{% url 'sale-report-router' %}">
                     <label class="pull-left">{% trans 'From' %}:</label>
-                    <input type="text" name="from" id="date-from" class="pull-left datepicker" data-date-format="yyyy-mm-dd">
+                    <input type="text" name="from" id="date-from" class="pull-left {% calendar_class %}" data-date-format="yyyy-mm-dd">
                     <label class="pull-left">{% trans 'To' %}:</label>
-                    <input type="text" name="to" id="date-to" class="pull-left datepicker" data-date-format="yyyy-mm-dd">
-                    <input type="submit" value="Go" class="btn">
+                    <input type="text" name="to" id="date-to" class="pull-left {% calendar_class %}" data-date-format="yyyy-mm-dd">
+                    <input type="submit" value="Go" class="btn btn-default btn-raised">
                 </form>
                 <form class="sales-report-form" id="sales-report-day" action="{% url 'sale-report-router' %}">
                     <label class="pull-left">{% trans 'Day' %}:&nbsp;&nbsp;</label>
-                    <input type="text" name="date" id="sale-date" class="pull-left datepicker" data-date-format="yyyy-mm-dd">
-                    <input type="submit" value="Go" class="btn">
+                    <input type="text" name="date" id="sale-date" class="pull-left {% calendar_class %}" data-date-format="yyyy-mm-dd">
+                    <input type="submit" value="Go" class="btn btn-default btn-raised">
                 </form>
             </div>
         </div>

@@ -4,7 +4,7 @@
 {% block page-title %}{% trans 'Collections' %}{% endblock %}
 
 {% block header-buttons %}
-    <a href="{% url 'share:collection_add' %}" class="btn btn-default pull-right">{% trans 'Add' %} {% trans 'Collection' %}</a>
+    <a href="{% url 'share:collection_add' %}" class="btn btn-success btn-raised">{% trans 'Add' %} {% trans 'Collection' %}</a>
 {% endblock %}
 
 {% block content %}
@@ -17,32 +17,32 @@
 
             {% autosort object_list as sorted_objects %}
             {% autopaginate sorted_objects 25 as paginated_objects %}
-
-            <table class="table table-striped table-bordered">
-                <thead>
-                <th>{% anchor count _('Count') %}</th>
-                <th>{% anchor interest_rate _('Interest Rate') %}</th>
-                <th>{% anchor start_date _('Start Date') %}</th>
-                <th>{% anchor end_date _('End Date') %}</th>
-                </thead>
-                <tbody>
-                {% for object in sorted_objects %}
-                    <tr>
-                        <td>
-                            <a href="{% url 'share:collection_edit' object.pk %}">{{ object.count }}</a>
-                        </td>
-                       <td>
-                            <a href="{% url 'share:collection_edit' object.pk %}">{{ object.interest_rate }}</a>
-                        </td>   <td>
-                            <a href="{% url 'share:collection_edit' object.pk %}">{{ object.start_date }}</a>
-                        </td>   <td>
-                            <a href="{% url 'share:collection_edit' object.pk %}">{{ object.end_date }}</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-
+            <div class="well">
+                <table class="table table-striped">
+                    <thead>
+                    <th>{% anchor count _('Count') %}</th>
+                    <th>{% anchor interest_rate _('Interest Rate') %}</th>
+                    <th>{% anchor start_date _('Start Date') %}</th>
+                    <th>{% anchor end_date _('End Date') %}</th>
+                    </thead>
+                    <tbody>
+                    {% for object in sorted_objects %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'share:collection_edit' object.pk %}">{{ object.count }}</a>
+                            </td>
+                           <td>
+                                <a href="{% url 'share:collection_edit' object.pk %}">{{ object.interest_rate }}</a>
+                            </td>   <td>
+                                <a href="{% url 'share:collection_edit' object.pk %}">{{ object.start_date }}</a>
+                            </td>   <td>
+                                <a href="{% url 'share:collection_edit' object.pk %}">{{ object.end_date }}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
             {% paginate %}
 
         </div>

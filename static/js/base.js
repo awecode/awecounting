@@ -36,7 +36,7 @@ function init_selectize($select) {
 
         if (!Object.size($select.options)) {
             var appended_link = jQuery('<button/>', {
-                class: 'appended-link',
+                class: 'appended-link btn btn-success btn-raised',
                 href: $select.$input.data('url'),
                 title: 'Add New ' + name,
                 text: 'Add New ' + name,
@@ -112,7 +112,7 @@ handle_ajax_response = function (obj) {
                 vm[match].push(obj);
             }
             $select.addItem(obj.id);
-            
+
         }
     }
     else {
@@ -1478,30 +1478,42 @@ function hms_to_s(t) { // h:m:s
     return (a[0] * 60 + +a[1]) * 60 + +a[2]
 }
 
-alert = function () {
+bsalert = function () {
 }
 
-alert.clear = function () {
-    $('#alert_placeholder').html('');
+bsalert.message = function (message, type) {
+    $.notify({
+        message: message
+    }, {
+        type: type,
+        //allow_dismiss: false,
+        animate: {
+            enter: 'animated fadeInDown',
+            exit: 'animated fadeOutUp'
+        },
+    });
 }
 
-alert.warning = function (message) {
-    $('#alert_placeholder').html('<div data-alert class="alert alert-warning radius">' + message + '<a href="#" class="close">&times;</a></div>')
+bsalert.warning = function (message) {
+    bsalert.message(message, 'warning');
 }
 
-alert.success = function (message) {
-    $('#alert_placeholder').html('<div data-alert class="alert alert-success radius">' + message + '<a href="#" class="close">&times;</a></div>')
+bsalert.success = function (message) {
+    bsalert.message(message, 'success');
 }
 
-alert.info = function (message) {
-    $('#alert_placeholder').html('<div data-alert class="alert alert-info radius">' + message + '<a href="#" class="close">&times;</a></div>')
+bsalert.info = function (message) {
+    bsalert.message(message, 'info');
 }
 
-alert.error = alert.warning;
+bsalert.error = function (message) {
+    bsalert.message(message, 'danger');
+}
+
+bsalert.danger = bsalert.error;
 
 //http://stackoverflow.com/questions/346021/how-do-i-remove-objects-from-a-javascript-associative-array/9973592#9973592
 Object.remove_item = function (obj, key) {
-    console.log(obj);
     if (!obj.hasOwnProperty(key))
         return obj;
     if (isNaN(parseInt(key)) || !(obj instanceof Array))
@@ -1606,11 +1618,6 @@ $(document).ready(function () {
             });
         }
 
-        $('.datepicker').datepicker({
-            format: 'yyyy-mm-dd',
-            startDate: '-3d'
-        });
-
         $('.flip-container').mouseenter(function () {
             $(this).addClass('open');
         });
@@ -1627,3 +1634,15 @@ $(document).ready(function () {
     });
 });
 
+$(document).on('show.bs.modal', '.modal', function () {
+    var zIndex = 1040 + (10 * $('.modal:visible').length);
+    $(this).css('z-index', zIndex);
+    setTimeout(function () {
+        $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+    }, 0);
+    $.material.init();
+});
+
+function update_url_with_id(id) {
+    history.pushState(id, id, window.location.href.replace('/create/', '').replace('/add/', '').replace('/create', '').replace('/add', '').replace(/\/+$/, "") + '/' + id + '/');
+}
