@@ -4,7 +4,7 @@
 {% block page-title %}{{ scenario }} {{ form.instance.base_unit.name }}{% endblock %}
 
 {% block breadcrumbs %}
-    <li><a href="{% url 'unit_conversion_list' %}">{% trans 'Unit' %}{% trans 'Conversion' %}</a></li>
+    <li><a href="{% url 'unit_conversion_list' %}">{% trans 'Unit' %} {% trans 'Conversion' %}</a></li>
     <li>{{ scenario }} {{ form.instance.base_unit.name }}</li>
 {% endblock %}
 
