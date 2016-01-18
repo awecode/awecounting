@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView
 from .models import Party
-from .forms import PartyForm
+from .forms import PartyForm, AccountForm
 
 
 def list_accounts(request):
@@ -48,4 +48,26 @@ class PartyUpdate(PartyView, UpdateView):
 
 
 class PartyDelete(PartyView, DeleteView):
+    pass
+
+
+class AccountView(CompanyView):
+    model = Account
+    success_url = reverse_lazy('account_list')
+    form_class = AccountForm
+
+
+class AccountList(AccountView, ListView):
+    pass
+
+
+class AccountCreate(AjaxableResponseMixin, AccountView, CreateView):
+    pass
+
+
+class AccountUpdate(AccountView, UpdateView):
+    pass
+
+
+class AccountDelete(AccountView, DeleteView):
     pass
