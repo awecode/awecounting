@@ -44,11 +44,12 @@
                     <div class="row">
                         <div class="col-md-6 col-sm-12">
                             <label for="bank_account">{% trans 'Bank' %} {% trans 'Account' %}</label>
-                            <select data-bind="selectize: $root.bank_account_array, value: bank_account" id="bank_account"></select>
+                            <select data-bind="selectize: $root.bank_account_array, value: bank_account" id="bank_account" 
+                            data-url="{% url 'bank:bankaccount_add' %}"></select>
                         </div>
                         <div class="col-md-6 col-sm-12">
                             <label for="benefactor">{% trans 'Benefactor' %}</label>
-                            <select data-bind="selectize: $root.benefactor_array, value: benefactor" id="benefactor"></select>
+                            <select data-bind="selectize: $root.benefactor_array, value: benefactor" data-url="{% url 'account_add' %}" id="benefactor"></select>
                         </div>
                     </div>
 
@@ -99,9 +100,9 @@
                 <div class="well">
                     <div class="row">
                         <div class="col-md-12 col-sm-12">
-                            <label for="party">{% trans 'Narration' %}</label>
-                            <input type="textarea" id="narration" data-bind="value: narration" class="form-control" id="date">
-                            <table class="table table-striped" data-bind="if: file">
+                            <label for="narration">{% trans 'Narration' %}</label>
+                            <textarea id="narration" data-bind="value: narration" class="form-control"></textarea>
+                            <table class="table table-striped" data-bind="visible: file().length > 0 ">
                                 <thead>
                                     <th>{% trans "File" %}</th>
                                     <th>{% trans "Description"%}</th>
@@ -117,21 +118,13 @@
                                         </tr>
                                 </tbody>
                             </table>
-                            <!--div data-bind="foreach: file">
-                                <div class="col-md-3 col-sm-3">
-                                    <a data-bind="attr:{href: attachment}, visible: attachment, text: attachment_name"></a> 
-                                </div>
-                                <div class="col-md-8 col-sm-8">
-                                    <p data-bind="text: description"></p>
-                                </div>
-                                <div class="col-md-1 col-sm-1">
-                                    <a href="#" class="red fa fa-2x fa-trash-o" data-bind="click: $root.remove_file"></a><br>
-                                </div>
-                            </div-->
 
                         </div>
                     </div>
-                    <label class="control-label">{% trans "Select File" %} <span data-bind="click: add_upload_file"><i class="fa fa-plus"></i></span></label>
+                    <label class="control-label">{% trans "Select File" %}
+                                        <a class="btn btn-default btn-raised" data-bind="click: add_upload_file"><i
+                            class="fa fa-plus"></i> {% trans 'Add New' %}
+                    </a>
                     <!-- ko foreach: upload_file -->
                     <div class="row">
                         <div class="col-md-12 col-sm-12 pull-left">
@@ -139,7 +132,7 @@
                             <a href="#" data-bind="click: $root.remove_upload_file" class="fa fa-trash-o red"></a>
                         </div>
                         <div class="col-md-12 col-sm-12">
-                            <input type="textarea" name="descritpion" class="form-control" data-bind="value: description" placeholder="Description">
+                            <textarea name="descritpion" class="form-control" data-bind="value: description" placeholder="Description"></textarea>
                         </div>
 
                     </div>

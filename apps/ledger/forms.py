@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from ..ledger.models import Party
+from ..ledger.models import Party, Account
 from awecounting.utils.forms import HTML5BootstrapModelForm
 from django.utils.translation import ugettext_lazy as _
 
@@ -16,3 +16,10 @@ class PartyForm(HTML5BootstrapModelForm):
     class Meta:
         model = Party
         exclude = ('account', 'company')
+
+class AccountForm(HTML5BootstrapModelForm):
+
+    class Meta:
+        model = Account
+        exclude = ('parent', 'category', 'company')
+

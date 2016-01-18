@@ -299,3 +299,48 @@ class CashPaymentRow(models.Model):
 
     class Meta:
         unique_together = ('invoice', 'cash_payment')
+
+
+class FixedAsset(models.Model):
+    from_account = models.ForeignKey(Account)
+    voucher_no = models.IntegerField()
+    date = BSDateField(default=today)
+    reference = models.CharField(max_length=50, null=True, blank=True)
+    description = models.TextField(blank=True, null=True)
+    company = models.ForeignKey(Company)
+    # statuses = [('Approved', 'Approved'), ('Unapproved', 'Unapproved')]
+    # status = models.CharField(max_length=10, choices=statuses, default='Unapproved')
+
+    def __init__(self, *args, **kwargs):
+        super(FixedAsset, self).__init__(*args, **kwargs)
+        if not self.pk and not self.voucher_no:
+            self.voucher_no = get_next_voucher_no(FixedAsset, self.company_id)
+
+    @property
+    def total(self):
+        grand_total = 0
+        for obj in self.rows.all():
+            total = obj.amount
+            grand_total += total
+        return grand_total
+
+
+
+class FixedAssetRow(models.Model):
+    asset_ledger = models.ForeignKey(Account)
+    description = models.TextField(null=True, blank=True)
+    amount = models.FloatField()
+    fixed_asset = models.ForeignKey(FixedAsset, related_name='rows')
+
+
+class AdditionalDetail(models.Model):
+    assets_code = models.CharField(max_length=100, null=True, blank=True)
+    assets_type = models.CharField(max_length=100, null=True, blank=True)
+    vendor_name = models.CharField(max_length=100, null=True, blank=True)
+    vendor_address = models.CharField(max_length=254, null=True, blank=True)
+    amount = models.FloatField(null=True, blank=True)
+    useful_life = models.CharField(max_length=254, null=True, blank=True)
+    description = models.TextField(blank=True, null=True)
+    warranty_period = models.CharField(max_length=100, null=True, blank=True)
+    maintenance = models.CharField(max_length=100, null=True, blank=True)
+    fixed_asset = models.ForeignKey(FixedAsset, related_name='additional_details')

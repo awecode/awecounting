@@ -6,7 +6,8 @@ from django.db.models import F
 from ..ledger.models import Account
 from ..users.models import Company
 from awecounting.utils.helpers import none_for_zero, zero_for_none
-
+from ..users.signals import company_creation
+from django.dispatch import receiver
 
 class Unit(models.Model):
     name = models.CharField(max_length=50)
@@ -15,6 +16,12 @@ class Unit(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+@receiver(company_creation)
+def handle_unit_creation(sender, **kwargs):
+    company = kwargs.get('company')
+    Unit.objects.create(name="pieces", short_name='pcs', company=company)
 
 
 class UnitConverter(models.Model):

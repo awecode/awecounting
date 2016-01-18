@@ -6,15 +6,91 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView
 import json
 from django.views.generic.detail import DetailView
-from awecounting.utils.mixins import CompanyView
+from awecounting.utils.mixins import CompanyView, DeleteView
 from ..inventory.models import set_transactions
 from ..ledger.models import set_transactions as set_ledger_transactions, Account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
 
 from .forms import CashReceiptForm, JournalVoucherForm, CashPaymentForm
-from .serializers import CashReceiptSerializer, CashPaymentSerializer, JournalVoucherSerializer, PurchaseSerializer, SaleSerializer
-from .models import CashReceipt, Purchase, JournalVoucher, JournalVoucherRow, PurchaseRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow
+from .serializers import FixedAssetSerializer, FixedAssetRowSerializer, AdditionalDetailSerializer, CashReceiptSerializer, CashPaymentSerializer, JournalVoucherSerializer, PurchaseSerializer, SaleSerializer
+from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, Purchase, JournalVoucher, JournalVoucherRow, PurchaseRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow
 
+
+class FixedAssetList(CompanyView, ListView):
+    model = FixedAsset
+
+
+class FixedAssetDelete(DeleteView):
+    model = FixedAsset
+    success_url = reverse_lazy('fixed_asset_list')
+
+
+class FixedAssetDetailView(DetailView):
+    model = FixedAsset
+
+    def get_context_data(self, **kwargs):
+        context = super(FixedAssetDetailView, self).get_context_data(**kwargs)
+        context['rows'] = FixedAssetRow.objects.select_related('asset_ledger').filter(fixed_asset = self.object)
+        return context
+
+
+
+def fixed_asset(request, pk=None):
+    if pk:
+        fixed_asset = get_object_or_404(FixedAsset, pk=pk, company=request.company)
+        scenario = 'Update'
+    else:
+        fixed_asset = FixedAsset(company=request.company)
+        scenario = 'Create'
+    data = FixedAssetSerializer(fixed_asset).data
+    return render(request, 'fixed_asset_form.html', {'scenario': scenario, 'data': data, 'fixed_asset': fixed_asset })
+
+def save_fixed_asset(request):
+    if request.is_ajax():
+        # params = json.loads(request.body)
+        params = json.loads(request.POST.get('fixed_asset'))
+    dct = {'rows': {}, 'additional_detail': {},}
+    company = request.company
+    if params.get('voucher_no') == '':
+        params['voucher_no'] = None
+    object_values = {'voucher_no': int(params.get('voucher_no')), 'date': params.get('date'),
+                     'from_account_id': params.get('from_account'),
+                     'reference': params.get('reference'), 'description': params.get('description'), 'company': company }
+    if params.get('id'):
+        obj = FixedAsset.objects.get(id=params.get('id'), company=request.company)
+    else:
+        obj = FixedAsset(company=request.company)
+    try:
+        obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = FixedAssetRow
+        for ind, row in enumerate(params.get('table_view').get('rows')):
+            if invalid(row, ['asset_ledger', 'amount']):
+                continue
+            else:
+                values = {'asset_ledger_id': row.get('asset_ledger'),
+                          'description': row.get('description'), 'amount': row.get('amount'),
+                          'fixed_asset': obj}
+                submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+                if not created:
+                    submodel = save_model(submodel, values)
+                dct['rows'][ind] = submodel.id
+        delete_rows(params.get('table_view').get('deleted_rows'), model)
+        additional_detail = AdditionalDetail
+        for ind, row in enumerate(params.get('additional_detail').get('rows')):
+            values = {'assets_code': row.get('assets_code'), 'assets_type': row.get('assets_type'),
+                      'vendor_name': row.get('vendor_name'), 'vendor_address': row.get('vendor_address'),
+                      'amount': row.get('amount'), 'useful_life': row.get('useful_life'),
+                      'description': row.get('description'), 'warranty_period': row.get('warranty_period'),
+                      'maintenance': row.get('maintenance'), 'fixed_asset': obj}
+            submodel, created = additional_detail.objects.get_or_create(id=row.get('id'), defaults=values)
+            if not created:
+                submodel = save_model(submodel, values)
+            dct['additional_detail'][ind] = submodel.id
+        delete_rows(params.get('additional_detail').get('deleted_rows'), additional_detail)
+    except Exception as e:
+        dct = write_error(dct, e)
+    return JsonResponse(dct)
 
 class CashReceiptList(CompanyView, ListView):
     model = CashReceipt
