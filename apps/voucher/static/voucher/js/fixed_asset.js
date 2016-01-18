@@ -12,6 +12,7 @@ function FixedAssetViewModel(data) {
     self.date = ko.observable();
     self.from_account = ko.observable();
     self.accounts = ko.observable();
+    self.description = ko.observable();
 
     $.ajax({
         url: '/ledger/api/account.json',
@@ -23,6 +24,8 @@ function FixedAssetViewModel(data) {
     });
 
     self.table_view = new TableViewModel({rows: data.rows}, FixedAssetRowViewModel);
+    self.addition_detail = new TableViewModel({rows: data.additional_details}, AdditionalDetailViewModel);
+
 
     self.id.subscribe(function (id) {
         update_url_with_id(id);
@@ -111,6 +114,25 @@ function FixedAssetRowViewModel(row) {
     self.asset_ledger = ko.observable();
     self.description = ko.observable();
     self.amount = ko.observable();
+
+    for (var k in row)
+        self[k] = ko.observable(row[k]);
+
+}
+
+function AdditionalDetailViewModel(row) {
+    var self = this;
+    self.id = ko.observable();
+    self.assets_code = ko.observable();
+    self.assets_type = ko.observable();
+    self.vendor_name = ko.observable();
+    self.vendor_address = ko.observable();
+    self.amount = ko.observable();
+    self.useful_life = ko.observable();
+    self.description = ko.observable();
+    self.warranty_period = ko.observable();
+    self.maintenance = ko.observable();
+
 
     for (var k in row)
         self[k] = ko.observable(row[k]);
