@@ -72,7 +72,7 @@ function ChequeDepositViewModel(data) {
         var sum = 0;
         self.table_view.rows().forEach(function (i) {
             if (i.amount())
-                sum += i.amount();
+                sum += parseInt(i.amount());
         });
         return round2(sum);
     };
