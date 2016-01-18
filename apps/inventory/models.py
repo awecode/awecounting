@@ -19,7 +19,7 @@ class Unit(models.Model):
 
 
 @receiver(company_creation)
-def handle_unit_creation(sender, **kwargs):
+def handle_company_creation(sender, **kwargs):
     company = kwargs.get('company')
     Unit.objects.create(name="pieces", short_name='pcs', company=company)
 
