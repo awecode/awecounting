@@ -1609,30 +1609,47 @@ function HashTable() {
 
 }
 
-$(document).ready(function () {
-    $(function () {
-        if ($('.selectize').length) {
-            var $select = $('.selectize').selectize();
-            $($select).each(function () {
-                init_selectize(this.selectize);
-            });
+function selectize_validation_fix($select) {
+
+    $select.$input.on('invalid', function (event) {
+        event.preventDefault();
+        $select.focus(true);
+        $select.$wrapper.addClass('invalid');
+    });
+
+    $select.$input.on('change', function (event) {
+        if (event.target.validity && event.target.validity.valid) {
+            $select.$wrapper.removeClass('invalid');
         }
+    });
 
-        $('.flip-container').mouseenter(function () {
-            $(this).addClass('open');
-        });
-        $('.flip-container').mouseleave(function () {
-            $(this).removeClass('open');
-        });
+}
 
-        $('.btn.warning, .btn-danger').click(function (e) {
-            var action = $(e.currentTarget).text().toLowerCase();
-            if (confirm('Are you sure you want to ' + action + '?')) {
-                return true;
-            } else return false;
+
+$(function () {
+    if ($('.selectize').length) {
+        var $select = $('.selectize').selectize();
+        $($select).each(function () {
+            init_selectize(this.selectize);
+            selectize_validation_fix(this.selectize);
         });
+    }
+
+    $('.flip-container').mouseenter(function () {
+        $(this).addClass('open');
+    });
+    $('.flip-container').mouseleave(function () {
+        $(this).removeClass('open');
+    });
+
+    $('.btn.warning, .btn-danger').click(function (e) {
+        var action = $(e.currentTarget).text().toLowerCase();
+        if (confirm('Are you sure you want to ' + action + '?')) {
+            return true;
+        } else return false;
     });
 });
+
 
 $(document).on('show.bs.modal', '.modal', function () {
     var zIndex = 1040 + (10 * $('.modal:visible').length);
