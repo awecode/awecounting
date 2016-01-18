@@ -2,10 +2,10 @@
 {% load i18n staticfiles %}
 {% load filters %}
 
-{% block page-title %}{% trans 'Unit' %} {% trans 'Converter' %}{% endblock %}
+{% block page-title %}{% trans 'Unit' %} {% trans 'Conversion' %}{% endblock %}
 {% block header-buttons %}        
     <a class="btn btn-success btn-raised"
-               href="{% url 'unitconverter_add' %}">{% trans 'New' %} {% trans 'Unit' %} {% trans 'Converter' %}</a>
+               href="{% url 'unit_conversion_add' %}">{% trans 'New' %} {% trans 'Unit' %} {% trans 'Conversion' %}</a>
 {% endblock %}
 
 
@@ -26,16 +26,16 @@
 
                 </thead>
                 <tbody>
-                {% for unitconverter in paginated_objects %}
+                {% for unit_conversion in paginated_objects %}
                     <tr>
                         <td>
-                            <a href="{% url 'unitconverter_edit' unitconverter.pk %}">{{ unitconverter.base_unit }}</a>
+                            <a href="{% url 'unit_conversion_edit' unit_conversion.pk %}">{{ unit_conversion.base_unit }}</a>
                         </td>
                         <td>
-                            {{ unitconverter.unit_to_convert }}
+                            {{ unit_conversion.unit_to_convert }}
                         </td>
                         <td>
-                            {{ unitconverter.multiple }}
+                            {{ unit_conversion.multiple }}
                         </td>                        
                     </tr>
                 {% endfor %}

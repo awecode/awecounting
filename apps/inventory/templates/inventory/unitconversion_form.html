@@ -4,7 +4,7 @@
 {% block page-title %}{{ scenario }} {{ form.instance.base_unit.name }}{% endblock %}
 
 {% block breadcrumbs %}
-    <li><a href="{% url 'unitconverter_list' %}">{% trans 'Unit' %}{% trans 'Converter' %}</a></li>
+    <li><a href="{% url 'unit_conversion_list' %}">{% trans 'Unit' %}{% trans 'Conversion' %}</a></li>
     <li>{{ scenario }} {{ form.instance.base_unit.name }}</li>
 {% endblock %}
 
@@ -20,7 +20,7 @@
         <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
 
         {% if form.instance.id %}
-            <a href="{% url 'unitconverter_delete' form.instance.id %}" class="btn btn-danger btn-raised">{% trans 'Delete' %}</a>
+            <a href="{% url 'unit_conversion_delete' form.instance.id %}" class="btn btn-danger btn-raised">{% trans 'Delete' %}</a>
         {% endif %}
     </form>
 

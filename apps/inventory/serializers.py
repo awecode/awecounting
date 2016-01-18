@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Item, Unit, JournalEntry, UnitConverter
+from .models import Item, Unit, JournalEntry, UnitConversion
 
 
 class UnitSerializer(serializers.ModelSerializer):
@@ -39,9 +39,9 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
         else:
             default_unit = self.context.get('default_unit')
             if obj.creator.unit.name != default_unit:
-                unit_converter = UnitConverter.objects.get(base_unit__name=default_unit,
+                unit_conversion = UnitConversion.objects.get(base_unit__name=default_unit,
                                                            unit_to_convert__name=obj.creator.unit.name)
-                multiple = unit_converter.multiple
+                multiple = unit_conversion.multiple
                 if self.context.get('unit_multiple'):
                     unit_multiple = self.context.get('unit_multiple')
                     return (obj.creator.quantity * multiple) / unit_multiple
@@ -60,9 +60,9 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
         else:
             default_unit = self.context.get('default_unit')
             if obj.creator.unit.name != default_unit:
-                unit_converter = UnitConverter.objects.get(base_unit__name=default_unit,
+                unit_conversion = UnitConversion.objects.get(base_unit__name=default_unit,
                                                            unit_to_convert__name=obj.creator.unit.name)
-                multiple = unit_converter.multiple
+                multiple = unit_conversion.multiple
                 if self.context.get('unit_multiple'):
                     unit_multiple = self.context.get('unit_multiple')
                     return (obj.creator.rate * unit_multiple) / multiple
@@ -81,9 +81,9 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
         else:
             default_unit = self.context.get('default_unit')
             if obj.creator.unit.name != default_unit:
-                unit_converter = UnitConverter.objects.get(base_unit__name=default_unit,
+                unit_conversion = UnitConversion.objects.get(base_unit__name=default_unit,
                                                            unit_to_convert__name=obj.creator.unit.name)
-                multiple = unit_converter.multiple
+                multiple = unit_conversion.multiple
                 if self.context.get('unit_multiple'):
                     unit_multiple = self.context.get('unit_multiple')
                     return (obj.creator.quantity * multiple) / unit_multiple

@@ -16,10 +16,10 @@ web_urls = [
     url(r'^unit/edit/(?P<pk>\d+)/$', views.UnitUpdate.as_view(), name='unit_edit'),
     url(r'^unit/delete/(?P<pk>\d+)/$', views.UnitDelete.as_view(), name='unit_delete'),
 
-    url(r'^unitconverter/$', views.UnitConverterList.as_view(), name='unitconverter_list'),
-    url(r'^unitconverter/add/$', views.UnitConverterCreate.as_view(), name='unitconverter_add'),
-    url(r'^unitconverter/edit/(?P<pk>\d+)/$', views.UnitConverterUpdate.as_view(), name='unitconverter_edit'),
-    url(r'^unitconverter/delete/(?P<pk>\d+)/$', views.UnitConverterDelete.as_view(), name='unitconverter_delete'),
+    url(r'^unit_conversion/$', views.UnitConversionList.as_view(), name='unit_conversion_list'),
+    url(r'^unit_conversion/add/$', views.UnitConversionCreate.as_view(), name='unit_conversion_add'),
+    url(r'^unit_conversion/edit/(?P<pk>\d+)/$', views.UnitConversionUpdate.as_view(), name='unit_conversion_edit'),
+    url(r'^unit_conversion/delete/(?P<pk>\d+)/$', views.UnitConversionDelete.as_view(), name='unit_conversion_delete'),
 
     url(r'^accounts/$', views.list_inventory_accounts, name='list_inventory_accounts'),
     url(r'^accounts/(?P<id>[0-9]+)/$', views.view_inventory_account, name='view_inventory_account'),

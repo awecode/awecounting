@@ -24,7 +24,7 @@ def handle_company_creation(sender, **kwargs):
     Unit.objects.create(name="pieces", short_name='pcs', company=company)
 
 
-class UnitConverter(models.Model):
+class UnitConversion(models.Model):
     base_unit = models.ForeignKey(Unit, null=True, related_name='base_unit')
     unit_to_convert = models.ForeignKey(Unit, null=True)
     multiple = models.FloatField()

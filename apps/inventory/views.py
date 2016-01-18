@@ -9,8 +9,8 @@ from django.views.generic import ListView
 
 from .serializers import ItemSerializer, InventoryAccountRowSerializer
 from ..voucher.models import Sale
-from .models import Item, UnitConverter, Unit, JournalEntry, InventoryAccount
-from .forms import ItemForm, UnitForm, UnitConverterForm
+from .models import Item, UnitConversion, Unit, JournalEntry, InventoryAccount
+from .forms import ItemForm, UnitForm, UnitConversionForm
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView
 
 
@@ -100,25 +100,25 @@ class ItemDelete(ItemView, DeleteView):
     pass
 
 
-class UnitConverterView(CompanyView):
-    model = UnitConverter
-    form_class = UnitConverterForm
-    success_url = reverse_lazy('unitconverter_list')
+class UnitConversionView(CompanyView):
+    model = UnitConversion
+    form_class = UnitConversionForm
+    success_url = reverse_lazy('unit_conversion_list')
 
 
-class UnitConverterList(UnitConverterView, ListView):
+class UnitConversionList(UnitConversionView, ListView):
     pass
 
 
-class UnitConverterCreate(UnitConverterView, CreateView):
+class UnitConversionCreate(UnitConversionView, CreateView):
     pass
 
 
-class UnitConverterUpdate(UnitConverterView, UpdateView):
+class UnitConversionUpdate(UnitConversionView, UpdateView):
     pass
 
 
-class UnitConverterDelete(UnitConverterView, DeleteView):
+class UnitConversionDelete(UnitConversionView, DeleteView):
     pass
 
 
@@ -161,7 +161,7 @@ def view_inventory_account(request, id):
         unit = None
     journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
         .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
-    conversions = UnitConverter.objects.filter(Q(base_unit=unit) | Q(unit_to_convert=unit)).select_related('base_unit',
+    conversions = UnitConversion.objects.filter(Q(base_unit=unit) | Q(unit_to_convert=unit)).select_related('base_unit',
                                                                                                            'unit_to_convert')
     multiple = 1
     if hasattr(obj, 'item'):
@@ -184,7 +184,7 @@ def view_inventory_account_with_rate(request, id):
             unit = obj.item.unit
     else:
         unit = None
-    conversions = UnitConverter.objects.filter(Q(base_unit=unit) | Q(unit_to_convert=unit)).select_related('base_unit',
+    conversions = UnitConversion.objects.filter(Q(base_unit=unit) | Q(unit_to_convert=unit)).select_related('base_unit',
                                                                                                            'unit_to_convert')
     multiple = 1
     journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
