@@ -24,12 +24,8 @@ function FixedAssetViewModel(data) {
     });
 
     self.table_view = new TableViewModel({rows: data.rows}, FixedAssetRowViewModel);
-    self.addition_detail = new TableViewModel({rows: data.additional_details}, AdditionalDetailViewModel);
+    self.additional_detail = new TableViewModel({rows: data.additional_details}, AdditionalDetailViewModel);
 
-
-    self.id.subscribe(function (id) {
-        update_url_with_id(id);
-    });
 
     self.total = function() {
         var sum = 0;
@@ -47,33 +43,15 @@ function FixedAssetViewModel(data) {
     self.save = function (item, event) {
         var form_data = new FormData()
 
-        for ( index in self.upload_file()){
-            if (typeof(self.upload_file()[index].upload_file()) != 'undefined') {
-                var description;
-                form_data.append('file', self.upload_file()[index].upload_file());
-                if (typeof(self.upload_file()[index].description()) == 'undefined') {
-                    description = '';
-                } else {
-                    description = self.upload_file()[index].description();
-                };
-                form_data.append('file_description', description);
-            };
-        };
-
-        if ( !self.bank_account() ) {
-            bsalert.error('Bank account field is required');
+        if ( !self.from_account() ) {
+            bsalert.error('From Account field is required');
             return false;
         }
 
-        if ( !self.benefactor() ) {
-            bsalert.error('Benefactor field is required');
-            return false;
-        }
-
-        form_data.append('cheque_deposit', ko.toJSON(self));
+        form_data.append('fixed_asset', ko.toJSON(self));
         $.ajax({
             type: "POST",
-            url: '/bank/save/cheque_deposit/',
+            url: '/voucher/fixed_asset/save/',
             data: form_data,
             processData: false,
             contentType: false,
@@ -90,20 +68,25 @@ function FixedAssetViewModel(data) {
                         $($("tbody > tr:not(.total, .file)")[i]).addClass('invalid-row');
                     });
 
-                    if(typeof(msg.attachment) != "undefined") {
-                        for ( i in msg.attachment ) {
-                            self.file.push( new FileViewModel( msg.attachment[i] ));
-                        };
-                        self.upload_file([ new UploadFileVM() ])
-                    }
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];
-                        $($("tbody > tr")[i]).removeClass('invalid-row');
+                        $($("tbody.fixed_asset_row > tr")[i]).removeClass('invalid-row');
+                    }
+                    for (var i in msg.additional_detail) {
+                        self.additional_detail.rows()[i].id = msg.additional_detail[i];
+                        $($("tbody.additional_details > tr")[i]).removeClass('invalid-row');
                     }
                 }
             }
         });
-    }
+    };
+
+    self.id.subscribe(function (id) {
+        debugger;
+        update_url_with_id(id);
+    });
+
+
 
 }
 

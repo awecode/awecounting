@@ -42,10 +42,12 @@ web_urls = [
     url(r'^cash_payment/save/$', views.save_cash_payment, name='cash_payment_save'),
     url(r'^cash_payment/detail/(?P<pk>[0-9]+)/$', views.CashPaymentDetailView.as_view(), name='cash_payment_detail'),
 
-    url(r'^fixed_asset/list/$', views.FixedAssetList.as_view(), name='fixed_asset_list'),
-    url(r'^fixed_asset/$', views.fixed_asset, name='fixed_asset_add'),
+    url(r'^fixed_asset/$', views.FixedAssetList.as_view(), name='fixed_asset_list'),
+    url(r'^fixed_asset/add/$', views.fixed_asset, name='fixed_asset_add'),
     url(r'^fixed_asset/(?P<pk>[0-9]+)/$', views.fixed_asset, name='fixed_asset_edit'),
     url(r'^fixed_asset/save/$', views.save_fixed_asset, name='fixed_asset_save'),
+    url(r'^fixed_asset/delete/(?P<pk>[0-9]+)$', views.FixedAssetDelete.as_view(), name='fixed_asset_delete'),
+
 ]
 
 api_urls = [

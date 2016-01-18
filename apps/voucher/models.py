@@ -306,7 +306,7 @@ class FixedAsset(models.Model):
     voucher_no = models.IntegerField()
     date = BSDateField(default=today)
     reference = models.CharField(max_length=50, null=True, blank=True)
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True)
     company = models.ForeignKey(Company)
     # statuses = [('Approved', 'Approved'), ('Unapproved', 'Unapproved')]
     # status = models.CharField(max_length=10, choices=statuses, default='Unapproved')

@@ -56,7 +56,7 @@
                             <th></th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="fixed_asset_row">
                         <!-- ko foreach: rows -->
                         <tr>
                             <td>
@@ -80,7 +80,7 @@
                         {% trans 'Add New Row' %}
                     </a>
                 </div>
-                <div data-bind="with: addition_detail" class="well">
+                <div data-bind="with: additional_detail" class="well">
                     <table class="table table-striped">
                         <thead>
                         <tr>
@@ -96,7 +96,7 @@
                             <th></th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="additional_details">
                         <!-- ko foreach: rows -->
                         <tr>
                             <td data-bind="editableText: assets_code"></td>
@@ -128,6 +128,11 @@
                         </div>
                     </div>
                 </div>
+
+                <input type="submit" class="btn btn-raised btn-info btn-lg" value="{% trans 'Save' %}">
+                {% if scenario == 'Update' %}
+                    <a class="btn btn-danger btn-raised" href="{% url 'fixed_asset_delete' fixed_asset.id %}">{% trans 'Delete!' %}</a>
+                {% endif %}
     </form>
 
 
