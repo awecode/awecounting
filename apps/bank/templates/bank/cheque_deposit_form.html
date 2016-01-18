@@ -49,7 +49,7 @@
                         </div>
                         <div class="col-md-6 col-sm-12">
                             <label for="benefactor">{% trans 'Benefactor' %}</label>
-                            <select data-bind="selectize: $root.benefactor_array, value: benefactor" id="benefactor"></select>
+                            <select data-bind="selectize: $root.benefactor_array, value: benefactor" data-url="{% url 'account_add' %}" id="benefactor"></select>
                         </div>
                     </div>
 
