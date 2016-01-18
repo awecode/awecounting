@@ -82,7 +82,6 @@ function FixedAssetViewModel(data) {
     };
 
     self.id.subscribe(function (id) {
-        debugger;
         update_url_with_id(id);
     });
 
