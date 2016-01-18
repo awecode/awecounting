@@ -47,6 +47,8 @@ web_urls = [
     url(r'^fixed_asset/(?P<pk>[0-9]+)/$', views.fixed_asset, name='fixed_asset_edit'),
     url(r'^fixed_asset/save/$', views.save_fixed_asset, name='fixed_asset_save'),
     url(r'^fixed_asset/delete/(?P<pk>[0-9]+)$', views.FixedAssetDelete.as_view(), name='fixed_asset_delete'),
+    url(r'^fixed_asset/detail/(?P<pk>[0-9]+)/$', views.FixedAssetDetailView.as_view(), name='fixed_asset_detail'),
+
 
 ]
 

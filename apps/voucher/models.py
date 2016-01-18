@@ -316,6 +316,15 @@ class FixedAsset(models.Model):
         if not self.pk and not self.voucher_no:
             self.voucher_no = get_next_voucher_no(FixedAsset, self.company_id)
 
+    @property
+    def total(self):
+        grand_total = 0
+        for obj in self.rows.all():
+            total = obj.amount
+            grand_total += total
+        return grand_total
+
+
 
 class FixedAssetRow(models.Model):
     asset_ledger = models.ForeignKey(Account)

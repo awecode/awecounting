@@ -24,6 +24,7 @@
                 <th>{% anchor from_account _('Account') %}</th>
                 <th>{% anchor date _('Date') %}</th>
                 <th>{% anchor reference _('Reference') %}</th>
+                <th></th>
                 </thead>
                 <tbody>
                 {% for object in sorted_objects %}
@@ -36,7 +37,10 @@
                         </td>   <td>
                             <a href="{% url 'fixed_asset_edit' object.pk %}">{{ object.date }}</a>
                         </td>   <td>
-                            <a href="#">{{ object.reference }}</a>
+                            <a href="#">{{ object.reference |default:''}}</a>
+                        </td>
+                        <td>
+                            <a href="{% url 'fixed_asset_detail' object.pk %}">{% trans "Detail" %}</a>
                         </td>
                     </tr>
                 {% endfor %}

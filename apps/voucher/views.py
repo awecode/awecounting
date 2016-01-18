@@ -25,6 +25,15 @@ class FixedAssetDelete(DeleteView):
     success_url = reverse_lazy('fixed_asset_list')
 
 
+class FixedAssetDetailView(DetailView):
+    model = FixedAsset
+
+    def get_context_data(self, **kwargs):
+        context = super(FixedAssetDetailView, self).get_context_data(**kwargs)
+        context['rows'] = FixedAssetRow.objects.select_related('asset_ledger').filter(fixed_asset = self.object)
+        return context
+
+
 
 def fixed_asset(request, pk=None):
     if pk:
