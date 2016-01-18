@@ -12,9 +12,26 @@ from ..ledger.models import set_transactions as set_ledger_transactions, Account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
 
 from .forms import CashReceiptForm, JournalVoucherForm, CashPaymentForm
-from .serializers import CashReceiptSerializer, CashPaymentSerializer, JournalVoucherSerializer, PurchaseSerializer, SaleSerializer
-from .models import CashReceipt, Purchase, JournalVoucher, JournalVoucherRow, PurchaseRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow
+from .serializers import FixedAssetSerializer, FixedAssetRowSerializer, AdditionalDetailSerializer, CashReceiptSerializer, CashPaymentSerializer, JournalVoucherSerializer, PurchaseSerializer, SaleSerializer
+from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, Purchase, JournalVoucher, JournalVoucherRow, PurchaseRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow
 
+
+class FixedAssetList(CompanyView, ListView):
+    model = FixedAsset
+
+
+def fixed_asset(request, pk=None):
+    if pk:
+        fixed_asset = get_object_or_404(FixedAsset, pk=pk, company=request.company)
+        scenario = 'Update'
+    else:
+        fixed_asset = FixedAsset(company=request.company)
+        scenario = 'Create'
+    data = FixedAssetSerializer(fixed_asset).data
+    return render(request, 'fixed_asset_form.html', {'scenario': scenario, 'data': data, 'fixed_asset': fixed_asset })
+
+def save_fixed_asset(request):
+    pass
 
 class CashReceiptList(CompanyView, ListView):
     model = CashReceipt

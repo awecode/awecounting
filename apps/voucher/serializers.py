@@ -90,8 +90,8 @@ class FixedAssetRowSerializer(serializers.ModelSerializer):
 
 
 class FixedAssetSerializer(serializers.ModelSerializer):
-    rows = FixedAssetRowSerializer()
-    additional_details = AdditionalDetailSerializer()
+    rows = FixedAssetRowSerializer(many=True)
+    additional_details = AdditionalDetailSerializer(many=True)
 
     class Meta:
         model = FixedAsset

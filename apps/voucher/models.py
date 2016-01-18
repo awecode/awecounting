@@ -304,7 +304,7 @@ class CashPaymentRow(models.Model):
 class FixedAsset(models.Model):
     from_account = models.ForeignKey(Account)
     voucher_no = models.IntegerField()
-    date = models.DateField()
+    date = BSDateField(default=today)
     reference = models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField()
     company = models.ForeignKey(Company)
