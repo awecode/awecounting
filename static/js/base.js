@@ -95,7 +95,7 @@ handle_ajax_response = function (obj) {
     var no_of_modals = $('.reveal-modal').length;
     $('#reveal-modal' + $('.reveal-modal').length).find($('.close-reveal-modal')).click();
     $select = window.last_active_select.pop();
-    
+
     if ($select.$input.data('bind') && $select.$input.data('bind').indexOf('selectize') != -1) {
         var matches = $select.$input.data('bind').match(/selectize: \$root\.([a-z_]+)/);
         if ($select.$input.data('to')) {
@@ -1653,10 +1653,13 @@ $(function () {
 
 $(document).on('show.bs.modal', '.modal', function () {
     var zIndex = 1040 + (10 * $('.modal:visible').length);
+    //$(this).removeAttr('tabindex');
     $(this).css('z-index', zIndex);
     setTimeout(function () {
         $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
     }, 0);
+    // TODO not-working
+    $(this).find('input:text:first').focus();
     $.material.init();
 });
 

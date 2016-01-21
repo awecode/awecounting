@@ -9,10 +9,36 @@ from awecounting.utils.helpers import none_for_zero, zero_for_none
 from ..users.signals import company_creation
 from django.dispatch import receiver
 
+
 class Unit(models.Model):
     name = models.CharField(max_length=50)
     short_name = models.CharField(max_length=10, blank=True, null=True)
     company = models.ForeignKey(Company)
+
+    def get_base_conversions(self, exclude=None):
+        return self.base_conversions.all()
+
+    def get_conversions(self, exclude=None):
+        return self.conversions.all()
+
+    @property
+    def convertibles(self, exclude=None):
+        # if exclude:
+        #     exclude = {'pk': exclude.pk}
+        # else:
+        #     exclude = {'pk': self.pk}
+        data = {}
+        for base_conversion in self.get_base_conversions():
+            data[base_conversion.unit_to_convert_id] = base_conversion.multiple
+            # for key, val in base_conversion.unit_to_convert.convertibles.items():
+            #     if not self.id == key:
+            #         data[key] = val * base_conversion.multiple
+        for conversion in self.get_conversions():
+            data[conversion.base_unit_id] = 1 / conversion.multiple
+            # for key, val in conversion.base_unit.convertibles.items():
+            #     if not self.id == key:
+            #         data[key] = val / conversion.multiple
+        return data
 
     def __unicode__(self):
         return self.name
@@ -25,8 +51,8 @@ def handle_company_creation(sender, **kwargs):
 
 
 class UnitConversion(models.Model):
-    base_unit = models.ForeignKey(Unit, null=True, related_name='base_unit')
-    unit_to_convert = models.ForeignKey(Unit, null=True)
+    base_unit = models.ForeignKey(Unit, null=True, related_name='base_conversions')
+    unit_to_convert = models.ForeignKey(Unit, null=True, related_name='conversions')
     multiple = models.FloatField()
     company = models.ForeignKey(Company)
 

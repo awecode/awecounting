@@ -4,6 +4,8 @@ from .models import Item, Unit, JournalEntry, UnitConversion
 
 
 class UnitSerializer(serializers.ModelSerializer):
+    convertibles = serializers.ReadOnlyField()
+
     class Meta:
         model = Unit
 
@@ -40,7 +42,7 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
             default_unit = self.context.get('default_unit')
             if obj.creator.unit.name != default_unit:
                 unit_conversion = UnitConversion.objects.get(base_unit__name=default_unit,
-                                                           unit_to_convert__name=obj.creator.unit.name)
+                                                             unit_to_convert__name=obj.creator.unit.name)
                 multiple = unit_conversion.multiple
                 if self.context.get('unit_multiple'):
                     unit_multiple = self.context.get('unit_multiple')
@@ -61,7 +63,7 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
             default_unit = self.context.get('default_unit')
             if obj.creator.unit.name != default_unit:
                 unit_conversion = UnitConversion.objects.get(base_unit__name=default_unit,
-                                                           unit_to_convert__name=obj.creator.unit.name)
+                                                             unit_to_convert__name=obj.creator.unit.name)
                 multiple = unit_conversion.multiple
                 if self.context.get('unit_multiple'):
                     unit_multiple = self.context.get('unit_multiple')
@@ -82,7 +84,7 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
             default_unit = self.context.get('default_unit')
             if obj.creator.unit.name != default_unit:
                 unit_conversion = UnitConversion.objects.get(base_unit__name=default_unit,
-                                                           unit_to_convert__name=obj.creator.unit.name)
+                                                             unit_to_convert__name=obj.creator.unit.name)
                 multiple = unit_conversion.multiple
                 if self.context.get('unit_multiple'):
                     unit_multiple = self.context.get('unit_multiple')
