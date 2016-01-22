@@ -45,21 +45,21 @@ class Unit(models.Model):
                 base_unit = self
             print 'Convertible for ' + str(base_unit)
             print 'Passed multiple is ' + str(mul)
-            data[base_unit.id] = mul
-            print data
-            print 'Exclude: ' + str(exclude)
-            print 'Conversions: ' + str(base_unit.get_all_conversions(exclude))
-            for conversion in base_unit.get_all_conversions(exclude):
-                exclude.append(conversion.pk)
-                unit = conversion.get_another_unit(base_unit.id)
-                print '\nConverting to ' + str(unit) + ' with multiple ' + str(conversion.multiple * mul)
-                # if unit.id not in data.keys():
-                for key, val in find_convertibles(data, exclude, conversion.multiple * mul, unit).items():
-                    print 'writing: ' + str(key) + ' : ' + str(val)
-                    data[key] = val * conversion.multiple
-                    # print data
-                print 'Writing: ' + str(unit.id) + ' : ' + str(mul)
-                data[unit.id] = mul
+            if base_unit.id not in data.keys():
+                data[base_unit.id] = mul
+                print data
+                print 'Exclude: ' + str(exclude)
+                print 'Conversions: ' + str(base_unit.get_all_conversions(exclude))
+                for conversion in base_unit.get_all_conversions(exclude):
+                    exclude.append(conversion.pk)
+                    unit = conversion.get_another_unit(base_unit.id)
+                    print '\nConverting to ' + str(unit) + ' with multiple ' + str(conversion.multiple * mul)
+                    
+                    for key, val in find_convertibles(data, exclude, conversion.multiple * mul, unit).items():
+                        
+                        if not key in data.keys():
+                            print 'writing: ' + str(key) + ' : ' + str(val)
+                            data[key] = val * conversion.multiple
                 
 
             return data
