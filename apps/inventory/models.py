@@ -2,7 +2,7 @@ from django.db import models
 from jsonfield import JSONField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
-from django.db.models import F
+from django.db.models import F, Q
 from ..ledger.models import Account
 from ..users.models import Company
 from awecounting.utils.helpers import none_for_zero, zero_for_none
@@ -21,24 +21,57 @@ class Unit(models.Model):
     def get_conversions(self, exclude=None):
         return self.conversions.all()
 
-    @property
-    def convertibles(self, exclude=None):
-        # if exclude:
-        #     exclude = {'pk': exclude.pk}
-        # else:
-        #     exclude = {'pk': self.pk}
-        data = {}
-        for base_conversion in self.get_base_conversions():
-            data[base_conversion.unit_to_convert_id] = base_conversion.multiple
-            # for key, val in base_conversion.unit_to_convert.convertibles.items():
-            #     if not self.id == key:
-            #         data[key] = val * base_conversion.multiple
-        for conversion in self.get_conversions():
-            data[conversion.base_unit_id] = 1 / conversion.multiple
-            # for key, val in conversion.base_unit.convertibles.items():
-            #     if not self.id == key:
-            #         data[key] = val / conversion.multiple
-        return data
+    def get_all_conversions(self, exclude=[]):
+
+        base_conversions = UnitConversion.objects.filter(base_unit=self).exclude(pk__in=exclude)
+        conversions = UnitConversion.objects.filter(unit_to_convert=self).exclude(pk__in=exclude)
+        ret = []
+        for base_conversion in base_conversions:
+            ret.append(base_conversion)
+        for conversion in conversions:
+            conversion.multiple = 1 / conversion.multiple
+            ret.append(conversion)
+        return ret
+
+        qs = UnitConversion.objects.filter(base_unit=self).extra(
+            select={'multiple': '1 / multiple'}) | UnitConversion.objects.filter(
+            unit_to_convert=self)
+        return qs.exclude(pk__in=exclude)
+
+    def convertibles(self):
+        def find_convertibles(data, exclude, mul, base_unit=None):
+            print ''
+            if not base_unit:
+                base_unit = self
+            print 'Convertible for ' + str(base_unit)
+            print 'Passed multiple is ' + str(mul)
+            data[base_unit.id] = mul
+            print data
+            print 'Exclude: ' + str(exclude)
+            print 'Conversions: ' + str(base_unit.get_all_conversions(exclude))
+            for conversion in base_unit.get_all_conversions(exclude):
+                exclude.append(conversion.pk)
+                unit = conversion.get_another_unit(base_unit.id)
+                print '\nConverting to ' + str(unit) + ' with multiple ' + str(conversion.multiple * mul)
+                # if unit.id not in data.keys():
+                for key, val in find_convertibles(data, exclude, conversion.multiple * mul, unit).items():
+                    print 'writing: ' + str(key) + ' : ' + str(val)
+                    data[key] = val * conversion.multiple
+                    # print data
+                print 'Writing: ' + str(unit.id) + ' : ' + str(mul)
+                data[unit.id] = mul
+                
+
+            return data
+
+        return find_convertibles({}, [], 1)
+
+        # for conversion in self.get_conversions():
+        #     if conversion.base_unit_id not in data.keys():
+        #         for key, val in conversion.base_unit.convertibles(data).items():
+        #             data[key] = val / conversion.multiple
+        #     data[conversion.base_unit_id] = 1 / conversion.multiple
+        # return data
 
     def __unicode__(self):
         return self.name
@@ -56,8 +89,13 @@ class UnitConversion(models.Model):
     multiple = models.FloatField()
     company = models.ForeignKey(Company)
 
+    def get_another_unit(self, unit_id):
+        if unit_id == self.base_unit_id:
+            return self.unit_to_convert
+        return self.base_unit
+
     def __unicode__(self):
-        return self.unit_to_convert.name + ' ' + '[' + str(self.multiple) + ':' + self.base_unit.name + ']'
+        return self.base_unit.name + ' - ' + self.unit_to_convert.name + ' : ' + str(self.multiple)
 
 
 class InventoryAccount(models.Model):

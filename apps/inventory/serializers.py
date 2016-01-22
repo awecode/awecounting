@@ -4,7 +4,10 @@ from .models import Item, Unit, JournalEntry, UnitConversion
 
 
 class UnitSerializer(serializers.ModelSerializer):
-    convertibles = serializers.ReadOnlyField()
+    convertible_units = serializers.SerializerMethodField()
+    
+    def get_convertible_units(self, obj):
+        return obj.convertibles()
 
     class Meta:
         model = Unit
