@@ -59,8 +59,9 @@ class Unit(models.Model):
                             # print 'writing: ' + str(key) + ' : ' + str(val)
                             data[key] = val * conversion.multiple
             return data
-
-        return find_convertibles({}, [], 1)
+        all_convertibles = find_convertibles({}, [], 1)
+        all_convertibles.pop(self.id, None)
+        return all_convertibles
 
         # for conversion in self.get_conversions():
         #     if conversion.base_unit_id not in data.keys():
