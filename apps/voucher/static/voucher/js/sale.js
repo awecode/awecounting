@@ -105,11 +105,13 @@ function SaleRow(row, sale_vm) {
         self[k] = ko.observable(row[k]);
 
     self.item.subscribe(function (item) {
-        var unit = get_by_id(sale_vm.units(), item.unit.id);
-        if (!self.unit_id())
-            self.unit_id(unit.id);
-        if (!self.rate()) {
-            self.rate(item.selling_rate);
+        if (item.unit) {
+            var unit = get_by_id(sale_vm.units(), item.unit.id);
+            if (!self.unit_id())
+                self.unit_id(unit.id);
+            if (!self.rate()) {
+                self.rate(item.selling_rate);
+            }
         }
     });
 
@@ -121,7 +123,21 @@ function SaleRow(row, sale_vm) {
         } else {
             return round2(self.quantity() * self.rate());
         }
-    })
+    });
+
+    //self.render_selected_unit = function (data) {
+    //    var obj = get_by_id(sale_vm.units(), data.id);
+    //    return '<div>' + obj.name + '</div>';
+    //}
+
+    self.render_unit_options = function (data) {
+        var obj = get_by_id(sale_vm.units(), data.id);
+        if (obj.id == self.unit_id())
+            return '<div>' + obj.name + '</div>';
+        if (obj.convertibles[self.unit_id()])
+            return '<div class="green">' + obj.name + '</div>';
+        return '<div class="red">' + obj.name + '</div>';
+    }
 
     self.render_option = function (data) {
         var obj = get_by_id(sale_vm.items(), data.id);

@@ -31,8 +31,8 @@ ko.bindingHandlers.selectize = {
             searchField: allBindingsAccessor.get('optionsText')
         }
 
-        if (allBindingsAccessor.has('options')) {
-            var passed_options = allBindingsAccessor.get('options')
+        if (allBindingsAccessor.has('selectize_options')) {
+            var passed_options = allBindingsAccessor.get('selectize_options')
             for (var attr_name in passed_options) {
                 options[attr_name] = passed_options[attr_name];
             }
@@ -114,6 +114,8 @@ ko.bindingHandlers.selectize = {
 
     },
     update: function (element, valueAccessor, allBindingsAccessor) {
+        
+        //debugger;
 
         if (allBindingsAccessor.has('object')) {
             var optionsValue = allBindingsAccessor.get('optionsValue') || 'id';
@@ -132,7 +134,7 @@ ko.bindingHandlers.selectize = {
                     var id = i[optionsValue]
                 return id == allBindingsAccessor.get('value')();
             })[0];
-
+            
             if (selected_obj) {
                 allBindingsAccessor.get('object')(selected_obj);
             }
@@ -224,7 +226,7 @@ ko.bindingHandlers.attachment = {
     init: function (element, valueAccessor) {
     },
     update: function (element, valueAccessor) {
-        $(element).on('change', function(){
+        $(element).on('change', function () {
             var value = valueAccessor();
             value($(element)[0].files[0]);
         });
@@ -239,12 +241,12 @@ ko.bindingHandlers.datepicker = {
             });
         } else if (element.classList.contains('bs-date')) {
             $(element).nepaliDatePicker();
-        };
+        }
+        ;
     },
     update: function (element, valueAccessor) {
     },
 };
-
 
 
 ko.bindingHandlers.editableText = {

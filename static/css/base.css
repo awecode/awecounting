@@ -505,7 +505,7 @@ label.required:after {
 }
 
 .red, .red:hover {
-    color: red;
+    color: red !important;
     text-decoration: none;
 }
 
@@ -545,4 +545,12 @@ td.link a{
 
 .right-bordered{
       border-right: 1px solid #ccc;
+}
+
+.green{
+    color: green !important;
+}
+
+.yellow{
+    color: yellow !important;
 }
