@@ -132,11 +132,14 @@ function SaleRow(row, sale_vm) {
 
     self.render_unit_options = function (data) {
         var obj = get_by_id(sale_vm.units(), data.id);
-        if (obj.id == self.unit_id())
-            return '<div>' + obj.name + '</div>';
-        if (obj.convertibles[self.unit_id()])
-            return '<div class="green">' + obj.name + '</div>';
-        return '<div class="red">' + obj.name + '</div>';
+        var klass = '';
+        if (self.unit_id() && obj.id != self.unit_id()) {
+            if (obj.convertible_units[self.unit_id()])
+                klass = 'green';
+            else
+                klass = 'red';
+        }
+        return '<div class="' + klass + '">' + obj.name + '</div>';
     }
 
     self.render_option = function (data) {

@@ -10,7 +10,3 @@ class ItemListAPI(CompanyAPI, generics.ListCreateAPIView):
 
 class UnitListAPI(CompanyAPI, generics.ListCreateAPIView):
     serializer_class = UnitSerializer
-
-    def get_queryset(self):
-        qs = super(UnitListAPI, self).get_queryset()
-        return qs.filter(pk=39)

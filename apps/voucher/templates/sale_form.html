@@ -36,8 +36,8 @@
             <div class="row">
                 <div class="col-md-6 col-sm-12">
                     <label for="party">{% trans 'Party' %}</label>
-{#                    <select data-bind="selectize: $root.parties, value: party_id, object: party"#}
-{#                            data-url="{% url 'party_add' %}" id="party"></select>#}
+                    <select data-bind="selectize: $root.parties, value: party_id, object: party"
+                            data-url="{% url 'party_add' %}" id="party"></select>
                 </div>
                 
                 <div class="col-md-6 col-sm-12 hidden-print" data-bind="if: party_balance">
@@ -79,7 +79,7 @@
                     <th>{% trans "Rate" %}</th>
                     <th>{% trans "Unit" %}</th>
                     <th>{% trans 'Discount' %}</th>
-                    <th>{% trans 'Total' %}</th>selectize
+                    <th>{% trans 'Total' %}</th>
                 </tr>
                 </thead>
 
@@ -90,9 +90,9 @@
                         <span data-bind="text:  $index()+1, localize: 1"> </span>
                     </td>
                     <td>
-{#                        <select data-url="{% url 'item_add' %}" data-script="/static/inventory/js/item.js"#}
-{#                                data-bind="selectize: $root.items, value: item_id, object:item, selectize_options:{render: {'option': render_option, 'item':render_option}}">#}
-{#                        </select>#}
+                        <select data-url="{% url 'item_add' %}" data-script="/static/inventory/js/item.js"
+                                data-bind="selectize: $root.items, value: item_id, object:item, selectize_options:{render: {'option': render_option, 'item':render_option}}">
+                        </select>
                     </td>
                     <td data-bind="editableText: quantity, numeric: true"></td>
                     <td data-bind="editableText: rate, numeric: true"></td>
