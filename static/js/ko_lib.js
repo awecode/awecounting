@@ -89,6 +89,8 @@ ko.bindingHandlers.selectize = {
             if (event.target.validity && event.target.validity.valid) {
                 $select.$wrapper.removeClass('invalid');
             }
+            // Force re-rendering of options by clearing render-cache
+            $select.renderCache = {}
         });
 
         if (typeof valueAccessor().subscribe == 'function') {
@@ -115,8 +117,6 @@ ko.bindingHandlers.selectize = {
     },
     update: function (element, valueAccessor, allBindingsAccessor) {
         
-        //debugger;
-
         if (allBindingsAccessor.has('object')) {
             var optionsValue = allBindingsAccessor.get('optionsValue') || 'id';
 
