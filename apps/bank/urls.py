@@ -6,14 +6,6 @@ urlpatterns = [
 
     # url(r'^book/(?P<id>[0-9]+)$', views.bank_book, name='bank_book'),
 
-    # url(r'^cheque-deposits/$', views.list_cheque_deposits, name='list_cheque_deposits'),
-    # url(r'^cheque-deposit/$', views.cheque_deposit, name='new_cheque_deposit'),
-    # url(r'^cheque-deposit/(?P<id>[0-9]+)$', views.cheque_deposit, name='update_cheque_deposit'),
-    # url(r'^cheque-deposit/delete/(?P<id>[0-9]+)$', views.delete_cheque_deposit,
-    #     name='delete_cheque_deposit'),
-    # url(r'^cheque-deposit/approve/$', views.approve_cheque_deposit, name='approve_cheque_deposit'),
-
-
     url(r'^cash_deposits/$', views.list_cash_deposits, name='cash_deposit_list'),
     url(r'^cash_deposit/add$', views.cash_deposit, name='cash_deposit_add'),
     url(r'^cash_deposit/(?P<id>[0-9]+)$', views.cash_deposit, name='cash_deposit_edit'),

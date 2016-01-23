@@ -54,11 +54,61 @@
 
             <div class="flip-body">
                 <h2>{% trans 'Inventory' %}</h2>
+                <a href="{% url 'list_inventory_accounts' %}">{% trans 'Accounts' %}</a>
                 <a href="{% url 'item_list' %}">{% trans 'Items' %}</a>
                 <a href="{% url 'unit_list' %}">{% trans 'Units' %}</a>
-                <a href="{% url 'party_list' %}">{% trans 'Parties' %}</a>
-                <a href="{% url 'list_inventory_accounts' %}">{% trans 'Accounts' %}</a>
-                <a href="{% url 'yesterday_sale' %}">{% trans "Yesterday's Sales" %}</a>
+                <a href="{% url 'unit_conversion_list' %}">{% trans 'Unit Conversions' %}</a>
+            </div>
+        </div>
+
+        <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
+            <i class="fa fa-money"></i>
+
+            <div class="flip-body">
+                <h2>{% trans 'Cash' %}</h2>
+                <a href="{% url 'cash_receipt_list' %}">{% trans 'Cash Receipts' %}</a>
+                <a href="{% url 'cash_receipt_add' %}">{% trans 'New Cash Receipt' %}</a>
+                <a href="{% url 'cash_payment_list' %}">{% trans 'Cash Payments' %}</a>
+                <a href="{% url 'cash_payment_add' %}">{% trans 'New Cash Payment' %}</a>
+            </div>
+        </div>
+
+        <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
+            <i class="fa fa-file-text-o"></i>
+
+            <div class="flip-body">
+                <h2>{% trans 'Vouchers' %}</h2>
+                <a href="{% url 'journal_voucher_list' %}">{% trans 'Journal Vouchers' %}</a>
+                <a href="{% url 'journal_voucher_add' %}">{% trans 'New Journal Voucher' %}</a>
+                <a href="{% url 'fixed_asset_list' %}">{% trans 'Fixed Assets Voucher' %}</a>
+                <a href="{% url 'fixed_asset_add' %}">{% trans 'New Fixed Assets Voucher' %}</a>
+            </div>
+        </div>
+
+        <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
+            <i class="fa fa-bank"></i>
+
+            <div class="flip-body">
+                <h2>{% trans 'Bank' %}</h2>
+                <a href="{% url 'bank:bankaccount_list' %}">{% trans 'Bank Accounts' %}</a>
+                <a href="{% url 'bank:cash_deposit_list' %}">{% trans 'Cash Desposits' %}</a>
+                <a href="{% url 'bank:cash_deposit_add' %}">{% trans 'New Cash Desposit' %}</a>
+                <a href="{% url 'bank:cheque_deposit_list' %}">{% trans 'Cheque Desposits' %}</a>
+                <a href="{% url 'bank:cheque_deposit_add' %}">{% trans 'New Cheque Desposit' %}</a>
+            </div>
+        </div>
+
+        <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
+            <i class="fa user-secret"></i>
+
+            <div class="flip-body">
+                <h2>{% trans 'Shares' %}</h2>
+                <a href="{% url 'share:shareholder_list' %}">{% trans 'List Shareholders' %}</a>
+                <a href="{% url 'share:shareholder_add' %}">{% trans 'Add Shareholder' %}</a>
+                <a href="{% url 'share:collection_list' %}">{% trans 'List Collections' %}</a>
+                <a href="{% url 'share:collection_add' %}">{% trans 'Add Collection' %}</a>
+                <a href="{% url 'share:investment_list' %}">{% trans 'List Investments' %}</a>
+                <a href="{% url 'share:investment_add' %}">{% trans 'Add Investment' %}</a>
             </div>
         </div>
 
@@ -67,8 +117,9 @@
             <i class="fa fa-book"></i>
 
             <div class="flip-body">
-                <h2>{% trans 'Accounts' %}</h2>
-                <a href="{% url 'list_account' %}">{% trans 'Accounts' %}</a>
+                <h2>{% trans 'Ledger' %}</h2>
+                <a href="{% url 'list_account' %}">{% trans 'Ledgers' %}</a>
+                <a href="{% url 'party_list' %}">{% trans 'Parties' %}</a>
             </div>
 
         </div>
@@ -97,14 +148,17 @@
 
                 <form class="sales-report-form" id="sales-report-range" action="{% url 'sale-report-router' %}">
                     <label class="pull-left">{% trans 'From' %}:</label>
-                    <input type="text" name="from" id="date-from" class="pull-left {% calendar_class %}" data-date-format="yyyy-mm-dd">
+                    <input type="text" name="from" id="date-from" class="pull-left {% calendar_class %}"
+                           data-date-format="yyyy-mm-dd">
                     <label class="pull-left">{% trans 'To' %}:</label>
-                    <input type="text" name="to" id="date-to" class="pull-left {% calendar_class %}" data-date-format="yyyy-mm-dd">
+                    <input type="text" name="to" id="date-to" class="pull-left {% calendar_class %}"
+                           data-date-format="yyyy-mm-dd">
                     <input type="submit" value="Go" class="btn btn-default btn-raised">
                 </form>
                 <form class="sales-report-form" id="sales-report-day" action="{% url 'sale-report-router' %}">
                     <label class="pull-left">{% trans 'Day' %}:&nbsp;&nbsp;</label>
-                    <input type="text" name="date" id="sale-date" class="pull-left {% calendar_class %}" data-date-format="yyyy-mm-dd">
+                    <input type="text" name="date" id="sale-date" class="pull-left {% calendar_class %}"
+                           data-date-format="yyyy-mm-dd">
                     <input type="submit" value="Go" class="btn btn-default btn-raised">
                 </form>
             </div>

@@ -5,14 +5,12 @@ from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRo
 from apps.bank.models import File as AttachFile
 from .forms import BankAccountForm, BankCashDepositForm
 from .serializers import ChequeDepositSerializer, FileSerializer
-from apps.ledger.models import Account, delete_rows
+from ..ledger.models import Account, delete_rows, set_transactions
 from datetime import date
 from django.shortcuts import render, get_object_or_404, redirect
 import json
 from awecounting.utils.helpers import save_model, invalid, write_error
 from django.http import JsonResponse
-from django.core.files import File
-from io import FileIO, BufferedWriter
 from django.views.generic.detail import DetailView
 
 
@@ -67,14 +65,6 @@ def cash_deposit(request, id=None):
     else:
         receipt = BankCashDeposit(date=date.today(), company=request.company)
         scenario = 'Create'
-    if request.POST.get('action') == 'Approve':
-        set_transactions(receipt, receipt.date,
-                         ['dr', receipt.bank_account, receipt.amount],
-                         ['cr', receipt.benefactor, receipt.amount],
-                         )
-        receipt.status = 'Approved'
-        receipt.save()
-        return redirect(reverse_lazy('bank:cash_deposit_edit', kwargs={'id': receipt.id}))
     if request.POST:
         form = BankCashDepositForm(request.POST, instance=receipt, company=request.company)
         if form.is_valid():
@@ -84,6 +74,10 @@ def cash_deposit(request, id=None):
                 receipt.attachment = request.FILES['attachment']
             receipt.status = 'Unapproved'
             receipt.save()
+            set_transactions(receipt, receipt.date,
+                         ['dr', receipt.bank_account, receipt.amount],
+                         ['cr', receipt.benefactor, receipt.amount],
+                         )
             return redirect(reverse_lazy('bank:cash_deposit_edit', kwargs={'id': receipt.id}))
     else:
         form = BankCashDepositForm(instance=receipt, company=request.company)
