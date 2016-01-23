@@ -116,7 +116,7 @@ ko.bindingHandlers.selectize = {
 
     },
     update: function (element, valueAccessor, allBindingsAccessor) {
-        
+
         if (allBindingsAccessor.has('object')) {
             var optionsValue = allBindingsAccessor.get('optionsValue') || 'id';
 
@@ -134,7 +134,7 @@ ko.bindingHandlers.selectize = {
                     var id = i[optionsValue]
                 return id == allBindingsAccessor.get('value')();
             })[0];
-            
+
             if (selected_obj) {
                 allBindingsAccessor.get('object')(selected_obj);
             }
@@ -384,3 +384,15 @@ ko.bindingHandlers.on_tab = {
 
     }
 }
+
+// http://stackoverflow.com/a/18184016/328406
+ko.subscribable.fn.subscription_changed = function (callback) {
+    var oldValue;
+    this.subscribe(function (_oldValue) {
+        oldValue = _oldValue;
+    }, this, 'beforeChange');
+
+    this.subscribe(function (newValue) {
+        callback(newValue, oldValue);
+    });
+};

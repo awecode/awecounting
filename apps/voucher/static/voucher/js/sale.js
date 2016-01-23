@@ -115,6 +115,19 @@ function SaleRow(row, sale_vm) {
         }
     });
 
+    self.unit.subscription_changed(function (new_val, old_val) {
+        if (old_val && old_val != new_val) {
+            var conversion_rate = old_val.convertible_units[new_val.id];
+            if (conversion_rate) {
+                if (self.quantity()) {
+                    self.quantity(self.quantity() * conversion_rate);
+                }
+                if (self.rate()) {
+                    self.rate(self.rate() / conversion_rate);
+                }
+            }
+        }
+    });
 
     self.total = ko.computed(function () {
         if (self.discount() > 0) {
