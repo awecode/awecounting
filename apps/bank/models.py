@@ -37,12 +37,9 @@ class ChequeDeposit(models.Model):
     clearing_date = BSDateField(default=today, null=True, blank=True)
     benefactor = models.ForeignKey(Account)
     deposited_by = models.CharField(max_length=254, blank=True, null=True)
-    # attachment = models.FileField(upload_to='cheque_deposits/%Y/%m/%d', blank=True, null=True)
     narration = models.TextField(null=True, blank=True)
     company = models.ForeignKey(Company)
-    file = GenericRelation(File)
-    # statuses = [('Approved', 'Approved'), ('Unapproved', 'Unapproved')]
-    # status = models.CharField(max_length=10, choices=statuses, default='Unapproved')
+    file = models.ManyToManyField(File)
 
     def __init__(self, *args, **kwargs):
         super(ChequeDeposit, self).__init__(*args, **kwargs)
@@ -51,9 +48,6 @@ class ChequeDeposit(models.Model):
 
     def __str__(self):
         return str(self.voucher_no) + ' : ' + str(self.deposited_by)
-
-    # def get_absolute_url(self):
-    #     return '/bank/cheque-deposit/' + str(self.id)
 
     def get_voucher_no(self):
         return self.id
@@ -96,16 +90,11 @@ class BankCashDeposit(models.Model):
     attachment = models.FileField(upload_to='bank_cash_deposits/%Y/%m/%d', blank=True, null=True)
     narration = models.TextField(null=True, blank=True)
     company = models.ForeignKey(Company)
-    # statuses = [('Approved', 'Approved'), ('Unapproved', 'Unapproved')]
-    # status = models.CharField(max_length=10, choices=statuses, default='Unapproved')
 
     def __init__(self, *args, **kwargs):
         super(BankCashDeposit, self).__init__(*args, **kwargs)
         if not self.pk and not self.voucher_no:
             self.voucher_no = get_next_voucher_no(BankCashDeposit, self.company_id)
-
-    # def get_absolute_url(self):
-    #     return '/bank/cash-deposit/' + str(self.id)
 
     def get_voucher_no(self):
         return self.id
@@ -123,11 +112,6 @@ class ChequePayment(models.Model):
     attachment = models.FileField(upload_to='cheque_payments/%Y/%m/%d', blank=True, null=True)
     narration = models.TextField(null=True, blank=True)
     company = models.ForeignKey(Company)
-    # statuses = [('Approved', 'Approved'), ('Unapproved', 'Unapproved')]
-    # status = models.CharField(max_length=10, choices=statuses, default='Unapproved')
-
-    # def get_absolute_url(self):
-    #     return '/bank/cheque-payment/' + str(self.id)
 
     def get_voucher_no(self):
         return self.cheque_number

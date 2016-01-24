@@ -132,7 +132,8 @@ def cheque_deposit_save(request):
         if request.FILES:
             dct['attachment'] = []
             for _file, description in zip(request.FILES.getlist('file'), request.POST.getlist('file_description')):
-                attach_file = AttachFile.objects.create(attachment=_file, description=description, content_object=obj)
+                attach_file = AttachFile.objects.create(attachment=_file, description=description)
+                obj.file.add(attach_file)
                 dct['attachment'].append(FileSerializer(attach_file).data)
         if params.get('file'):
             for i, o in enumerate(params.get('file')):

@@ -23,7 +23,6 @@ class ItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Item
-        # exclude = ['unit']
 
 
 class InventoryAccountRowSerializer(serializers.ModelSerializer):

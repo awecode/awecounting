@@ -309,9 +309,6 @@ class CompanySetting(models.Model):
 class File(models.Model):
     attachment = models.FileField(upload_to='cheque_payments/%Y/%m/%d', blank=True, null=True)
     description = models.TextField(max_length=254, null=True, blank=True)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('content_type', 'object_id')
 
     def filename(self):
         return os.path.basename(self.attachment.name)

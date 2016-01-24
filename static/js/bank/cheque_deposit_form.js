@@ -120,7 +120,7 @@ function ChequeDepositViewModel(data) {
                         for ( i in msg.attachment ) {
                             self.file.push( new FileViewModel( msg.attachment[i] ));
                         };
-                        self.upload_file([ new UploadFileVM() ])
+                        self.upload.files([ new UploadFileVM() ])
                     }
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];
