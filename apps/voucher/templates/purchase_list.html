@@ -30,7 +30,7 @@
             <tbody>
             {% for purchase in paginated_objects %}
                 <tr>
-                    <td>
+                    <td class="link">
                         <a href="{% url 'purchase-edit' purchase.pk %}">{{ purchase.voucher_no }}</a>
                     </td>
                     <td>

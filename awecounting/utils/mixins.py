@@ -79,37 +79,32 @@ class CompanyView(object):
 
 class StaffMixin(object):
     def dispatch(self, request, *args, **kwargs):
-        u = request.user
-        if u.is_authenticated():
-            # if bool(u.groups.filter(name__in=group_names)) | u.is_superuser():
-            if bool(u.groups.filter(name__in=['Staff', 'Accountant', 'Owner, SuperOwner'])):
+        if request.user.is_authenticated():
+            if request.role.group.name in ['Staff', 'Accountant', 'Owner', 'SuperOwner']:
                 return super(StaffMixin, self).dispatch(request, *args, **kwargs)
         raise PermissionDenied()
 
 
 class AccountantMixin(object):
     def dispatch(self, request, *args, **kwargs):
-        u = request.user
-        if u.is_authenticated():
-            if bool(u.groups.filter(name__in=['Accountant', 'Owner, SuperOwner'])):
+        if request.user.is_authenticated():
+            if request.role.group.name in ['Accountant', 'Owner', 'SuperOwner']:
                 return super(AccountantMixin, self).dispatch(request, *args, **kwargs)
         raise PermissionDenied()
 
 
 class OwnerMixin(object):
     def dispatch(self, request, *args, **kwargs):
-        u = request.user
-        if u.is_authenticated():
-            if bool(u.groups.filter(name__in=['Owner, SuperOwner'])):
+        if request.user.is_authenticated():
+            if request.role.group.name in ['Owner', 'SuperOwner']:
                 return super(OwnerMixin, self).dispatch(request, *args, **kwargs)
         raise PermissionDenied()
 
 
 class SuperOwnerMixin(object):
     def dispatch(self, request, *args, **kwargs):
-        u = request.user
-        if u.is_authenticated():
-            if bool(u.groups.filter(name='SuperOwner')):
+        if request.user.is_authenticated():
+            if request.role.group.name == 'SuperOwner':
                 return super(SuperOwnerMixin, self).dispatch(request, *args, **kwargs)
         raise PermissionDenied()
 

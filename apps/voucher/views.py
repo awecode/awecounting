@@ -6,14 +6,16 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView
 import json
 from django.views.generic.detail import DetailView
-from awecounting.utils.mixins import CompanyView, DeleteView
+from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, OwnerMixin
 from ..inventory.models import set_transactions
 from ..ledger.models import set_transactions as set_ledger_transactions, Account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
 
 from .forms import CashReceiptForm, JournalVoucherForm, CashPaymentForm
-from .serializers import FixedAssetSerializer, FixedAssetRowSerializer, AdditionalDetailSerializer, CashReceiptSerializer, CashPaymentSerializer, JournalVoucherSerializer, PurchaseSerializer, SaleSerializer
-from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, Purchase, JournalVoucher, JournalVoucherRow, PurchaseRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow
+from .serializers import FixedAssetSerializer, FixedAssetRowSerializer, AdditionalDetailSerializer, CashReceiptSerializer, \
+    CashPaymentSerializer, JournalVoucherSerializer, PurchaseSerializer, SaleSerializer
+from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, Purchase, JournalVoucher, JournalVoucherRow, \
+    PurchaseRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow
 
 
 class FixedAssetList(CompanyView, ListView):
@@ -30,9 +32,8 @@ class FixedAssetDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(FixedAssetDetailView, self).get_context_data(**kwargs)
-        context['rows'] = FixedAssetRow.objects.select_related('asset_ledger').filter(fixed_asset = self.object)
+        context['rows'] = FixedAssetRow.objects.select_related('asset_ledger').filter(fixed_asset=self.object)
         return context
-
 
 
 def fixed_asset(request, pk=None):
@@ -43,19 +44,20 @@ def fixed_asset(request, pk=None):
         fixed_asset = FixedAsset(company=request.company)
         scenario = 'Create'
     data = FixedAssetSerializer(fixed_asset).data
-    return render(request, 'fixed_asset_form.html', {'scenario': scenario, 'data': data, 'fixed_asset': fixed_asset })
+    return render(request, 'fixed_asset_form.html', {'scenario': scenario, 'data': data, 'fixed_asset': fixed_asset})
+
 
 def save_fixed_asset(request):
     if request.is_ajax():
         # params = json.loads(request.body)
         params = json.loads(request.POST.get('fixed_asset'))
-    dct = {'rows': {}, 'additional_detail': {},}
+    dct = {'rows': {}, 'additional_detail': {}, }
     company = request.company
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
     object_values = {'voucher_no': int(params.get('voucher_no')), 'date': params.get('date'),
                      'from_account_id': params.get('from_account'),
-                     'reference': params.get('reference'), 'description': params.get('description'), 'company': company }
+                     'reference': params.get('reference'), 'description': params.get('description'), 'company': company}
     if params.get('id'):
         obj = FixedAsset.objects.get(id=params.get('id'), company=request.company)
     else:
@@ -92,6 +94,7 @@ def save_fixed_asset(request):
         dct = write_error(dct, e)
     return JsonResponse(dct)
 
+
 class CashReceiptList(CompanyView, ListView):
     model = CashReceipt
 
@@ -101,7 +104,7 @@ class CashReceiptDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(CashReceiptDetailView, self).get_context_data(**kwargs)
-        context['rows'] = CashReceiptRow.objects.select_related('invoice').filter(cash_receipt = self.object)
+        context['rows'] = CashReceiptRow.objects.select_related('invoice').filter(cash_receipt=self.object)
         return context
 
 
@@ -114,7 +117,7 @@ class CashPaymentDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(CashPaymentDetailView, self).get_context_data(**kwargs)
-        context['rows'] = CashPaymentRow.objects.select_related('invoice').filter(cash_payment = self.object)
+        context['rows'] = CashPaymentRow.objects.select_related('invoice').filter(cash_payment=self.object)
         return context
 
 
@@ -130,6 +133,7 @@ def cash_receipt(request, pk=None):
     data = CashReceiptSerializer(voucher).data
     return render(request, 'cash_receipt.html', {'form': form, 'scenario': scenario, 'data': data})
 
+
 @login_required
 def cash_payment(request, pk=None):
     if pk:
@@ -141,6 +145,7 @@ def cash_payment(request, pk=None):
     form = CashPaymentForm(instance=voucher, company=request.company)
     data = CashPaymentSerializer(voucher).data
     return render(request, 'cash_payment.html', {'form': form, 'scenario': scenario, 'data': data})
+
 
 def save_cash_payment(request):
     params = json.loads(request.body)
@@ -195,20 +200,21 @@ def save_cash_payment(request):
     return JsonResponse(dct)
 
 
-class PurchaseDetailView(DetailView):
+class PurchaseDetailView(CompanyView, OwnerMixin, DetailView):
     model = Purchase
 
     def get_context_data(self, **kwargs):
         context = super(PurchaseDetailView, self).get_context_data(**kwargs)
-        context['rows'] = PurchaseRow.objects.select_related('item', 'unit').filter(purchase = self.object)
+        context['rows'] = PurchaseRow.objects.select_related('item', 'unit').filter(purchase=self.object)
         return context
+
 
 class SaleDetailView(DetailView):
     model = Sale
 
     def get_context_data(self, **kwargs):
         context = super(SaleDetailView, self).get_context_data(**kwargs)
-        context['rows'] = SaleRow.objects.select_related('item', 'unit').filter(sale = self.object)
+        context['rows'] = SaleRow.objects.select_related('item', 'unit').filter(sale=self.object)
         return context
 
 
@@ -217,13 +223,14 @@ class JournalVoucherDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(JournalVoucherDetailView, self).get_context_data(**kwargs)
-        context['rows'] = JournalVoucherRow.objects.filter(journal_voucher = self.object).select_related('account')
+        context['rows'] = JournalVoucherRow.objects.filter(journal_voucher=self.object).select_related('account')
         return context
 
 
 def purchase_list(request):
     obj = Purchase.objects.filter(company=request.company)
     return render(request, 'purchase_list.html', {'objects': obj})
+
 
 def purchase(request, id=None):
     if id:
