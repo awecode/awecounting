@@ -126,8 +126,8 @@ class ChequePayment(models.Model):
     # statuses = [('Approved', 'Approved'), ('Unapproved', 'Unapproved')]
     # status = models.CharField(max_length=10, choices=statuses, default='Unapproved')
 
-    def get_absolute_url(self):
-        return '/bank/cheque-payment/' + str(self.id)
+    # def get_absolute_url(self):
+    #     return '/bank/cheque-payment/' + str(self.id)
 
     def get_voucher_no(self):
         return self.cheque_number
