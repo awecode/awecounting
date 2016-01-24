@@ -4,6 +4,7 @@
 {% block page-title %}{{ scenario }} {{ form.instance }}{% endblock %}
 
 {% block breadcrumbs %}
+    <li>{% trans 'Bank' %}</li>
     <li><a href="{% url 'bank:bankaccount_list' %}">{% trans 'Bank Accounts' %}</a></li>
     <li>{{ scenario }} {{ form.instance }}</li>
 {% endblock %}

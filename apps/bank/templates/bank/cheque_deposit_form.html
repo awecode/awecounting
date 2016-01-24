@@ -13,6 +13,7 @@
 {% endblock %}
 
 {% block breadcrumbs %}
+    <li>{% trans 'Bank' %}</li>
     <li><a href="{% url 'bank:cheque_deposit_list' %}">{% trans 'Cheque Deposit' %}</a></li>
     <li>{{ scenario }} {% trans 'Cheque Deposit' %}</li>
 {% endblock %}

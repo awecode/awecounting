@@ -7,6 +7,11 @@
     <a href="{% url 'bank:cheque_deposit_add' %}" class="btn btn-success btn-raised">{% trans 'Add' %} {% trans 'Cheque Deposit' %}</a>
 {% endblock %}
 
+{% block breadcrumbs %}
+    <li>{% trans 'Bank' %}</li>
+    <li><a href="{% url 'bank:cheque_deposit_list' %}"></a>{% trans 'Cheque Deposit' %}</li>
+{% endblock %}
+
 {% block content %}
 
     <div class="row">
