@@ -1,10 +1,8 @@
 from django.http import JsonResponse
-from django.views.generic.edit import UpdateView as BaseUpdateView, CreateView as BaseCreateView, \
-    DeleteView as BaseDeleteView, FormView as BaseFormView
+from django.views.generic.edit import UpdateView as BaseUpdateView, CreateView as BaseCreateView, DeleteView as BaseDeleteView
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
-from apps.ledger.models import Party
 from .helpers import json_from_object
 from django.core.exceptions import PermissionDenied
 
@@ -119,3 +117,12 @@ class SuperOwnerMixin(object):
 class CompanyAPI(object):
     def get_queryset(self):
         return self.serializer_class.Meta.model.objects.filter(company=self.request.company)
+
+
+class SerializerWithFile(object):
+    def get_files(self, obj):
+        from apps.users.serializers import FileSerializer
+
+        if obj.pk:
+            return FileSerializer(obj.files.all(), many=True).data
+        return []

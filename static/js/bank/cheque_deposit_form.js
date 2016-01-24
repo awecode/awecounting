@@ -14,20 +14,20 @@ function ChequeDepositViewModel(data) {
     self.status = ko.observable();
     self.benefactor = ko.observable();
     self.bank_account = ko.observable();
-    
+
     self.file = ko.observableArray();
     self.deleted_files = ko.observableArray();
 
     self.upload = new UploadFileVM();
 
 
-    self.remove_file = function(file) {
+    self.remove_file = function (file) {
         self.file.remove(file)
         self.deleted_files.push(file)
     };
 
     $.ajax({
-        url: '/ledger/api/bank_account/account.json/',
+        url: '/ledger/api/bank_account/account.json',
         dataType: 'json',
         async: false,
         success: function (data) {
@@ -46,22 +46,22 @@ function ChequeDepositViewModel(data) {
 
     self.table_view = new TableViewModel({rows: data.rows}, ChequeDepositRowViewModel);
 
-    for (var k in data){
-        if ( k == 'file') {
-            for ( i in data[k]) {
-                self.file.push( new FileViewModel( data[k][i] ));
-            };
+    for (var k in data) {
+        if (k == 'files') {
+            for (i in data[k]) {
+                self.file.push(new FileViewModel(data[k][i]));
+            }
+            
         } else {
             self[k] = ko.observable(data[k]);
         }
-    };
-
+    }
 
     self.id.subscribe(function (id) {
         update_url_with_id(id);
     });
 
-    self.total = function() {
+    self.total = function () {
         var sum = 0;
         self.table_view.rows().forEach(function (i) {
             if (i.amount())
@@ -73,7 +73,7 @@ function ChequeDepositViewModel(data) {
     self.save = function (item, event) {
         var form_data = new FormData()
 
-        for ( index in self.upload.files()){
+        for (index in self.upload.files()) {
             if (typeof(self.upload.files()[index].file()) != 'undefined') {
                 var description;
                 form_data.append('file', self.upload.files()[index].file());
@@ -81,17 +81,20 @@ function ChequeDepositViewModel(data) {
                     description = '';
                 } else {
                     description = self.upload.files()[index].description();
-                };
+                }
+                ;
                 form_data.append('file_description', description);
-            };
-        };
+            }
+            ;
+        }
+        ;
 
-        if ( !self.bank_account() ) {
+        if (!self.bank_account()) {
             bsalert.error('Bank account field is required');
             return false;
         }
 
-        if ( !self.benefactor() ) {
+        if (!self.benefactor()) {
             bsalert.error('Benefactor field is required');
             return false;
         }
@@ -116,11 +119,12 @@ function ChequeDepositViewModel(data) {
                         $($("tbody > tr:not(.total, .file)")[i]).addClass('invalid-row');
                     });
 
-                    if(typeof(msg.attachment) != "undefined") {
-                        for ( i in msg.attachment ) {
-                            self.file.push( new FileViewModel( msg.attachment[i] ));
-                        };
-                        self.upload.files([ new UploadFileVM() ])
+                    if (typeof(msg.attachment) != "undefined") {
+                        for (i in msg.attachment) {
+                            self.file.push(new FileViewModel(msg.attachment[i]));
+                        }
+                        ;
+                        self.upload.files([new UploadFileVM()])
                     }
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];
@@ -134,28 +138,28 @@ function ChequeDepositViewModel(data) {
 }
 
 
-function UploadFileVM(){
+function UploadFileVM() {
     var self = this;
 
-    self.files = ko.observableArray([ new File() ]);
+    self.files = ko.observableArray([new File()]);
 
-    self.add_upload_file = function() {
-        self.files.push( new File() );
+    self.add_upload_file = function () {
+        self.files.push(new File());
     }
 
-    self.remove_upload_file = function(file){
+    self.remove_upload_file = function (file) {
         self.files.remove(file);
     };
 };
 
-function File(){
+function File() {
     var self = this;
 
-    self.file = ko.observable(); 
+    self.file = ko.observable();
     self.description = ko.observable();
 }
 
-function FileViewModel(data){
+function FileViewModel(data) {
     var self = this;
 
     self.id = ko.observable();
@@ -166,7 +170,7 @@ function FileViewModel(data){
     for (var k in data)
         self[k] = ko.observable(data[k]);
 
-    if(self.attachment()) {
+    if (self.attachment()) {
         var attachment_name = self.attachment().split('/').pop();
         self.attachment_name(attachment_name);
     }
