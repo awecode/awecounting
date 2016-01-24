@@ -18,15 +18,8 @@ function ChequeDepositViewModel(data) {
     self.file = ko.observableArray();
     self.deleted_files = ko.observableArray();
 
-    self.upload_file = ko.observableArray([ new UploadFileVM() ]);
+    self.upload = new UploadFileVM();
 
-    self.add_upload_file = function() {
-        self.upload_file.push( new UploadFileVM() );
-    }
-
-    self.remove_upload_file = function(file){
-        self.upload_file.remove(file);
-    };
 
     self.remove_file = function(file) {
         self.file.remove(file)
@@ -80,14 +73,14 @@ function ChequeDepositViewModel(data) {
     self.save = function (item, event) {
         var form_data = new FormData()
 
-        for ( index in self.upload_file()){
-            if (typeof(self.upload_file()[index].upload_file()) != 'undefined') {
+        for ( index in self.upload.files()){
+            if (typeof(self.upload.files()[index].file()) != 'undefined') {
                 var description;
-                form_data.append('file', self.upload_file()[index].upload_file());
-                if (typeof(self.upload_file()[index].description()) == 'undefined') {
+                form_data.append('file', self.upload.files()[index].file());
+                if (typeof(self.upload.files()[index].description()) == 'undefined') {
                     description = '';
                 } else {
-                    description = self.upload_file()[index].description();
+                    description = self.upload.files()[index].description();
                 };
                 form_data.append('file_description', description);
             };
@@ -144,9 +137,23 @@ function ChequeDepositViewModel(data) {
 function UploadFileVM(){
     var self = this;
 
-    self.upload_file = ko.observable(); 
-    self.description = ko.observable();
+    self.files = ko.observableArray([ new File() ]);
+
+    self.add_upload_file = function() {
+        self.files.push( new File() );
+    }
+
+    self.remove_upload_file = function(file){
+        self.files.remove(file);
+    };
 };
+
+function File(){
+    var self = this;
+
+    self.file = ko.observable(); 
+    self.description = ko.observable();
+}
 
 function FileViewModel(data){
     var self = this;
