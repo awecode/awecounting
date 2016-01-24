@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRow, File
+from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRow
 
 
 class ChequeDepositRowInline(admin.TabularInline):
@@ -14,6 +14,5 @@ class ChequeDepositAdmin(admin.ModelAdmin):
 admin.site.register(BankAccount)
 admin.site.register(BankCashDeposit)
 admin.site.register(ChequeDeposit, ChequeDepositAdmin)
-admin.site.register(File)
 
 # Register your models here.

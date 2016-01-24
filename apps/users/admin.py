@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin, UserChangeForm as DjangoUserChangeForm, \
     UserCreationForm as DjangoUserCreationForm
 from django import forms
-from .models import User, GroupProxy, Company, Role, CompanySetting
+from .models import File, User, GroupProxy, Company, Role, CompanySetting
 
 
 class UserCreationForm(DjangoUserCreationForm):
@@ -110,3 +110,6 @@ admin.site.register(GroupProxy, GroupAdmin)
 admin.site.register(Role)
 admin.site.register(Company)
 admin.site.register(CompanySetting)
+admin.site.register(File)
+
+
