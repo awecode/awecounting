@@ -2,9 +2,10 @@ from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView, AjaxableResponseMixin
 from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRow
-from apps.bank.models import File as AttachFile
+from apps.users.models import File as AttachFile
+from apps.users.serializers import FileSerializer
 from .forms import BankAccountForm, BankCashDepositForm
-from .serializers import ChequeDepositSerializer, FileSerializer
+from .serializers import ChequeDepositSerializer
 from ..ledger.models import Account, delete_rows, set_transactions
 from datetime import date
 from django.shortcuts import render, get_object_or_404, redirect

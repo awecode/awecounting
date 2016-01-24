@@ -13,6 +13,9 @@ from njango.fields import BSDateField, today, get_calendar
 # from django.contrib.auth.decorators import user_passes_test
 from njango.nepdate import ad2bs, string_from_tuple, tuple_from_string, bs2ad, bs
 
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+import os
 
 class UserManager(BaseUserManager):
     def create_user(self, username, email, password=None, full_name=''):
@@ -301,3 +304,15 @@ class CompanySetting(models.Model):
 
     def __unicode__(self):
         return self.company.name
+
+
+class File(models.Model):
+    attachment = models.FileField(upload_to='cheque_payments/%Y/%m/%d', blank=True, null=True)
+    description = models.TextField(max_length=254, null=True, blank=True)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    def filename(self):
+        return os.path.basename(self.attachment.name)
+
