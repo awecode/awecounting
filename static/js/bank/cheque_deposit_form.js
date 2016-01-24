@@ -16,7 +16,7 @@ function ChequeDepositViewModel(data) {
     self.bank_account = ko.observable();
     
     self.file = ko.observableArray();
-    self.deleted_file = ko.observableArray();
+    self.deleted_files = ko.observableArray();
 
     self.upload_file = ko.observableArray([ new UploadFileVM() ]);
 
@@ -30,7 +30,7 @@ function ChequeDepositViewModel(data) {
 
     self.remove_file = function(file) {
         self.file.remove(file)
-        self.deleted_file.push(file)
+        self.deleted_files.push(file)
     };
 
     $.ajax({

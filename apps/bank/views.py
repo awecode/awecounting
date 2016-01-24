@@ -156,7 +156,7 @@ def cheque_deposit_save(request):
     except Exception as e:
         dct = write_error(dct, e)
     delete_rows(params.get('table_view').get('deleted_rows'), model)
-    delete_rows(params.get('deleted_file'), AttachFile)
+    delete_rows(params.get('deleted_files'), AttachFile)
     return JsonResponse(dct)
 
 # @login_required
