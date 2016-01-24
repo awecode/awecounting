@@ -131,7 +131,9 @@
                     <div class="row" data-bind="foreach: files">
                         <div class="col-md-12 col-sm-12 pull-left">
                             <input class="attachment" data-bind="attachment: file" type="file" class="file">
-                            <a href="#" data-bind="click: $parent.remove_upload_file" class="fa fa-trash-o red"></a>
+                            <button href="#" class="btn" data-bind="click: $parent.remove_upload_file">
+                            <i class="red fa fa-trash-o"></i>
+                            </button>
                         </div>
                         <div class="col-md-12 col-sm-12">
                             <textarea name="descritpion" class="form-control" data-bind="value: description" placeholder="Description"></textarea>
