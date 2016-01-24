@@ -79,14 +79,40 @@ class CompanyView(object):
         return form
 
 
-class StaffOnlyMixin(object):
+class StaffMixin(object):
     def dispatch(self, request, *args, **kwargs):
         u = request.user
         if u.is_authenticated():
             # if bool(u.groups.filter(name__in=group_names)) | u.is_superuser():
-            # return True
-            if bool(u.groups.filter(name='Staff')):
-                return super(StaffOnlyMixin, self).dispatch(request, *args, **kwargs)
+            if bool(u.groups.filter(name__in=['Staff', 'Accountant', 'Owner, SuperOwner'])):
+                return super(StaffMixin, self).dispatch(request, *args, **kwargs)
+        raise PermissionDenied()
+
+
+class AccountantMixin(object):
+    def dispatch(self, request, *args, **kwargs):
+        u = request.user
+        if u.is_authenticated():
+            if bool(u.groups.filter(name__in=['Accountant', 'Owner, SuperOwner'])):
+                return super(AccountantMixin, self).dispatch(request, *args, **kwargs)
+        raise PermissionDenied()
+
+
+class OwnerMixin(object):
+    def dispatch(self, request, *args, **kwargs):
+        u = request.user
+        if u.is_authenticated():
+            if bool(u.groups.filter(name__in=['Owner, SuperOwner'])):
+                return super(OwnerMixin, self).dispatch(request, *args, **kwargs)
+        raise PermissionDenied()
+
+
+class SuperOwnerMixin(object):
+    def dispatch(self, request, *args, **kwargs):
+        u = request.user
+        if u.is_authenticated():
+            if bool(u.groups.filter(name='SuperOwner')):
+                return super(SuperOwnerMixin, self).dispatch(request, *args, **kwargs)
         raise PermissionDenied()
 
 
