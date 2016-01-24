@@ -1,10 +1,10 @@
 from django.db import models
 from apps.ledger.models import Account
-from apps.users.models import Company
+from apps.users.models import Company, File
 from awecounting.utils.helpers import get_next_voucher_no
 from django.utils.translation import ugettext_lazy as _
 from njango.fields import BSDateField, today
-import os
+from django.contrib.contenttypes.fields import GenericRelation
 
 
 class BankAccount(models.Model):
@@ -37,11 +37,9 @@ class ChequeDeposit(models.Model):
     clearing_date = BSDateField(default=today, null=True, blank=True)
     benefactor = models.ForeignKey(Account)
     deposited_by = models.CharField(max_length=254, blank=True, null=True)
-    attachment = models.FileField(upload_to='cheque_deposits/%Y/%m/%d', blank=True, null=True)
     narration = models.TextField(null=True, blank=True)
     company = models.ForeignKey(Company)
-    # statuses = [('Approved', 'Approved'), ('Unapproved', 'Unapproved')]
-    # status = models.CharField(max_length=10, choices=statuses, default='Unapproved')
+    file = models.ManyToManyField(File)
 
     def __init__(self, *args, **kwargs):
         super(ChequeDeposit, self).__init__(*args, **kwargs)
@@ -49,10 +47,7 @@ class ChequeDeposit(models.Model):
             self.voucher_no = get_next_voucher_no(ChequeDeposit, self.company_id)
 
     def __str__(self):
-        return str(self.voucher_no) + ': ' + self.deposited_by
-
-    # def get_absolute_url(self):
-    #     return '/bank/cheque-deposit/' + str(self.id)
+        return str(self.voucher_no) + ' : ' + str(self.deposited_by)
 
     def get_voucher_no(self):
         return self.id
@@ -95,16 +90,11 @@ class BankCashDeposit(models.Model):
     attachment = models.FileField(upload_to='bank_cash_deposits/%Y/%m/%d', blank=True, null=True)
     narration = models.TextField(null=True, blank=True)
     company = models.ForeignKey(Company)
-    # statuses = [('Approved', 'Approved'), ('Unapproved', 'Unapproved')]
-    # status = models.CharField(max_length=10, choices=statuses, default='Unapproved')
 
     def __init__(self, *args, **kwargs):
         super(BankCashDeposit, self).__init__(*args, **kwargs)
         if not self.pk and not self.voucher_no:
             self.voucher_no = get_next_voucher_no(BankCashDeposit, self.company_id)
-
-    # def get_absolute_url(self):
-    #     return '/bank/cash-deposit/' + str(self.id)
 
     def get_voucher_no(self):
         return self.id
@@ -122,11 +112,6 @@ class ChequePayment(models.Model):
     attachment = models.FileField(upload_to='cheque_payments/%Y/%m/%d', blank=True, null=True)
     narration = models.TextField(null=True, blank=True)
     company = models.ForeignKey(Company)
-    # statuses = [('Approved', 'Approved'), ('Unapproved', 'Unapproved')]
-    # status = models.CharField(max_length=10, choices=statuses, default='Unapproved')
-
-    def get_absolute_url(self):
-        return '/bank/cheque-payment/' + str(self.id)
 
     def get_voucher_no(self):
         return self.cheque_number
@@ -194,10 +179,3 @@ class ChequePayment(models.Model):
 #         return self.electronic_fund_transfer_in.id
 
 
-class File(models.Model):
-    attachment = models.FileField(upload_to='cheque_payments/%Y/%m/%d', blank=True, null=True)
-    description = models.TextField(max_length=254, null=True, blank=True)
-    cheque_deposit = models.ForeignKey(ChequeDeposit, related_name="file")
-
-    def filename(self):
-        return os.path.basename(self.attachment.name)

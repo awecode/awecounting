@@ -7,6 +7,11 @@
     <a href="{% url 'bank:bankaccount_add' %}" class="btn btn-success btn-raised">{% trans 'Add' %} {% trans 'Account' %}</a>
 {% endblock %}
 
+{% block breadcrumbs %}
+    <li>{% trans 'Bank' %}</li>
+    <li><a href="{% url 'bank:bankaccount_list' %}"></a>{% trans 'Bank Accounts' %}</li>
+{% endblock %}
+
 {% block content %}
 
             {% load pagination_tags %}

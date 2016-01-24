@@ -4,6 +4,7 @@
 {% block page-title %}{{ scenario }} {% trans 'Bank Cash Deposit' %}{% endblock %}
 
 {% block breadcrumbs %}
+    <li>{% trans 'Bank' %}</li>
     <li><a href="{% url 'bank:cash_deposit_list' %}">{% trans 'Bank Cash Deposit' %}</a></li>
     <li>{{ scenario }}</li>
 {% endblock %}

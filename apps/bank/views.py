@@ -2,9 +2,10 @@ from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView, AjaxableResponseMixin
 from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRow
-from apps.bank.models import File as AttachFile
+from apps.users.models import File as AttachFile
+from apps.users.serializers import FileSerializer
 from .forms import BankAccountForm, BankCashDepositForm
-from .serializers import ChequeDepositSerializer, FileSerializer
+from .serializers import ChequeDepositSerializer
 from ..ledger.models import Account, delete_rows, set_transactions
 from datetime import date
 from django.shortcuts import render, get_object_or_404, redirect
@@ -131,7 +132,8 @@ def cheque_deposit_save(request):
         if request.FILES:
             dct['attachment'] = []
             for _file, description in zip(request.FILES.getlist('file'), request.POST.getlist('file_description')):
-                attach_file = AttachFile.objects.create(attachment=_file, description=description, cheque_deposit=obj)
+                attach_file = AttachFile.objects.create(attachment=_file, description=description)
+                obj.file.add(attach_file)
                 dct['attachment'].append(FileSerializer(attach_file).data)
         if params.get('file'):
             for i, o in enumerate(params.get('file')):
@@ -155,7 +157,7 @@ def cheque_deposit_save(request):
     except Exception as e:
         dct = write_error(dct, e)
     delete_rows(params.get('table_view').get('deleted_rows'), model)
-    delete_rows(params.get('deleted_file'), AttachFile)
+    delete_rows(params.get('deleted_files'), AttachFile)
     return JsonResponse(dct)
 
 # @login_required

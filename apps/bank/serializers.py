@@ -1,10 +1,6 @@
 from rest_framework import serializers
-from apps.bank.models import ChequeDeposit, ChequeDepositRow, File
-
-
-class FileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = File
+from apps.bank.models import ChequeDeposit, ChequeDepositRow
+from apps.users.serializers import FileSerializer
 
 
 class ChequeDepositRowSerializer(serializers.ModelSerializer):
