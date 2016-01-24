@@ -102,6 +102,9 @@ class GroupAdmin(admin.ModelAdmin):
     #     return False
     pass
 
+class FileInline(admin.TabularInline):
+    model = File
+
 
 from django.contrib.auth.models import Group
 

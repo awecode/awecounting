@@ -17,6 +17,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 import os
 
+
 class UserManager(BaseUserManager):
     def create_user(self, username, email, password=None, full_name=''):
         if not email:
@@ -313,3 +314,5 @@ class File(models.Model):
     def filename(self):
         return os.path.basename(self.attachment.name)
 
+    def __str__(self):
+        return self.description or self.filename()

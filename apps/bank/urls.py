@@ -1,7 +1,9 @@
 from django.conf.urls import url
+from rest_framework.urlpatterns import format_suffix_patterns
+import api
 import views
 
-urlpatterns = [
+web_urls = [
     # url(r'^settings/$', views.bank_settings, name='bank_settings'),
 
     # url(r'^book/(?P<id>[0-9]+)$', views.bank_book, name='bank_book'),
@@ -18,27 +20,6 @@ urlpatterns = [
     # url(r'^cheque-payment/delete/(?P<id>[0-9]+)$', views.delete_cheque_payment,
     #     name='delete_cheque_payment'),
 
-    # url(r'^electronic-fund-transfers-out/$', views.list_electronic_fund_transfers_out,
-    #     name='list_electronic_fund_transfers_out'),
-    # url(r'^electronic-fund-transfer-out/$', views.electronic_fund_transfer_out,
-    #     name='new_electronic_fund_transfer_out'),
-    # url(r'^electronic-fund-transfer-out/(?P<id>[0-9]+)$', views.electronic_fund_transfer_out,
-    #     name='update_electronic_fund_transfer_out'),
-    # url(r'^electronic-fund-transfer-out/delete/(?P<id>[0-9]+)$',
-    #     views.delete_electronic_fund_transfer_out,
-    #     name='delete_electronic_fund_transfer_out'),
-
-    # url(r'^electronic-fund-transfers-in/$', views.list_electronic_fund_transfers_in,
-    #     name='list_electronic_fund_transfers_in'),
-    # url(r'^electronic-fund-transfer-in/$', views.electronic_fund_transfer_in,
-    #     name='new_electronic_fund_transfer_in'),
-    # url(r'^electronic-fund-transfer-in/(?P<id>[0-9]+)$', views.electronic_fund_transfer_in,
-    #     name='update_electronic_fund_transfer_in'),
-    # url(r'^eft-in/approve/$', views.approve_eft_in, name='approve_eft_in'),
-    # url(r'^electronic-fund-transfer-in/delete/(?P<id>[0-9]+)$',
-    #     views.delete_electronic_fund_transfer_in,
-    #     name='delete_electronic_fund_transfer_in'),
-
     url(r'^account/$', views.BankAccountList.as_view(), name='bankaccount_list'),
     url(r'^account/add/$', views.BankAccountCreate.as_view(), name='bankaccount_add'),
     url(r'^account/edit/(?P<pk>\d+)/$', views.BankAccountUpdate.as_view(), name='bankaccount_edit'),
@@ -52,3 +33,12 @@ urlpatterns = [
     url(r'^cheque_deposit/detail/(?P<pk>[0-9]+)/$', views.ChequeDepositDetailView.as_view(), name='cheque_deposit_detail'),
 
 ]
+
+api_urls = [
+    url(r'^api/cheque_deposits/$', api.ChequeDepositListAPI.as_view()),
+    url(r'^api/cheque_deposit/(?P<pk>[0-9]+)/$', api.ChequeDepositDetailAPI.as_view()),
+]
+
+api_urls = format_suffix_patterns(api_urls)
+
+urlpatterns = web_urls + api_urls

@@ -39,7 +39,7 @@ class ChequeDeposit(models.Model):
     deposited_by = models.CharField(max_length=254, blank=True, null=True)
     narration = models.TextField(null=True, blank=True)
     company = models.ForeignKey(Company)
-    file = models.ManyToManyField(File)
+    files = models.ManyToManyField(File, blank=True)
 
     def __init__(self, *args, **kwargs):
         super(ChequeDeposit, self).__init__(*args, **kwargs)
@@ -116,7 +116,6 @@ class ChequePayment(models.Model):
     def get_voucher_no(self):
         return self.cheque_number
 
-
 # class ElectronicFundTransferOut(models.Model):
 #     transaction_number = models.CharField(max_length=50)
 #     date = models.DateField()
@@ -177,5 +176,3 @@ class ChequePayment(models.Model):
 # 
 #     def get_voucher_no(self):
 #         return self.electronic_fund_transfer_in.id
-
-
