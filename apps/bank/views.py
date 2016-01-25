@@ -56,7 +56,7 @@ class CashDepositDelete(CashDepositView, DeleteView):
     pass
 
 
-class CashDepositeList(CashDepositView, ListView):
+class CashDepositList(CashDepositView, ListView):
     pass
 
 
@@ -77,9 +77,9 @@ def cash_deposit(request, id=None):
             receipt.status = 'Unapproved'
             receipt.save()
             set_transactions(receipt, receipt.date,
-                         ['dr', receipt.bank_account, receipt.amount],
-                         ['cr', receipt.benefactor, receipt.amount],
-                         )
+                             ['dr', receipt.bank_account, receipt.amount],
+                             ['cr', receipt.benefactor, receipt.amount],
+                             )
             return redirect(reverse_lazy('bank:cash_deposit_edit', kwargs={'id': receipt.id}))
     else:
         form = BankCashDepositForm(instance=receipt, company=request.company)
@@ -106,9 +106,9 @@ def cheque_deposit_create(request, id=None):
     else:
         cheque_deposit = ChequeDeposit(company=request.company)
         scenario = 'Create'
-    data = ChequeDepositSerializer(cheque_deposit).data
+
     return render(request, 'bank/cheque_deposit_form.html',
-                  {'data': data, 'scenario': scenario, 'cheque_deposit': cheque_deposit})
+                  {'data': ChequeDepositSerializer(cheque_deposit).data, 'scenario': scenario, 'cheque_deposit': cheque_deposit})
 
 
 def cheque_deposit_save(request):
@@ -179,6 +179,6 @@ class ChequePaymentCreate(ChequePaymentView, CreateView):
 class ChequePaymentDelete(ChequePaymentView, DeleteView):
     pass
 
+
 class ChequePaymentUpdate(ChequePaymentView, UpdateView):
     pass
-
