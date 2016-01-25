@@ -1,5 +1,5 @@
 from awecounting.utils.forms import HTML5BootstrapModelForm, ExtFileField, KOModelForm
-from .models import BankAccount, BankCashDeposit
+from .models import BankAccount, BankCashDeposit, ChequePayment
 from django import forms
 from django.core.urlresolvers import reverse_lazy
 from apps.ledger.models import Account
@@ -54,3 +54,14 @@ class BankCashDepositForm(HTML5BootstrapModelForm):
     class Meta:
         model = BankCashDeposit
         exclude = ['company', 'status']
+        
+
+class ChequePaymentForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = ChequePayment
+        exclude = ('company',)
+        widgets = {
+            'beneficiary': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('account_add')}),
+            'bank_account': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('account_add')}),
+        }
+        company_filters = ('beneficiary', 'bank_account')

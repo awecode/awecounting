@@ -22,6 +22,11 @@ web_urls = [
     url(r'^cheque_deposit/delete/(?P<pk>[0-9]+)$', views.ChequeDepositDelete.as_view(), name='cheque_deposit_delete'),
     url(r'^cheque_deposit/detail/(?P<pk>[0-9]+)/$', views.ChequeDepositDetailView.as_view(), name='cheque_deposit_detail'),
 
+    url(r'^cheque_payment/$', views.ChequePaymentList.as_view(), name='cheque_payment_list'),
+    url(r'^cheque_payment/add/$', views.ChequePaymentCreate.as_view(), name='cheque_payment_add'),
+    url(r'^cheque_payment/edit/(?P<pk>\d+)/$', views.ChequePaymentUpdate.as_view(), name='cheque_payment_edit'),
+    url(r'^cheque_payment/delete/(?P<pk>\d+)/$', views.ChequePaymentDelete.as_view(), name='cheque_payment_delete'),
+
 ]
 
 api_urls = [

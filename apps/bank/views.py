@@ -1,10 +1,10 @@
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView, AjaxableResponseMixin
-from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRow
+from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRow, ChequePayment
 from apps.users.models import File as AttachFile
 from apps.users.serializers import FileSerializer
-from .forms import BankAccountForm, BankCashDepositForm
+from .forms import BankAccountForm, BankCashDepositForm, ChequePaymentForm
 from .serializers import ChequeDepositSerializer
 from ..ledger.models import Account, delete_rows, set_transactions
 from datetime import date
@@ -160,3 +160,25 @@ def cheque_deposit_save(request):
     delete_rows(params.get('table_view').get('deleted_rows'), model)
     delete_rows(params.get('deleted_files'), AttachFile)
     return JsonResponse(dct)
+
+
+class ChequePaymentView(CompanyView):
+    model = ChequePayment
+    success_url = reverse_lazy('bank:cheque_payment_list')
+    form_class = ChequePaymentForm
+
+
+class ChequePaymentList(ChequePaymentView, ListView):
+    pass
+
+
+class ChequePaymentCreate(ChequePaymentView, CreateView):
+    pass
+
+
+class ChequePaymentDelete(ChequePaymentView, DeleteView):
+    pass
+
+class ChequePaymentUpdate(ChequePaymentView, UpdateView):
+    pass
+
