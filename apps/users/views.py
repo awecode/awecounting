@@ -6,10 +6,10 @@ from django.contrib.auth.views import login
 from django.contrib.auth import logout as auth_logout
 # from allauth.account.forms import LoginForm, SignupForm
 
-from awecounting.utils.mixins import DeleteView, UpdateView, CreateView
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, group_required
 from django.views.generic.list import ListView
 from .forms import UserForm, UserUpdateForm, RoleForm
-from .models import User, Company, group_required, Role
+from .models import User, Company, Role
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 
@@ -104,7 +104,7 @@ def set_role(request, pk):
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
-@group_required('Owner', 'SuperOwner')
+@group_required('Owner')
 def roles(request):
     if request.POST:
         from django.core.validators import validate_email
@@ -150,7 +150,7 @@ def roles(request):
     return render(request, 'roles.html', {'roles': objs, 'groups': groups})
 
 
-@group_required('Owner', 'SuperOwner')
+@group_required('Owner')
 def delete_role(request, pk):
     obj = Role.objects.get(company=request.company, id=pk)
     if not obj.group.name == 'SuperOwner':

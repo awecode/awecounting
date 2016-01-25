@@ -2,9 +2,12 @@ from django.http import JsonResponse
 from django.views.generic.edit import UpdateView as BaseUpdateView, CreateView as BaseCreateView, DeleteView as BaseDeleteView
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.decorators import login_required
-from .helpers import json_from_object
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
+
+from .helpers import json_from_object
+
+from functools import wraps
 
 
 class DeleteView(BaseDeleteView):
@@ -77,10 +80,18 @@ class CompanyView(object):
         return form
 
 
+USURPERS = {
+    'Staff': ['Staff', 'Accountant', 'Owner', 'SuperOwner'],
+    'Accountant': ['Accountant', 'Owner', 'SuperOwner'],
+    'Owner': ['Owner', 'SuperOwner'],
+    'SuperOwner': ['SuperOwner'],
+}
+
+
 class StaffMixin(object):
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated():
-            if request.role.group.name in ['Staff', 'Accountant', 'Owner', 'SuperOwner']:
+            if request.role.group.name in USURPERS['Staff']:
                 return super(StaffMixin, self).dispatch(request, *args, **kwargs)
         raise PermissionDenied()
 
@@ -88,7 +99,7 @@ class StaffMixin(object):
 class AccountantMixin(object):
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated():
-            if request.role.group.name in ['Accountant', 'Owner', 'SuperOwner']:
+            if request.role.group.name in USURPERS['Accountant']:
                 return super(AccountantMixin, self).dispatch(request, *args, **kwargs)
         raise PermissionDenied()
 
@@ -96,7 +107,7 @@ class AccountantMixin(object):
 class OwnerMixin(object):
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated():
-            if request.role.group.name in ['Owner', 'SuperOwner']:
+            if request.role.group.name in USURPERS['Owner']:
                 return super(OwnerMixin, self).dispatch(request, *args, **kwargs)
         raise PermissionDenied()
 
@@ -104,7 +115,7 @@ class OwnerMixin(object):
 class SuperOwnerMixin(object):
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated():
-            if request.role.group.name == 'SuperOwner':
+            if request.role.group.name in USURPERS['SuperOwner']:
                 return super(SuperOwnerMixin, self).dispatch(request, *args, **kwargs)
         raise PermissionDenied()
 
@@ -121,3 +132,17 @@ class SerializerWithFile(object):
         if obj.pk:
             return FileSerializer(obj.files.all(), many=True).data
         return []
+
+
+def group_required(group_name):
+    def _check_group(view_func):
+        @wraps(view_func)
+        def wrapper(request, *args, **kwargs):
+            if request.user.is_authenticated():
+                if request.role.group.name in USURPERS.get(group_name, []):
+                    return view_func(request, *args, **kwargs)
+            raise PermissionDenied()
+
+        return wrapper
+
+    return _check_group

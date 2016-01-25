@@ -6,7 +6,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView
 import json
 from django.views.generic.detail import DetailView
-from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, OwnerMixin
+from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, OwnerMixin, AccountantMixin, StaffMixin, \
+    group_required
 from ..inventory.models import set_transactions
 from ..ledger.models import set_transactions as set_ledger_transactions, Account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
@@ -200,7 +201,7 @@ def save_cash_payment(request):
     return JsonResponse(dct)
 
 
-class PurchaseDetailView(CompanyView, OwnerMixin, DetailView):
+class PurchaseDetailView(CompanyView, StaffMixin, DetailView):
     model = Purchase
 
     def get_context_data(self, **kwargs):
@@ -209,7 +210,7 @@ class PurchaseDetailView(CompanyView, OwnerMixin, DetailView):
         return context
 
 
-class SaleDetailView(DetailView):
+class SaleDetailView(CompanyView, StaffMixin, DetailView):
     model = Sale
 
     def get_context_data(self, **kwargs):
@@ -218,7 +219,7 @@ class SaleDetailView(DetailView):
         return context
 
 
-class JournalVoucherDetailView(DetailView):
+class JournalVoucherDetailView(CompanyView, StaffMixin, DetailView):
     model = JournalVoucher
 
     def get_context_data(self, **kwargs):
@@ -243,7 +244,7 @@ def purchase(request, id=None):
     return render(request, 'purchase-form.html', {'data': data, 'scenario': scenario, 'purchase': obj})
 
 
-@login_required
+@group_required('Accountant')
 def save_cash_receipt(request):
     params = json.loads(request.body)
     dct = {'rows': {}}

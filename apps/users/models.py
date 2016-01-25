@@ -1,4 +1,3 @@
-import datetime
 from django.core.urlresolvers import reverse_lazy
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
@@ -8,13 +7,9 @@ from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from njango.fields import BSDateField, today, get_calendar
-# from allauth.account.signals import user_logged_in
-# from django.dispatch import receiver
-# from django.contrib.auth.decorators import user_passes_test
+
 from njango.nepdate import ad2bs, string_from_tuple, tuple_from_string, bs2ad, bs
 
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 import os
 
 
@@ -170,25 +165,25 @@ class Role(models.Model):
         unique_together = ('user', 'group', 'company')
 
 
-def group_required(*groups):
-    def _dec(view_function):
-
-        def _view(request, *args, **kwargs):
-            allowed = False
-            for role in request.roles:
-                if role.group.name in groups:
-                    allowed = True
-            if allowed:
-                return view_function(request, *args, **kwargs)
-            else:
-                if request.user.is_authenticated():
-                    raise PermissionDenied()
-                else:
-                    return redirect(reverse_lazy('users:login'))
-
-        return _view
-
-    return _dec
+# def group_required(*groups):
+#     def _dec(view_function):
+# 
+#         def _view(request, *args, **kwargs):
+#             allowed = False
+#             for role in request.roles:
+#                 if role.group.name in groups:
+#                     allowed = True
+#             if allowed:
+#                 return view_function(request, *args, **kwargs)
+#             else:
+#                 if request.user.is_authenticated():
+#                     raise PermissionDenied()
+#                 else:
+#                     return redirect(reverse_lazy('users:login'))
+# 
+#         return _view
+# 
+#     return _dec
 
 
 class GroupProxy(Group):
@@ -252,7 +247,6 @@ class CompanySetting(models.Model):
 
     def save(self, *args, **kwargs):
         # if self.use_nepali_fy_system:
-        #     
         ret = super(CompanySetting, self).save(*args, **kwargs)
         return ret
 
