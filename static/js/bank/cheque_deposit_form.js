@@ -73,21 +73,22 @@ function ChequeDepositViewModel(data) {
     self.save = function (item, event) {
         var form_data = new FormData()
 
+
         for (index in self.upload.files()) {
-            if (typeof(self.upload.files()[index].file()) != 'undefined') {
-                var description;
-                form_data.append('file', self.upload.files()[index].file());
-                if (typeof(self.upload.files()[index].description()) == 'undefined') {
-                    description = '';
-                } else {
-                    description = self.upload.files()[index].description();
-                }
-                ;
-                form_data.append('file_description', description);
-            }
-            ;
-        }
-        ;
+            if (typeof(self.upload.files()[index].file != 'undefined')) {
+                if (typeof(self.upload.files()[index].file()) != 'undefined') {
+                    var description;
+                    form_data.append('file', self.upload.files()[index].file());
+                    if (typeof(self.upload.files()[index].description()) == 'undefined') {
+                        description = '';
+                    } else {
+                        description = self.upload.files()[index].description();
+                    }
+                    ;
+                    form_data.append('file_description', description);
+                };
+            };
+        };
 
         if (!self.bank_account()) {
             bsalert.error('Bank account field is required');
@@ -119,16 +120,17 @@ function ChequeDepositViewModel(data) {
                         $($("tbody > tr:not(.total, .file)")[i]).addClass('invalid-row');
                     });
 
+                    for (var i in msg.rows) {
+                        self.table_view.rows()[i].id = msg.rows[i];
+                        $($("tbody > tr")[i]).removeClass('invalid-row');
+                    }
+
                     if (typeof(msg.attachment) != "undefined") {
                         for (i in msg.attachment) {
                             self.file.push(new FileViewModel(msg.attachment[i]));
                         }
                         ;
-                        self.upload.files([new UploadFileVM()])
-                    }
-                    for (var i in msg.rows) {
-                        self.table_view.rows()[i].id = msg.rows[i];
-                        $($("tbody > tr")[i]).removeClass('invalid-row');
+                        self.upload.files([new File()])
                     }
                 }
             }

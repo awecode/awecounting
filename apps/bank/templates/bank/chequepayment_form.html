@@ -5,8 +5,8 @@
 
 {% block breadcrumbs %}
     <li>{% trans 'Bank' %}</li>
-    <li><a href="{% url 'bank:bankaccount_list' %}">{% trans 'Bank Accounts' %}</a></li>
-    <li>{{ scenario }} {{ form.instance }}</li>
+    <li><a href="{% url 'bank:cheque_payment_list' %}">{% trans 'Cheque Payments' %}</a></li>
+    <li>{{ scenario }} {% trans 'Cheque Payment' %}</li>
 {% endblock %}
 
 {% block content %}
@@ -21,7 +21,7 @@
         <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
 
         {% if form.instance.id %}
-            <a href="{% url 'bank:bankaccount_delete' form.instance.id %}" class="btn btn-danger btn-raised">{% trans 'Delete' %}</a>
+            <a href="{% url 'bank:cheque_payment_delete' form.instance.id %}" class="btn btn-danger btn-raised">{% trans 'Delete' %}</a>
         {% endif %}
     </form>
 

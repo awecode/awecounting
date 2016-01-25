@@ -39,7 +39,7 @@
                        <td>
                             <a href="{% url 'bank:cheque_deposit_edit' object.pk %}">{{ object.date }}</a>
                         </td>   <td>
-                            <a href="{% url 'bank:cheque_deposit_edit' object.pk %}">{{ object.narration }}</a>
+                            <a href="{% url 'bank:cheque_deposit_edit' object.pk %}">{{ object.narration | default:''}}</a>
                         </td>   <td>
                             <a href="{% url 'bank:cheque_deposit_detail' object.pk %}">{% trans "Detail" %}</a>
                         </td>
