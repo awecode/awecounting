@@ -47,16 +47,17 @@ class BankAccountDelete(BankAccountView, DeleteView):
     pass
 
 
-def delete_cash_deposit(request, id):
-    obj = get_object_or_404(BankCashDeposit, id=id, company=request.company)
-    obj.delete()
-    return reverse_lazy('bank:cash_deposit_list')
+class CashDepositView(CompanyView):
+    model = BankCashDeposit
+    success_url = reverse_lazy('bank:cash_deposit_list')
 
 
-def list_cash_deposits(request):
-    items = BankCashDeposit.objects.filter(company=request.company)
-    # filtered_items = CashDepositFilter(request.GET, queryset=items, company=request.company)
-    return render(request, 'list_cash_deposits.html', {'objects': items})
+class CashDepositDelete(CashDepositView, DeleteView):
+    pass
+
+
+class CashDepositeList(CashDepositView, ListView):
+    pass
 
 
 def cash_deposit(request, id=None):
