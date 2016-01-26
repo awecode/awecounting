@@ -131,7 +131,7 @@
 
                 <input type="submit" class="btn btn-raised btn-info btn-lg" value="{% trans 'Save' %}">
                 {% if scenario == 'Update' %}
-                    <a class="btn btn-danger btn-raised" href="{% url 'fixed_asset_delete' fixed_asset.id %}">{% trans 'Delete!' %}</a>
+                    <a class="btn btn-danger btn-raised" href="{% url 'fixed_asset_delete' obj.id %}">{% trans 'Delete!' %}</a>
                 {% endif %}
     </form>
 

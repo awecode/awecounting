@@ -7,7 +7,7 @@ from django.views.generic import ListView
 import json
 from django.views.generic.detail import DetailView
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, OwnerMixin, AccountantMixin, StaffMixin, \
-    group_required
+    group_required, TableObjectMixin
 from ..inventory.models import set_transactions
 from ..ledger.models import set_transactions as set_ledger_transactions, Account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
@@ -19,13 +19,18 @@ from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, Pu
     PurchaseRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow
 
 
-class FixedAssetList(CompanyView, ListView):
-    model = FixedAsset
-
-
-class FixedAssetDelete(DeleteView):
+class FixedAssetView(CompanyView):
     model = FixedAsset
     success_url = reverse_lazy('fixed_asset_list')
+    serializer_class = FixedAssetSerializer
+
+
+class FixedAssetList(FixedAssetView, ListView):
+    pass
+
+
+class FixedAssetDelete(FixedAssetView, DeleteView):
+    pass
 
 
 class FixedAssetDetailView(DetailView):
@@ -37,15 +42,8 @@ class FixedAssetDetailView(DetailView):
         return context
 
 
-def fixed_asset(request, pk=None):
-    if pk:
-        fixed_asset = get_object_or_404(FixedAsset, pk=pk, company=request.company)
-        scenario = 'Update'
-    else:
-        fixed_asset = FixedAsset(company=request.company)
-        scenario = 'Create'
-    data = FixedAssetSerializer(fixed_asset).data
-    return render(request, 'fixed_asset_form.html', {'scenario': scenario, 'data': data, 'fixed_asset': fixed_asset})
+class FixedAssetCreate(FixedAssetView, TableObjectMixin):
+    template_name = 'fixed_asset_form.html'
 
 
 def save_fixed_asset(request):
@@ -96,12 +94,16 @@ def save_fixed_asset(request):
     return JsonResponse(dct)
 
 
-class CashReceiptList(CompanyView, ListView):
+class CashReceiptView(CompanyView):
     model = CashReceipt
+    serializer_class = CashReceiptSerializer
 
 
-class CashReceiptDetailView(DetailView):
-    model = CashReceipt
+class CashReceiptList(CashReceiptView, ListView):
+    pass
+
+
+class CashReceiptDetailView(CashReceiptView, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(CashReceiptDetailView, self).get_context_data(**kwargs)
@@ -109,8 +111,13 @@ class CashReceiptDetailView(DetailView):
         return context
 
 
-class CashPaymentList(CompanyView, ListView):
+class CashPaymentView(CompanyView):
     model = CashPayment
+    serializer_class = CashPaymentSerializer
+
+
+class CashPaymentList(CashPaymentView, ListView):
+    pass
 
 
 class CashPaymentDetailView(DetailView):
@@ -122,30 +129,38 @@ class CashPaymentDetailView(DetailView):
         return context
 
 
-@login_required
-def cash_receipt(request, pk=None):
-    if pk:
-        voucher = get_object_or_404(CashReceipt, pk=pk, company=request.company)
-        scenario = 'Update'
-    else:
-        voucher = CashReceipt(company=request.company)
-        scenario = 'Create'
-    form = CashReceiptForm(instance=voucher, company=request.company)
-    data = CashReceiptSerializer(voucher).data
-    return render(request, 'cash_receipt.html', {'form': form, 'scenario': scenario, 'data': data})
+class CashReceiptCreate(CashReceiptView, TableObjectMixin):
+    template_name = 'cash_receipt.html'
 
 
-@login_required
-def cash_payment(request, pk=None):
-    if pk:
-        voucher = get_object_or_404(CashPayment, pk=pk, company=request.company)
-        scenario = 'Update'
-    else:
-        voucher = CashPayment(company=request.company)
-        scenario = 'Create'
-    form = CashPaymentForm(instance=voucher, company=request.company)
-    data = CashPaymentSerializer(voucher).data
-    return render(request, 'cash_payment.html', {'form': form, 'scenario': scenario, 'data': data})
+# @login_required
+# def cash_receipt(request, pk=None):
+#     if pk:
+#         voucher = get_object_or_404(CashReceipt, pk=pk, company=request.company)
+#         scenario = 'Update'
+#     else:
+#         voucher = CashReceipt(company=request.company)
+#         scenario = 'Create'
+#     form = CashReceiptForm(instance=voucher, company=request.company)
+#     data = CashReceiptSerializer(voucher).data
+#     return render(request, 'cash_receipt.html', {'form': form, 'scenario': scenario, 'data': data})
+
+
+class CashPaymentCreate(CashPaymentView, TableObjectMixin):
+    template_name = 'cash_payment.html'
+
+
+# @login_required
+# def cash_payment(request, pk=None):
+#     if pk:
+#         voucher = get_object_or_404(CashPayment, pk=pk, company=request.company)
+#         scenario = 'Update'
+#     else:
+#         voucher = CashPayment(company=request.company)
+#         scenario = 'Create'
+#     form = CashPaymentForm(instance=voucher, company=request.company)
+#     data = CashPaymentSerializer(voucher).data
+#     return render(request, 'cash_payment.html', {'form': form, 'scenario': scenario, 'data': data})
 
 
 def save_cash_payment(request):
@@ -201,8 +216,17 @@ def save_cash_payment(request):
     return JsonResponse(dct)
 
 
-class PurchaseDetailView(CompanyView, StaffMixin, DetailView):
+class PurchaseView(CompanyView):
     model = Purchase
+    serializer_class = PurchaseSerializer
+
+
+class SaleView(CompanyView):
+    model = Sale
+    serializer_class = SaleSerializer
+
+
+class PurchaseDetailView(PurchaseView, StaffMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(PurchaseDetailView, self).get_context_data(**kwargs)
@@ -210,8 +234,7 @@ class PurchaseDetailView(CompanyView, StaffMixin, DetailView):
         return context
 
 
-class SaleDetailView(CompanyView, StaffMixin, DetailView):
-    model = Sale
+class SaleDetailView(SaleView, StaffMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(SaleDetailView, self).get_context_data(**kwargs)
@@ -228,20 +251,27 @@ class JournalVoucherDetailView(CompanyView, StaffMixin, DetailView):
         return context
 
 
-def purchase_list(request):
-    obj = Purchase.objects.filter(company=request.company)
-    return render(request, 'purchase_list.html', {'objects': obj})
+class PurchaseList(PurchaseView, ListView):
+    pass
+
+# def purchase_list(request):
+#     obj = Purchase.objects.filter(company=request.company)
+#     return render(request, 'purchase_list.html', {'objects': obj})
 
 
-def purchase(request, id=None):
-    if id:
-        obj = get_object_or_404(Purchase, id=id)
-        scenario = 'Update'
-    else:
-        obj = Purchase(company=request.company)
-        scenario = 'Create'
-    data = PurchaseSerializer(obj).data
-    return render(request, 'purchase-form.html', {'data': data, 'scenario': scenario, 'purchase': obj})
+class PurchaseCreate(PurchaseView, TableObjectMixin):
+    template_name = 'purchase-form.html'
+
+
+# def purchase(request, id=None):
+#     if id:
+#         obj = get_object_or_404(Purchase, id=id)
+#         scenario = 'Update'
+#     else:
+#         obj = Purchase(company=request.company)
+#         scenario = 'Create'
+#     data = PurchaseSerializer(obj).data
+#     return render(request, 'purchase-form.html', {'data': data, 'scenario': scenario, 'purchase': obj})
 
 
 @group_required('Accountant')
@@ -357,15 +387,20 @@ def save_purchase(request):
     return JsonResponse(dct)
 
 
-def sale(request, id=None):
-    if id:
-        obj = get_object_or_404(Sale, id=id)
-        scenario = 'Update'
-    else:
-        obj = Sale(date=datetime.datetime.now().date(), company=request.company)
-        scenario = 'Create'
-    data = SaleSerializer(obj).data
-    return render(request, 'sale_form.html', {'data': data, 'scenario': scenario, 'sale': obj})
+
+class SaleCreate(SaleView, TableObjectMixin):
+    template_name = 'sale_form.html'
+
+
+# def sale(request, id=None):
+#     if id:
+#         obj = get_object_or_404(Sale, id=id)
+#         scenario = 'Update'
+#     else:
+#         obj = Sale(date=datetime.datetime.now().date(), company=request.company)
+#         scenario = 'Create'
+#     data = SaleSerializer(obj).data
+#     return render(request, 'sale_form.html', {'data': data, 'scenario': scenario, 'sale': obj})
 
 
 def save_sale(request):
@@ -423,9 +458,13 @@ def save_sale(request):
     return JsonResponse(dct)
 
 
-def sale_list(request):
-    objects = Sale.objects.filter(company=request.company).prefetch_related('rows')
-    return render(request, 'sale_list.html', {'objects': objects})
+
+class SaleList(SaleView, ListView):
+    pass
+
+# def sale_list(request):
+#     objects = Sale.objects.filter(company=request.company).prefetch_related('rows')
+#     return render(request, 'sale_list.html', {'objects': objects})
 
 
 def sale_day(request, voucher_date):
@@ -494,21 +533,26 @@ class JournalVoucherView(CompanyView):
     model = JournalVoucher
     success_url = reverse_lazy('journal_voucher_list')
     form_class = JournalVoucherForm
+    serializer_class = JournalVoucherSerializer
 
 
 class JournalVoucherList(JournalVoucherView, ListView):
     pass
 
 
-def journal_voucher_create(request, id=None):
-    if id:
-        journal_voucher = get_object_or_404(JournalVoucher, id=id)
-        scenario = 'Update'
-    else:
-        journal_voucher = JournalVoucher(company=request.company)
-        scenario = 'Create'
-    data = JournalVoucherSerializer(journal_voucher).data
-    return render(request, 'voucher/journal_voucher_form.html', {'data': data, 'scenario': scenario})
+class JournalVoucherCreate(JournalVoucherView, TableObjectMixin):
+    template_name = 'voucher/journal_voucher_form.html'
+
+
+# def journal_voucher_create(request, id=None):
+#     if id:
+#         journal_voucher = get_object_or_404(JournalVoucher, id=id)
+#         scenario = 'Update'
+#     else:
+#         journal_voucher = JournalVoucher(company=request.company)
+#         scenario = 'Create'
+#     data = JournalVoucherSerializer(journal_voucher).data
+#     return render(request, 'voucher/journal_voucher_form.html', {'data': data, 'scenario': scenario})
 
 
 def journal_voucher_save(request):
