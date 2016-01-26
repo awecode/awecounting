@@ -5,6 +5,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
 
+from django.views.generic import ListView
+from django.shortcuts import get_object_or_404
+
 from .helpers import json_from_object
 
 from functools import wraps
@@ -61,6 +64,23 @@ class AjaxableResponseMixin(object):
             return json_from_object(self.object)
         else:
             return response
+
+
+class TableObjectMixin(ListView):
+    def get_context_data(self, *args, **kwargs):
+        context = super(DetailTableMixin, self).get_context_data(**kwargs)
+        if self.kwargs:
+            pk = int(self.kwargs.get('pk'))
+            obj = get_object_or_404( self.model, pk = pk, company = self.request.company)
+            scenario = 'Update'
+        else:
+            obj = self.model(company=self.request.company)
+            scenario = 'Create'
+        data = self.serializer_class(obj).data
+        context['data'] = data
+        context['scenario'] = scenario
+        context['obj'] = obj
+        return context
 
 
 class CompanyView(object):

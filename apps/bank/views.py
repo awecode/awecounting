@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
-from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView, AjaxableResponseMixin
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView, AjaxableResponseMixin, TableObjectMixin
 from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRow, ChequePayment
 from apps.users.models import File as AttachFile
 from apps.users.serializers import FileSerializer
@@ -78,6 +78,7 @@ class CashDepositUpdate(CashDepositView, UpdateView):
 class ChequeDepositView(CompanyView):
     model = ChequeDeposit
     success_url = reverse_lazy('bank:cheque_deposit_list')
+    serializer_class = ChequeDepositSerializer
 
 
 class ChequeDepositList(ChequeDepositView, ListView):
@@ -86,6 +87,10 @@ class ChequeDepositList(ChequeDepositView, ListView):
 
 class ChequeDepositDelete(ChequeDepositView, DeleteView):
     pass
+
+
+class ChequeDepositCreate(ChequeDepositView, TableObjectMixin):
+    template_name = 'bank/cheque_deposit_form.html'
 
 
 def cheque_deposit_create(request, id=None):
