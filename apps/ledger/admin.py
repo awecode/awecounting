@@ -1,7 +1,7 @@
 from django.contrib import admin
 from modeltranslation.admin import TranslationAdmin
 
-from .models import Account, Transaction, JournalEntry, Party
+from .models import Account, Transaction, JournalEntry, Party, Category
 
 
 class AccountAdmin(admin.ModelAdmin):
@@ -11,6 +11,7 @@ class AccountAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Account, AccountAdmin)
+admin.site.register(Category)
 admin.site.register(Transaction)
 admin.site.register(JournalEntry)
 admin.site.register(Party, TranslationAdmin)

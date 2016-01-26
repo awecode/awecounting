@@ -279,7 +279,142 @@ from apps.users.signals import company_creation
 
 def handle_company_creation(sender, **kwargs):
     company = kwargs.get('company')
-    Account.objects.create(company=company, name='Cash')
+
+    # EQUITY
+
+    equity = Category(name='Equity', company=company)
+    equity.save()
+    Account(name='Paid in Capital', category=equity, code='1-0001', company=company).save()
+    Account(name='Retained Earnings', category=equity, code='1-0002', company=company).save()
+    Account(name='Profit and Loss Account', category=equity, code='1-0003', company=company).save()
+
+    # ASSETS
+
+    assets = Category(name='Assets', company=company)
+    assets.save()
+    Category(name='Other Receivables', parent=assets, company=company).save()
+    Category(name='Deferred Assets', parent=assets, company=company).save()
+    Category(name='Fixed Assets', parent=assets, company=company).save()
+    Category(name='Loads and Advances Given', parent=assets, company=company).save()
+    Category(name='Deposits Made', parent=assets, company=company).save()
+    Category(name='Employee', parent=assets, company=company).save()
+
+    cash_account = Category(name='Cash Account', parent=assets, company=company)
+    cash_account.save()
+    Account.objects.create(company=company, name='Cash', category=cash_account, code='2-0001')
+
+    Account(name='Merchandise', category=assets, code='2-0002', company=company).save()
+
+    cash_equivalent_account = Category(name='Cash Equivalent Account', parent=assets, company=company)
+    cash_equivalent_account.save()
+    Account(name='Cheque Account', category=cash_equivalent_account, code='2-0003', company=company).save()
+
+    bank_account = Category(name='Bank Account', parent=assets, company=company)
+    bank_account.save()
+    # Account(name='ATM Account', category=bank_account, code='2-0005', company=company).save()
+    # Account(name='Bank Account', category=bank_account, code='2-0001', company=company).save()
+    # Account(name='Card Account', category=bank_account, code='2-0002', company=company).save()
+
+    account_receivables = Category(name='Account Receivables', parent=assets, company=company)
+    account_receivables.save()
+    Category(name='Customers', parent=account_receivables, company=company).save()
+
+    employee_deductions = Category(name='Employee Deductions', parent=assets, company=company)
+    employee_deductions.save()
+    Account(name='Advances', category=employee_deductions, code='2-0010', company=company).save()
+    Account(name='Loans', category=employee_deductions, code='2-0011', company=company).save()
+    Account(name='Payroll Taxes', category=employee_deductions, code='2-0012', company=company).save()
+    Account(name='Employees\' Contribution to Retirement Fund', category=employee_deductions, code='2-0013',
+            company=company).save()
+    Account(name='Compulsory Deductions', category=employee_deductions, code='2-0014', company=company).save()
+
+    # LIABILITIES
+
+    liabilities = Category(name='Liabilities', company=company)
+    liabilities.save()
+    account_payables = Category(name='Account Payables', parent=liabilities, company=company)
+    account_payables.save()
+    Category(name='Suppliers', parent=account_payables, company=company).save()
+    other_payables = Category(name='Other Payables', parent=liabilities, company=company)
+    other_payables.save()
+    Account(name='Utility Bills Account', category=other_payables, code='3-0002', company=company).save()
+    Category(name='Provisions', parent=liabilities, company=company).save()
+    secured_loans = Category(name='Secured Loans', parent=liabilities, company=company)
+    secured_loans.save()
+    Account(name='Bank OD', category=secured_loans, code='3-0005', company=company).save()
+    Account(name='Bank Loans', category=secured_loans, code='3-0006', company=company).save()
+    Category(name='Unsecured Loans', parent=liabilities, company=company).save()
+    Category(name='Deposits Taken', parent=liabilities, company=company).save()
+    Category(name='Loans & Advances Taken', parent=liabilities, company=company).save()
+    duties_and_taxes = Category(name='Duties & Taxes', parent=liabilities, company=company)
+    duties_and_taxes.save()
+    Account(name='Sales Tax', category=duties_and_taxes, code='3-0010', company=company).save()
+    Account(name='Payroll Tax', category=duties_and_taxes, code='3-0011', company=company).save()
+    Account(name='Income Tax', category=duties_and_taxes, code='3-0012', company=company).save()
+    # Account(name='VAT', category=duties_and_taxes, code='3-0020', company=company).save()
+
+    # INCOME
+
+    income = Category(name='Income', company=company)
+    income.save()
+    Account(name='Discount Income', category=income, code='4-0012', company=company).save()
+    sales = Category(name='Sales', parent=income, company=company)
+    sales.save()
+
+    Account(name='Non Tax Sales', category=sales, code='4-0006', company=company).save()
+    Account(name='Sales', category=sales, tax_rate=8.25, code='4-0008', company=company).save()
+
+    direct_income = Category(name='Direct Income', parent=income, company=company)
+    direct_income.save()
+    transfer_remittance = Category(name='Transfer and Remittance', parent=direct_income, company=company)
+    transfer_remittance.save()
+    Account(name='Bill Payments', category=transfer_remittance, code='4-0011', company=company).save()
+
+    indirect_income = Category(name='Indirect Income', parent=income, company=company)
+    indirect_income.save()
+    Account(name='Commission In', category=indirect_income, code='6-0001', company=company).save()
+
+    # EXPENSES
+
+    expenses = Category(name='Expenses', company=company)
+    expenses.save()
+    purchase = Category(name='Purchase', parent=expenses, company=company)
+    purchase.save()
+    Account(name='Purchase', category=purchase, code='11-0008', company=company).save()
+
+    Category(name='Direct Expenses', parent=expenses, company=company).save()
+
+    indirect_expenses = Category(name='Indirect Expenses', parent=expenses, company=company)
+    indirect_expenses.save()
+    Account(name='Payroll Expenses', category=indirect_expenses, code='13-0001', company=company).save()
+    Account(name='Rent Expenses', category=indirect_expenses, code='13-0002', company=company).save()
+    Account(name='Commission Out', category=indirect_expenses, code='13-0003', company=company).save()
+    Account(name='Bank Charges Expenses', category=indirect_expenses, code='13-0004', company=company).save()
+    Account(name='Bank Interest Expenses', category=indirect_expenses, code='13-0005', company=company).save()
+    Account(name='Electricity Expenses', category=indirect_expenses, code='13-0006', company=company).save()
+    Account(name='City/Municipal Expenses', category=indirect_expenses, code='13-0007', company=company).save()
+    Account(name='Travelling and Conveyance Expenses', category=indirect_expenses, code='13-0008',
+            company=company).save()
+    Account(name='Lunch and Refreshment Expenses', category=indirect_expenses, code='13-0009', company=company).save()
+    Account(name='Cleaning Expenses', category=indirect_expenses, code='13-0010', company=company).save()
+    Account(name='Discount Expenses', category=indirect_expenses, code='13-0011', company=company).save()
+    Account(name='Repairs and Maintenance Expenses', category=indirect_expenses, code='13-0012', company=company).save()
+
+    pay_head = Category(name='Pay Head', parent=indirect_expenses, company=company)
+    pay_head.save()
+    Account(name='Salary', category=pay_head, code='13-0013', company=company).save()
+    Account(name='Allowances', category=pay_head, code='13-0014', company=company).save()
+    Account(name='Benefits', category=pay_head, code='13-0015', company=company).save()
+    Account(name='Employees\' Insurance', category=pay_head, code='13-0016', company=company).save()
+    Account(name='Travelling Allowance', category=pay_head, code='13-0017', company=company).save()
+    Account(name='Daily Allowance', category=pay_head, code='13-0018', company=company).save()
+
+    # Opening Balance Difference
+
+    opening_balance_difference = Category(name='Opening Balance Difference', company=company)
+    opening_balance_difference.save()
+    Account(name='Opening Balance Difference', category=opening_balance_difference, company=company,
+            code='0-0001').save()
 
 
 company_creation.connect(handle_company_creation)
