@@ -19,13 +19,17 @@ from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, Pu
     PurchaseRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow
 
 
-class FixedAssetList(CompanyView, ListView):
-    model = FixedAsset
-
-
-class FixedAssetDelete(DeleteView):
+class FixedAssetView(CompanyView):
     model = FixedAsset
     success_url = reverse_lazy('fixed_asset_list')
+
+
+class FixedAssetList(FixedAssetView, ListView):
+    pass
+
+
+class FixedAssetDelete(FixedAssetView, DeleteView):
+    pass
 
 
 class FixedAssetDetailView(DetailView):
