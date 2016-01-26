@@ -107,7 +107,6 @@ class ChequeDepositCreate(ChequeDepositView, TableObjectMixin):
 
 def cheque_deposit_save(request):
     if request.is_ajax():
-        # params = json.loads(request.body)
         params = json.loads(request.POST.get('cheque_deposit'))
     dct = {'rows': {}}
     company = request.company

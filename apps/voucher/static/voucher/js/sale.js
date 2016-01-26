@@ -64,6 +64,7 @@ function SaleViewModel(data) {
                 }
                 else {
                     bsalert.success('Saved!');
+                    self.table_view.deleted_rows([]);
                     $("tbody > tr").each(function (i) {
                         $($("tbody > tr:not(.total)")[i]).addClass('invalid-row');
                     });
