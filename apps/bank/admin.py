@@ -1,4 +1,5 @@
 from django.contrib import admin
+from awecounting.utils.mixins import CompanyAdmin
 from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRow, ChequePayment
 
 
@@ -10,17 +11,17 @@ class ChequeDepositRowInline(admin.TabularInline):
     model = ChequeDepositRow
 
 
-class ChequeDepositAdmin(admin.ModelAdmin):
+class ChequeDepositAdmin(CompanyAdmin):
     inlines = [
         ChequeDepositRowInline, ChequeFileInline
     ]
-    exclude = ['files',]
+    exclude = ['files', ]
 
 
-admin.site.register(BankAccount)
+admin.site.register(BankAccount, CompanyAdmin)
 admin.site.register(BankCashDeposit)
 admin.site.register(ChequeDeposit, ChequeDepositAdmin)
-admin.site.register(ChequePayment)
+admin.site.register(ChequePayment, CompanyAdmin)
 
 
 # Register your models here.

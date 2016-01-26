@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin, UserChangeForm as DjangoUserChangeForm, \
     UserCreationForm as DjangoUserCreationForm
 from django import forms
+from awecounting.utils.mixins import CompanyAdmin
 from .models import File, User, GroupProxy, Company, Role, CompanySetting
 
 
@@ -110,9 +111,9 @@ from django.contrib.auth.models import Group
 
 admin.site.unregister(Group)
 admin.site.register(GroupProxy, GroupAdmin)
-admin.site.register(Role)
+admin.site.register(Role, CompanyAdmin)
 admin.site.register(Company)
-admin.site.register(CompanySetting)
+admin.site.register(CompanySetting, CompanyAdmin)
 admin.site.register(File)
 
 

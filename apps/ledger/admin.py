@@ -1,17 +1,17 @@
 from django.contrib import admin
-from modeltranslation.admin import TranslationAdmin
+
+from awecounting.utils.mixins import CompanyAdmin, TranslationCompanyAdmin
 
 from .models import Account, Transaction, JournalEntry, Party, Category
 
 
-class AccountAdmin(admin.ModelAdmin):
+class AccountAdmin(CompanyAdmin):
     list_display = ['code', 'name', 'current_cr', 'current_dr', 'parent', 'category']
-    list_filter = ['company']
     list_display_links = ['code', 'name']
 
 
 admin.site.register(Account, AccountAdmin)
-admin.site.register(Category)
+admin.site.register(Category, CompanyAdmin)
 admin.site.register(Transaction)
 admin.site.register(JournalEntry)
-admin.site.register(Party, TranslationAdmin)
+admin.site.register(Party, TranslationCompanyAdmin)
