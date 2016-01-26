@@ -4,7 +4,7 @@ import api
 import views
 
 web_urls = [
-    url(r'^cash_deposits/$', views.CashDepositeList.as_view(), name='cash_deposit_list'),
+    url(r'^cash_deposits/$', views.CashDepositList.as_view(), name='cash_deposit_list'),
     url(r'^cash_deposit/add$', views.CashDepositCreate.as_view(), name='cash_deposit_add'),
     url(r'^cash_deposit/(?P<pk>[0-9]+)$', views.CashDepositUpdate.as_view(), name='cash_deposit_edit'),
     url(r'^cash_deposit/delete/(?P<pk>[0-9]+)$', views.CashDepositDelete.as_view(),

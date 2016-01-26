@@ -57,7 +57,7 @@ class CashDepositDelete(CashDepositView, DeleteView):
     pass
 
 
-class CashDepositeList(CashDepositView, ListView):
+class CashDepositList(CashDepositView, ListView):
     pass
 
 
@@ -93,16 +93,16 @@ class ChequeDepositCreate(ChequeDepositView, TableObjectMixin):
     template_name = 'bank/cheque_deposit_form.html'
 
 
-def cheque_deposit_create(request, id=None):
-    if id:
-        cheque_deposit = get_object_or_404(ChequeDeposit, id=id, company=request.company)
-        scenario = 'Update'
-    else:
-        cheque_deposit = ChequeDeposit(company=request.company)
-        scenario = 'Create'
-    data = ChequeDepositSerializer(cheque_deposit).data
-    return render(request, 'bank/cheque_deposit_form.html',
-                  {'data': data, 'scenario': scenario, 'cheque_deposit': cheque_deposit})
+# def cheque_deposit_create(request, id=None):
+#     if id:
+#         cheque_deposit = get_object_or_404(ChequeDeposit, id=id, company=request.company)
+#         scenario = 'Update'
+#     else:
+#         cheque_deposit = ChequeDeposit(company=request.company)
+#         scenario = 'Create'
+
+#     return render(request, 'bank/cheque_deposit_form.html',
+#                   {'data': ChequeDepositSerializer(cheque_deposit).data, 'scenario': scenario, 'cheque_deposit': cheque_deposit})
 
 
 def cheque_deposit_save(request):
@@ -173,6 +173,6 @@ class ChequePaymentCreate(ChequePaymentView, CreateView):
 class ChequePaymentDelete(ChequePaymentView, DeleteView):
     pass
 
+
 class ChequePaymentUpdate(ChequePaymentView, UpdateView):
     pass
-
