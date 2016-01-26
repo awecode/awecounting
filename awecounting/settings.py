@@ -24,6 +24,7 @@ INSTALLED_APPS = (
     'apps.share',
     'apps.bank',
     'apps.voucher',
+    'apps.tax',
 
     'njango',
     'rest_framework',
