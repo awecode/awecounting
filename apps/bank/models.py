@@ -87,7 +87,6 @@ class BankCashDeposit(models.Model):
     benefactor = models.ForeignKey(Account)
     amount = models.FloatField()
     deposited_by = models.CharField(max_length=254, blank=True, null=True)
-    attachment = models.FileField(upload_to='bank_cash_deposits/%Y/%m/%d', blank=True, null=True)
     narration = models.TextField(null=True, blank=True)
     company = models.ForeignKey(Company)
 

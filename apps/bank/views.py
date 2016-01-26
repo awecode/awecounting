@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
-from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView, AjaxableResponseMixin
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView, AjaxableResponseMixin, TableObjectMixin
 from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRow, ChequePayment
 from apps.users.models import File as AttachFile
 from apps.users.serializers import FileSerializer
@@ -15,7 +15,7 @@ from django.http import JsonResponse
 from django.views.generic.detail import DetailView
 
 
-class ChequeDepositDetailView(DetailView):
+class ChequeDepositDetailView(CompanyView, DetailView):
     model = ChequeDeposit
 
 
@@ -50,6 +50,7 @@ class BankAccountDelete(BankAccountView, DeleteView):
 class CashDepositView(CompanyView):
     model = BankCashDeposit
     success_url = reverse_lazy('bank:cash_deposit_list')
+    form_class = BankCashDepositForm
 
 
 class CashDepositDelete(CashDepositView, DeleteView):
@@ -60,35 +61,24 @@ class CashDepositList(CashDepositView, ListView):
     pass
 
 
-def cash_deposit(request, id=None):
-    if id:
-        receipt = get_object_or_404(BankCashDeposit, id=id, company=request.company)
-        scenario = 'Update'
-    else:
-        receipt = BankCashDeposit(date=date.today(), company=request.company)
-        scenario = 'Create'
-    if request.POST:
-        form = BankCashDepositForm(request.POST, instance=receipt, company=request.company)
-        if form.is_valid():
-            receipt = form.save(commit=False)
-            receipt.company = request.company
-            if 'attachment' in request.FILES:
-                receipt.attachment = request.FILES['attachment']
-            receipt.status = 'Unapproved'
-            receipt.save()
-            set_transactions(receipt, receipt.date,
-                             ['dr', receipt.bank_account, receipt.amount],
-                             ['cr', receipt.benefactor, receipt.amount],
-                             )
-            return redirect(reverse_lazy('bank:cash_deposit_edit', kwargs={'id': receipt.id}))
-    else:
-        form = BankCashDepositForm(instance=receipt, company=request.company)
-    return render(request, 'cash_deposit.html', {'form': form, 'scenario': scenario})
+class CashDepositCreate(CashDepositView, CreateView):
+    # def form_valid(self, form):
+        # set_transactions(receipt, receipt.date,
+        #              ['dr', receipt.bank_account, receipt.amount],
+        #              ['cr', receipt.benefactor, receipt.amount],
+        #              )
+        # return super(BankAccountCreate, self).form_valid(form)
+    pass
+
+
+class CashDepositUpdate(CashDepositView, UpdateView):
+    pass
 
 
 class ChequeDepositView(CompanyView):
     model = ChequeDeposit
     success_url = reverse_lazy('bank:cheque_deposit_list')
+    serializer_class = ChequeDepositSerializer
 
 
 class ChequeDepositList(ChequeDepositView, ListView):
@@ -99,21 +89,24 @@ class ChequeDepositDelete(ChequeDepositView, DeleteView):
     pass
 
 
-def cheque_deposit_create(request, id=None):
-    if id:
-        cheque_deposit = get_object_or_404(ChequeDeposit, id=id, company=request.company)
-        scenario = 'Update'
-    else:
-        cheque_deposit = ChequeDeposit(company=request.company)
-        scenario = 'Create'
+class ChequeDepositCreate(ChequeDepositView, TableObjectMixin):
+    template_name = 'bank/cheque_deposit_form.html'
 
-    return render(request, 'bank/cheque_deposit_form.html',
-                  {'data': ChequeDepositSerializer(cheque_deposit).data, 'scenario': scenario, 'cheque_deposit': cheque_deposit})
+
+# def cheque_deposit_create(request, id=None):
+#     if id:
+#         cheque_deposit = get_object_or_404(ChequeDeposit, id=id, company=request.company)
+#         scenario = 'Update'
+#     else:
+#         cheque_deposit = ChequeDeposit(company=request.company)
+#         scenario = 'Create'
+
+#     return render(request, 'bank/cheque_deposit_form.html',
+#                   {'data': ChequeDepositSerializer(cheque_deposit).data, 'scenario': scenario, 'cheque_deposit': cheque_deposit})
 
 
 def cheque_deposit_save(request):
     if request.is_ajax():
-        # params = json.loads(request.body)
         params = json.loads(request.POST.get('cheque_deposit'))
     dct = {'rows': {}}
     company = request.company

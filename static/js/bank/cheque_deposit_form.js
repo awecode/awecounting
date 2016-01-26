@@ -114,6 +114,8 @@ function ChequeDepositViewModel(data) {
                 }
                 else {
                     bsalert.success('Saved!');
+                    self.table_view.deleted_rows([]);
+                    self.deleted_files([]);
                     if (msg.id)
                         self.id(msg.id);
                     $("tbody > tr").each(function (i) {
