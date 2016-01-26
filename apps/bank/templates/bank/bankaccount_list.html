@@ -25,7 +25,7 @@
                 <th>{% anchor name _('Bank Name') %}</th>
                 <th>{% anchor ac_no _('Account Number') %}</th>
                 <th>{% anchor branch_name _('Branch Name') %}</th>
-                <th>{% trans 'Account' %}</th>
+                <th>{% trans 'Ledger' %}</th>
                 </thead>
                 <tbody>
                 {% for object in sorted_objects %}
@@ -40,7 +40,7 @@
                             <a href="{% url 'bank:bankaccount_edit' object.pk %}">{{ object.branch_name }}</a>
                         </td>
                         <td>
-                            <a href="{% url 'bank:bankaccount_edit' object.pk %}">{{ object.account.name }}</a>
+                            <a href="{% url 'view_account' object.account.pk %}">{{ object.account.name }}</a>
                         </td>
                     </tr>
                 {% endfor %}
