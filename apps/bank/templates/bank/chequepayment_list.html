@@ -30,7 +30,7 @@
                 <tbody>
                 {% for object in sorted_objects %}
                     <tr>
-                        <td>
+                        <td class="link">
                             <a href="{% url 'bank:cheque_payment_edit' object.pk %}">{{ object.cheque_number }}</a>
                         </td>
                         <td>
