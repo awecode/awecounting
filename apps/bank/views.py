@@ -1,6 +1,7 @@
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
-from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView, AjaxableResponseMixin, TableObjectMixin
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView, AjaxableResponseMixin, TableObjectMixin, SuperOwnerMixin, OwnerMixin, AccountantMixin, StaffMixin, \
+    group_required
 from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRow, ChequePayment
 from apps.users.models import File as AttachFile
 from apps.users.serializers import FileSerializer
@@ -15,7 +16,7 @@ from django.http import JsonResponse
 from django.views.generic.detail import DetailView
 
 
-class ChequeDepositDetailView(CompanyView, DetailView):
+class ChequeDepositDetailView(CompanyView, StaffMixin, DetailView):
     model = ChequeDeposit
 
 
@@ -25,11 +26,11 @@ class BankAccountView(CompanyView):
     form_class = BankAccountForm
 
 
-class BankAccountList(BankAccountView, ListView):
+class BankAccountList(BankAccountView, StaffMixin, ListView):
     pass
 
 
-class BankAccountCreate(AjaxableResponseMixin, BankAccountView, CreateView):
+class BankAccountCreate(AjaxableResponseMixin, AccountantMixin, BankAccountView, CreateView):
     def form_valid(self, form):
         form.instance.company = self.request.company
         form.instance.account = Account.objects.create(
@@ -39,11 +40,11 @@ class BankAccountCreate(AjaxableResponseMixin, BankAccountView, CreateView):
         return super(BankAccountCreate, self).form_valid(form)
 
 
-class BankAccountUpdate(BankAccountView, UpdateView):
+class BankAccountUpdate(BankAccountView, AccountantMixin, UpdateView):
     pass
 
 
-class BankAccountDelete(BankAccountView, DeleteView):
+class BankAccountDelete(BankAccountView, AccountantMixin, DeleteView):
     pass
 
 
@@ -53,15 +54,15 @@ class CashDepositView(CompanyView):
     form_class = BankCashDepositForm
 
 
-class CashDepositDelete(CashDepositView, DeleteView):
+class CashDepositDelete(CashDepositView, AccountantMixin, DeleteView):
     pass
 
 
-class CashDepositList(CashDepositView, ListView):
+class CashDepositList(CashDepositView, StaffMixin, ListView):
     pass
 
 
-class CashDepositCreate(CashDepositView, CreateView):
+class CashDepositCreate(CashDepositView, AccountantMixin, CreateView):
     # def form_valid(self, form):
         # set_transactions(receipt, receipt.date,
         #              ['dr', receipt.bank_account, receipt.amount],
@@ -71,7 +72,7 @@ class CashDepositCreate(CashDepositView, CreateView):
     pass
 
 
-class CashDepositUpdate(CashDepositView, UpdateView):
+class CashDepositUpdate(CashDepositView, AccountantMixin, UpdateView):
     pass
 
 
@@ -81,15 +82,15 @@ class ChequeDepositView(CompanyView):
     serializer_class = ChequeDepositSerializer
 
 
-class ChequeDepositList(ChequeDepositView, ListView):
+class ChequeDepositList(ChequeDepositView, StaffMixin, ListView):
     pass
 
 
-class ChequeDepositDelete(ChequeDepositView, DeleteView):
+class ChequeDepositDelete(ChequeDepositView, AccountantMixin, DeleteView):
     pass
 
 
-class ChequeDepositCreate(ChequeDepositView, TableObjectMixin):
+class ChequeDepositCreate(ChequeDepositView, AccountantMixin, TableObjectMixin):
     template_name = 'bank/cheque_deposit_form.html'
 
 
@@ -104,7 +105,7 @@ class ChequeDepositCreate(ChequeDepositView, TableObjectMixin):
 #     return render(request, 'bank/cheque_deposit_form.html',
 #                   {'data': ChequeDepositSerializer(cheque_deposit).data, 'scenario': scenario, 'cheque_deposit': cheque_deposit})
 
-
+@group_required('Accountant')
 def cheque_deposit_save(request):
     if request.is_ajax():
         params = json.loads(request.POST.get('cheque_deposit'))
@@ -161,17 +162,17 @@ class ChequePaymentView(CompanyView):
     form_class = ChequePaymentForm
 
 
-class ChequePaymentList(ChequePaymentView, ListView):
+class ChequePaymentList(ChequePaymentView, StaffMixin, ListView):
     pass
 
 
-class ChequePaymentCreate(ChequePaymentView, CreateView):
+class ChequePaymentCreate(ChequePaymentView, AccountantMixin, CreateView):
     pass
 
 
-class ChequePaymentDelete(ChequePaymentView, DeleteView):
+class ChequePaymentDelete(ChequePaymentView, AccountantMixin, DeleteView):
     pass
 
 
-class ChequePaymentUpdate(ChequePaymentView, UpdateView):
+class ChequePaymentUpdate(ChequePaymentView, AccountantMixin, UpdateView):
     pass
