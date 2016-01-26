@@ -7,7 +7,7 @@ from django.views.generic import ListView
 import json
 from django.views.generic.detail import DetailView
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, OwnerMixin, AccountantMixin, StaffMixin, \
-    group_required
+    group_required, TableObjectMixin
 from ..inventory.models import set_transactions
 from ..ledger.models import set_transactions as set_ledger_transactions, Account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
@@ -22,6 +22,7 @@ from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, Pu
 class FixedAssetView(CompanyView):
     model = FixedAsset
     success_url = reverse_lazy('fixed_asset_list')
+    serializer_class = FixedAssetSerializer
 
 
 class FixedAssetList(FixedAssetView, ListView):
@@ -41,15 +42,8 @@ class FixedAssetDetailView(DetailView):
         return context
 
 
-def fixed_asset(request, pk=None):
-    if pk:
-        fixed_asset = get_object_or_404(FixedAsset, pk=pk, company=request.company)
-        scenario = 'Update'
-    else:
-        fixed_asset = FixedAsset(company=request.company)
-        scenario = 'Create'
-    data = FixedAssetSerializer(fixed_asset).data
-    return render(request, 'fixed_asset_form.html', {'scenario': scenario, 'data': data, 'fixed_asset': fixed_asset})
+class FixedAssetCreate(FixedAssetView, TableObjectMixin):
+    template_name = 'fixed_asset_form.html'
 
 
 def save_fixed_asset(request):
