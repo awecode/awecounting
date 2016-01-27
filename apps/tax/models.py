@@ -16,6 +16,9 @@ class TaxScheme(models.Model):
     def name(self):
         return self.short_name or self.full_name
 
+    def get_class_name(self):
+        return self.__class__.__name__
+
     def save(self, *args, **kwargs):
         if self.pk is None:
             account = Account(name=self.name)
