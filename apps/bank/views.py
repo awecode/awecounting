@@ -1,6 +1,7 @@
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
-from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView, AjaxableResponseMixin, TableObjectMixin, SuperOwnerMixin, OwnerMixin, AccountantMixin, StaffMixin, \
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView, AjaxableResponseMixin, TableObjectMixin, \
+    SuperOwnerMixin, OwnerMixin, AccountantMixin, StaffMixin, \
     group_required
 from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRow, ChequePayment
 from apps.users.models import File as AttachFile
@@ -33,10 +34,6 @@ class BankAccountList(BankAccountView, StaffMixin, ListView):
 class BankAccountCreate(AjaxableResponseMixin, AccountantMixin, BankAccountView, CreateView):
     def form_valid(self, form):
         form.instance.company = self.request.company
-        form.instance.account = Account.objects.create(
-            name=form.instance.bank_name,
-            company=self.request.company
-        )
         return super(BankAccountCreate, self).form_valid(form)
 
 
@@ -64,11 +61,11 @@ class CashDepositList(CashDepositView, StaffMixin, ListView):
 
 class CashDepositCreate(CashDepositView, AccountantMixin, CreateView):
     # def form_valid(self, form):
-        # set_transactions(receipt, receipt.date,
-        #              ['dr', receipt.bank_account, receipt.amount],
-        #              ['cr', receipt.benefactor, receipt.amount],
-        #              )
-        # return super(BankAccountCreate, self).form_valid(form)
+    # set_transactions(receipt, receipt.date,
+    #              ['dr', receipt.bank_account, receipt.amount],
+    #              ['cr', receipt.benefactor, receipt.amount],
+    #              )
+    # return super(BankAccountCreate, self).form_valid(form)
     pass
 
 
