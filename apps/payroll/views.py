@@ -30,6 +30,7 @@ class EntryCreate(EntryView, TableObjectMixin):
 class EntryDetailView(EntryView, DetailView):
     def get_context_data(self, **kwargs):
         context = super(EntryDetailView, self).get_context_data(**kwargs)
+        # TODO Roshan - Why not obj.rows.all in template ?
         context['rows'] = EntryRow.objects.select_related('employee').filter(entry=self.object)
         return context
 
@@ -69,7 +70,7 @@ def save_entry(request):
                 set_transactions(submodel, obj.created,
                                  ['dr', submodel.pay_heading, submodel.amount],
                                  ['cr', Account.objects.get(name='Payroll Tax', company=request.company), submodel.tax],
-                                 ['cr', submodel.employee, submodel.amount - submodel.tax]
+                                 ['cr', submodel.employee, float(submodel.amount) - float(submodel.tax)]
                                  )
         delete_rows(params.get('table_view').get('deleted_rows'), model)
     except Exception as e:

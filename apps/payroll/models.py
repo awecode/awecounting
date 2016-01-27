@@ -2,7 +2,7 @@ from django.db import models
 from awecounting.utils.helpers import zero_for_none
 from apps.ledger.models import Account
 from apps.users.models import Company
-from njango.fields import BSDateField, today
+from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse_lazy
 from awecounting.utils.helpers import get_next_voucher_no
 
@@ -29,6 +29,9 @@ class Entry(models.Model):
             total = obj.amount
             grand_total += total
         return grand_total
+
+    class Meta:
+        verbose_name_plural = _('Entries')
 
 
 class EntryRow(models.Model):
@@ -184,9 +187,9 @@ class IndividualPayroll(models.Model):
     voucher_no = models.CharField(max_length=50)
     date = models.DateField()
     company = models.ForeignKey(Company)
-    #days_worked = models.FloatField()
-    #hours_worked = models.FloatField()
-    #ot_hours_worked = models.FloatField()
+    # days_worked = models.FloatField()
+    # hours_worked = models.FloatField()
+    # ot_hours_worked = models.FloatField()
     day_rate = models.FloatField(null=True, blank=True)
     hour_rate = models.FloatField(null=True, blank=True)
     ot_hour_rate = models.FloatField(null=True, blank=True)

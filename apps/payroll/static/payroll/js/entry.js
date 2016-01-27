@@ -9,6 +9,7 @@ function EntryViewModel(data) {
 
     self.id = ko.observable();
     self.entry_no = ko.observable();
+    self.status = ko.observable();
 
     $.ajax({
         url: '/ledger/api/account.json',
