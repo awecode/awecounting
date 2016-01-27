@@ -1,0 +1,45 @@
+{% extends "dashboard.html" %}
+
+{% block title %}Employees{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url "list_employees" %}">Employees</a></li>
+{% endblock %}
+
+{% block pageheader %}
+    Employees
+{% endblock %}
+
+{% block content %}
+
+    <table class="table table-bordered table-striped table-sortable">
+        <thead>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Tax ID</th>
+        <th>Designation</th>
+        <th>Account</th>
+        <th>Actions</th>
+        </thead>
+        <tbody>
+        {% for item in objects %}
+            <tr>
+                <td>
+                    {{ item.name }}
+                </td>
+                <td>{{ item.address }}</td>
+                <td>{{ item.tax_id }}</td>
+                <td>{{ item.designation }}</td>
+                <td><a href="{{ item.account.get_absolute_url }}">{{ item.account.name }}</a></td>
+                <td>
+                    <a href="{% url 'update_employee' item.id %}">Edit</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="btn" href="{% url 'create_employee' %}">Create New Employee</a>
+
+{% endblock %}

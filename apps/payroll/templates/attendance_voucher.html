@@ -1,0 +1,111 @@
+{% extends "dashboard.html" %}
+
+{% block title %}{{ scenario }} Day Attendance Voucher{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url "create_attendance_voucher" %}">Day Attendance Voucher</a></li>
+{% endblock %}
+{% load filters %}
+{% block extra-head %}
+    <script src="{{ STATIC_URL }}js/vendors/knockout.js"></script>
+    <script src="{{ STATIC_URL }}js/ko_lib.js"></script>
+    <script src="{{ STATIC_URL }}js/attendance_voucher.js"></script>
+    <script>
+        ko_data =
+        {{ data|jsonify }}
+    </script>
+{% endblock %}
+
+{% block pageheader %}
+    {{ scenario }} Day Attendance Voucher
+{% endblock %}
+
+{% block content %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <span data-bind="text: message(), css: state()"></span>
+
+        <div class="row-fluid">
+            <span class="span6"></span>
+            <span class="span2">Voucher No.</span>
+            <span class="span4 pull-left"><input type="text" data-bind="value: voucher_no" required></span>
+        </div>
+
+        <div class="row-fluid">
+            <span class="span6"></span>
+            <span class="span2">Voucher Date</span>
+            <span class="span4"><input type="text" data-bind="value: date" class="date-picker"
+                                       data-date-format="yyyy-mm-dd" required></span>
+        </div>
+
+        <table class="table table-bordered table-striped table-sortable">
+            <tr>
+                <td>Employee:
+                    <input type="hidden" data-name="Employee" data-url="{% url 'create_employee' %}"
+                               data-bind="value: employee, select2: $root.employees">
+                </td>
+                <td>
+                    From : <input type="text" data-bind="value: from_date" class="date-picker"
+                                  data-date-format="yyyy-mm-dd" required>
+                </td>
+                <td>
+                    To : <input type="text" data-bind="value: to_date" class="date-picker"
+                                data-date-format="yyyy-mm-dd" required>
+                </td>
+            </tr>
+            <tr>
+                <td>Total Working Days</td>
+                <td data-bind="editableText: total_working_days, numeric: true"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Full Present Days</td>
+                <td data-bind="editableText: full_present_day, numeric: true"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Half Present Days</td>
+                <td data-bind="editableText: half_present_day, numeric: true"></td>
+                <td data-bind="editableText: half_multiplier, numeric: true"></td>
+            </tr>
+            <tr>
+                <td>Early/Late Attendance Days</td>
+                <td data-bind="editableText: early_late_attendance_day, numeric: true"></td>
+                <td data-bind="editableText: early_late_multiplier, numeric: true"></td>
+            </tr>
+            <tr>
+                <td>Total Present Days</td>
+                <td data-bind="text: total_present_day()"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Total Absent Days</td>
+                <td data-bind="text: total_absent_day()"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Total OT Hours</td>
+                <td data-bind="editableText: total_ot_hours, numeric: true"></td>
+                <td></td>
+            </tr>
+        </table>
+
+
+        {% if scenario == 'Update' %}
+            <a class="btn delete-warn" href="{% url 'delete_attendance_vouchers' data.id %}">Delete</a>
+        {% endif %}
+        <input class="btn" type="submit" value="Save" data-bind="click: $root.save">
+        <input class="btn" type="submit" value="Save & Continue" data-bind="click: $root.save"
+               data-continue="true">
+
+
+        </div>
+
+
+    </form>
+
+
+{% endblock %}

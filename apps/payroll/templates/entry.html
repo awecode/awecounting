@@ -1,0 +1,81 @@
+{% extends "dashboard.html" %}
+
+{% block title %}{{ scenario }} Payroll{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url "list_payroll_entries" %}">Payroll Entries</a></li>
+    <span class="divider"><i class="icon-angle-right"></i></span>
+    <li><a href="{% url "create_payroll_entry" %}">{{ scenario }} Payroll Entry</a></li>
+{% endblock %}
+
+{% block extra-head %}
+    <script src="{{ STATIC_URL }}js/vendors/knockout.js"></script>
+    <script src="{{ STATIC_URL }}js/ko_lib.js"></script>
+    <script src="{{ STATIC_URL }}js/payroll.js"></script>
+    <script>
+        $(document).ready(function () {
+            {% load filters %}
+            ko.applyBindings(new PayrollEntryModel({{data|jsonify}}));
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+
+    <div data-bind="with: payroll_entry">
+        <div><h2 data-bind="css: state()">{{ scenario }} Payroll Entry</h2>
+            <span data-bind="text: message()"></span>
+
+        </div>
+
+        Entry No. <input type="text" data-bind="value: entry_no"/>
+        <table class="table table-bordered table-striped table-acubor table-sortable">
+            <thead>
+            <tr>
+                <th>SN</th>
+                <th>Employee</th>
+                <th>Pay Heading</th>
+                <th>Amount</th>
+                <th>Hours</th>
+                <th>Tax</th>
+                <th>Remarks</th>
+                <th class="span1"></th>
+            </tr>
+            </thead>
+
+            <tbody id="payroll-entry">
+            <!-- ko foreach: rows -->
+            <tr data-bind="flash: true">
+                <td data-bind="text: $index()+1">
+                </td>
+                <td class="with_ip">
+                    <select data-bind="options: $root.accounts, optionsText: 'name', optionsValue: 'id', value: account_id, optionsCaption: 'Choose an account..', select2: {placeholderOption: 'first'}"></select>
+                </td>
+                <td class="with_ip">
+                    <select data-bind="options: $root.accounts, optionsText: 'name', optionsValue: 'id', value: pay_heading, optionsCaption: 'Choose an account..', select2: {placeholderOption: 'first'}"></select>
+                </td>
+                <td data-bind="editableText: amount, numeric: true"></td>
+                <td data-bind="editableText: hours, numeric: true"></td>
+                <td data-bind="editableText: tax, numeric: true"></td>
+                <td data-bind="editableText: remarks"></td>
+                <td align="center">
+                    <button class="btn-none" data-bind="click: $parent.removeRow"><i class="icon-trash"></i></button>
+                </td>
+            </tr>
+            <!-- /ko -->
+            </tbody>
+        </table>
+        <span>
+            <button class="btn" data-bind="click: addRow"><i class="icon-plus-sign"></i> Add New Row</button>
+            <button class="btn" data-bind="click: save"><i class="icon-save"></i> Save</button>
+            <button class="btn" data-bind="click: reset">Reset</button>
+            {% if scenario == 'Update' %}
+                <a class="btn btn-danger" href="{% url 'delete_payroll_entry' data.id %}">Delete!</a>
+            {% endif %}
+        </span>
+
+
+    </div>
+
+{% endblock %}

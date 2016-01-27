@@ -1,0 +1,79 @@
+{% extends "_base.html" %}
+{% load staticfiles i18n filters %}
+
+{% block page-title %}
+    {% trans 'Detail' %} {% trans 'Entry' %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'entry_list' %}">{% trans 'Entries' %}</a></li>
+    <li>{% trans 'Detail' %} {% trans 'Entries' %}</li>
+{% endblock %}
+
+
+{% block content %}
+<div class="well">
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <div>
+            <label for="voucher-no">{% trans 'Entry' %} {% trans 'No.' %}</label>
+            <p>
+                {{ object.entry_no }}
+            </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="well">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>{% trans "SN" %}</th>
+                <th>{% trans "Employee" %}</th>
+                <th>{% trans "Pay Heading" %}</th>
+                <th>{% trans "Amount" %}</th>
+                <th>{% trans "Hours" %}</th>
+                <th>{% trans "Tax" %}</th>
+                <th>{% trans "Remarks" %}</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                <td>
+                    {{ row.sn }}
+                </td>
+                <td>
+                    {{ row.employee }}
+                </td>
+                <td>
+                    {{ row.pay_heading }}
+                </td>
+                <td>
+                    {{ row.amount }}
+                </td>
+                <td>
+                    {{ row.hours }}
+                </td>
+                <td>
+                    {{ row.tax }}
+                </td>
+                <td>
+                    {{ row.remarks }}
+                </td>
+            </tr>
+            {% endfor %}
+            <tr class="total">
+                <td colspan="3">
+                    {% trans 'Grand Total' %}
+                </td>
+                <td colspan="5">{{ object.total }}</td>
+
+            </tr>
+        </tbody>
+
+    </table>
+</div>
+
+{% endblock %}

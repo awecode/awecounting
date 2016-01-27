@@ -55,7 +55,7 @@ function PurchaseViewModel(data) {
     self.sub_total = function () {
         var sum = 0;
         self.table_view.rows().forEach(function (i) {
-            sum += i.total();
+            sum += parseInt(i.total());
         });
         return sum;
     }

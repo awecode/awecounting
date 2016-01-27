@@ -1,0 +1,51 @@
+{% extends "dashboard.html" %}
+
+{% block title %}Payroll Entries{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url "list_payroll_entries" %}">All Payroll Entries</a></li>
+{% endblock %}
+
+{% block pageheader %}
+    Payroll Entries
+{% endblock %}
+
+{% block content %}
+
+    {% load pagination_tags %}
+    {% load sorting_tags %}
+
+
+    {% autosort objects as sorted_objects %}
+    {% autopaginate sorted_objects 25 as paginated_objects %}
+
+    <table class="table table-bordered table-striped table-sortable">
+        <thead>
+        <th>{% anchor entry_no 'Entry No.' %}</th>
+        <th>{% anchor created 'Created On' %}</th>
+        <th>{% anchor modified 'Modified On' %}</th>
+        <th>Actions</th>
+        </thead>
+        <tbody>
+        {% for item in paginated_objects %}
+            <tr>
+                <td>
+                    {{ item.entry_no }}
+                </td>
+                <td>{{ item.created }}</td>
+                <td>{{ item.modified }}</td>
+                <td>
+                    <a href="{% url 'update_payroll_entry' item.id %}">Edit</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% paginate %}
+
+    <a class="btn" href="{% url 'create_payroll_entry' %}">New Payroll Entry</a>
+
+
+{% endblock %}

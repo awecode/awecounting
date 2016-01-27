@@ -49,14 +49,14 @@ def write_error(dct, e):
     return dct
 
 
-def get_next_voucher_no(cls, attr):
-    from django.db.models import Max
+# def get_next_voucher_no(cls, attr):
+#     from django.db.models import Max
 
-    max_voucher_no = cls.objects.all().aggregate(Max(attr))[attr + '__max']
-    if max_voucher_no:
-        return max_voucher_no + 1
-    else:
-        return 1
+#     max_voucher_no = cls.objects.all().aggregate(Max(attr))[attr + '__max']
+#     if max_voucher_no:
+#         return max_voucher_no + 1
+#     else:
+#         return 1
 
 
 def json_from_object(obj):
@@ -80,7 +80,7 @@ def get_next_voucher_no(cls, company_id=None, attr='voucher_no'):
         qs = qs.filter(company_id=company_id)
     max_voucher_no = qs.aggregate(Max(attr))[attr + '__max']
     if max_voucher_no:
-        return max_voucher_no + 1
+        return int(max_voucher_no) + 1
     else:
         return 1
 

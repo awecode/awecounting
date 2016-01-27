@@ -1,0 +1,30 @@
+{% extends base_template %}
+
+{% block title %}{{ scenario }} Employee{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url "list_employees" %}">Employees</a></li>
+    <span class="divider"><i class="icon-angle-right"></i></span>
+    <li>{{ scenario }} Employee</li>
+{% endblock %}
+
+{% block pageheader %}
+    {{ scenario }} Employee
+{% endblock %}
+
+{% block content %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="row">
+            <div class="span12">
+                <input type="submit" value="Submit" class="btn"/>
+                {% if scenario == 'Update' %}
+                    <a class="btn btn-danger" href="{% url 'delete_employee' form.instance.id %}">Delete!</a>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+{% endblock %}

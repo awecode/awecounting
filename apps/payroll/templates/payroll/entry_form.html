@@ -1,0 +1,92 @@
+{% extends "_base.html" %}
+{% load staticfiles i18n njango_filters %}
+{% load filters %}
+
+{% block page-title %}
+    {{ scenario }} {% trans 'Entry' %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li>{% trans "Payroll" %}</li>
+    <li><a href="{% url 'entry_list' %}">{% trans 'Entry' %}</a></li>
+    <li>{{ scenario }} {% trans 'Entry' %}</li>
+{% endblock %}
+
+{% block extrahead %}
+    <script src="{% static 'payroll/js/entry.js' %}"></script>
+    <script>
+        ko_data = {{data|jsonify}};
+    </script>
+{% endblock %}
+
+{% block content %}
+    <form method="post" data-bind="submit: save">
+        {% csrf_token %}
+        <div class="well">
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <label for="voucher_no">{% trans 'Entry' %} {% trans 'No.' %}</label>
+                    <input type="text" data-bind="value: entry_no" class="form-control" id="voucher_no">
+                </div>
+            </div>
+        </div>
+
+        <div data-bind="with: table_view" class="well">
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>{% trans "SN" %}</th>
+                    <th>{% trans "Employee" %}</th>
+                    <th>{% trans "Pay Heading" %}</th>
+                    <th>{% trans "Amount" %}</th>
+                    <th>{% trans "Hours" %}</th>
+                    <th>{% trans "Tax" %}</th>
+                    <th>{% trans "Remarks" %}</th>
+                    <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                <!-- ko foreach: rows -->
+                <tr>
+                    <td>
+                        <span data-bind="text:  $index()+1, localize: 1"> </span>
+                    </td>
+                    <td>
+                            <select data-bind="selectize: employees, value: employee" id="employee" 
+                            data-url="{% url 'bank:bankaccount_add' %}"></select>
+                    </td>
+                    <td>
+                            <select data-bind="selectize: pay_headings, value: pay_heading" id="pay_heading" 
+                            data-url="{% url 'bank:bankaccount_add' %}"></select>
+                    </td>
+                    <td data-bind="editableText: amount, numeric: true"></td>
+                    <td data-bind="editableText: hours"></td>
+                    <td data-bind="editableText: tax"></td>
+                    <td data-bind="editableText: remarks"></td>
+                    <td class="hide-on-print text-center">
+                        <a href="#" class="red fa fa-trash-o fa-2x" data-bind="click: $parent.removeRow"></a>
+                    </td>
+                </tr>
+
+                <!-- /ko -->
+                <tr class="total">
+                    <td colspan="3">
+                        {% trans 'Grand Total' %}
+                    </td>
+                    <td colspan="5" data-bind="text: $root.sub_total(), localize: 1"></td>
+
+                </tr>
+                </tbody>
+
+            </table>
+            <a class="btn btn-default btn-raised" data-bind="click: addRow">
+                {% trans 'Add New Row' %}
+            </a>
+        </div>
+
+        
+        <input type="submit" class="btn btn-info btn-raised" value="{% trans 'Save' %}">
+    </form>
+{% endblock %}
