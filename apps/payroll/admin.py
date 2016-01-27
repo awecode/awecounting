@@ -1,6 +1,6 @@
 from django.contrib import admin
 from awecounting.utils.mixins import CompanyAdmin
-from .models import Entry, EntryRow
+from .models import Entry, EntryRow, Employee
 
 
 class EntryRowInline(admin.TabularInline):
@@ -14,3 +14,4 @@ class EntryAdmin(CompanyAdmin):
 
 admin.site.register(Entry, EntryAdmin)
 admin.site.register(EntryRow)
+admin.site.register(Employee)

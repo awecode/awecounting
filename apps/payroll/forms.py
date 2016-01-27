@@ -1,8 +1,9 @@
 from django import forms
-from apps.payroll.models import Employee
+from awecounting.utils.forms import HTML5BootstrapModelForm
+from .models import Employee
 
 
-class EmployeeForm(forms.ModelForm):
+class EmployeeForm(HTML5BootstrapModelForm):
     class Meta:
         model = Employee
         exclude = ['account', 'company']

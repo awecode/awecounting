@@ -1,0 +1,57 @@
+{% extends '_base.html' %}
+{% load i18n filters %}
+
+{% block page-title %}{% trans 'Employee' %}{% endblock %}
+
+{% block header-buttons %}
+    <a href="{% url 'employee_add' %}" class="btn btn-success btn-raised">{% trans 'Add' %} {% trans 'Employee' %}</a>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li>{% trans 'Tax' %}</li>
+    <li><a href="{% url 'employee_list' %}"></a>{% trans 'Employee' %}</li>
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+
+            {% load pagination_tags %}
+            {% load sorting_tags %}
+
+            {% autosort object_list as sorted_objects %}
+            {% autopaginate sorted_objects 25 as paginated_objects %}
+            <div class="well">
+                <table class="table table-striped">
+                    <thead>
+                    <th>{% anchor name _('Name') %}</th>
+                    <th>{% anchor address _('Address') %}</th>
+                    <th>{% anchor tax_id _('Tax Id') %}</th>
+                    <th>{% anchor designation _('Designation') %}</th>
+                    </thead>
+                    <tbody>
+                    {% for object in sorted_objects %}
+                        <tr>
+                            <td class='link'>
+                                <a href="{% url 'employee_edit' object.pk %}">{{ object.name }}</a>
+                            </td>
+                           <td>
+                                <a href="{% url 'employee_edit' object.pk %}">{{ object.address }}</a>
+                            </td>   <td>
+                                <a href="{% url 'employee_edit' object.pk %}">{{ object.tax_id }}</a>
+                            </td>   <td>
+                                <a href="{% url 'employee_edit' object.pk %}">{{ object.designation }}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% paginate %}
+
+        </div>
+    </div>
+
+
+{% endblock %}

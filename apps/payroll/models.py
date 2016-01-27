@@ -7,7 +7,6 @@ from django.core.urlresolvers import reverse_lazy
 from awecounting.utils.helpers import get_next_voucher_no
 
 
-
 class Entry(models.Model):
     entry_no = models.CharField(max_length=10)
     company = models.ForeignKey(Company)
@@ -90,8 +89,6 @@ class Employee(models.Model):
 
     def save(self, *args, **kwargs):
         if self.pk is None:
-            #dummy_account = Account.objects.all()[:1][0]
-            #self.account = dummy_account
             super(Employee, self).save(*args, **kwargs)
             account = Account(code='13-0001-' + str(self.id), name=self.name)
             account.company = self.company
@@ -118,8 +115,6 @@ class AttendanceVoucher(models.Model):
     early_late_multiplier = models.FloatField(default=1, null=True, blank=True)
     total_ot_hours = models.FloatField(null=True, blank=True)
     paid = models.BooleanField(default=False)
-    #statuses = [('Approved', 'Approved'), ('Unapproved', 'Unapproved')]
-    #status = models.CharField(max_length=10, choices=statuses, default='Unapproved')
     company = models.ForeignKey(Company)
 
     def total_present_days(self):

@@ -3,12 +3,13 @@ from django.core.urlresolvers import reverse_lazy
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, OwnerMixin, AccountantMixin, StaffMixin, \
-    group_required, TableObjectMixin
+    group_required, TableObjectMixin, UpdateView, CreateView, AjaxableResponseMixin
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
-from .models import Entry, EntryRow
+from .models import Entry, EntryRow, Employee
 from .serializers import EntrySerializer
+from .forms import EmployeeForm
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
 
 
@@ -69,4 +70,26 @@ def save_entry(request):
     except Exception as e:
         dct = write_error(dct, e)
     return JsonResponse(dct)
+
+
+class EmployeeView(CompanyView):
+    model = Employee
+    success_url = reverse_lazy('employee_list')
+    form_class = EmployeeForm
+
+
+class EmployeeList(EmployeeView, StaffMixin, ListView):
+    pass
+
+
+class EmployeeCreate(AjaxableResponseMixin, AccountantMixin, EmployeeView, CreateView):
+    pass
+
+
+class EmployeeUpdate(EmployeeView, AccountantMixin, UpdateView):
+    pass
+
+
+class EmployeeDelete(EmployeeView, AccountantMixin, DeleteView):
+    pass
 
