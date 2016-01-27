@@ -119,9 +119,24 @@
                 <h2>{% trans 'Ledger' %}</h2>
                 <a href="{% url 'list_account' %}">{% trans 'Ledgers' %}</a>
                 <a href="{% url 'party_list' %}">{% trans 'Parties' %}</a>
+                <a href="{% url 'tax_scheme_list' %}">{% trans 'Tax Schemes' %}</a>
             </div>
 
         </div>
+
+        <div class="tile flip-container">
+            <i class="fa fa-book"></i>
+
+            <div class="flip-body">
+                <h2>{% trans 'Payroll' %}</h2>
+                <a href="{% url 'entry_add' %}">{% trans 'New Payroll Entry' %}</a>
+                <a href="{% url 'entry_list' %}">{% trans 'Payroll Entries' %}</a>
+                <a href="{% url 'employee_list' %}">{% trans 'Employees' %}</a>
+                <a href="{% url 'employee_add' %}">{% trans 'Add New Employee' %}</a>
+            </div>
+
+        </div>
+
     </div>
     <div class="sales-report row">
         <div class="panel panel-default">
