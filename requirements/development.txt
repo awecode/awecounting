@@ -8,7 +8,7 @@ ipdb
 Django
 psycopg2
 django-mptt
--e git+https://github.com/zyga/django-pagination.git@master#egg=linaro-django-pagination
+-e git+https://github.com/areski/django-pagination.git@fix-xrange-slice#egg=linaro-django-pagination
 webstack-django-sorting
 djangorestframework
 Pillow
@@ -16,4 +16,4 @@ Pillow
 django-modeltranslation
 sorl-thumbnail
 jsonfield
-openpyxl
+-e git+https://github.com/awecode/njango.git@master#egg=njango

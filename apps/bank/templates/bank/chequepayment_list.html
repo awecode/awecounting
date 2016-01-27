@@ -1,0 +1,55 @@
+{% extends '_base.html' %}
+{% load i18n filters %}
+
+{% block page-title %}{% trans 'Cheque Payment' %}{% endblock %}
+
+{% block header-buttons %}
+    <a href="{% url 'bank:cheque_payment_add' %}" class="btn btn-success btn-raised">{% trans 'Add' %} {% trans 'Cheque Payment' %}</a>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li>{% trans 'Bank' %}</li>
+    <li><a href="{% url 'bank:cheque_payment_list' %}"></a>{% trans 'Cheque Payment' %}</li>
+{% endblock %}
+
+{% block content %}
+
+            {% load pagination_tags %}
+            {% load sorting_tags %}
+
+            {% autosort object_list as sorted_objects %}
+            {% autopaginate sorted_objects 25 as paginated_objects %}
+            <div class="well">
+            <table class="table table-striped ">
+                <thead>
+                <th>{% anchor cheque_number _('Cheque Number') %}</th>
+                <th>{% anchor date _('Date') %}</th>
+                <th>{% anchor bank_account _('Bank Account') %}</th>
+                <th>{% anchor amount _('Amount') %}</th>
+                </thead>
+                <tbody>
+                {% for object in sorted_objects %}
+                    <tr>
+                        <td class="link">
+                            <a href="{% url 'bank:cheque_payment_edit' object.pk %}">{{ object.cheque_number }}</a>
+                        </td>
+                        <td>
+                            <a href="{% url 'bank:cheque_payment_edit' object.pk %}">{{ object.date }}</a>
+                        </td>
+                        <td>
+                            <a href="{% url 'bank:cheque_payment_edit' object.pk %}">{{ object.bank_account }}</a>
+                        </td>
+                        <td>
+                            <a href="{% url 'bank:cheque_payment_edit' object.pk %}">{{ object.amount }}</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+
+            {% paginate %}
+
+
+
+{% endblock %}

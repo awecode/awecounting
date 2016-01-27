@@ -3,6 +3,38 @@ import re
 from django.template.defaultfilters import slugify
 
 
+class ExtFileField(forms.FileField):
+    """
+    Same as forms.FileField, but you can specify a file extension whitelist.
+
+    Traceback (most recent call last):
+    ...
+    ValidationError: [u'Not allowed filetype!']
+    """
+
+    def __init__(self, *args, **kwargs):
+        ext_whitelist = kwargs.pop("ext_whitelist")
+        self.ext_whitelist = [i.lower() for i in ext_whitelist]
+
+        super(ExtFileField, self).__init__(*args, **kwargs)
+
+    def clean(self, *args, **kwargs):
+        data = super(ExtFileField, self).clean(*args, **kwargs)
+        if data is None:
+            if self.required:
+                raise forms.ValidationError("This file is required")
+            else:
+                return
+        elif data is not False:
+            filename = data.name
+            ext = os.path.splitext(filename)[1]
+            ext = ext.lower()
+            if ext not in self.ext_whitelist:
+                file_types = ", ".join([i for i in self.ext_whitelist])
+                error = "Only allowed file types are: %s" % file_types
+                raise forms.ValidationError(error)
+
+
 def _slug_strip(value, separator='-'):
     """
     Cleans up a slug by removing slug separator characters that occur at the
@@ -132,7 +164,7 @@ class HTML5BootstrapModelForm(HTML5ModelForm):
 
 class KOModelForm(forms.ModelForm):
     required_css_class = 'required'
-    
+
     def __init__(self, *args, **kwargs):
         super(KOModelForm, self).__init__(*args, **kwargs)
         self.refine_for_ko()
@@ -143,4 +175,3 @@ class KOModelForm(forms.ModelForm):
             if field.required:
                 field.widget.attrs['required'] = 'required'
             field.widget.attrs['data-bind'] = 'value: ' + name
-            field.widget.attrs['class'] = 'form-control'

@@ -1,12 +1,13 @@
 from django import forms
+from django.core.urlresolvers import reverse_lazy
 from modeltranslation.forms import TranslationModelForm
 from django.utils.translation import ugettext_lazy as _
 
-from apps.inventory.models import Item, Party, Unit, InventoryAccount, UnitConverter
+from .models import Item, Unit, InventoryAccount, UnitConversion
 from awecounting.utils.forms import HTML5BootstrapModelForm, KOModelForm
 
 
-class ItemForm(KOModelForm, TranslationModelForm):
+class ItemForm(HTML5BootstrapModelForm, KOModelForm, TranslationModelForm):
     account_no = forms.Field(widget=forms.TextInput(), label=_('Inventory Account No.'))
 
     def __init__(self, *args, **kwargs):
@@ -34,17 +35,10 @@ class ItemForm(KOModelForm, TranslationModelForm):
     class Meta:
         model = Item
         fields = '__all__'
-        exclude = ['other_properties', 'account', 'unit', 'ledger', 'company']
-
-
-class PartyForm(HTML5BootstrapModelForm):
-    address = forms.CharField(label=_('Address'), required=False)
-    phone_no = forms.CharField(label=_('Phone No.'), required=False)
-    pan_no = forms.CharField(label=_('PAN No.'), required=False)
-
-    class Meta:
-        model = Party
-        exclude = ('account', 'company')
+        exclude = ['other_properties', 'account', 'ledger', 'company']
+        widgets = {
+            'unit': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('unit_add')}),
+        }
 
 
 class UnitForm(HTML5BootstrapModelForm):
@@ -53,7 +47,12 @@ class UnitForm(HTML5BootstrapModelForm):
         exclude = ('company',)
 
 
-class UnitConverterForm(KOModelForm):
+class UnitConversionForm(HTML5BootstrapModelForm):
     class Meta:
-        model = UnitConverter
-        exclude = ()
+        model = UnitConversion
+        exclude = ('company',)
+        widgets = {
+            'base_unit': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('unit_add')}),
+            'unit_to_convert': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('unit_add')}),
+        }
+        company_filters = ('base_unit', 'unit_to_convert')

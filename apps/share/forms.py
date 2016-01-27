@@ -7,7 +7,7 @@ from .models import ShareHolder, Collection, Investment
 class ShareHolderForm(HTML5BootstrapModelForm):
     class Meta:
         model = ShareHolder
-        exclude = ('company',)
+        exclude = ('company', 'account')
 
 
 class CollectionForm(HTML5BootstrapModelForm):
@@ -17,11 +17,11 @@ class CollectionForm(HTML5BootstrapModelForm):
 
 
 class InvestmentForm(HTML5BootstrapModelForm):
-    # share_holder = forms.ModelChoiceField(queryset=ShareHolder.objects.filter(company=self.company))
     class Meta:
         model = Investment
-        exclude = ()
+        exclude = ('company',)
         widgets = {
             'share_holder': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('share:shareholder_add')}),
             'collection': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('share:collection_add')}),
         }
+        company_filters = ('share_holder', 'collection')

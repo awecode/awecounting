@@ -31,8 +31,8 @@ ko.bindingHandlers.selectize = {
             searchField: allBindingsAccessor.get('optionsText')
         }
 
-        if (allBindingsAccessor.has('options')) {
-            var passed_options = allBindingsAccessor.get('options')
+        if (allBindingsAccessor.has('selectize_options')) {
+            var passed_options = allBindingsAccessor.get('selectize_options')
             for (var attr_name in passed_options) {
                 options[attr_name] = passed_options[attr_name];
             }
@@ -75,7 +75,7 @@ ko.bindingHandlers.selectize = {
         if (typeof init_selectize == 'function') {
             init_selectize($select);
         }
-        
+
         // Selectize required field form submit focus fix
         // https://github.com/brianreavis/selectize.js/issues/733#issuecomment-145871854
 
@@ -89,6 +89,8 @@ ko.bindingHandlers.selectize = {
             if (event.target.validity && event.target.validity.valid) {
                 $select.$wrapper.removeClass('invalid');
             }
+            // Force re-rendering of options by clearing render-cache
+            $select.renderCache = {}
         });
 
         if (typeof valueAccessor().subscribe == 'function') {
@@ -117,8 +119,15 @@ ko.bindingHandlers.selectize = {
 
         if (allBindingsAccessor.has('object')) {
             var optionsValue = allBindingsAccessor.get('optionsValue') || 'id';
-            var value_accessor = valueAccessor();
+
+            if (typeof valueAccessor() == 'function') {
+                var value_accessor = valueAccessor();
+            } else {
+                var value_accessor = valueAccessor;
+            }
+
             var selected_obj = $.grep(value_accessor(), function (i) {
+
                 if (typeof i[optionsValue] == 'function')
                     var id = i[optionsValue]
                 else
@@ -210,6 +219,33 @@ ko.bindingHandlers.max = {
             }
         });
     }
+};
+
+
+ko.bindingHandlers.attachment = {
+    init: function (element, valueAccessor) {
+    },
+    update: function (element, valueAccessor) {
+        $(element).on('change', function () {
+            var value = valueAccessor();
+            value($(element)[0].files[0]);
+        });
+    },
+};
+
+ko.bindingHandlers.datepicker = {
+    init: function (element) {
+        if (element.classList.contains('ad-date')) {
+            $(element).datepicker({
+                format: 'yyyy-mm-dd',
+            });
+        } else if (element.classList.contains('bs-date')) {
+            $(element).nepaliDatePicker();
+        }
+        ;
+    },
+    update: function (element, valueAccessor) {
+    },
 };
 
 
@@ -331,4 +367,32 @@ ko.bindingHandlers.toggle = {
     },
     update: function (element, valueAccessor) {
     }
+};
+
+
+ko.bindingHandlers.on_tab = {
+    init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+        $(element).on('keydown', function (event) {
+            if (event.keyCode == 9) {
+
+                var fn = valueAccessor();
+                fn(element, viewModel);
+            }
+        });
+    },
+    update: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+
+    }
+}
+
+// http://stackoverflow.com/a/18184016/328406
+ko.subscribable.fn.subscription_changed = function (callback) {
+    var oldValue;
+    this.subscribe(function (_oldValue) {
+        oldValue = _oldValue;
+    }, this, 'beforeChange');
+
+    this.subscribe(function (newValue) {
+        callback(newValue, oldValue);
+    });
 };

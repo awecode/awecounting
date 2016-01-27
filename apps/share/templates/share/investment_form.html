@@ -1,25 +1,27 @@
 {% extends "_base.html" %}
 {% load i18n staticfiles %}
 
-{% block page-title %}{{ scenario }} {{ form.instance }}{% endblock %}
+{% block page-title %}{{ scenario }} {% trans 'Investment' %}{% endblock %}
 
 {% block breadcrumbs %}
     <li><a href="{% url 'share:investment_list' %}">{% trans 'Investments' %}</a></li>
-    <li>{{ scenario }} {{ form.instance }}</li>
+    <li>{{ scenario }} {% trans 'Investment' %}</li>
 {% endblock %}
 
 {% block content %}
     <form method="POST">
+    <div class="well">
         {% csrf_token %}
 
         {{ form.non_field_errors }}
 
         {{ form.as_p }}
 
-        <input type="submit" class='btn btn-default' value="{% trans 'Save' %}">
+    </div>
+        <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
 
         {% if form.instance.id %}
-            <a href="{% url 'share:investment_delete' form.instance.id %}" class="btn btn-danger">{% trans 'Delete' %}</a>
+            <a href="{% url 'share:investment_delete' form.instance.id %}" class="btn btn-danger btn-raised">{% trans 'Delete' %}</a>
         {% endif %}
     </form>
 

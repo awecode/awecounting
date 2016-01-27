@@ -151,7 +151,6 @@ def setting(path):
     return val
 
 
-
 @register.tag
 def ifappexists(parser, token):
     """ Conditional Django template tag to check if one or more apps exist.
@@ -272,11 +271,13 @@ def mailto(email, linktext=None):
 def to_class_name(value):
     return value.__class__.__name__
 
+
 @register.simple_tag()
 def multiply(a, b):
     if a and b:
         return a * b
     return ''
+
 
 @register.filter
 def dr_or_cr(val):
@@ -284,6 +285,7 @@ def dr_or_cr(val):
         return str(val * -1) + ' (Cr)'
     else:
         return str(val) + ' (Dr)'
+
 
 @register.filter
 def get_particulars(entry, account):
@@ -300,6 +302,7 @@ def get_particulars(entry, account):
 def remove_account(transactions, account):
     return [transaction for transaction in transactions if
             transaction.account.id != account.id]
+
 
 @register.filter
 def refine_voucher_type(the_type):
@@ -444,3 +447,16 @@ def do_usemacro(parser, token):
 
     macro.parser = parser
     return UseMacroNode(macro, fe_args, fe_kwargs)
+
+
+@register.filter
+def tel(no):
+    return mark_safe('<a href="tel:%s">%s</a>' % (no, no))
+
+@register.filter
+def remove_lines(string):
+    return str(string).replace('\n', '')
+
+@register.filter
+def last_word(string):
+    return str(string).split()[-1]

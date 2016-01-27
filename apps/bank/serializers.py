@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from bank.models import ChequeDeposit, ChequeDepositRow, ChequePayment, ElectronicFundTransferIn, ElectronicFundTransferInRow, ElectronicFundTransferOut
+from apps.bank.models import ChequeDeposit, ChequeDepositRow
+from awecounting.utils.mixins import SerializerWithFile
 
 
 class ChequeDepositRowSerializer(serializers.ModelSerializer):
@@ -7,29 +8,9 @@ class ChequeDepositRowSerializer(serializers.ModelSerializer):
         model = ChequeDepositRow
 
 
-class ChequeDepositSerializer(serializers.ModelSerializer):
-    rows = ChequeDepositRowSerializer()
+class ChequeDepositSerializer(SerializerWithFile, serializers.ModelSerializer):
+    rows = ChequeDepositRowSerializer(many=True)
+    files = serializers.SerializerMethodField()
 
     class Meta:
         model = ChequeDeposit
-
-
-class ChequePaymentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ChequePayment
-
-
-class ElectronicFundTransferOutSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ElectronicFundTransferOut
-
-class ElectronicFundTransferInRowSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ElectronicFundTransferInRow
-
-
-class ElectronicFundTransferInSerializer(serializers.ModelSerializer):
-    rows = ElectronicFundTransferInRowSerializer()
-
-    class Meta:
-        model = ElectronicFundTransferIn

@@ -1,0 +1,57 @@
+{% extends '_base.html' %}
+{% load i18n filters %}
+
+{% block page-title %}{% trans 'Tax Scheme' %}{% endblock %}
+
+{% block header-buttons %}
+    <a href="{% url 'tax_scheme_add' %}" class="btn btn-success btn-raised">{% trans 'Add' %} {% trans 'Tax Scheme' %}</a>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li>{% trans 'Tax' %}</li>
+    <li><a href="{% url 'tax_scheme_list' %}"></a>{% trans 'Tax Scheme' %}</li>
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+
+            {% load pagination_tags %}
+            {% load sorting_tags %}
+
+            {% autosort object_list as sorted_objects %}
+            {% autopaginate sorted_objects 25 as paginated_objects %}
+            <div class="well">
+                <table class="table table-striped">
+                    <thead>
+                    <th>{% anchor full_name _('Full Name') %}</th>
+                    <th>{% anchor short_name _('Short Name') %}</th>
+                    <th>{% anchor percent _('Percent') %}</th>
+                    <th>{% anchor recoverable _('Recoverable') %}</th>
+                    </thead>
+                    <tbody>
+                    {% for object in sorted_objects %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'tax_scheme_edit' object.pk %}">{{ object.full_name }}</a>
+                            </td>
+                           <td>
+                                <a href="{% url 'tax_scheme_edit' object.pk %}">{{ object.short_name }}</a>
+                            </td>   <td>
+                                <a href="{% url 'tax_scheme_edit' object.pk %}">{{ object.percent }}</a>
+                            </td>   <td>
+                                <a href="{% url 'tax_scheme_edit' object.pk %}">{{ object.recoverable }}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% paginate %}
+
+        </div>
+    </div>
+
+
+{% endblock %}

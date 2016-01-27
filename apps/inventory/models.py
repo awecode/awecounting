@@ -1,51 +1,98 @@
-import datetime
-
-from django.core.urlresolvers import reverse_lazy
 from django.db import models
 from jsonfield import JSONField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
-from django.db.models import F
-from apps.ledger.models import Account
-from apps.users.models import Company
+from django.db.models import F, Q
+from ..ledger.models import Account
+from ..users.models import Company
+from awecounting.utils.helpers import none_for_zero, zero_for_none
+from ..users.signals import company_creation
+from django.dispatch import receiver
 
-
-def get_next_voucher_no(cls, attr):
-    from django.db.models import Max
-
-    max_voucher_no = cls.objects.all().aggregate(Max(attr))[attr + '__max']
-    if max_voucher_no:
-        return max_voucher_no + 1
-    else:
-        return 1
-
-def none_for_zero(obj):
-    if not obj:
-        return None
-    else:
-        return obj
-
-def zero_for_none(obj):
-    if obj is None:
-        return 0
-    else:
-        return obj
 
 class Unit(models.Model):
     name = models.CharField(max_length=50)
     short_name = models.CharField(max_length=10, blank=True, null=True)
     company = models.ForeignKey(Company)
 
+    def get_base_conversions(self, exclude=None):
+        return self.base_conversions.all()
+
+    def get_conversions(self, exclude=None):
+        return self.conversions.all()
+
+    def get_all_conversions(self, exclude=[]):
+
+        base_conversions = UnitConversion.objects.filter(base_unit=self).exclude(pk__in=exclude)
+        conversions = UnitConversion.objects.filter(unit_to_convert=self).exclude(pk__in=exclude)
+        ret = []
+        for base_conversion in base_conversions:
+            ret.append(base_conversion)
+        for conversion in conversions:
+            conversion.multiple = 1 / conversion.multiple
+            ret.append(conversion)
+        return ret
+
+        qs = UnitConversion.objects.filter(base_unit=self).extra(
+            select={'multiple': '1 / multiple'}) | UnitConversion.objects.filter(
+            unit_to_convert=self)
+        return qs.exclude(pk__in=exclude)
+
+    def convertibles(self):
+        def find_convertibles(data, exclude, mul, base_unit=None):
+            # print ''
+            if not base_unit:
+                base_unit = self
+            # print 'Convertible for ' + str(base_unit)
+            # print 'Passed multiple is ' + str(mul)
+            if base_unit.id not in data.keys():
+                data[base_unit.id] = mul
+                # print data
+                # print 'Exclude: ' + str(exclude)
+                # print 'Conversions: ' + str(base_unit.get_all_conversions(exclude))
+                for conversion in base_unit.get_all_conversions(exclude):
+                    exclude.append(conversion.pk)
+                    unit = conversion.get_another_unit(base_unit.id)
+                    # print '\nConverting to ' + str(unit) + ' with multiple ' + str(conversion.multiple * mul)
+                    for key, val in find_convertibles(data, exclude, conversion.multiple * mul, unit).items():
+                        if not key in data.keys():
+                            # print 'writing: ' + str(key) + ' : ' + str(val)
+                            data[key] = val * conversion.multiple
+            return data
+        all_convertibles = find_convertibles({}, [], 1)
+        all_convertibles.pop(self.id, None)
+        return all_convertibles
+
+        # for conversion in self.get_conversions():
+        #     if conversion.base_unit_id not in data.keys():
+        #         for key, val in conversion.base_unit.convertibles(data).items():
+        #             data[key] = val / conversion.multiple
+        #     data[conversion.base_unit_id] = 1 / conversion.multiple
+        # return data
+
     def __unicode__(self):
         return self.name
 
-class UnitConverter(models.Model):
-    base_unit = models.ForeignKey(Unit, null=True, related_name='base_unit')
-    unit_to_convert = models.ForeignKey(Unit, null=True)
+
+@receiver(company_creation)
+def handle_company_creation(sender, **kwargs):
+    company = kwargs.get('company')
+    Unit.objects.create(name="Pieces", short_name='pcs', company=company)
+
+
+class UnitConversion(models.Model):
+    base_unit = models.ForeignKey(Unit, null=True, related_name='base_conversions')
+    unit_to_convert = models.ForeignKey(Unit, null=True, related_name='conversions')
     multiple = models.FloatField()
+    company = models.ForeignKey(Company)
+
+    def get_another_unit(self, unit_id):
+        if unit_id == self.base_unit_id:
+            return self.unit_to_convert
+        return self.base_unit
 
     def __unicode__(self):
-        return self.unit_to_convert.name + ' ' + '[' + str(self.multiple) + ':' + self.base_unit.name + ']'
+        return self.base_unit.name + ' - ' + self.unit_to_convert.name + ' : ' + str(self.multiple)
 
 
 class InventoryAccount(models.Model):
@@ -79,7 +126,7 @@ class Item(models.Model):
     account = models.OneToOneField(InventoryAccount, related_name='item', null=True)
     image = models.ImageField(upload_to='items', blank=True, null=True)
     size = models.CharField(max_length=250, blank=True, null=True)
-    unit = models.ForeignKey(Unit)
+    unit = models.ForeignKey(Unit, related_name="item_unit", blank=False, null=True, on_delete=models.SET_NULL)
     selling_rate = models.FloatField(blank=True, null=True)
     other_properties = JSONField(blank=True, null=True)
     ledger = models.ForeignKey(Account, null=True)
@@ -138,9 +185,11 @@ class Transaction(models.Model):
     def __str__(self):
         return str(self.account) + ' [' + str(self.dr_amount) + ' / ' + str(self.cr_amount) + ']'
 
+
 def alter(account, date, diff):
     Transaction.objects.filter(journal_entry__date__gt=date, account=account).update(
         current_balance=none_for_zero(zero_for_none(F('current_balance')) + zero_for_none(diff)))
+
 
 def set_transactions(model, date, *args):
     args = [arg for arg in args if arg is not None]
@@ -175,96 +224,3 @@ def set_transactions(model, date, *args):
         transaction.account.save()
         journal_entry.transactions.add(transaction)
         alter(transaction.account, date, diff)
-
-class Party(models.Model):
-    name = models.CharField(max_length=254)
-    address = models.CharField(max_length=254, blank=True, null=True)
-    phone_no = models.CharField(max_length=100, blank=True, null=True)
-    pan_no = models.CharField(max_length=50, blank=True, null=True)
-    account = models.ForeignKey(Account, null=True)
-    company = models.ForeignKey(Company)
-
-    def save(self, *args, **kwargs):
-        if not self.account_id:
-            account = Account(name=self.name, company=self.company)
-            account.save()
-            self.account = account
-        super(Party, self).save(*args, **kwargs)
-
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        verbose_name_plural = 'Parties'
-
-class Purchase(models.Model):
-    party = models.ForeignKey(Party)
-    voucher_no = models.PositiveIntegerField(blank=True, null=True)
-    credit = models.BooleanField(default=False)
-    date = models.DateField(default=datetime.datetime.today)
-    company = models.ForeignKey(Company)
-
-    def __init__(self, *args, **kwargs):
-        super(Purchase, self).__init__(*args, **kwargs)
-
-        if not self.pk and not self.voucher_no:
-            self.voucher_no = get_next_voucher_no(Purchase, 'voucher_no')
-
-    @property
-    def total(self):
-        grand_total = 0
-        for obj in self.rows.all():
-            total = obj.quantity * obj.rate
-            grand_total += total
-        return grand_total
-
-    def get_absolute_url(self):
-        return reverse_lazy('purchase-detail', kwargs={'id': self.pk})
-
-class PurchaseRow(models.Model):
-    sn = models.PositiveIntegerField()
-    item = models.ForeignKey(Item)
-    quantity = models.FloatField()
-    rate = models.FloatField()
-    discount = models.FloatField(default=0)
-    unit = models.ForeignKey(Unit)
-    purchase = models.ForeignKey(Purchase, related_name='rows')
-
-    def get_voucher_no(self):
-        return self.purchase.voucher_no
-
-    def get_absolute_url(self):
-        return reverse_lazy('purchase-detail', kwargs={'id': self.purchase.pk})
-
-class Sale(models.Model):
-    party = models.ForeignKey(Party, blank=True, null=True)
-    voucher_no = models.PositiveIntegerField(blank=True, null=True)
-    date = models.DateField(default=datetime.datetime.today)
-    company = models.ForeignKey(Company)
-
-    def get_absolute_url(self):
-        return reverse_lazy('sale-detail', kwargs={'id': self.pk})
-
-    @property
-    def total(self):
-        grand_total = 0 
-        for obj in self.rows.all():
-            total = obj.quantity * obj.rate
-            grand_total += total
-        return grand_total
-
-class SaleRow(models.Model):
-    sn = models.PositiveIntegerField()
-    item = models.ForeignKey(Item)
-    quantity = models.FloatField()
-    rate = models.FloatField()
-    discount = models.FloatField(default=0)
-    unit = models.ForeignKey(Unit)
-    sale = models.ForeignKey(Sale, related_name='rows')
-
-    def get_voucher_no(self):
-        return self.sale.voucher_no
-
-    def get_absolute_url(self):
-        return reverse_lazy('sale-detail', kwargs={'id': self.sale.pk})

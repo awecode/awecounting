@@ -1,0 +1,139 @@
+{% extends "_base.html" %}
+{% load staticfiles i18n filters %}
+
+{% block page-title %}
+    {% trans 'Detail' %} {% trans "Cheque Deposit" %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li>{% trans 'Bank' %}</li>
+    <li><a href="{% url 'bank:cheque_deposit_list' %}">{% trans 'Cheque Deposit' %}</a></li>
+    <li>{% trans 'Detail' %} {% trans 'Cheque Deposit' %}</li>
+{% endblock %}
+
+
+{% block content %}
+<div class="well">
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <label for="voucher-no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
+            <p>
+                {{ object.voucher_no }}
+            </p>
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <label for="date">{% trans 'Date' %}</label>
+            <p>
+                {{ object.date }}
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <label for="deposited_by">{% trans 'Deposited By' %}</label>
+            <p>
+                {{ object.deposited_by }}
+            </p>
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <label for="clearing_date">{% trans 'Clearing' %} {% trans 'Date' %}</label>
+            <p>
+                {{ object.clearing_date }}
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <label for="bank_account">{% trans 'Bank' %} {% trans 'Account' %}</label>
+            <p>
+                {{ object.bank_account }}
+            </p>
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <label for="benefactor">{% trans 'Benefactor' %}</label>
+            <p>
+                {{ object.benefactor }}
+            </p>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="well">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th >{% trans "SN" %}</th>
+            <th >{% trans "Cheque Number" %}</th>
+            <th >{% trans "Cheque Date" %}</th>
+            <th >{% trans "Drawee Bank" %}</th>
+            <th >{% trans "Branch/Address" %}</th>
+            <th >{% trans "Amount" %}</th>
+        </tr>
+        </thead>
+
+        <tbody>
+            {% for row in object.rows.all %}
+            <tr>
+                <td>
+                    {{ row.sn }}
+                </td>
+                <td>
+                    {{ row.cheque_number }}
+                </td>
+                <td>
+                    {{ row.cheque_date }}
+                </td>
+                <td>
+                    {{ row.drawee_bank }}
+                </td>
+                <td>
+                    {{ row.drawee_bank_address }}
+                </td>
+                <td>
+                    {{ row.amount }}
+                </td>
+            </tr>
+            {% endfor %}
+            <tr class="total">
+                <td colspan="5">
+                    {% trans 'Grand Total' %}
+                </td>
+                <td colspan="2">{{ object.total }}</td>
+
+            </tr>
+        </tbody>
+
+
+    </table>
+
+</div>
+<div class="well">
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <label for="party">{% trans 'Narration' %}</label>
+            <p>
+                {{ object.narration }}
+            </p>
+            <table class="table table-striped" data-bind="if: file">
+                <thead>
+                    <th>{% trans "File" %}</th>
+                    <th>{% trans "Description"%}</th>
+                    <th></th>
+                </thead>
+                <tbody data-bind="foreach: file">
+                {% for file in object.file.all %}
+                    <tr class="file">
+                        <td>
+                            <a href="{{ file.attachment.url }}">{{ file.filename }}</a>
+                        </td>
+                        <td>{{ file.description |default:'' }}</td>                              
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

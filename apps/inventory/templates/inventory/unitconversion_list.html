@@ -1,0 +1,50 @@
+{% extends "_base.html" %}
+{% load i18n staticfiles %}
+{% load filters %}
+
+{% block page-title %}{% trans 'Unit' %} {% trans 'Conversion' %}{% endblock %}
+{% block header-buttons %}        
+    <a class="btn btn-success btn-raised"
+               href="{% url 'unit_conversion_add' %}">{% trans 'New' %} {% trans 'Unit' %} {% trans 'Conversion' %}</a>
+{% endblock %}
+
+
+{% block content %}
+    <div class="well">
+            {% load pagination_tags %}
+            {% load sorting_tags %}
+            {% load filters %}
+
+            {% autosort object_list as sorted_objects %}
+            {% autopaginate sorted_objects 25 as paginated_objects %}
+
+            <table class="table table-striped">
+                <thead>
+                <th>{% anchor base_unit _('Base Unit') %}</th>
+                <th>{% anchor unit_to_convert _('Unit to convert') %}</th>
+                <th>{% trans _('Multiple') %}</th>
+
+                </thead>
+                <tbody>
+                {% for unit_conversion in paginated_objects %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'unit_conversion_edit' unit_conversion.pk %}">{{ unit_conversion.base_unit }}</a>
+                        </td>
+                        <td>
+                            {{ unit_conversion.unit_to_convert }}
+                        </td>
+                        <td>
+                            {{ unit_conversion.multiple }}
+                        </td>                        
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+    </div>
+
+            {% paginate %}
+
+
+
+{% endblock %}

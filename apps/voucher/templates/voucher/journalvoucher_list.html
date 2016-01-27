@@ -1,0 +1,57 @@
+{% extends '_base.html' %}
+{% load i18n filters %}
+
+{% block page-title %}{% trans 'Journal Voucher' %}{% endblock %}
+
+{% block header-buttons %}
+    <a href="{% url 'journal_voucher_add' %}" class="btn btn-success btn-raised">{% trans 'Add' %} {% trans 'Journal Voucher' %}</a>
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+
+            {% load pagination_tags %}
+            {% load sorting_tags %}
+
+            {% autosort object_list as sorted_objects %}
+            {% autopaginate sorted_objects 25 as paginated_objects %}
+            <div class="well">
+            <table class="table table-striped">
+                <thead>
+                <th>{% anchor voucher_no _('Voucher No') %}</th>
+                <th>{% anchor date _('Date') %}</th>
+                <th>{% anchor narration _('Narration') %}</th>
+                <th>{% anchor status _('Status') %}</th>
+                <th></th>
+                </thead>
+                <tbody>
+                {% for object in sorted_objects %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'journal_voucher_edit' object.pk %}">{{ object.voucher_no }}</a>
+                        </td>
+                       <td>
+                            <a href="{% url 'journal_voucher_edit' object.pk %}">{{ object.date }}</a>
+                        </td>   <td>
+                            <a href="{% url 'journal_voucher_edit' object.pk %}">{{ object.narration }}</a>
+                        </td>   <td>
+                            <a href="#">{{ object.status }}</a>
+                        </td>
+                        <td>
+                            <a href="{% url 'journal_detail' object.id %}">{% trans "Detail" %}</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+
+            {% paginate %}
+
+        </div>
+    </div>
+
+
+{% endblock %}

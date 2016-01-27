@@ -36,7 +36,7 @@ function init_selectize($select) {
 
         if (!Object.size($select.options)) {
             var appended_link = jQuery('<button/>', {
-                class: 'appended-link',
+                class: 'appended-link btn btn-success btn-raised',
                 href: $select.$input.data('url'),
                 title: 'Add New ' + name,
                 text: 'Add New ' + name,
@@ -91,11 +91,12 @@ appended_link_clicked = function (e) {
 }
 
 handle_ajax_response = function (obj) {
+
     var no_of_modals = $('.reveal-modal').length;
     $('#reveal-modal' + $('.reveal-modal').length).find($('.close-reveal-modal')).click();
     $select = window.last_active_select.pop();
 
-    if ($select.$input.data('bind')) {
+    if ($select.$input.data('bind') && $select.$input.data('bind').indexOf('selectize') != -1) {
         var matches = $select.$input.data('bind').match(/selectize: \$root\.([a-z_]+)/);
         if ($select.$input.data('to')) {
         }
@@ -112,7 +113,6 @@ handle_ajax_response = function (obj) {
                 vm[match].push(obj);
             }
             $select.addItem(obj.id);
-            
         }
     }
     else {
@@ -1478,30 +1478,42 @@ function hms_to_s(t) { // h:m:s
     return (a[0] * 60 + +a[1]) * 60 + +a[2]
 }
 
-alert = function () {
+bsalert = function () {
 }
 
-alert.clear = function () {
-    $('#alert_placeholder').html('');
+bsalert.message = function (message, type) {
+    $.notify({
+        message: message
+    }, {
+        type: type,
+        //allow_dismiss: false,
+        animate: {
+            enter: 'animated fadeInDown',
+            exit: 'animated fadeOutUp'
+        },
+    });
 }
 
-alert.warning = function (message) {
-    $('#alert_placeholder').html('<div data-alert class="alert alert-warning radius">' + message + '<a href="#" class="close">&times;</a></div>')
+bsalert.warning = function (message) {
+    bsalert.message(message, 'warning');
 }
 
-alert.success = function (message) {
-    $('#alert_placeholder').html('<div data-alert class="alert alert-success radius">' + message + '<a href="#" class="close">&times;</a></div>')
+bsalert.success = function (message) {
+    bsalert.message(message, 'success');
 }
 
-alert.info = function (message) {
-    $('#alert_placeholder').html('<div data-alert class="alert alert-info radius">' + message + '<a href="#" class="close">&times;</a></div>')
+bsalert.info = function (message) {
+    bsalert.message(message, 'info');
 }
 
-alert.error = alert.warning;
+bsalert.error = function (message) {
+    bsalert.message(message, 'danger');
+}
+
+bsalert.danger = bsalert.error;
 
 //http://stackoverflow.com/questions/346021/how-do-i-remove-objects-from-a-javascript-associative-array/9973592#9973592
 Object.remove_item = function (obj, key) {
-    console.log(obj);
     if (!obj.hasOwnProperty(key))
         return obj;
     if (isNaN(parseInt(key)) || !(obj instanceof Array))
@@ -1597,33 +1609,60 @@ function HashTable() {
 
 }
 
-$(document).ready(function () {
-    $(function () {
-        if ($('.selectize').length) {
-            var $select = $('.selectize').selectize();
-            $($select).each(function () {
-                init_selectize(this.selectize);
-            });
+function selectize_validation_fix($select) {
+
+    $select.$input.on('invalid', function (event) {
+        event.preventDefault();
+        $select.focus(true);
+        $select.$wrapper.addClass('invalid');
+    });
+
+    $select.$input.on('change', function (event) {
+        if (event.target.validity && event.target.validity.valid) {
+            $select.$wrapper.removeClass('invalid');
         }
+    });
 
-        $('.datepicker').datepicker({
-            format: 'yyyy-mm-dd',
-            startDate: '-3d'
-        });
+}
 
-        $('.flip-container').mouseenter(function () {
-            $(this).addClass('open');
-        });
-        $('.flip-container').mouseleave(function () {
-            $(this).removeClass('open');
-        });
 
-        $('.btn.warning, .btn-danger').click(function (e) {
-            var action = $(e.currentTarget).text().toLowerCase();
-            if (confirm('Are you sure you want to ' + action + '?')) {
-                return true;
-            } else return false;
+$(function () {
+    if ($('.selectize').length) {
+        var $select = $('.selectize').selectize();
+        $($select).each(function () {
+            init_selectize(this.selectize);
+            selectize_validation_fix(this.selectize);
         });
+    }
+
+    $('.flip-container').mouseenter(function () {
+        $(this).addClass('open');
+    });
+    $('.flip-container').mouseleave(function () {
+        $(this).removeClass('open');
+    });
+
+    $('.btn.warning, .btn-danger').click(function (e) {
+        var action = $(e.currentTarget).text().toLowerCase();
+        if (confirm('Are you sure you want to ' + action + '?')) {
+            return true;
+        } else return false;
     });
 });
 
+
+$(document).on('show.bs.modal', '.modal', function () {
+    var zIndex = 1040 + (10 * $('.modal:visible').length);
+    //$(this).removeAttr('tabindex');
+    $(this).css('z-index', zIndex);
+    setTimeout(function () {
+        $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+    }, 0);
+    // TODO not-working
+    $(this).find('input:text:first').focus();
+    $.material.init();
+});
+
+function update_url_with_id(id) {
+    history.pushState(id, id, window.location.href.replace('/create/', '').replace('/add/', '').replace('/create', '').replace('/add', '').replace(/\/+$/, "") + '/' + id + '/');
+}

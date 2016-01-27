@@ -1,15 +1,16 @@
 from django.core.urlresolvers import reverse_lazy
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, _user_has_perm
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Group
-from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-# from allauth.account.signals import user_logged_in
-# from django.dispatch import receiver
+from njango.fields import BSDateField, today, get_calendar
 
+from njango.nepdate import ad2bs, string_from_tuple, tuple_from_string, bs2ad, bs
+
+import os
 
 
 class UserManager(BaseUserManager):
@@ -52,7 +53,7 @@ class Company(models.Model):
     name = models.CharField(max_length=254)
     location = models.TextField()
     type_of_business = models.CharField(max_length=254)
-    
+
     def save(self, *args, **kwargs):
         new = False
         if not self.pk:
@@ -60,6 +61,7 @@ class Company(models.Model):
         ret = super(Company, self).save(*args, **kwargs)
         if new:
             from .signals import company_creation
+
             company_creation.send(sender=None, company=self)
         return ret
 
@@ -163,51 +165,26 @@ class Role(models.Model):
         unique_together = ('user', 'group', 'company')
 
 
-class StaffOnlyMixin(object):
-    def dispatch(self, request, *args, **kwargs):
-        u = request.user
-        if u.is_authenticated():
-            # if bool(u.groups.filter(name__in=group_names)) | u.is_superuser():
-            # return True
-            if bool(u.groups.filter(name='Staff')):
-                return super(StaffOnlyMixin, self).dispatch(request, *args, **kwargs)
-        raise PermissionDenied()
-
-
-# def group_required(*group_names):
-#     """Requires user membership in at least one of the groups passed in."""
+# def group_required(*groups):
+#     def _dec(view_function):
 # 
-#     def in_groups(u):
-#         if u.is_authenticated():
-#             # if bool(u.groups.filter(name__in=group_names)) | u.is_superuser():
-#             # return True
-#             if bool(u.groups.filter(name__in=group_names)):
-#                 return True
-#             raise PermissionDenied()
-#         return False
+#         def _view(request, *args, **kwargs):
+#             allowed = False
+#             for role in request.roles:
+#                 if role.group.name in groups:
+#                     allowed = True
+#             if allowed:
+#                 return view_function(request, *args, **kwargs)
+#             else:
+#                 if request.user.is_authenticated():
+#                     raise PermissionDenied()
+#                 else:
+#                     return redirect(reverse_lazy('users:login'))
 # 
-#     return user_passes_test(in_groups)
+#         return _view
+# 
+#     return _dec
 
-
-def group_required(*groups):
-    def _dec(view_function):
-
-        def _view(request, *args, **kwargs):
-            allowed = False
-            for role in request.roles:
-                if role.group.name in groups:
-                    allowed = True
-            if allowed:
-                return view_function(request, *args, **kwargs)
-            else:
-                if request.user.is_authenticated():
-                    raise PermissionDenied()
-                else:
-                    return redirect(reverse_lazy('users:login'))
-
-        return _view
-
-    return _dec
 
 class GroupProxy(Group):
     class Meta:
@@ -257,3 +234,79 @@ if 'rest_framework.authtoken' in settings.INSTALLED_APPS:
     def generate_token():
         for user in User.objects.all():
             Token.objects.get_or_create(user=user)
+
+
+class CompanySetting(models.Model):
+    company = models.OneToOneField(Company, related_name='settings')
+    unique_voucher_number = models.BooleanField(default=True)
+    use_nepali_fy_system = models.BooleanField(default=True)
+    voucher_number_start_date = BSDateField(default=today)
+    # voucher_number_restart_years = models.IntegerField(default=1)
+    # voucher_number_restart_months = models.IntegerField(default=0)
+    # voucher_number_restart_days = models.IntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        # if self.use_nepali_fy_system:
+        ret = super(CompanySetting, self).save(*args, **kwargs)
+        return ret
+
+    def get_fy_from_date(self, date):
+        calendar = get_calendar()
+        if type(date) == str or type(date) == unicode:
+            date = tuple_from_string(date)
+        if calendar == 'ad':
+            date = ad2bs(date)
+        if type(date) == tuple:
+            date = string_from_tuple(date)
+        month = int(date.split('-')[1])
+        year = int(date.split('-')[0])
+        if self.use_nepali_fy_system:
+            if month < 4:
+                year -= 1
+        else:
+            day = int(date.split('-')[2])
+            if month <= self.voucher_number_start_date.month and day < self.voucher_number_start_date.day:
+                year -= 1
+        return year
+
+    def get_fy_start(self, date=None):
+        year = self.get_fy_from_date(date)
+        if self.use_nepali_fy_system:
+            fiscal_year_start = str(year) + '-04-01'
+        else:
+            fiscal_year_start = str(year) + '-' + str(self.voucher_number_start_date.month) + '-' + str(
+                self.voucher_number_start_date.day)
+        tuple_value = tuple_from_string(fiscal_year_start)
+        calendar = get_calendar()
+        if calendar == 'ad':
+            tuple_value = bs2ad(tuple_value)
+        return tuple_value
+
+    def get_fy_end(self, date=None):
+
+        year = self.get_fy_from_date(date)
+        if self.use_nepali_fy_system:
+            fiscal_year_end = str(int(year) + 1) + '-03-' + str(bs[int(year) + 1][2])
+        else:
+            # import ipdb
+            # ipdb.set_trace()
+            fiscal_year_end = str(int(year) + 1) + '-' + str(self.voucher_number_start_date.month) + '-' + str(12)
+        tuple_value = tuple_from_string(fiscal_year_end)
+        calendar = get_calendar()
+        if calendar == 'ad':
+            tuple_value = bs2ad(tuple_value)
+        return tuple_value
+
+    def __unicode__(self):
+        return self.company.name
+
+
+class File(models.Model):
+    attachment = models.FileField(upload_to='cheque_payments/%Y/%m/%d', blank=True, null=True)
+    description = models.TextField(max_length=254, null=True, blank=True)
+
+    def filename(self):
+        return os.path.basename(self.attachment.name)
+
+    def __str__(self):
+        return self.description or self.filename()

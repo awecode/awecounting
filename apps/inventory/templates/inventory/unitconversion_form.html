@@ -1,0 +1,27 @@
+{% extends base_template %}
+{% load i18n %}
+
+{% block page-title %}{{ scenario }} {{ form.instance.base_unit.name }}{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'unit_conversion_list' %}">{% trans 'Unit' %} {% trans 'Conversion' %}</a></li>
+    <li>{{ scenario }} {{ form.instance.base_unit.name }}</li>
+{% endblock %}
+
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        <div class="well">
+        {{ form.non_field_errors }}
+
+        {{ form.as_p }}
+        </div>
+
+        <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
+
+        {% if form.instance.id %}
+            <a href="{% url 'unit_conversion_delete' form.instance.id %}" class="btn btn-danger btn-raised">{% trans 'Delete' %}</a>
+        {% endif %}
+    </form>
+
+{% endblock %}

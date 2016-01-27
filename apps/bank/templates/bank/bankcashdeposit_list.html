@@ -1,0 +1,53 @@
+{% extends "_base.html" %}
+{% load i18n %}
+
+{% block page-title %}{% trans 'Cash Deposits' %}{% endblock %}
+
+{% block header-buttons %}
+    <a href="{% url 'bank:cash_deposit_add' %}" class="btn btn-success btn-raised">{% trans 'New' %} {% trans 'Cash Deposit' %}</a>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li>{% trans 'Bank' %}</li>
+    <li><a href="{% url 'bank:cash_deposit_list' %}"></a>{% trans 'Cash Deposits' %}</li>
+{% endblock %}
+
+{% block content %}
+
+    {% load pagination_tags %}
+    {% load sorting_tags %}
+
+    <br>
+
+    {% autosort object_list as sorted_objects %}
+    {% autopaginate sorted_objects 25 as paginated_objects %}
+    <div class="well">
+    <table class="table table-striped">
+        <thead>
+        <th>{% anchor date 'Date' %}</th>
+        <th>{% anchor bank_account 'Bank Account' %}</th>
+        <th>{% anchor benefactor 'Benefactor (Given By)' %}</th>
+        <th>{% anchor amount 'Amount' %}</th>
+        <th>{% trans 'Actions' %}</th>
+        </thead>
+        <tbody>
+        {% for item in paginated_objects %}
+            <tr>
+                <td class="link">
+                    {{ item.date }}
+                </td>
+                <td>{{ item.bank_account }}</td>
+                <td>{{ item.benefactor }}</td>
+                <td>{{ item.amount }}</td>
+                <td>
+                    <a href="{% url 'bank:cash_deposit_edit' item.id %}">Edit</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% paginate %}
+
+
+{% endblock %}

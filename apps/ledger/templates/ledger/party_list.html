@@ -1,0 +1,51 @@
+{% extends "_base.html" %}
+{% load i18n staticfiles filters %}
+
+{% block page-title %}{% trans 'Parties' %}{% endblock %}
+
+{% block header-buttons %}
+    <a class="btn btn-success btn-raised" href="{% url 'party_add' %}">{% trans 'New' %} {% trans 'Party' %}</a>
+{% endblock %}
+
+{% block content %}
+    <div class="well">
+
+        {% load pagination_tags %}
+        {% load sorting_tags %}
+        {% load filters %}
+
+        {% autosort object_list as sorted_objects %}
+        {% autopaginate sorted_objects 25 as paginated_objects %}
+
+        <table class="table table-striped">
+            <thead>
+            <th>{% anchor name _('Name') %}</th>
+            <th>{% anchor phone_no _('Phone No.') %}</th>
+            <th>{% anchor pan_no _('PAN No.') %}</th>
+            <th>{% trans 'Ledgers' %}</th>
+            </thead>
+            <tbody>
+            {% for party in paginated_objects %}
+                <tr>
+                    <td>
+                        <a href="{% url 'party_edit' party.pk %}">{{ party.name }}</a>
+                    </td>
+                    <td>
+                        {{ party.phone_no|tel }}
+                    </td>
+                    <td>
+                        {{ party.pan_no }}
+                    </td>
+                    <td>
+                        <a href="{% url 'view_account' party.account.pk %}">{% trans 'View Ledger' %}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% paginate %}
+
+    </div>
+
+{% endblock %}
