@@ -2,6 +2,7 @@ import json
 from django.core.urlresolvers import reverse_lazy
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from apps.ledger.models import set_transactions, Account
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, OwnerMixin, AccountantMixin, StaffMixin, \
     group_required, TableObjectMixin, UpdateView, CreateView, AjaxableResponseMixin
 from django.views.generic import ListView
@@ -27,7 +28,6 @@ class EntryCreate(EntryView, TableObjectMixin):
 
 
 class EntryDetailView(EntryView, DetailView):
-
     def get_context_data(self, **kwargs):
         context = super(EntryDetailView, self).get_context_data(**kwargs)
         context['rows'] = EntryRow.objects.select_related('employee').filter(entry=self.object)
@@ -62,11 +62,15 @@ def save_entry(request):
                           'pay_heading_id': row.get('pay_heading_id'), 'amount': row.get('amount'),
                           'hours': row.get('hours'), 'tax': row.get('tax'), 'remarks': row.get('remarks'),
                           'entry': obj}
-                print values
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
                 dct['rows'][ind] = submodel.id
+                set_transactions(submodel, obj.created,
+                                 ['dr', submodel.pay_heading, submodel.amount],
+                                 ['cr', Account.objects.get(name='Payroll Tax', company=request.company), submodel.tax],
+                                 ['cr', submodel.employee, submodel.amount - submodel.tax]
+                                 )
         delete_rows(params.get('table_view').get('deleted_rows'), model)
     except Exception as e:
         dct = write_error(dct, e)
@@ -93,4 +97,3 @@ class EmployeeUpdate(EmployeeView, AccountantMixin, UpdateView):
 
 class EmployeeDelete(EmployeeView, AccountantMixin, DeleteView):
     pass
-
