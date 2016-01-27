@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^users/', include('apps.users.urls', namespace='users')),
     url(r'^share/', include('apps.share.urls', namespace='share')),
     url(r'^tax/', include('apps.tax.urls')),
+    url(r'^payroll/', include('apps.payroll.urls')),
     url(r'^inventory/', include('apps.inventory.urls')),
     url(r'^ledger/', include('apps.ledger.urls')),
     url(r'^voucher/', include('apps.voucher.urls')),

@@ -1,0 +1,51 @@
+{% extends '_base.html' %}
+{% load i18n filters %}
+
+{% block page-title %}{% trans 'Entry' %}{% endblock %}
+
+{% block header-buttons %}
+    <a href="{% url 'entry_add' %}" class="btn btn-success btn-raised">{% trans 'Add' %} {% trans 'Entry' %}</a>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li>{% trans 'Payroll' %}</li>
+    <li><a href="{% url 'entry_list' %}"></a>{% trans 'Entry' %}</li>
+{% endblock %}
+
+{% block content %}
+
+            {% load pagination_tags %}
+            {% load sorting_tags %}
+
+            {% autosort object_list as sorted_objects %}
+            {% autopaginate sorted_objects 25 as paginated_objects %}
+            <div class="well">
+            <table class="table table-striped ">
+                <thead>
+                    <th>{% anchor entry_no 'Entry No.' %}</th>
+                    <th>{% anchor created 'Created On' %}</th>
+                    <th>{% anchor modified 'Modified On' %}</th>
+                    <th>{% trans "Actions" %}</th>
+                </thead>
+                <tbody>
+                {% for object in sorted_objects %}
+                        <tr>
+                            <td class='link'>
+                                <a href="{% url 'entry_detail' object.pk %}">{{ object.entry_no }}</a>
+                            </td>
+                            <td>{{ object.created }}</td>
+                            <td>{{ object.modified }}</td>
+                            <td>
+                                <a href="{% url 'entry_edit' object.id %}">Edit</a>
+                            </td>
+                        </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+
+            {% paginate %}
+
+
+
+{% endblock %}

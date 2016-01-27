@@ -3,6 +3,9 @@ from awecounting.utils.helpers import zero_for_none
 from apps.ledger.models import Account
 from apps.users.models import Company
 from njango.fields import BSDateField, today
+from django.core.urlresolvers import reverse_lazy
+from awecounting.utils.helpers import get_next_voucher_no
+
 
 
 class Entry(models.Model):
@@ -12,7 +15,22 @@ class Entry(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
-        return '/payroll/' + str(self.id)
+        return reverse_lazy('entry_edit', kwargs={'pk': self.id})
+
+    def __init__(self, *args, **kwargs):
+        super(Entry, self).__init__(*args, **kwargs)
+
+        if not self.pk and not self.entry_no:
+            self.entry_no = get_next_voucher_no(Entry, self.company_id, attr='entry_no')
+
+    @property
+    def total(self):
+        grand_total = 0
+        for obj in self.rows.all():
+            total = obj.amount
+            grand_total += total
+        return grand_total
+    
 
 
 class EntryRow(models.Model):
