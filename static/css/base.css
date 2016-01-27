@@ -554,3 +554,13 @@ td.link a{
 .yellow{
     color: yellow !important;
 }
+
+.body-center {
+   width: 400px;
+   height: 400px;
+   position: absolute;
+   left: 50%;
+   top: 50%; 
+   margin-left: -200px;
+   margin-top: -200px;
+}
