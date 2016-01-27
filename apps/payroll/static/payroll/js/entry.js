@@ -15,23 +15,23 @@ function EntryViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.bank_account_array = ko.observableArray(data);
+            self.bank_accounts = ko.observableArray(data);
         }
     });
 
     $.ajax({
-        url: '/ledger/api/account.json',
+        url: '/ledger/api/employee/account.json',
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.benefactor_array = ko.observableArray(data);
+            self.employees = ko.observableArray(data);
         }
     });
 
     self.table_view = new TableViewModel({rows: data.rows}, EntryRowViewModel);
 
     for (var k in data) {
-            self[k] = ko.observable(data[k]);
+        self[k] = ko.observable(data[k]);
     }
 
     self.id.subscribe(function (id) {
@@ -96,20 +96,12 @@ function EntryRowViewModel(row) {
     self.id = ko.observable();
     self.amount = ko.observable();
     self.hours = ko.observable();
+    self.employee_id = ko.observable();
     self.employee = ko.observable();
+    self.pay_heading_id = ko.observable();
     self.pay_heading = ko.observable();
     self.tax = ko.observable();
     self.remarks = ko.observable();
-
-    $.ajax({
-        url: '/ledger/api/account.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.employees = ko.observableArray(data);
-            self.pay_headings = ko.observableArray(data);
-        }
-    });
 
     for (var k in row)
         self[k] = ko.observable(row[k]);

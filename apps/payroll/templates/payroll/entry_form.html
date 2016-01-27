@@ -44,7 +44,7 @@
                     <th>{% trans "Tax" %}</th>
                     <th>{% trans "Remarks" %}</th>
                     <th></th>
-                    </tr>
+                </tr>
                 </thead>
 
                 <tbody>
@@ -54,12 +54,13 @@
                         <span data-bind="text:  $index()+1, localize: 1"> </span>
                     </td>
                     <td>
-                            <select data-bind="selectize: employees, value: employee" id="employee" 
-                            data-url="{% url 'bank:bankaccount_add' %}"></select>
+                        <select data-bind="selectize: $root.employees, value: employee_id, object: employee" id="employee"
+                                data-url="{% url 'employee_add' %}"></select>
                     </td>
                     <td>
-                            <select data-bind="selectize: pay_headings, value: pay_heading" id="pay_heading" 
-                            data-url="{% url 'bank:bankaccount_add' %}"></select>
+                        <select data-bind="selectize: $root.bank_accounts, value: pay_heading_id, object: pay_heading_id"
+                                id="pay_heading" data-name="Bank Account"
+                                data-url="{% url 'bank:bankaccount_add' %}"></select>
                     </td>
                     <td data-bind="editableText: amount, numeric: true"></td>
                     <td data-bind="editableText: hours"></td>
@@ -86,7 +87,7 @@
             </a>
         </div>
 
-        
+
         <input type="submit" class="btn btn-info btn-raised" value="{% trans 'Save' %}">
     </form>
 {% endblock %}

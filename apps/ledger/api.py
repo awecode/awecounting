@@ -8,7 +8,7 @@ class AccountListAPI(generics.ListCreateAPIView):
     serializer_class = AccountSerializer
 
     def get_queryset(self):
-        queryset = Account.objects.all()
+        queryset = Account.objects.filter(company=self.request.company)
         if 'category' in self.kwargs:
             category_name = self.kwargs['category'].replace('_', ' ').title()
             queryset = queryset.filter(category__name=category_name)

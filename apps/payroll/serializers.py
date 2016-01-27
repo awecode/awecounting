@@ -3,6 +3,9 @@ from apps.payroll.models import Entry, EntryRow, Employee
 
 
 class EntryRowSerializer(serializers.ModelSerializer):
+    employee_id = serializers.ReadOnlyField(source='employee.id')
+    pay_heading_id = serializers.ReadOnlyField(source='pay_heading.id')
+
     class Meta:
         model = EntryRow
 

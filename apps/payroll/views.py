@@ -58,8 +58,8 @@ def save_entry(request):
             if invalid(row, ['employee', 'pay_heading']):
                 continue
             else:
-                values = {'sn': ind + 1, 'employee_id': row.get('employee'),
-                          'pay_heading_id': row.get('pay_heading'), 'amount': row.get('amount'),
+                values = {'sn': ind + 1, 'employee_id': row.get('employee_id'),
+                          'pay_heading_id': row.get('pay_heading_id'), 'amount': row.get('amount'),
                           'hours': row.get('hours'), 'tax': row.get('tax'), 'remarks': row.get('remarks'),
                           'entry': obj}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
