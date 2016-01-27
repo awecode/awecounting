@@ -30,7 +30,6 @@ class Entry(models.Model):
             total = obj.amount
             grand_total += total
         return grand_total
-    
 
 
 class EntryRow(models.Model):
