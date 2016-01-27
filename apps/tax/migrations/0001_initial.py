@@ -15,10 +15,10 @@ class Migration(migrations.Migration):
             name='TaxScheme',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=100)),
+                ('full_name', models.CharField(max_length=100)),
                 ('short_name', models.CharField(max_length=5, null=True, blank=True)),
                 ('percent', models.FloatField()),
-                ('recoverable', models.FloatField(default=False)),
+                ('recoverable', models.BooleanField(default=False)),
                 ('company', models.ForeignKey(to='users.Company')),
             ],
         ),
