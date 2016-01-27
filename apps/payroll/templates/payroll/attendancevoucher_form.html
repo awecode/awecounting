@@ -1,0 +1,30 @@
+{% extends base_template %}
+{% load i18n %}
+
+{% block page-title %}{{ scenario }} {% trans "Attendance Voucher" %}{% endblock %}
+
+{% block breadcrumbs %}
+    <li>{% trans "Payroll" %}</li>
+    <li><a href="{% url 'attendance_voucher_list' %}">{% trans 'Attendance Voucher' %}</a></li>
+    <li>{{ scenario }} {% trans 'Attendance Voucher' %}</li>
+{% endblock %}
+
+{% block content %}
+    <form method="POST">
+        <div class="well">
+            {% csrf_token %}
+
+            {{ form.non_field_errors }}
+
+            {{ form.as_p }}
+
+        </div>
+
+        <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
+
+        {% if form.instance.id %}
+            <a href="{% url 'attendance_voucher_delete' form.instance.id %}" class="btn btn-danger btn-raised">{% trans 'Delete' %}</a>
+        {% endif %}
+    </form>
+
+{% endblock %}

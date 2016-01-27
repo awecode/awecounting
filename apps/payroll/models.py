@@ -103,10 +103,10 @@ class Employee(models.Model):
 
 class AttendanceVoucher(models.Model):
     voucher_no = models.CharField(max_length=50)
-    date = models.DateField()
+    date = BSDateField(default=today)
     employee = models.ForeignKey(Employee)
-    from_date = models.DateField()
-    to_date = models.DateField()
+    from_date = BSDateField(default=today)
+    to_date = BSDateField(default=today)
     total_working_days = models.FloatField(null=True, blank=True)
     full_present_day = models.FloatField(null=True, blank=True)
     half_present_day = models.FloatField(null=True, blank=True)
@@ -119,6 +119,12 @@ class AttendanceVoucher(models.Model):
 
     def total_present_days(self):
         return self.full_present_day + self.half_present_day * self.half_multiplier + self.early_late_attendance_day * self.early_late_multiplier
+
+    def __init__(self, *args, **kwargs):
+        super(AttendanceVoucher, self).__init__(*args, **kwargs)
+
+        if not self.pk and not self.voucher_no:
+            self.entry_no = get_next_voucher_no(AttendanceVoucher, self.company_id)
 
 
 class WorkTimeVoucher(models.Model):
