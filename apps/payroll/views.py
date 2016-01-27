@@ -7,9 +7,9 @@ from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, O
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
-from .models import Entry, EntryRow, Employee
+from .models import Entry, EntryRow, Employee, AttendanceVoucher
 from .serializers import EntrySerializer
-from .forms import EmployeeForm
+from .forms import EmployeeForm, AttendanceVoucherForm
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
 
 
@@ -93,3 +93,24 @@ class EmployeeUpdate(EmployeeView, AccountantMixin, UpdateView):
 class EmployeeDelete(EmployeeView, AccountantMixin, DeleteView):
     pass
 
+
+class AttendanceVoucherView(CompanyView):
+    model = AttendanceVoucher
+    success_url = reverse_lazy('attendance_voucher_list')
+    form_class = AttendanceVoucherForm
+
+
+class AttendanceVoucherList(AttendanceVoucherView, StaffMixin, ListView):
+    pass
+
+
+class AttendanceVoucherCreate(AjaxableResponseMixin, AccountantMixin, AttendanceVoucherView, CreateView):
+    pass
+
+
+class AttendanceVoucherUpdate(AttendanceVoucherView, AccountantMixin, UpdateView):
+    pass
+
+
+class AttendanceVoucherDelete(AttendanceVoucherView, AccountantMixin, DeleteView):
+    pass

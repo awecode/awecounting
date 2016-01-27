@@ -15,6 +15,11 @@ web_urls = [
     url(r'^employee/add/$', views.EmployeeCreate.as_view(), name='employee_add'),
     url(r'^employee/edit/(?P<pk>\d+)/$', views.EmployeeUpdate.as_view(), name='employee_edit'),
     url(r'^employee/delete/(?P<pk>\d+)/$', views.EmployeeDelete.as_view(), name='employee_delete'),
+
+    url(r'^attendance_voucher/$', views.AttendanceVoucherList.as_view(), name='attendance_voucher_list'),
+    url(r'^attendance_voucher/add/$', views.AttendanceVoucherCreate.as_view(), name='attendance_voucher_add'),
+    url(r'^attendance_voucher/edit/(?P<pk>\d+)/$', views.AttendanceVoucherUpdate.as_view(), name='attendance_voucher_edit'),
+    url(r'^attendance_voucher/delete/(?P<pk>\d+)/$', views.AttendanceVoucherDelete.as_view(), name='attendance_voucher_delete'),
 ]
 
 api_urls = [
