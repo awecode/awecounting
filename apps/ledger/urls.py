@@ -12,6 +12,8 @@ web_urls = [
     url(r'^party/edit/(?P<pk>\d+)/$', views.PartyUpdate.as_view(), name='party_edit'),
     url(r'^party/delete/(?P<pk>\d+)/$', views.PartyDelete.as_view(), name='party_delete'),
 
+    url(r'^categories/$', views.list_categories, name='list_categories'),
+
     url(r'^account/$', views.AccountList.as_view(), name='account_list'),
     url(r'^account/add/$', views.AccountCreate.as_view(), name='account_add'),
     url(r'^account/edit/(?P<pk>\d+)/$', views.AccountUpdate.as_view(), name='account_edit'),

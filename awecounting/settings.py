@@ -12,6 +12,7 @@ STATICFILES_DIRS = (
 INSTALLED_APPS = (
     'apps.users',
     'modeltranslation',
+    'mptt',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

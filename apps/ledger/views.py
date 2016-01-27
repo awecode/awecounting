@@ -1,12 +1,13 @@
 from django.shortcuts import render, get_object_or_404
 
-from apps.ledger.models import Account, JournalEntry
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView
-from .models import Party
+from .models import Party, Category, Account, JournalEntry
 from .forms import PartyForm, AccountForm
 
+
+# TODO Roshan - Convert following view methods to class based views
 
 def list_accounts(request):
     objects = Account.objects.filter(company=request.company)
@@ -26,6 +27,11 @@ def view_account(request, id):
         'journal_entries': journal_entries,
         'base_template': base_template,
     })
+
+
+def list_categories(request):
+    categories = Category.objects.filter(company=request.company)
+    return render(request, 'ledger/list_categories.html', {'categories': categories})
 
 
 # Party CRUD with mixins

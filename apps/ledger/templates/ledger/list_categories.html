@@ -1,0 +1,32 @@
+{% extends "_base.html" %}
+{% load i18n %}
+
+{% block page-title %}{% trans 'Ledger Categories' %}{% endblock %}
+
+{% block header-buttons %}
+    {#    <a href="{% url 'employee_add' %}" class="btn btn-success btn-raised">{% trans 'Add' %} {% trans 'Employee' %}</a>#}
+    {#    <a class="btn" href="{% url 'create_category' %}">Create New Category</a>#}
+{% endblock %}
+
+{% block content %}
+
+    {% load mptt_tags %}
+    <div class="well">
+        <ul>
+            {% recursetree categories %}
+                <li>
+                    {#                <a href="{% url 'update_category' node.id %}">{{ node.name }}</a>#}
+                    {{ node.name }}
+                    {% if not node.is_leaf_node %}
+                        <ul class="children">
+                            {{ children }}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endrecursetree %}
+        </ul>
+    </div>
+
+
+
+{% endblock %}
