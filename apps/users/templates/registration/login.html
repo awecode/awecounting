@@ -1,42 +1,86 @@
-{% extends '_base.html' %}
-{% load i18n %}
+{% load i18n static %}
 
-{% block page-title %}{% trans 'Login' %}{% endblock %}
-{% block content %}
-    <div>
-        <div class="well">
-        {% if form.errors %}
-            <p class="alert-error" role='alert'>{% trans "Your username and password didn't match. Please try again." %}</p>
-        {% endif %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <form method="post" action="{% url 'users:login' %}"
-              id="user_login_new">{% csrf_token %}
-            {% if state %}
-                {{ state }}
-            {% endif %}
-            {% if next %}
-                <input type="hidden" name="next" value="{{ next }}"/>
-            {% endif %}
-            <div class="required">
-                <label for="id_username">{% trans 'Username:' %}</label>
-                <input type="text" class="form-control" name="username" id="id_username" value="{{ username }}" required
-                       autofocus/>
-            </div>
+    <title>
+        {% trans 'Login' %} | {% trans 'Awecounting' %}
+    </title>
 
-            <div class="form-group">
-                <label for="id_password">{% trans 'Password:' %}</label>
-                <input type="password" name="password" class="form-control" id="id_password" value="{{ username }}" required/>
-            </div>
+    <link rel="stylesheet" href='{% static "css/bootstrap.min.css" %}' type="text/css" media="all">
+    <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-material-design.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ripples.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/material.awe.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
+</head>
+<body>
+
+<div class='container'>
+
+    <div id="content" class="body-center">
+        {% block content %}
             <div>
-                <input type="checkbox" id="remember_me" name="remember_me" value="true"/>
-                <label for="remember_me">{% trans 'Remember Me' %}</label>
-            </div>
-            </div>
-            <div>
-                <input type="submit" value="Log In" class="btn btn-info btn-raised"/>
-            </div>
+                <div class="well">
+                    {% if form.errors %}
+                        <p class="alert-error"
+                           role='alert'>{% trans "Your username and password didn't match. Please try again." %}</p>
+                    {% endif %}
 
-        </form>
+                    <form method="post" action="{% url 'users:login' %}"
+                          id="user_login_new">{% csrf_token %}
+                        {% if state %}
+                            {{ state }}
+                        {% endif %}
+                        {% if next %}
+                            <input type="hidden" name="next" value="{{ next }}"/>
+                        {% endif %}
+                        <div class="required">
+                            <label for="id_username">{% trans 'Username:' %}</label>
+                            <input type="text" class="form-control" name="username" id="id_username" value="{{ username }}"
+                                   required
+                                   autofocus/>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_password">{% trans 'Password:' %}</label>
+                            <input type="password" name="password" class="form-control" id="id_password" value="{{ username }}"
+                                   required/>
+                        </div>
+
+                        <div>
+                            <input type="checkbox" id="remember_me" name="remember_me" value="true"/>
+                            <label for="remember_me">{% trans 'Remember Me' %}</label>
+                        </div>
+                </div>
+                <div>
+                    <input type="submit" value="Log In" class="btn btn-info btn-raised"/>
+                </div>
+
+                </form>
+            </div>
+        {% endblock %}
+        
     </div>
-{% endblock %}
+
+    {% block footer %}
+        <div id="footer"></div>
+    {% endblock %}
+
+</div>
+<script src='{% static "js/libs/jquery-2.1.4.min.js" %}'></script>
+<script src='{% static "js/libs/bootstrap.min.js" %}'></script>
+<script src="{% static 'js/libs/material.min.js' %}"></script>
+<script src="{% static 'js/libs/ripples.min.js' %}"></script>
+
+<script>
+    $.material.init();
+</script>
+
+</body>
+</html>
