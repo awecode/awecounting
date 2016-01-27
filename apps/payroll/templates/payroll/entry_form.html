@@ -55,12 +55,12 @@
                     </td>
                     <td>
                         <select data-bind="selectize: $root.employees, value: employee_id, object: employee" id="employee"
-                                data-url="{% url 'employee_add' %}"></select>
+                                data-url="{% url 'employee_add' %}?ret=account"></select>
                     </td>
                     <td>
                         <select data-bind="selectize: $root.pay_headings, value: pay_heading_id, object: pay_heading"
                                 id="pay_heading" data-name="Bank Account"
-                                data-url="{% url 'bank:bankaccount_add' %}"></select>
+                                data-url="{% url 'bank:bankaccount_add' %}?ret=account"></select>
                     </td>
                     <td data-bind="editableText: amount, numeric: true"></td>
                     <td data-bind="editableText: hours"></td>

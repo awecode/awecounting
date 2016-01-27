@@ -63,7 +63,11 @@ class AjaxableResponseMixin(object):
     def form_valid(self, form):
         response = super(AjaxableResponseMixin, self).form_valid(form)
         if self.request.is_ajax():
-            return json_from_object(self.object)
+            if 'ret' in self.request.GET:
+                obj = getattr(self.object, self.request.GET['ret'])
+            else:
+                obj = self.object
+            return json_from_object(obj)
         else:
             return response
 
