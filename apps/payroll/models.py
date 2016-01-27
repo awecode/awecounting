@@ -2,6 +2,7 @@ from django.db import models
 from awecounting.utils.helpers import zero_for_none
 from apps.ledger.models import Account
 from apps.users.models import Company
+from njango.fields import BSDateField, today
 
 
 class Entry(models.Model):
@@ -47,8 +48,6 @@ class Employee(models.Model):
         for row in work_time_voucher_rows:
             row.paid = True
             row.save()
-
-
 
     def get_unpaid_days(self):
         total = 0
