@@ -12,6 +12,10 @@ class AccountListAPI(generics.ListCreateAPIView):
         if 'category' in self.kwargs:
             category_name = self.kwargs['category'].replace('_', ' ').title()
             queryset = queryset.filter(category__name=category_name)
+        if 'categories' in self.request.query_params:
+            categories = self.request.query_params['categories'].split(',')
+            categories = [category.replace('_', ' ').title() for category in categories]
+            queryset = queryset.filter(category__name__in=categories)
         return queryset
 
 

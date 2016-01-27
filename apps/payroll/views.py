@@ -55,13 +55,14 @@ def save_entry(request):
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         for ind, row in enumerate(params.get('table_view').get('rows')):
-            if invalid(row, ['employee', 'pay_heading']):
+            if invalid(row, ['employee_id', 'pay_heading_id']):
                 continue
             else:
                 values = {'sn': ind + 1, 'employee_id': row.get('employee_id'),
                           'pay_heading_id': row.get('pay_heading_id'), 'amount': row.get('amount'),
                           'hours': row.get('hours'), 'tax': row.get('tax'), 'remarks': row.get('remarks'),
                           'entry': obj}
+                print values
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)

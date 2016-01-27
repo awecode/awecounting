@@ -11,11 +11,12 @@ function EntryViewModel(data) {
     self.entry_no = ko.observable();
 
     $.ajax({
-        url: '/ledger/api/bank_account/account.json',
+        url: '/ledger/api/account.json',
         dataType: 'json',
+        data: "categories=bank_account,cash_account",
         async: false,
         success: function (data) {
-            self.bank_accounts = ko.observableArray(data);
+            self.pay_headings = ko.observableArray(data);
         }
     });
 
@@ -41,9 +42,11 @@ function EntryViewModel(data) {
     self.sub_total = function () {
         var sum = 0;
         self.table_view.rows().forEach(function (i) {
-            sum += parseInt(i.amount());
+            if (i.amount()) {
+                sum += parseFloat(i.amount());
+            }
         });
-        return round2(sum);
+        return sum;
     }
 
     self.save = function (item, event) {

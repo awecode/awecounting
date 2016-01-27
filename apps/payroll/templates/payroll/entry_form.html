@@ -8,7 +8,7 @@
 
 {% block breadcrumbs %}
     <li>{% trans "Payroll" %}</li>
-    <li><a href="{% url 'entry_list' %}">{% trans 'Entry' %}</a></li>
+    <li><a href="{% url 'entry_list' %}">{% trans 'Entries' %}</a></li>
     <li>{{ scenario }} {% trans 'Entry' %}</li>
 {% endblock %}
 
@@ -58,7 +58,7 @@
                                 data-url="{% url 'employee_add' %}"></select>
                     </td>
                     <td>
-                        <select data-bind="selectize: $root.bank_accounts, value: pay_heading_id, object: pay_heading_id"
+                        <select data-bind="selectize: $root.pay_headings, value: pay_heading_id, object: pay_heading"
                                 id="pay_heading" data-name="Bank Account"
                                 data-url="{% url 'bank:bankaccount_add' %}"></select>
                     </td>
