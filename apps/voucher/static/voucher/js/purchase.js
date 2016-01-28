@@ -124,7 +124,33 @@ function PurchaseRow(row, purchase_vm) {
         } else {
             return round2(self.quantity() * self.rate());
         }
-    })
+    });
+
+    self.unit.subscription_changed(function (new_val, old_val) {
+        if (old_val && old_val != new_val) {
+            var conversion_rate = old_val.convertible_units[new_val.id];
+            if (conversion_rate) {
+                if (self.quantity()) {
+                    self.quantity(self.quantity() * conversion_rate);
+                }
+                if (self.rate()) {
+                    self.rate(self.rate() / conversion_rate);
+                }
+            }
+        }
+    });
+
+    self.render_unit_options = function (data) {
+        var obj = get_by_id(purchase_vm.units(), data.id);
+        var klass = '';
+        if (self.unit_id() && obj.id != self.unit_id()) {
+            if (obj.convertible_units[self.unit_id()])
+                klass = 'green';
+            else
+                klass = 'red';
+        }
+        return '<div class="' + klass + '">' + obj.name + '</div>';
+    }
 
     self.render_option = function (data) {
         var obj = get_by_id(purchase_vm.items(), data.id);
