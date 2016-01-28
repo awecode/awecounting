@@ -11,6 +11,7 @@ class ItemForm(HTML5BootstrapModelForm, KOModelForm, TranslationModelForm):
     account_no = forms.Field(widget=forms.TextInput(), label=_('Inventory Account No.'))
 
     def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request')
         super(ItemForm, self).__init__(*args, **kwargs)
 
         if self.instance.account:
@@ -19,6 +20,7 @@ class ItemForm(HTML5BootstrapModelForm, KOModelForm, TranslationModelForm):
             self.fields['account_no'].initial = InventoryAccount.get_next_account_no()
         if self.instance.id:
             self.fields['account_no'].widget = forms.HiddenInput()
+        self.fields['unit'].queryset = Unit.objects.filter(company=self.request.company)
 
     def clean_account_no(self):
         if not self.cleaned_data['account_no'].isdigit():
@@ -39,6 +41,7 @@ class ItemForm(HTML5BootstrapModelForm, KOModelForm, TranslationModelForm):
         widgets = {
             'unit': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('unit_add')}),
         }
+        company_filters = ['unit']
 
 
 class UnitForm(HTML5BootstrapModelForm):

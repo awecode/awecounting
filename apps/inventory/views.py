@@ -11,7 +11,7 @@ from .serializers import ItemSerializer, InventoryAccountRowSerializer
 from ..voucher.models import Sale
 from .models import Item, UnitConversion, Unit, JournalEntry, InventoryAccount
 from .forms import ItemForm, UnitForm, UnitConversionForm
-from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView, StaffMixin
 
 
 @login_required
@@ -45,6 +45,7 @@ def item_search(request):
         return render(request, 'item_search.html', {'objects': obj})
 
 
+
 def item(request, pk=None):
     if pk:
         item_obj = get_object_or_404(Item, id=pk, company=request.company)
@@ -55,7 +56,7 @@ def item(request, pk=None):
         scenario = 'Create'
         unit = ''
     if request.POST:
-        form = ItemForm(data=request.POST, instance=item_obj)
+        form = ItemForm(data=request.POST, instance=item_obj, request=request)
         if form.is_valid():
             item_obj = form.save(commit=False)
             property_name = request.POST.getlist('property_name')
@@ -75,7 +76,7 @@ def item(request, pk=None):
                 return JsonResponse(ItemSerializer(item_obj).data)
             return redirect('/inventory/item')
     else:
-        form = ItemForm(instance=item_obj)
+        form = ItemForm(instance=item_obj, request=request)
     if request.is_ajax():
         base_template = '_modal.html'
     else:
@@ -90,6 +91,38 @@ class ItemView(CompanyView):
     model = Item
     form_class = ItemForm
     success_url = reverse_lazy('item_list')
+
+#     def form_valid(self, form):
+#         self.object = form.save(commit=False)
+#         property_name = self.request.POST.getlist('property_name')
+#         item_property = self.request.POST.getlist('property')
+#         unit_id = self.request.POST.get('unit')
+#         self.object.unit_id = int(unit_id)
+#         self.object.company = self.request.company
+#         if self.request.FILES != {}:
+#             self.object.image = self.request.FILES['image']
+#         other_properties = {}
+#         for key, value in zip(property_name, item_property):
+#             if key and value:
+#                 other_properties[key] = value
+#         if other_properties: self.object.other_properties = other_properties
+#         self.object.save(account_no=form.cleaned_data['account_no'])
+#         return super(ItemView, self).form_valid(form)
+# 
+# 
+# class ItemCreate(StaffMixin, ItemView, AjaxableResponseMixin, CreateView):
+#     def get_context_data(self, *args, **kwargs):
+#         data = super(ItemCreate, self).get_context_data(*args, **kwargs)
+#         # data['item_data'] = self.object.other_properties
+#         return data
+# 
+# 
+# class ItemUpdate(StaffMixin, ItemView, AjaxableResponseMixin, UpdateView):
+#     def get_context_data(self, *args, **kwargs):
+#         data = super(ItemUpdate, self).get_context_data(*args, **kwargs)
+#         # data['item_data'] = self.object.other_properties
+#         # data['item_unit_id'] = self.object.unit_id
+#         return data
 
 
 class ItemList(ItemView, ListView):
@@ -162,7 +195,7 @@ def view_inventory_account(request, id):
     journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
         .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
     conversions = UnitConversion.objects.filter(Q(base_unit=unit) | Q(unit_to_convert=unit)).select_related('base_unit',
-                                                                                                           'unit_to_convert')
+                                                                                                            'unit_to_convert')
     multiple = 1
     if hasattr(obj, 'item'):
         if not unit == obj.item.unit:
@@ -185,12 +218,12 @@ def view_inventory_account_with_rate(request, id):
     else:
         unit = None
     conversions = UnitConversion.objects.filter(Q(base_unit=unit) | Q(unit_to_convert=unit)).select_related('base_unit',
-                                                                                                           'unit_to_convert')
+                                                                                                            'unit_to_convert')
     multiple = 1
     journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
         .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
     data = InventoryAccountRowSerializer(journal_entries, many=True, context={'default_unit': obj.item.unit.name}).data
-    
+
     return render(request, 'inventory_account_detail_with_rate.html',
                   {'obj': obj, 'entries': journal_entries, 'data': data, 'unit_conversions': conversions, 'unit': unit,
                    'multiple': multiple})

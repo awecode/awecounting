@@ -12,12 +12,8 @@
 {% block extrahead %}
     <script src="{% static 'inventory/js/item.js' %}"></script>
     <script>
-        item_data = {{ item_data| jsonify }};
-        {% if item_unit_id %}
-            item_unit_id = {{ item_unit_id }};
-        {% else %}
-            item_unit_id = '';
-        {% endif %}
+        item_data = {{ form.instance.other_properties| jsonify }};
+        item_unit_id = '{{ form.instance.unit_id|default:'' }}';
     </script>
 {% endblock %}
 

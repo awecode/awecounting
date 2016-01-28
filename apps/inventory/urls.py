@@ -5,8 +5,11 @@ import views
 import api
 
 web_urls = [
-    url(r'^item/add/$', views.item, name='item_add'),
+
     url(r'^item/$', views.ItemList.as_view(), name='item_list'),
+    # url(r'^item/add/$', views.ItemCreate.as_view(), name='item_add'),
+    # url(r'^item/(?P<pk>[0-9]+)/$', views.ItemUpdate.as_view(), name='item_edit'),
+    url(r'^item/add/$', views.item, name='item_add'),
     url(r'^item/(?P<pk>[0-9]+)/$', views.item, name='item_edit'),
     url(r'^item/search/$', views.item_search, name='search-item'),
     url(r'^item/delete/(?P<pk>\d+)/$', views.ItemDelete.as_view(), name='item_delete'),
