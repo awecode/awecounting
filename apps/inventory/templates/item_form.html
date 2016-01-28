@@ -15,6 +15,13 @@
         item_data = {{ form.instance.other_properties| jsonify }};
         item_unit_id = '{{ form.instance.unit_id|default:'' }}';
     </script>
+    <script>
+        {% if base_template == "_modal.html" %}
+            $(function() {
+                 $('.selectize').selectize(options);
+            });
+        {% endif %}
+    </script>
 {% endblock %}
 
 {% block content %}

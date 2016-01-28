@@ -12,6 +12,16 @@ $(document).ready(function () {
         $(this).html(value);
     });
 
+
+    if ($('.selectize').length) {
+        var $select = $('.selectize').selectize();
+        $($select).each(function () {
+            init_selectize(this.selectize);
+            selectize_validation_fix(this.selectize);
+        });
+    }
+
+
 });
 
 function ItemVM(data, unit_id) {

@@ -55,9 +55,11 @@ function PurchaseViewModel(data) {
     self.sub_total = function () {
         var sum = 0;
         self.table_view.rows().forEach(function (i) {
-            sum += parseInt(i.total());
+            if (i.total()) {
+                sum += parseFloat(i.total());
+            }
         });
-        return sum;
+        return round2(sum);
     }
 
     self.save = function (item, event) {
@@ -108,8 +110,10 @@ function PurchaseRow(row, purchase_vm) {
         self[k] = ko.observable(row[k]);
 
     self.item.subscribe(function (item) {
+        //debugger;
+        // TODO
         var unit = get_by_id(purchase_vm.units(), item.unit.id);
-        if (!self.unit_id())
+        if (unit && !self.unit_id())
             self.unit_id(unit.id);
     });
 

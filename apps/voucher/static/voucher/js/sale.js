@@ -84,9 +84,11 @@ function SaleViewModel(data) {
     self.sub_total = function () {
         var sum = 0;
         self.table_view.rows().forEach(function (i) {
-            sum += i.total();
+            if (i.total()) {
+                sum += parseFloat(i.total());
+            }
         });
-        return sum;
+        return round2(sum);
     }
 }
 
