@@ -17,6 +17,44 @@ from awecounting import settings
 
 register = Library()
 
+USURPERS = {
+    'Staff': ['Staff', 'Accountant', 'Owner', 'SuperOwner'],
+    'Accountant': ['Accountant', 'Owner', 'SuperOwner'],
+    'Owner': ['Owner', 'SuperOwner'],
+    'SuperOwner': ['SuperOwner'],
+}
+
+@register.tag(name="roleingroup")
+def do_role_group(parser, token):
+    try:
+        # split_contents() knows not to split quoted strings.
+        tag_name, group_name, role = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError(
+            "%r tag requires exactly two arguments" % token.contents.split()[0]
+        )
+    if not (role[0] == role[-1] and role[0] in ('"', "'")):
+        raise template.TemplateSyntaxError(
+            "%r tag's argument should be in quotes" % tag_name
+        )
+    nodelist = parser.parse('endroleingroup',)
+    parser.delete_first_token()
+    return RoleInGroup(group_name, role[1:-1], nodelist)
+
+
+class RoleInGroup(template.Node):
+    def __init__(self, group_name, role, nodelist):
+        self.group_name = template.Variable(group_name)
+        self.role = role
+        self.nodelist = nodelist
+
+    def render(self, context):
+        actual_group_name = self.group_name.resolve(context)
+        if actual_group_name in USURPERS[self.role]:
+            return self.nodelist.render(context)
+        else:
+            return ''
+
 
 def handler(obj):
     if hasattr(obj, 'isoformat'):
