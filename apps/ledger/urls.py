@@ -12,7 +12,10 @@ web_urls = [
     url(r'^party/edit/(?P<pk>\d+)/$', views.PartyUpdate.as_view(), name='party_edit'),
     url(r'^party/delete/(?P<pk>\d+)/$', views.PartyDelete.as_view(), name='party_delete'),
 
-    url(r'^categories/$', views.list_categories, name='list_categories'),
+    url(r'^categories/$', views.CategoryList.as_view(), name='category_list'),
+    url(r'^category/add/$', views.CategoryCreate.as_view(), name='category_add'),
+    url(r'^category/edit/(?P<pk>\d+)/$', views.CategoryUpdate.as_view(), name='category_edit'),
+    url(r'^category/delete/(?P<pk>\d+)/$', views.CategoryDelete.as_view(), name='category_delete'),
 
     url(r'^account/$', views.AccountList.as_view(), name='account_list'),
     url(r'^account/add/$', views.AccountCreate.as_view(), name='account_add'),

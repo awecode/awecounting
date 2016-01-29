@@ -1,0 +1,43 @@
+{% extends "_base.html" %}
+{% load i18n staticfiles filters %}
+
+{% block page-title %}{% trans 'Categories' %}{% endblock %}
+
+{% block header-buttons %}
+    <a class="btn btn-success btn-raised" href="{% url 'category_add' %}">{% trans 'New' %} {% trans 'Category' %}</a>
+{% endblock %}
+
+{% block content %}
+    <div class="well">
+
+        {% load pagination_tags %}
+        {% load sorting_tags %}
+        {% load filters %}
+
+        {% autosort object_list as sorted_objects %}
+        {% autopaginate sorted_objects 25 as paginated_objects %}
+
+        <table class="table table-striped">
+            <thead>
+            <th>{% anchor name _('Name') %}</th>
+            <th>{% anchor description _('Description') %}</th>
+            </thead>
+            <tbody>
+            {% for category in paginated_objects %}
+                <tr>
+                    <td>
+                        <a href="{% url 'category_edit' category.pk %}">{{ category.name }}</a>
+                    </td>
+                    <td>
+                        {{ category.description|default:'' }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% paginate %}
+
+    </div>
+
+{% endblock %}

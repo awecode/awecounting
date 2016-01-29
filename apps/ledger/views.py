@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView
 from .models import Party, Category, Account, JournalEntry
-from .forms import PartyForm, AccountForm
+from .forms import PartyForm, AccountForm, CategoryForm
 
 
 # TODO Roshan - Convert following view methods to class based views
@@ -32,6 +32,27 @@ def view_account(request, id):
 def list_categories(request):
     categories = Category.objects.filter(company=request.company)
     return render(request, 'ledger/list_categories.html', {'categories': categories})
+
+class CategoryView(CompanyView):
+    model = Category
+    success_url = reverse_lazy('category_list')
+    form_class = CategoryForm
+
+class CategoryList(CategoryView, ListView):
+    pass
+
+
+class CategoryCreate(AjaxableResponseMixin, CategoryView, CreateView):
+    pass
+
+
+class CategoryUpdate(CategoryView, UpdateView):
+    pass
+
+
+class CategoryDelete(CategoryView, DeleteView):
+    pass
+
 
 
 # Party CRUD with mixins
