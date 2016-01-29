@@ -9,11 +9,6 @@ from .forms import PartyForm, AccountForm, CategoryForm
 
 # TODO Roshan - Convert following view methods to class based views
 
-def list_accounts(request):
-    objects = Account.objects.filter(company=request.company)
-    return render(request, 'list_accounts.html', {'accounts': objects})
-
-
 def view_account(request, id):
     account = get_object_or_404(Account, id=id, company=request.company)
     # transactions = account.transactions

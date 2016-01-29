@@ -4,7 +4,7 @@ import views
 import api
 
 web_urls = [
-    url(r'^$', views.list_accounts, name='list_account'),
+    url(r'^$', views.AccountList.as_view(), name='list_account'),
     url(r'^(?P<id>[0-9]+)/$', views.view_account, name='view_account'),
 
     url(r'^party/$', views.PartyList.as_view(), name='party_list'),
