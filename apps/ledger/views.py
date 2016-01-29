@@ -24,10 +24,6 @@ def view_account(request, id):
     })
 
 
-def list_categories(request):
-    categories = Category.objects.filter(company=request.company)
-    return render(request, 'ledger/list_categories.html', {'categories': categories})
-
 class CategoryView(CompanyView):
     model = Category
     success_url = reverse_lazy('category_list')
