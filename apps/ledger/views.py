@@ -7,21 +7,22 @@ from .models import Party, Category, Account, JournalEntry
 from .forms import PartyForm, AccountForm, CategoryForm
 
 
-# TODO Roshan - Convert following view methods to class based views
+class ViewAccount(ListView):
+    model = Account
+    template_name = 'view_account.html'
 
-def view_account(request, id):
-    account = get_object_or_404(Account, id=id, company=request.company)
-    # transactions = account.transactions
-    base_template = 'dashboard.html'
-    journal_entries = JournalEntry.objects.filter(transactions__account_id=account.id).order_by('id',
-                                                                                                'date') \
-        .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
-    return render(request, 'view_account.html', {
-        'account': account,
-        # 'transactions': transactions.all(),
-        'journal_entries': journal_entries,
-        'base_template': base_template,
-    })
+    def get_context_data(self, *args, **kwargs):
+        context = super(ViewAccount, self).get_context_data(**kwargs)
+        base_template = 'dashboard.html'
+        pk = int(self.kwargs.get('pk'))
+        obj = get_object_or_404(self.model, pk=pk, company=self.request.company)
+        journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.pk).order_by('pk',
+                                                                                                    'date') \
+            .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
+        context['account'] = obj
+        context['journal_entries'] = journal_entries
+        context['base_template'] = base_template
+        return context
 
 
 class CategoryView(CompanyView):

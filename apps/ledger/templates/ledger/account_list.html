@@ -27,16 +27,17 @@
             <th>{% anchor opening_dr _('Opening Dr.') %}</th>
             <th>{% anchor opening_cr _('Opening Cr.') %}</th>
             <th>{% anchor category _('category') %}</th>
+            <th>{% trans "Action" %}</th>
 
             </thead>
             <tbody>
             {% for account in paginated_objects %}
                 <tr>
                     <td>
-                        <a href="{% url 'account_edit' account.pk %}">{{ account.code |default:''}}</a>
+                        <a href="{% url 'view_account' account.pk %}">{{ account.code |default:''}}</a>
                     </td>
                     <td>
-                        <a href="{% url 'account_edit' account.pk %}">{{ account.name }}</a>
+                        <a href="{% url 'view_account' account.pk %}">{{ account.name }}</a>
                     </td>
                     <td>
                         {{ account.current_dr |default:''}}
@@ -55,6 +56,9 @@
                     </td>
                     <td>
                         {{ account.category| default:'-' }}
+                    </td>
+                    <td>
+                        <a href="{% url 'account_edit' account.pk %}">{% trans "Edit" %}</a>
                     </td>
                 </tr>
             {% endfor %}
