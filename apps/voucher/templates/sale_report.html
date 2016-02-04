@@ -43,13 +43,15 @@
                     <th>{% anchor voucher_no _('Voucher No.') %}</th>
                     <th>{% anchor date _('Date') %}</th>
                     <th>{% trans 'Total' %}</th>
-
+                    {% roleingroup request.role.group.name "Accountant" %}
+                        <th>{% trans "Action" %}</th>
+                    {% endroleingroup %}
                     </thead>
                     <tbody>
                     {% for sale in paginated_objects %}
                         <tr>
-                            <td>
-                                <a href="{% url 'sale-edit' sale.pk %}">{{ sale.voucher_no }}</a>
+                            <td class="link">
+                                <a href="{% url 'sale_detail' sale.pk %}">{{ sale.voucher_no }}</a>
                             </td>
                             <td>
                                 {{ sale.date }}
@@ -57,6 +59,11 @@
                             <td>
                                 {{ sale.total }}
                             </td>
+                            {% roleingroup request.role.group.name "Accountant" %}
+                            <td>
+                                <a href="{% url 'sale-edit' sale.id %}">{% trans "Edit" %}</a>
+                            </td>
+                            {% endroleingroup %}
                         </tr>
                     {% endfor %}
                     </tbody>

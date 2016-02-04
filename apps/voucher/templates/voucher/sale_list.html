@@ -27,13 +27,15 @@
             <th>{% anchor credit _('Credit/Cash') %}</th>
             <th>{% anchor pending _('Pending') %}</th>
             <th>{% anchor total _('Total') %}</th>
-            <th></th>
+            {% roleingroup request.role.group.name "Accountant" %}
+                <th>{% trans "Action" %}</th>
+            {% endroleingroup %}
             </thead>
             <tbody>
             {% for sale in paginated_objects %}
                 <tr>
                     <td class="link">
-                        <a href="{% url 'sale-edit' sale.pk %}">{{ sale.voucher_no }}</a>
+                        <a href="{% url 'sale_detail' sale.pk %}">{{ sale.voucher_no }}</a>
                     </td>
                     <td>
                         {{ sale.date }}
@@ -52,9 +54,12 @@
                     <td>
                         {{ sale.total_amount }}
                     </td>
+                    {% roleingroup request.role.group.name "Accountant" %}
                     <td>
-                        <a href="{% url 'sale_detail' sale.id %}">{% trans "Detail" %}</a>
+                        <a href="{% url 'sale-edit' sale.id %}">{% trans "Edit" %}</a>
                     </td>
+                    {% endroleingroup %}
+
                 </tr>
             {% endfor %}
             </tbody>
