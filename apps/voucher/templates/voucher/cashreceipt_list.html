@@ -24,26 +24,30 @@
                 <th>{% anchor date _('Date') %}</th>
                 <th>{% anchor party _('Party') %}</th>
                 <th>{% anchor amount _('Amount') %}</th>
-                <th></th>
+                {% roleingroup request.role.group.name "Accountant" %}
+                    <th>{% trans "Action" %}</th>
+                {% endroleingroup %}
                 </thead>
                 <tbody>
                 {% for object in sorted_objects %}
                     <tr>
-                        <td>
-                            <a href="{% url 'cash_receipt_edit' object.pk %}">{{ object.voucher_no }}</a>
+                        <td class="link">
+                            <a href="{% url 'cash_receipt_detail' object.pk %}">{{ object.voucher_no }}</a>
                         </td>
                        <td>
-                            <a href="{% url 'cash_receipt_edit' object.pk %}">{{ object.date }}</a>
+                            {{ object.date }}
                         </td>   
                         <td>
-                            <a href="{% url 'cash_receipt_edit' object.pk %}">{{ object.party }}</a>
+                            {{ object.party }}
                         </td>   
                         <td>
-                            <a href="{% url 'cash_receipt_edit' object.pk %}">{{ object.amount |default:'' }}</a>
+                            {{ object.amount |default:'' }}
                         </td>   
+                        {% roleingroup request.role.group.name "Accountant" %}
                         <td>
-                            <a href="{% url 'cash_receipt_detail' object.pk %}">{% trans "Detail" %}</a>
+                            <a href="{% url 'cash_receipt_edit' object.pk %}">{% trans "Edit" %}</a>
                         </td>   
+                        {% endroleingroup %}
                     </tr>
                 {% endfor %}
                 </tbody>
