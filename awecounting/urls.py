@@ -15,9 +15,9 @@ urlpatterns = [
     url(r'^inventory/', include('apps.inventory.urls')),
     url(r'^ledger/', include('apps.ledger.urls')),
     url(r'^voucher/', include('apps.voucher.urls')),
+    url(r'^api/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^bank/', include('apps.bank.urls', namespace='bank')),
     url(r'^njango/', include('njango.urls')),
-
 ]
 
 if settings.DEBUG:
