@@ -24,9 +24,9 @@
                 <th>{% anchor from_account _('Account') %}</th>
                 <th>{% anchor date _('Date') %}</th>
                 <th>{% anchor reference _('Reference') %}</th>
-                {% roleingroup request.role.group.name "Accountant" %}
+                {% ifrole "Accountant" %}
                     <th>{% trans "Action" %}</th>
-                {% endroleingroup %}
+                {% endrole %}
                 </thead>
                 <tbody>
                 {% for object in sorted_objects %}
@@ -41,11 +41,11 @@
                         </td>   <td>
                             {{ object.reference |default:''}}
                         </td>
-                        {% roleingroup request.role.group.name "Accountant" %}
+                        {% ifrole "Accountant" %}
                         <td>
                             <a href="{% url 'fixed_asset_edit' object.pk %}">{% trans "Edit" %}</a>
                         </td>
-                        {% endroleingroup %}
+                        {% endrole %}
                     </tr>
                 {% endfor %}
                 </tbody>

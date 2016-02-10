@@ -24,9 +24,9 @@
             <th>{% anchor date _('Date') %}</th>
             <th>{% anchor party _('Party') %}</th>
             <th>{% anchor credit _('Credit/Cash') %}</th>
-            {% roleingroup request.role.group.name "Accountant" %}
+            {% ifrole "Accountant" %}
                 <th>{% trans "Action" %}</th>
-            {% endroleingroup %}
+            {% endrole %}
             </thead>
             <tbody>
             {% for purchase in paginated_objects %}
@@ -45,11 +45,11 @@
                     <td>
                         {{ purchase.type }}
                     </td>
-                    {% roleingroup request.role.group.name "Accountant" %}
+                    {% ifrole "Accountant" %}
                     <td>
                         <a href="{% url 'purchase-edit' purchase.id %}">{% trans "Edit" %}</a>
                     </td>
-                    {% endroleingroup %}
+                    {% endrole %}
                 </tr>
             {% endfor %}
             </tbody>

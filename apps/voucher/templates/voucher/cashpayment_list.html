@@ -24,9 +24,9 @@
                 <th>{% anchor date _('Date') %}</th>
                 <th>{% anchor party _('Party') %}</th>
                 <th>{% anchor amount _('Amount') %}</th>
-                {% roleingroup request.role.group.name "Accountant" %}
+                {% ifrole "Accountant" %}
                     <th>{% trans "Action" %}</th>
-                {% endroleingroup %}
+                {% endrole %}
                 </thead>
                 <tbody>
                 {% for object in sorted_objects %}
@@ -43,11 +43,11 @@
                         <td>
                            {{ object.amount |default:'' }}
                         </td>   
-                        {% roleingroup request.role.group.name "Accountant" %}
+                        {% ifrole "Accountant" %}
                         <td>
                             <a href="{% url 'cash_payment_edit' object.pk %}">{% trans "Edit" %}</a>
                         </td>
-                        {% endroleingroup %}   
+                        {% endrole %}   
                     </tr>
                 {% endfor %}
                 </tbody>
