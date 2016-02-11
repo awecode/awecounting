@@ -1,6 +1,7 @@
 from rest_framework import generics
-from .serializers import SaleSerializer, PurchaseSerializer
+from .serializers import SaleSerializer, PurchaseSerializer, CashPaymentSerializer
 from .models import Sale, CashReceipt, Purchase
+from awecounting.utils.mixins import CompanyAPI
 
 
 class PendingSaleListAPI(generics.ListCreateAPIView):
@@ -33,3 +34,13 @@ class PendingPurchaseListAPI(generics.ListCreateAPIView):
         else:
             queryset = queryset.filter(pending_amount__gt=0)
         return queryset
+
+
+class CashPaymentListAPI(CompanyAPI, generics.ListCreateAPIView):
+    serializer_class = CashPaymentSerializer
+
+
+class CashPaymentDetailAPI(CompanyAPI, generics.RetrieveAPIView):
+    serializer_class = CashPaymentSerializer
+
+

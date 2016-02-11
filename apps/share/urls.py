@@ -28,7 +28,6 @@ api_urls = [
     url(r'^api/collection/(?P<pk>[0-9]+)/$', api.CollectionDetailAPI.as_view()),
     url(r'^api/investments/$', api.InvestmentListAPI.as_view()),
     url(r'^api/investment/(?P<pk>[0-9]+)/$', api.InvestmentDetailAPI.as_view()),
-
 ]
 
 api_urls = format_suffix_patterns(api_urls)
