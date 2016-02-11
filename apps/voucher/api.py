@@ -1,5 +1,5 @@
 from rest_framework import generics
-from .serializers import SaleSerializer, PurchaseSerializer, CashPaymentSerializer, CashReceiptSerializer
+from .serializers import SaleSerializer, PurchaseSerializer, CashPaymentSerializer, CashReceiptSerializer, FixedAssetSerializer
 from .models import Sale, CashReceipt, Purchase
 from awecounting.utils.mixins import CompanyAPI
 
@@ -50,6 +50,14 @@ class CashReceiptListAPI(CompanyAPI, generics.ListCreateAPIView):
 
 class CashReceiptDetailAPI(CompanyAPI, generics.RetrieveAPIView):
     serializer_class = CashReceiptSerializer
+
+
+class FixedAssetListAPI(CompanyAPI, generics.ListCreateAPIView):
+    serializer_class = FixedAssetSerializer
+
+
+class FixedAssetDetailAPI(CompanyAPI, generics.RetrieveAPIView):
+    serializer_class = FixedAssetSerializer
 
 
 

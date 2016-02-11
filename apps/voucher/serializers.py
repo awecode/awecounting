@@ -84,6 +84,7 @@ class AdditionalDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdditionalDetail
 
+
 class FixedAssetRowSerializer(serializers.ModelSerializer):
     class Meta:
         model = FixedAssetRow

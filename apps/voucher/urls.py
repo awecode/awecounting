@@ -59,6 +59,8 @@ api_urls = [
     url(r'^api/cash_payment/(?P<pk>[0-9]+)/', api.CashPaymentDetailAPI.as_view()),
     url(r'^api/cash_receipts/', api.CashReceiptListAPI.as_view()),
     url(r'^api/cash_receipt/(?P<pk>[0-9]+)/', api.CashReceiptDetailAPI.as_view()),
+    url(r'^api/fixed_assets/', api.FixedAssetListAPI.as_view()),
+    url(r'^api/fixed_asset/(?P<pk>[0-9]+)/', api.FixedAssetDetailAPI.as_view()),
 ]
 
 api_urls = format_suffix_patterns(api_urls)
