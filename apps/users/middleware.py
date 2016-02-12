@@ -46,7 +46,6 @@ class RoleMiddleware(object):
             roles = Role.objects.filter(user=user).select_related('group', 'company')
             if roles:
                 role = roles[0]
-            import ipdb; ipdb.set_trace()
             request.__class__.company = role.company
         else:
             request = clear_roles(request)
