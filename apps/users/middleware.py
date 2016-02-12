@@ -16,7 +16,6 @@ def clear_roles(request):
 class RoleMiddleware(object):
     def process_request(self, request):
         if not request.user.is_anonymous():
-
             role = None
             if request.session.get('role'):
                 try:
@@ -29,24 +28,24 @@ class RoleMiddleware(object):
                 if roles:
                     role = roles[0]
                     request.session['role'] = role.id
-            if role:
-                request.__class__.role = role
-                request.__class__.company = role.company
-                request.__class__.group = role.group
-                request.__class__.roles = Role.objects.filter(user=request.user, company=role.company)
-                request.__class__.is_owner = request.group.name in ('Owner', 'SuperOwner')
-                #     for role in request.roles:
-                #         groups.append(role.group)
-                #     request.__class__.groups = groups
-            else:
-                request = clear_roles(request)
-        elif request.META.get('HTTP_AUTHORIZATION'):
+                
+        if request.META.get('HTTP_AUTHORIZATION'):
             token_key = request.META.get('HTTP_AUTHORIZATION').split(' ')[-1]
-            user = Token.objects.get(key=token_key).user
-            roles = Role.objects.filter(user=user).select_related('group', 'company')
+            request.user = Token.objects.get(key=token_key).user
+            roles = Role.objects.filter(user=request.user).select_related('group', 'company')
             if roles:
                 role = roles[0]
+                request.session['role'] = role.id
+
+        if role:
+            request.__class__.role = role
             request.__class__.company = role.company
+            request.__class__.group = role.group
+            request.__class__.roles = Role.objects.filter(user=request.user, company=role.company)
+            request.__class__.is_owner = request.group.name in ('Owner', 'SuperOwner')
+            #     for role in request.roles:
+            #         groups.append(role.group)
+            #     request.__class__.groups = groups
         else:
             request = clear_roles(request)
 
