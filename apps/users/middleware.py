@@ -1,5 +1,6 @@
 from apps.users.models import Role
 from apps.users.models import Company
+from rest_framework.authtoken.models import Token
 
 
 def clear_roles(request):
@@ -39,6 +40,14 @@ class RoleMiddleware(object):
                 #     request.__class__.groups = groups
             else:
                 request = clear_roles(request)
+        elif request.META.get('HTTP_AUTHORIZATION'):
+            token_key = request.META.get('HTTP_AUTHORIZATION').split(' ')[-1]
+            user = Token.objects.get(key=token_key).user
+            roles = Role.objects.filter(user=user).select_related('group', 'company')
+            if roles:
+                role = roles[0]
+            import ipdb; ipdb.set_trace()
+            request.__class__.company = role.company
         else:
             request = clear_roles(request)
 
