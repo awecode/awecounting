@@ -15,7 +15,6 @@ def clear_roles(request):
 
 class RoleMiddleware(object):
     def process_request(self, request):
-        role = None
 
         if request.META.get('HTTP_AUTHORIZATION'):
             token_key = request.META.get('HTTP_AUTHORIZATION').split(' ')[-1]
@@ -23,6 +22,7 @@ class RoleMiddleware(object):
 
         if not request.user.is_anonymous():
 
+            role = None
             if request.session.get('role'):
                 try:
                     role = Role.objects.select_related('group', 'company').get(pk=request.session.get('role'), user=request.user)
