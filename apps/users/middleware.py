@@ -41,3 +41,6 @@ class RoleMiddleware(object):
                 request = clear_roles(request)
         else:
             request = clear_roles(request)
+
+    def authenticate(self, request):
+        pass
