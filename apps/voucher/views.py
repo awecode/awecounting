@@ -361,6 +361,7 @@ def save_purchase(request):
             else:
                 values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'quantity': row.get('quantity'),
                           'rate': row.get('rate'), 'unit_id': row.get('unit')['id'], 'discount': row.get('discount'),
+                          'tax_scheme_id': row.get('tax_scheme').get('tax_scheme'),
                           'purchase': obj}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:

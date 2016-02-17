@@ -94,6 +94,7 @@
                     <th>{% trans "Quantity" %}</th>
                     <th>{% trans "Rate" %}</th>
                     <th>{% trans "Unit" %}</th>
+                    <th>{% trans "Tax Scheme" %}</th>
                     <th>{% trans 'Discount' %}</th>
                     <th>{% trans 'Total' %}</th>
                     <th></th>
@@ -116,6 +117,9 @@
                     <td class="unit-cell">
                         <select data-bind="selectize: $root.units, value: unit_id, object: unit"
                                 data-url="{% url 'unit_add' %}"></select>
+                    </td>
+                    <td data-bind="with: tax_scheme">
+                        <select id="row_tax_scheme" data-bind="selectize: tax_schemes, optionsText: 'full_name', value: tax_scheme"></select>
                     </td>
                     <td data-bind="editableText: discount"></td>
                     <td data-bind="text: total"></td>

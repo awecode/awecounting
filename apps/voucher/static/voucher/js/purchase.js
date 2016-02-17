@@ -184,6 +184,8 @@ function PurchaseRow(row, purchase_vm) {
         }
     })
 
+    self.tax_scheme = new TaxSchemeViewModel(self.tax_scheme());
+
     self.render_option = function (data) {
         var obj = get_by_id(purchase_vm.items(), data.id);
         return '<div>' + obj.full_name + '</div>';
