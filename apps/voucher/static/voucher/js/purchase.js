@@ -4,9 +4,8 @@ $(document).ready(function () {
     $('.change-on-ready').trigger('change');
 });
 
-function TaxViewModel(tax){
+function TaxViewModel(tax, tax_scheme){
     var self = this;
-    self.tax = ko.observable(tax);
     var choices = [
         {
             'id': 'inclusive',
@@ -22,10 +21,31 @@ function TaxViewModel(tax){
         },
     ]
 
+    self.tax = ko.observable(tax);
     self.tax_choices = ko.observableArray(choices);
+    self.tax_scheme = ko.observable();
+    self.tax_scheme_visibility = ko.observable(true);
+
+    $.ajax({
+        url: '/tax/api/tax_schemes.json',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            self.tax_schemes = ko.observableArray(data);
+        }
+    });
+
+    if (tax_scheme) {
+        self.tax_scheme(tax_scheme);
+    };
 
     self.tax.subscribe(function() {
-        console.log(self.tax());
+        if (self.tax() == 'no') {
+            self.tax_scheme_visibility(false);
+        };
+        if (self.tax() != 'no' && self.tax_scheme_visibility() == false ){
+            self.tax_scheme_visibility(true);
+        }
     });
 }
 
@@ -37,7 +57,7 @@ function PurchaseViewModel(data) {
 
     self.status = ko.observable();
 
-    self.tax_vm = new TaxViewModel(self.tax());
+    self.tax_vm = new TaxViewModel(self.tax(), self.tax_scheme());
 
     $.ajax({
         url: '/inventory/api/items.json',
