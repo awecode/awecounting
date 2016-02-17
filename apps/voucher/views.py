@@ -333,13 +333,12 @@ def save_purchase(request):
     dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
-    # import ipdb; ipdb.set_trace()
     if params.get('tax_vm').get('tax'):
         tax = params.get('tax_vm').get('tax')
     if params.get('tax_vm').get('tax') == 'no':
         tax_scheme_id = None
     else:
-        tax_scheme_id = params.get('tax_vm').get('tax_scheme')
+        tax_scheme_id = params.get('tax_vm').get('tax_scheme').get('tax_scheme')
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
                      'party_id': params.get('party_id'), 'due_date': params.get('due_date'),
                      'credit': params.get('credit'), 'tax': tax, 'tax_scheme_id': tax_scheme_id, 'company': request.company}

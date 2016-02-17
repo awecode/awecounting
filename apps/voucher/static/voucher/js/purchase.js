@@ -23,11 +23,30 @@ function TaxViewModel(tax, tax_scheme){
 
     self.tax = ko.observable(tax);
     self.tax_choices = ko.observableArray(choices);
-    self.tax_scheme = ko.observable();
     self.tax_scheme_visibility = ko.observable(true);
+
+    self.tax_scheme = new TaxSchemeViewModel(tax_scheme);
 
     if (self.tax() == 'no') {
         self.tax_scheme_visibility(false);
+    };
+
+    self.tax.subscribe(function() {
+        if (self.tax() == 'no') {
+            self.tax_scheme_visibility(false);
+        };
+        if (self.tax() != 'no' && self.tax_scheme_visibility() == false ){
+            self.tax_scheme_visibility(true);
+        }
+    });
+}
+
+function TaxSchemeViewModel(tax_scheme) {
+    var self = this;
+    self.tax_scheme = ko.observable();
+    
+    if (tax_scheme) {
+        self.tax_scheme(tax_scheme);
     };
 
     $.ajax({
@@ -39,18 +58,6 @@ function TaxViewModel(tax, tax_scheme){
         }
     });
 
-    if (tax_scheme) {
-        self.tax_scheme(tax_scheme);
-    };
-
-    self.tax.subscribe(function() {
-        if (self.tax() == 'no') {
-            self.tax_scheme_visibility(false);
-        };
-        if (self.tax() != 'no' && self.tax_scheme_visibility() == false ){
-            self.tax_scheme_visibility(true);
-        }
-    });
 }
 
 function PurchaseViewModel(data) {

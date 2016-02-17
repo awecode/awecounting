@@ -75,7 +75,7 @@
                     <select name="tax" class="form-control" id="tax" data-bind="selectize: tax_choices, optionsText: 'value', value: tax"></select>
                 </div>
                 <div data-bind="visible: tax_scheme_visibility">
-                    <div class="col-md-6 col-sm-12">
+                    <div class="col-md-6 col-sm-12" data-bind="with: tax_scheme">
                         <label for="due_date">{% trans 'Tax Scheme' %}</label>
                         <select id="tax_scheme" data-bind="selectize: tax_schemes, optionsText: 'full_name', value: tax_scheme"></select>
                     </div>
