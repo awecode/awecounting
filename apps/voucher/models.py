@@ -15,7 +15,7 @@ from ..tax.models import TaxScheme
 
 
 class Purchase(models.Model):
-    tax_choices = [('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'), ('no', 'No Tax')]
+    tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'),]
     party = models.ForeignKey(Party)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     credit = models.BooleanField(default=False)

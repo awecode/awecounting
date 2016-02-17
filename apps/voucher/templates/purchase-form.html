@@ -69,6 +69,18 @@
                            id="due_date">
                 </div>
             </div>
+            <div class="row" data-bind="with: tax_vm">
+                <div class="col-md-6 col-sm-12">
+                    <label for="party">{% trans 'Tax Scheme' %}</label>
+                    <select name="tax_scheme" class="form-control" id="tax_scheme" data-bind="selectize: tax_choices, optionsText: 'value', value: tax"></select>
+                    <h2 data-bind="text: tax"></h2>
+                </div>
+
+                <div class="col-md-6 col-sm-12 hidden-print">
+
+                </div>
+
+            </div>
         </div>
 
 

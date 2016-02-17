@@ -4,6 +4,31 @@ $(document).ready(function () {
     $('.change-on-ready').trigger('change');
 });
 
+function TaxViewModel(tax){
+    var self = this;
+    self.tax = ko.observable(tax);
+    var choices = [
+        {
+            'id': 'inclusive',
+            'value' : 'Tax Inclusive',
+        },
+        {
+            'id': 'exclusive',
+            'value' : 'Tax Exclusive',
+        },
+        {
+            'id' : 'no',
+            'value' : 'No Tax',
+        },
+    ]
+
+    self.tax_choices = ko.observableArray(choices);
+
+    self.tax.subscribe(function() {
+        console.log(self.tax());
+    });
+}
+
 function PurchaseViewModel(data) {
     var self = this;
 
@@ -11,6 +36,8 @@ function PurchaseViewModel(data) {
         self[k] = ko.observable(data[k]);
 
     self.status = ko.observable();
+
+    self.tax_vm = new TaxViewModel(self.tax());
 
     $.ajax({
         url: '/inventory/api/items.json',
