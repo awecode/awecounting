@@ -359,9 +359,13 @@ def save_purchase(request):
             if invalid(row, ['item_id', 'quantity', 'unit_id']):
                 continue
             else:
+                if params.get('tax_vm').get('tax') == 'no':
+                    row_tax_scheme_id = None
+                else:
+                    row_tax_scheme_id = row.get('tax_scheme').get('tax_scheme')
                 values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'quantity': row.get('quantity'),
                           'rate': row.get('rate'), 'unit_id': row.get('unit')['id'], 'discount': row.get('discount'),
-                          'tax_scheme_id': row.get('tax_scheme').get('tax_scheme'),
+                          'tax_scheme_id': row_tax_scheme_id,
                           'purchase': obj}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
