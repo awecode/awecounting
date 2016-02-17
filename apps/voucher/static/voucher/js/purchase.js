@@ -26,6 +26,10 @@ function TaxViewModel(tax, tax_scheme){
     self.tax_scheme = ko.observable();
     self.tax_scheme_visibility = ko.observable(true);
 
+    if (self.tax() == 'no') {
+        self.tax_scheme_visibility(false);
+    };
+
     $.ajax({
         url: '/tax/api/tax_schemes.json',
         dataType: 'json',
