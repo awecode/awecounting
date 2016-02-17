@@ -68,6 +68,7 @@ class PurchaseRow(models.Model):
     quantity = models.FloatField()
     rate = models.FloatField()
     discount = models.FloatField(default=0)
+    tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True)
     unit = models.ForeignKey(Unit)
     purchase = models.ForeignKey(Purchase, related_name='rows')
 
