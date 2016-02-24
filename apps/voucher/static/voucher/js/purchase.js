@@ -62,11 +62,16 @@ function TaxSchemeViewModel(tax_scheme) {
 
 function PurchaseViewModel(data) {
     var self = this;
+    
+    self.tax = ko.observable();
+    self.tax_scheme = ko.observable();
 
     for (var k in data)
         self[k] = ko.observable(data[k]);
 
     self.status = ko.observable();
+    
+    
 
     self.tax_vm = new TaxViewModel(self.tax(), self.tax_scheme());
 
@@ -210,6 +215,7 @@ function PurchaseRow(row, purchase_vm) {
         }
         return '<div class="' + klass + '">' + obj.name + '</div>';
     }
+
 
     self.tax_scheme = new TaxSchemeViewModel(self.tax_scheme());
 
