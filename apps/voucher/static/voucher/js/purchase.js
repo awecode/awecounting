@@ -4,6 +4,62 @@ $(document).ready(function () {
     $('.change-on-ready').trigger('change');
 });
 
+function TaxViewModel(tax, tax_scheme){
+    var self = this;
+    var choices = [
+        {
+            'id': 'inclusive',
+            'value' : 'Tax Inclusive',
+        },
+        {
+            'id': 'exclusive',
+            'value' : 'Tax Exclusive',
+        },
+        {
+            'id' : 'no',
+            'value' : 'No Tax',
+        },
+    ]
+
+    self.tax = ko.observable(tax);
+    self.tax_choices = ko.observableArray(choices);
+    self.tax_scheme_visibility = ko.observable(true);
+
+    self.tax_scheme = new TaxSchemeViewModel(tax_scheme);
+
+    if (self.tax() == 'no') {
+        self.tax_scheme_visibility(false);
+    };
+
+    self.tax.subscribe(function() {
+        if (self.tax() == 'no') {
+            self.tax_scheme_visibility(false);
+        };
+        if (self.tax() != 'no' && self.tax_scheme_visibility() == false ){
+            self.tax_scheme_visibility(true);
+        }
+    });
+}
+
+function TaxSchemeViewModel(tax_scheme) {
+    var self = this;
+    self.tax_scheme = ko.observable();
+    
+    if (tax_scheme) {
+        self.tax_scheme(tax_scheme);
+    };
+
+    $.ajax({
+        url: '/tax/api/tax_schemes.json',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            self.tax_schemes = ko.observableArray(data);
+        }
+    });
+
+}
+
 function PurchaseViewModel(data) {
     var self = this;
 
@@ -11,6 +67,8 @@ function PurchaseViewModel(data) {
         self[k] = ko.observable(data[k]);
 
     self.status = ko.observable();
+
+    self.tax_vm = new TaxViewModel(self.tax(), self.tax_scheme());
 
     $.ajax({
         url: '/inventory/api/items.json',
@@ -105,7 +163,8 @@ function PurchaseRow(row, purchase_vm) {
     self.discount = ko.observable(0);
     self.unit = ko.observable();
     self.unit_id = ko.observable();
-
+    self.tax_scheme = ko.observable();
+    
     for (var k in row)
         self[k] = ko.observable(row[k]);
 
@@ -125,6 +184,8 @@ function PurchaseRow(row, purchase_vm) {
             return round2(self.quantity() * self.rate());
         }
     })
+
+    self.tax_scheme = new TaxSchemeViewModel(self.tax_scheme());
 
     self.render_option = function (data) {
         var obj = get_by_id(purchase_vm.items(), data.id);

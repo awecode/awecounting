@@ -69,6 +69,18 @@
                            id="due_date">
                 </div>
             </div>
+            <div class="row" data-bind="with: tax_vm">
+                <div class="col-md-6 col-sm-12">
+                    <label for="party">{% trans 'Tax' %}</label>
+                    <select name="tax" class="form-control" id="tax" data-bind="selectize: tax_choices, optionsText: 'value', value: tax"></select>
+                </div>
+                <div data-bind="visible: tax_scheme_visibility">
+                    <div class="col-md-6 col-sm-12" data-bind="with: tax_scheme">
+                        <label for="due_date">{% trans 'Tax Scheme' %}</label>
+                        <select id="tax_scheme" data-bind="selectize: tax_schemes, optionsText: 'full_name', value: tax_scheme"></select>
+                    </div>
+                </div>
+            </div>
         </div>
 
 
@@ -82,6 +94,7 @@
                     <th>{% trans "Quantity" %}</th>
                     <th>{% trans "Rate" %}</th>
                     <th>{% trans "Unit" %}</th>
+                    <th data-bind="visible: $root.tax_vm.tax_scheme_visibility">{% trans "Tax Scheme" %}</th>
                     <th>{% trans 'Discount' %}</th>
                     <th>{% trans 'Total' %}</th>
                     <th></th>
@@ -104,6 +117,9 @@
                     <td class="unit-cell">
                         <select data-bind="selectize: $root.units, value: unit_id, object: unit"
                                 data-url="{% url 'unit_add' %}"></select>
+                    </td>
+                    <td data-bind="with: tax_scheme, visible: $root.tax_vm.tax_scheme_visibility">
+                        <select id="row_tax_scheme" data-bind="selectize: tax_schemes, optionsText: 'full_name', value: tax_scheme"></select>
                     </td>
                     <td data-bind="editableText: discount"></td>
                     <td data-bind="text: total"></td>

@@ -11,13 +11,17 @@ from ..users.models import Company
 from awecounting.utils.helpers import get_next_voucher_no
 from django.utils.translation import ugettext_lazy as _
 from datetime import date
+from ..tax.models import TaxScheme
 
 
 class Purchase(models.Model):
+    tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'),]
     party = models.ForeignKey(Party)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     credit = models.BooleanField(default=False)
     date = BSDateField(default=today)
+    tax = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True, blank=True)
+    tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True)
     due_date = BSDateField(blank=True, null=True)
     pending_amount = models.FloatField(null=True, blank=True)
     total_amount = models.FloatField(null=True, blank=True)
@@ -64,6 +68,7 @@ class PurchaseRow(models.Model):
     quantity = models.FloatField()
     rate = models.FloatField()
     discount = models.FloatField(default=0)
+    tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True)
     unit = models.ForeignKey(Unit)
     purchase = models.ForeignKey(Purchase, related_name='rows')
 
