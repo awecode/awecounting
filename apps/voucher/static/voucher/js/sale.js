@@ -41,7 +41,7 @@ function SaleViewModel(data) {
 
     self.party_balance = ko.computed(function () {
         if (self.party())
-            return -1 * self.party().balance;
+            return self.party().balance;
     });
 
     self.table_view = new TableViewModel({rows: data.rows, argument: self}, SaleRow);
