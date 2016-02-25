@@ -27,7 +27,6 @@ function TaxViewModel(tax, tax_scheme, tax_schemes){
 
     self.tax_scheme = new TaxSchemeViewModel(tax_scheme, tax_schemes);
 
-
     if (self.tax() == 'no') {
         self.tax_scheme_visibility(false);
     };
@@ -45,7 +44,6 @@ function TaxViewModel(tax, tax_scheme, tax_schemes){
 function TaxSchemeViewModel(tax_scheme, tax_schemes) {
     var self = this;
     self.tax_scheme = ko.observable();
-    
     if (tax_scheme) {
         self.tax_scheme(tax_scheme);
     };
@@ -68,9 +66,10 @@ function PurchaseViewModel(data) {
         async: false,
         success: function (data) {
             self.tax_schemes = ko.observableArray(data);
+            var none = {full_name: 'None', id:0};
+            self.tax_schemes.push(none);
         }
     });
-
 
     self.tax_vm = new TaxViewModel(self.tax(), self.tax_scheme(), self.tax_schemes());
 
