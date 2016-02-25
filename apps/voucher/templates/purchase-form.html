@@ -94,6 +94,7 @@
                     <th>{% trans "Quantity" %}</th>
                     <th>{% trans "Rate" %}</th>
                     <th>{% trans "Unit" %}</th>
+                    <th data-bind="visible: $root.get_scheme()">{% trans "Tax" %}</th>
                     <th data-bind="visible: $root.get_scheme()">{% trans "Tax Scheme" %}</th>
                     <th>{% trans 'Discount' %}</th>
                     <th>{% trans 'Total' %}</th>
@@ -118,9 +119,14 @@
                         <select data-bind="selectize: $root.units, value: unit_id, object: unit"
                                 data-url="{% url 'unit_add' %}"></select>
                     </td>
-                    <td data-bind="with: tax_scheme, visible: $root.get_scheme()">
-                        <select id="row_tax_scheme" data-bind="selectize: tax_schemes, optionsText: 'full_name', value: tax_scheme"></select>
+                    <!-- ko with: row_tax_vm -->
+                    <td data-bind="visible: $root.get_scheme()">
+                        <select name="tax" class="form-control" id="tax" data-bind="selectize: tax_choices, optionsText: 'value', value: tax"></select>
                     </td>
+                    <td data-bind="visible: $root.get_scheme(), with:tax_scheme">
+                        <select id="tax_scheme" data-bind="selectize: tax_schemes, optionsText: 'full_name', value: tax_scheme"></select>
+                    </td>
+                    <!-- /ko -->
                     <td data-bind="editableText: discount"></td>
                     <td data-bind="text: total"></td>
                     <td class="hide-on-print text-center">

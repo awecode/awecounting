@@ -68,6 +68,8 @@ class PurchaseRow(models.Model):
     quantity = models.FloatField()
     rate = models.FloatField()
     discount = models.FloatField(default=0)
+    tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'),]
+    tax = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True, blank=True)
     tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True)
     unit = models.ForeignKey(Unit)
     purchase = models.ForeignKey(Purchase, related_name='rows')

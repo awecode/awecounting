@@ -179,6 +179,7 @@ function PurchaseRow(row, purchase_vm) {
     self.unit = ko.observable();
     self.unit_id = ko.observable();
     self.tax_scheme = ko.observable();
+    self.tax = ko.observable();
     
     for (var k in row)
         self[k] = ko.observable(row[k]);
@@ -200,7 +201,9 @@ function PurchaseRow(row, purchase_vm) {
         }
     })
 
-    self.tax_scheme = new TaxSchemeViewModel(self.tax_scheme(), purchase_vm.tax_schemes());
+    self.row_tax_vm = new TaxViewModel(self.tax(), self.tax_scheme(), purchase_vm.tax_schemes());
+
+    // self.tax_scheme = new TaxSchemeViewModel(self.tax_scheme(), purchase_vm.tax_schemes());
 
     self.render_option = function (data) {
         var obj = get_by_id(purchase_vm.items(), data.id);
