@@ -4,7 +4,7 @@ $(document).ready(function () {
     $('.change-on-ready').trigger('change');
 });
 
-function TaxViewModel(tax, tax_scheme){
+function TaxViewModel(tax, tax_scheme, tax_schemes){
     var self = this;
     var choices = [
         {
@@ -25,7 +25,8 @@ function TaxViewModel(tax, tax_scheme){
     self.tax_choices = ko.observableArray(choices);
     self.tax_scheme_visibility = ko.observable(true);
 
-    self.tax_scheme = new TaxSchemeViewModel(tax_scheme);
+    self.tax_scheme = new TaxSchemeViewModel(tax_scheme, tax_schemes);
+
 
     if (self.tax() == 'no') {
         self.tax_scheme_visibility(false);
@@ -41,7 +42,7 @@ function TaxViewModel(tax, tax_scheme){
     });
 }
 
-function TaxSchemeViewModel(tax_scheme) {
+function TaxSchemeViewModel(tax_scheme, tax_schemes) {
     var self = this;
     self.tax_scheme = ko.observable();
     
@@ -49,14 +50,7 @@ function TaxSchemeViewModel(tax_scheme) {
         self.tax_scheme(tax_scheme);
     };
 
-    $.ajax({
-        url: '/tax/api/tax_schemes.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.tax_schemes = ko.observableArray(data);
-        }
-    });
+    self.tax_schemes = ko.observableArray(tax_schemes);
 
 }
 
@@ -68,7 +62,17 @@ function PurchaseViewModel(data) {
 
     self.status = ko.observable();
 
-    self.tax_vm = new TaxViewModel(self.tax(), self.tax_scheme());
+    $.ajax({
+        url: '/tax/api/tax_schemes.json',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            self.tax_schemes = ko.observableArray(data);
+        }
+    });
+
+
+    self.tax_vm = new TaxViewModel(self.tax(), self.tax_scheme(), self.tax_schemes());
 
     $.ajax({
         url: '/inventory/api/items.json',
@@ -185,7 +189,7 @@ function PurchaseRow(row, purchase_vm) {
         }
     })
 
-    self.tax_scheme = new TaxSchemeViewModel(self.tax_scheme());
+    self.tax_scheme = new TaxSchemeViewModel(self.tax_scheme(), purchase_vm.tax_schemes());
 
     self.render_option = function (data) {
         var obj = get_by_id(purchase_vm.items(), data.id);
