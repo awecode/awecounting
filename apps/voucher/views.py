@@ -330,7 +330,7 @@ def save_cash_receipt(request):
 def save_purchase(request):
     if request.is_ajax():
         params = json.loads(request.body)
-    dct = {'rows': {}}
+    dct = {'rows': {}, 'tax':{} }
 
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
@@ -357,7 +357,8 @@ def save_purchase(request):
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
-
+        dct['tax'] = obj.tax
+        dct['tax_scheme_id'] = obj.tax_scheme_id
         model = PurchaseRow
         grand_total = 0
         for ind, row in enumerate(params.get('table_view').get('rows')):

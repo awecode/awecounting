@@ -157,6 +157,18 @@ function PurchaseViewModel(data) {
                     $("tbody > tr").each(function (i) {
                         $($("tbody > tr:not(.total)")[i]).addClass('invalid-row');
                     });
+                    if (msg.tax == 'no'){
+                        for (var i in msg.rows) {
+                            self.table_view.rows()[i].row_tax_vm.tax('no');
+                            self.table_view.rows()[i].row_tax_vm.tax_scheme.tax_scheme(0);
+                        }
+                    }
+                    if (msg.tax_scheme_id != "" && msg.tax_scheme_id != null){
+                    for (var i in msg.rows) {
+                        self.table_view.rows()[i].row_tax_vm.tax('no');
+                        self.table_view.rows()[i].row_tax_vm.tax_scheme.tax_scheme(0);
+                    }
+                    }
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];
                         $($("tbody > tr")[i]).removeClass('invalid-row');
@@ -180,7 +192,7 @@ function PurchaseRow(row, purchase_vm) {
     self.unit_id = ko.observable();
     self.tax_scheme = ko.observable();
     self.tax = ko.observable();
-    
+
     for (var k in row)
         self[k] = ko.observable(row[k]);
 
