@@ -73,6 +73,18 @@ function PurchaseViewModel(data) {
 
     self.tax_vm = new TaxViewModel(self.tax(), self.tax_scheme(), self.tax_schemes());
 
+    self.get_scheme = function() {
+        var bool;
+        if (self.tax_vm.tax_scheme.tax_scheme() == '' || self.tax_vm.tax_scheme.tax_scheme() == 0 ) {
+            bool = true;
+        } else {
+            bool = false;
+        };
+        return self.tax_vm.tax_scheme_visibility() && bool;
+    };
+
+    self.tax_vm.tax_scheme.tax_scheme.subscribe( self.get_scheme );
+
     $.ajax({
         url: '/inventory/api/items.json',
         dataType: 'json',
