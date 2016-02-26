@@ -66,7 +66,7 @@ function PurchaseViewModel(data) {
         async: false,
         success: function (data) {
             self.tax_schemes = ko.observableArray(data);
-            var none = {full_name: 'None', id:0};
+            var none = {name: 'None', id:0};
             self.tax_schemes.push(none);
         }
     });

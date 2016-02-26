@@ -77,7 +77,7 @@
                 <div data-bind="visible: tax_scheme_visibility">
                     <div class="col-md-6 col-sm-12" data-bind="with: tax_scheme">
                         <label for="due_date">{% trans 'Tax Scheme' %}</label>
-                        <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, optionsText: 'full_name', value: tax_scheme"
+                        <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme"
                         data-url="{% url 'tax_scheme_add' %}"></select>
                     </div>
                 </div>

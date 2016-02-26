@@ -13,8 +13,10 @@ class TaxScheme(models.Model):
     company = models.ForeignKey(Company)
 
     @property
-    def name(self):
-        return self.short_name or self.full_name
+    def get_name(self):
+        if self.name:
+            return self.name
+        return self.short_name
 
     def get_class_name(self):
         return self.__class__.__name__
