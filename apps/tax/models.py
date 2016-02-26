@@ -6,7 +6,7 @@ from ..users.models import Company
 
 
 class TaxScheme(models.Model):
-    full_name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
     short_name = models.CharField(max_length=5, blank=True, null=True)
     percent = models.FloatField()
     recoverable = models.BooleanField(default=False)
