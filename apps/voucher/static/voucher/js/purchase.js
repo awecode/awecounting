@@ -66,7 +66,7 @@ function PurchaseViewModel(data) {
         async: false,
         success: function (data) {
             self.tax_schemes = ko.observableArray(data);
-            var none = {name: 'None', id:0};
+            var none = {name: 'None', id: 0, percent: 0};
             self.tax_schemes.push(none);
         }
     });
@@ -135,6 +135,29 @@ function PurchaseViewModel(data) {
         return round2(sum);
     }
 
+    self.tax_amount = function () {
+        var sum = 0;
+        if (self.get_scheme()) {
+            self.table_view.rows().forEach(function (i) {
+                if (i.tax_amount()) {
+                    sum += parseFloat(i.tax_amount());
+                }
+            });
+        } 
+        if (self.tax_vm.tax_scheme.tax_scheme() != '' || self.tax_vm.tax_scheme.tax_scheme() != 0 ) {
+            tax_percent = $.grep(vm.tax_schemes(), function(e){ return e.id == self.tax_vm.tax_scheme.tax_scheme(); })[0].percent;
+            if (vm.tax_vm.tax() == 'inclusive') {
+                sum = self.sub_total() * (tax_percent / (100 + tax_percent))
+            } else if (vm.tax_vm.tax() == 'exclusive') {
+                sum = self.sub_total() * ( tax_percent / 100 );
+            } else {
+                sum = 0
+            }
+        }
+        return r2z(round2(sum));
+    }
+
+    self.grand_total = ko.observable('grand total');
     self.save = function (item, event) {
         if (!self.party()) {
             bsalert.error('Party is required!');
@@ -195,7 +218,6 @@ function PurchaseRow(row, purchase_vm) {
         self[k] = ko.observable(row[k]);
 
     self.item.subscribe(function (item) {
-        //debugger;
         // TODO
         var unit = get_by_id(purchase_vm.units(), item.unit.id);
         if (unit && !self.unit_id())
@@ -213,7 +235,25 @@ function PurchaseRow(row, purchase_vm) {
 
     self.row_tax_vm = new TaxViewModel(self.tax(), self.tax_scheme(), purchase_vm.tax_schemes());
 
-    // self.tax_scheme = new TaxSchemeViewModel(self.tax_scheme(), purchase_vm.tax_schemes());
+    self.tax_amount = ko.observable();
+
+    self.calculate_tax_amount = function() {
+        tax_percent = $.grep(vm.tax_schemes(), function(e){ return e.id == self.row_tax_vm.tax_scheme.tax_scheme(); })[0].percent;
+        tax_total = 0;
+        if (vm.tax_vm.tax() == 'inclusive') {
+            tax_total = self.total() * (tax_percent / (100 + tax_percent))
+        } else if (vm.tax_vm.tax() == 'exclusive') {
+            tax_total = self.total() * ( tax_percent / 100 );
+        } else {
+            tax_total = 0
+        }
+        self.tax_amount(tax_total);
+    };
+
+
+    self.row_tax_vm.tax_scheme.tax_scheme.subscribe( self.calculate_tax_amount );
+    self.total.subscribe( self.calculate_tax_amount );
+    purchase_vm.tax_vm.tax.subscribe( self.calculate_tax_amount );
 
     self.render_option = function (data) {
         var obj = get_by_id(purchase_vm.items(), data.id);
