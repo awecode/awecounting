@@ -8,7 +8,7 @@ from django.db import models
 from ..inventory.models import Item, Unit
 from ..ledger.models import Party, Account
 from ..users.models import Company
-from awecounting.utils.helpers import get_next_voucher_no
+from awecounting.utils.helpers import get_next_voucher_no, calculate_tax
 from django.utils.translation import ugettext_lazy as _
 from datetime import date
 from ..tax.models import TaxScheme
@@ -58,18 +58,12 @@ class Purchase(models.Model):
     def tax_amount(self):
         _sum = 0
         if self.tax_scheme:
-            if self.tax == "inclusive":
-                _sum = self.sub_total * (self.tax_scheme.percent / (100 + self.tax_scheme.percent))
-            elif self.tax == "exclusive":
-                _sum = self.sub_total  * (self.tax_scheme.percent / 100 )
+            _sum = calculate_tax(self.tax, self.sub_total, self.tax_scheme.percent)
         else:
             for obj in self.rows.all():
                 if obj.tax_scheme:
                     total = obj.quantity * obj.rate - obj.discount
-                    if self.tax == "inclusive":
-                        amount = total * (obj.tax_scheme.percent / (100 + obj.tax_scheme.percent))
-                    elif self.tax == "exclusive":
-                        amount = total  * (obj.tax_scheme.percent / 100 )
+                    amount = calculate_tax(self.tax, total, obj.tax_scheme.percent)
                     _sum += amount
         return _sum
 
