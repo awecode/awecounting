@@ -1,5 +1,6 @@
 from apps.users.models import Role
 from apps.users.models import Company
+from rest_framework.authtoken.models import Token
 
 
 def clear_roles(request):
@@ -14,6 +15,11 @@ def clear_roles(request):
 
 class RoleMiddleware(object):
     def process_request(self, request):
+
+        if request.META.get('HTTP_AUTHORIZATION'):
+            token_key = request.META.get('HTTP_AUTHORIZATION').split(' ')[-1]
+            request.user = Token.objects.get(key=token_key).user
+
         if not request.user.is_anonymous():
 
             role = None
@@ -41,3 +47,6 @@ class RoleMiddleware(object):
                 request = clear_roles(request)
         else:
             request = clear_roles(request)
+
+    def authenticate(self, request):
+        pass
