@@ -331,7 +331,6 @@ def save_purchase(request):
     if request.is_ajax():
         params = json.loads(request.body)
     dct = {'rows': {}, 'tax':{} }
-
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
 
@@ -342,10 +341,9 @@ def save_purchase(request):
         tax_scheme_id = None
     else:
         tax_scheme_id = params.get('tax_vm').get('tax_scheme')
-    
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
                      'party_id': params.get('party_id'), 'due_date': params.get('due_date'),
-                     'credit': params.get('credit'), 'tax': tax, 'tax_scheme_id': tax_scheme_id, 'company': request.company}
+                     'credit': params.get('credit'), 'tax': tax, 'tax_scheme_id': empty_to_none(tax_scheme_id), 'company': request.company}
 
     if params.get('id'):
         obj = Purchase.objects.get(id=params.get('id'), company=request.company)

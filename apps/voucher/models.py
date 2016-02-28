@@ -47,12 +47,39 @@ class Purchase(models.Model):
             self.voucher_no = get_next_voucher_no(Purchase, self.company_id)
 
     @property
-    def total(self):
+    def sub_total(self):
         grand_total = 0
         for obj in self.rows.all():
             total = obj.quantity * obj.rate - obj.discount
             grand_total += total
-        return grand_total
+        return grand_total  
+
+    @property
+    def tax_amount(self):
+        _sum = 0
+        if self.tax_scheme:
+            if self.tax == "inclusive":
+                _sum = self.sub_total * (self.tax_scheme.percent / (100 + self.tax_scheme.percent))
+            elif self.tax == "exclusive":
+                _sum = self.sub_total  * (self.tax_scheme.percent / 100 )
+        else:
+            for obj in self.rows.all():
+                if obj.tax_scheme:
+                    total = obj.quantity * obj.rate - obj.discount
+                    if self.tax == "inclusive":
+                        amount = total * (obj.tax_scheme.percent / (100 + obj.tax_scheme.percent))
+                    elif self.tax == "exclusive":
+                        amount = total  * (obj.tax_scheme.percent / 100 )
+                    _sum += amount
+        return _sum
+
+    @property
+    def total(self):
+        amount = self.sub_total
+        if self.tax == "exclusive":
+            amount = self.sub_total + self.tax_amount
+        return amount
+    
 
     @property
     def voucher_type(self):
