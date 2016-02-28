@@ -121,7 +121,7 @@
                     </td>
                     <!-- ko with: row_tax_vm -->
                     <td data-bind="visible: $root.get_scheme(), with:tax_scheme">
-                        <select id="tax_scheme" data-bind="selectize: tax_schemes, value: tax_scheme"
+                        <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme"
                         data-url="{% url 'tax_scheme_add' %}"></select>
                     </td>
                     <!-- /ko -->
