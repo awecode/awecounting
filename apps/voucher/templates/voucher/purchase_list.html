@@ -11,7 +11,6 @@
 
 {% block content %}
     <div class="well">
-
         {% load pagination_tags %}
         {% load sorting_tags %}
         {% load filters %}
@@ -25,13 +24,15 @@
             <th>{% anchor date _('Date') %}</th>
             <th>{% anchor party _('Party') %}</th>
             <th>{% anchor credit _('Credit/Cash') %}</th>
-            <th></th>
+            {% ifrole "Accountant" %}
+                <th>{% trans "Action" %}</th>
+            {% endrole %}
             </thead>
             <tbody>
             {% for purchase in paginated_objects %}
                 <tr>
                     <td class="link">
-                        <a href="{% url 'purchase-edit' purchase.pk %}">{{ purchase.voucher_no }}</a>
+                        <a href="{% url 'purchase-detail' purchase.pk %}">{{ purchase.voucher_no }}</a>
                     </td>
                     <td>
                         {{ purchase.date }}
@@ -44,9 +45,11 @@
                     <td>
                         {{ purchase.type }}
                     </td>
+                    {% ifrole "Accountant" %}
                     <td>
-                        <a href="{% url 'purchase-detail' purchase.id %}">{% trans "Detail" %}</a>
+                        <a href="{% url 'purchase-edit' purchase.id %}">{% trans "Edit" %}</a>
                     </td>
+                    {% endrole %}
                 </tr>
             {% endfor %}
             </tbody>
