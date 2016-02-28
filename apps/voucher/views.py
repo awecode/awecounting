@@ -340,10 +340,8 @@ def save_purchase(request):
 
     if params.get('tax_vm').get('tax') == 'no':
         tax_scheme_id = None
-    elif params.get('tax_vm').get('tax_scheme').get('tax_scheme') == '0':
-        tax_scheme_id = None
     else:
-        tax_scheme_id = params.get('tax_vm').get('tax_scheme').get('tax_scheme')
+        tax_scheme_id = params.get('tax_vm').get('tax_scheme')
     
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
                      'party_id': params.get('party_id'), 'due_date': params.get('due_date'),
@@ -353,7 +351,6 @@ def save_purchase(request):
         obj = Purchase.objects.get(id=params.get('id'), company=request.company)
     else:
         obj = Purchase(company=request.company)
-    # if True:
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
@@ -368,20 +365,15 @@ def save_purchase(request):
                 if params.get('tax_vm').get('tax') == 'no':
                     row_tax_scheme_id = None
                     row.get('row_tax_vm')['tax'] = 'no'
-                elif row.get('row_tax_vm').get('tax_scheme').get('tax_scheme') == '0':
-                    row_tax_scheme_id = None
-                    row.get('row_tax_vm')['tax'] = 'no'
                 else:
-                    row_tax_scheme_id = row.get('row_tax_vm').get('tax_scheme').get('tax_scheme')
-                # import ipdb; ipdb.set_trace()
-                if params.get('tax_vm').get('tax_scheme').get('tax_scheme') != '0' and params.get('tax_vm').get('tax_scheme').get('tax_scheme') != '':
+                    row_tax_scheme_id = row.get('row_tax_vm').get('tax_scheme')
+                if params.get('tax_vm').get('tax_scheme') != '0' and params.get('tax_vm').get('tax_scheme') != '':
                     row_tax_scheme_id = None
                     row.get('row_tax_vm')['tax'] = 'no'
 
                 values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'quantity': row.get('quantity'),
                           'rate': row.get('rate'), 'unit_id': row.get('unit')['id'], 'discount': row.get('discount'),
                           'tax_scheme_id': row_tax_scheme_id,
-                           # 'tax' : row.get('row_tax_vm').get('tax'),
                           'purchase': obj}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
