@@ -26,6 +26,7 @@ ko.bindingHandlers.selectize = {
         ko.bindingHandlers.options.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
 
         var options = {
+            plugins: ['remove_button'],
             valueField: allBindingsAccessor.get('optionsValue'),
             labelField: allBindingsAccessor.get('optionsText'),
             searchField: allBindingsAccessor.get('optionsText')
