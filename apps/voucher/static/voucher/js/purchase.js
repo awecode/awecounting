@@ -144,14 +144,11 @@ function PurchaseViewModel(data) {
                 }
             });
         } 
-        console.log(sum)
-        // debugger;
         if (self.tax_vm.tax_scheme.tax_scheme() != '' && self.tax_vm.tax_scheme.tax_scheme() != 0 ) {
             tax_percent = $.grep(vm.tax_schemes(), function(e){ return e.id == self.tax_vm.tax_scheme.tax_scheme(); })[0].percent;
-            // debugger;
-            if (vm.tax_vm.tax() == 'inclusive') {
+            if (self.tax_vm.tax() == 'inclusive') {
                 _sum = self.sub_total() * (tax_percent / (100 + tax_percent))
-            } else if (vm.tax_vm.tax() == 'exclusive') {
+            } else if (self.tax_vm.tax() == 'exclusive') {
                 _sum = self.sub_total() * ( tax_percent / 100 );
             } else {
                 _sum = 0
@@ -161,7 +158,16 @@ function PurchaseViewModel(data) {
         return r2z(round2(sum));
     }
 
-    self.grand_total = ko.observable('grand total');
+    self.total_amount = 0;
+
+    self.grand_total = function () {
+        self.total_amount = rnum(self.sub_total());
+        if (vm.tax_vm.tax() == 'exclusive') {
+            self.total_amount = self.sub_total() + self.tax_amount();
+        }
+        return self.total_amount;
+    }
+
     self.save = function (item, event) {
         if (!self.party()) {
             bsalert.error('Party is required!');
