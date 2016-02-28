@@ -25,7 +25,7 @@
             <div class="well">
                 <table class="table table-striped">
                     <thead>
-                    <th>{% anchor full_name _('Full Name') %}</th>
+                    <th>{% anchor name _('Full Name') %}</th>
                     <th>{% anchor short_name _('Short Name') %}</th>
                     <th>{% anchor percent _('Percent') %}</th>
                     <th>{% anchor recoverable _('Recoverable') %}</th>
@@ -34,7 +34,7 @@
                     {% for object in sorted_objects %}
                         <tr>
                             <td>
-                                <a href="{% url 'tax_scheme_edit' object.pk %}">{{ object.full_name }}</a>
+                                <a href="{% url 'tax_scheme_edit' object.pk %}">{{ object.name }}</a>
                             </td>
                            <td>
                                 <a href="{% url 'tax_scheme_edit' object.pk %}">{{ object.short_name }}</a>
