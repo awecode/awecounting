@@ -32,6 +32,12 @@ web_urls = [
 api_urls = [
     url(r'^api/cheque_deposits/$', api.ChequeDepositListAPI.as_view()),
     url(r'^api/cheque_deposit/(?P<pk>[0-9]+)/$', api.ChequeDepositDetailAPI.as_view()),
+    url(r'^api/bank_accounts/$', api.BankAccountListAPI.as_view()),
+    url(r'^api/bank_account/(?P<pk>[0-9]+)/$', api.BankAccountDetailAPI.as_view()),
+    url(r'^api/bank_cash_deposits/$', api.BankCashDepositListAPI.as_view()),
+    url(r'^api/bank_cash_deposit/(?P<pk>[0-9]+)/$', api.BankCashDepositDetailAPI.as_view()),
+    url(r'^api/cheque_payments/$', api.ChequePaymentListAPI.as_view()),
+    url(r'^api/cheque_payment/(?P<pk>[0-9]+)/$', api.ChequePaymentDetailAPI.as_view()),
 ]
 
 api_urls = format_suffix_patterns(api_urls)

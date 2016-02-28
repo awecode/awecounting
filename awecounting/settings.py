@@ -30,6 +30,7 @@ INSTALLED_APPS = (
 
     'njango',
     'rest_framework',
+    'rest_framework.authtoken',
     'linaro_django_pagination',
     'webstack_django_sorting',
 )
@@ -76,6 +77,18 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissions'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'apps.users.middleware.RoleMiddleware',
+    )
+}
+
 
 ROOT_URLCONF = 'awecounting.urls'
 
