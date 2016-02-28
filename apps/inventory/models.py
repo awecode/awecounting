@@ -222,5 +222,5 @@ def set_transactions(model, date, *args):
         transaction.account.current_balance += diff
         transaction.current_balance = transaction.account.current_balance
         transaction.account.save()
-        journal_entry.transactions.add(transaction)
+        journal_entry.transactions.add(transaction, bulk=False)
         alter(transaction.account, date, diff)
