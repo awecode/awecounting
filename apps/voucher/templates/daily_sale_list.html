@@ -20,12 +20,15 @@
                 <th>{% anchor voucher_no _('Vourcher ID') %}</th>
                 <th>{% anchor date _('Date') %}</th>
                 <th>{% trans 'Total' %}</th>
+                {% ifrole "Accountant" %}
+                    <th>{% trans "Action" %}</th>
+                {% endrole %}
                 </thead>
                 <tbody>
                 {% for sale in paginated_objects %}
                     <tr>
                         <td>
-                            <a href="{% url 'sale-edit' sale.pk %}">{{ sale.voucher_no }}</a>
+                            <a href="{% url 'sale_detail' sale.pk %}">{{ sale.voucher_no }}</a>
                         </td>
                         <td>
                             {{ sale.date }}
@@ -33,6 +36,11 @@
                         <td>
                             {{ sale.total }}
                         </td>
+                        {% ifrole "Accountant" %}
+                        <td>
+                            <a href="{% url 'sale-edit' sale.id %}">{% trans "Edit" %}</a>
+                        </td>
+                        {% endrole %}
                     </tr>
                 {% endfor %}
                 </tbody>

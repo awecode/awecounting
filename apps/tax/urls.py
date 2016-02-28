@@ -1,6 +1,6 @@
 from django.conf.urls import url
-from . import views, api
 from rest_framework.urlpatterns import format_suffix_patterns
+from . import views, api
 
 web_urls = [
     url(r'^tax_scheme/$', views.TaxSchemeList.as_view(), name='tax_scheme_list'),

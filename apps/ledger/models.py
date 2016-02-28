@@ -243,7 +243,7 @@ def set_transactions(submodel, date, *args):
 
         # the following code lies outside if,else block, inside for loop
         transaction.account.save()
-        journal_entry.transactions.add(transaction)
+        journal_entry.transactions.add(transaction, bulk=False)
 
 
 def delete_rows(rows, model):

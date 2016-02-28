@@ -69,6 +69,19 @@
                            id="due_date">
                 </div>
             </div>
+            <div class="row" data-bind="with: tax_vm">
+                <div class="col-md-6 col-sm-12">
+                    <label for="party">{% trans 'Tax' %}</label>
+                    <select name="tax" class="form-control" id="tax" data-bind="selectize: tax_choices, optionsText: 'value', value: tax"></select>
+                </div>
+                <div data-bind="visible: tax_scheme_visibility">
+                    <div class="col-md-6 col-sm-12" data-bind="with: tax_scheme">
+                        <label for="due_date">{% trans 'Tax Scheme' %}</label>
+                        <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme"
+                        data-url="{% url 'tax_scheme_add' %}"></select>
+                    </div>
+                </div>
+            </div>
         </div>
 
 
@@ -82,6 +95,7 @@
                     <th>{% trans "Quantity" %}</th>
                     <th>{% trans "Rate" %}</th>
                     <th>{% trans "Unit" %}</th>
+                    <th data-bind="visible: $root.get_scheme()">{% trans "Tax Scheme" %}</th>
                     <th>{% trans 'Discount' %}</th>
                     <th>{% trans 'Total' %}</th>
                     <th></th>
@@ -105,6 +119,12 @@
                         <select data-bind="selectize: $root.units, value: unit_id, object: unit"
                                 data-url="{% url 'unit_add' %}"></select>
                     </td>
+                    <!-- ko with: row_tax_vm -->
+                    <td data-bind="visible: $root.get_scheme(), with:tax_scheme">
+                        <select id="tax_scheme" data-bind="selectize: tax_schemes, value: tax_scheme"
+                        data-url="{% url 'tax_scheme_add' %}"></select>
+                    </td>
+                    <!-- /ko -->
                     <td data-bind="editableText: discount"></td>
                     <td data-bind="text: total"></td>
                     <td class="hide-on-print text-center">
@@ -113,11 +133,25 @@
                 </tr>
 
                 <!-- /ko -->
-                <tr class="total">
+                <tr class="sub-total total">
                     <td colspan="6">
-                        {% trans 'Grand Total' %}
+                        {% trans 'Sub Total' %}
                     </td>
                     <td colspan="2" data-bind="text: $root.sub_total(), localize: 1"></td>
+
+                </tr>
+                <tr class="tax-total total">
+                    <td colspan="6">
+                        {% trans 'Tax Amount' %}
+                    </td>
+                    <td colspan="2" data-bind="text: $root.tax_amount(), localize: 1"></td>
+
+                </tr>
+                <tr class="grand-total total">
+                    <td colspan="6">
+                        {% trans 'Grand Amount' %}
+                    </td>
+                    <td colspan="2" data-bind="text: $root.grand_total(), localize: 1"></td>
 
                 </tr>
                 </tbody>

@@ -116,14 +116,15 @@
             <p>
                 {{ object.narration }}
             </p>
-            <table class="table table-striped" data-bind="if: file">
+            {% if object.files.all %}
+            <table class="table table-striped">
                 <thead>
                     <th>{% trans "File" %}</th>
                     <th>{% trans "Description"%}</th>
                     <th></th>
                 </thead>
-                <tbody data-bind="foreach: file">
-                {% for file in object.file.all %}
+                <tbody>
+                {% for file in object.files.all %}
                     <tr class="file">
                         <td>
                             <a href="{{ file.attachment.url }}">{{ file.filename }}</a>
@@ -133,6 +134,7 @@
                 {% endfor %}
                 </tbody>
             </table>
+            {% endif %}
         </div>
     </div>
 </div>
