@@ -144,15 +144,19 @@ function PurchaseViewModel(data) {
                 }
             });
         } 
-        if (self.tax_vm.tax_scheme.tax_scheme() != '' || self.tax_vm.tax_scheme.tax_scheme() != 0 ) {
+        console.log(sum)
+        // debugger;
+        if (self.tax_vm.tax_scheme.tax_scheme() != '' && self.tax_vm.tax_scheme.tax_scheme() != 0 ) {
             tax_percent = $.grep(vm.tax_schemes(), function(e){ return e.id == self.tax_vm.tax_scheme.tax_scheme(); })[0].percent;
+            // debugger;
             if (vm.tax_vm.tax() == 'inclusive') {
-                sum = self.sub_total() * (tax_percent / (100 + tax_percent))
+                _sum = self.sub_total() * (tax_percent / (100 + tax_percent))
             } else if (vm.tax_vm.tax() == 'exclusive') {
-                sum = self.sub_total() * ( tax_percent / 100 );
+                _sum = self.sub_total() * ( tax_percent / 100 );
             } else {
-                sum = 0
+                _sum = 0
             }
+            return r2z(round2(_sum));
         }
         return r2z(round2(sum));
     }
