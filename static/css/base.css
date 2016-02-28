@@ -564,3 +564,15 @@ td.link a{
    margin-left: -200px;
    margin-top: -200px;
 }
+
+ul.navbar-right li form div select.btn{
+    color: #FFFFFF !important;
+    /*display: none;*/
+}
+
+ul.navbar-right li form div select.btn option{
+    color: #000000 !important;
+    /*display: none;*/
+}
+
+

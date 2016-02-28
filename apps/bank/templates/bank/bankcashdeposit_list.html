@@ -40,7 +40,7 @@
                 <td>{{ item.benefactor }}</td>
                 <td>{{ item.amount }}</td>
                 <td>
-                    <a href="{% url 'bank:cash_deposit_edit' item.id %}">Edit</a>
+                    <a href="{% url 'bank:cash_deposit_edit' item.id %}">{% trans "Edit" %}</a>
                 </td>
             </tr>
         {% endfor %}
