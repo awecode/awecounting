@@ -66,8 +66,6 @@ function PurchaseViewModel(data) {
         async: false,
         success: function (data) {
             self.tax_schemes = ko.observableArray(data);
-            var none = {name: 'None', id: 0, percent: 0};
-            self.tax_schemes.push(none);
         }
     });
 
@@ -77,8 +75,6 @@ function PurchaseViewModel(data) {
         var bool;
         if (self.tax_vm.tax_scheme.tax_scheme() == '' || self.tax_vm.tax_scheme.tax_scheme() == 0 ) {
             bool = true;
-        } else {
-            bool = false;
         };
         return self.tax_vm.tax_scheme_visibility() && bool;
     };
@@ -144,17 +140,17 @@ function PurchaseViewModel(data) {
                 }
             });
         } 
-        if (self.tax_vm.tax_scheme.tax_scheme() != '' && self.tax_vm.tax_scheme.tax_scheme() != 0 ) {
+        if (self.tax_vm.tax_scheme.tax_scheme() != '') {
             tax_percent = $.grep(vm.tax_schemes(), function(e){ return e.id == self.tax_vm.tax_scheme.tax_scheme(); })[0].percent;
             if (self.tax_vm.tax() == 'inclusive') {
                 _sum = self.sub_total() * (tax_percent / (100 + tax_percent))
             } else if (self.tax_vm.tax() == 'exclusive') {
                 _sum = self.sub_total() * ( tax_percent / 100 );
             } else {
-                _sum = 0
+                sum = 0
             }
             return r2z(round2(_sum));
-        }
+        } 
         return r2z(round2(sum));
     }
 
@@ -248,16 +244,19 @@ function PurchaseRow(row, purchase_vm) {
     self.tax_amount = ko.observable();
 
     self.calculate_tax_amount = function() {
-        tax_percent = $.grep(vm.tax_schemes(), function(e){ return e.id == self.row_tax_vm.tax_scheme.tax_scheme(); })[0].percent;
-        tax_total = 0;
+        var tax_total = 0;
+        if (self.row_tax_vm.tax_scheme.tax_scheme() != '') {
+            tax_percent = $.grep(vm.tax_schemes(), function(e){ return e.id == self.row_tax_vm.tax_scheme.tax_scheme(); })[0].percent;
         if (vm.tax_vm.tax() == 'inclusive') {
             tax_total = self.total() * (tax_percent / (100 + tax_percent))
         } else if (vm.tax_vm.tax() == 'exclusive') {
             tax_total = self.total() * ( tax_percent / 100 );
+        } 
         } else {
             tax_total = 0
-        }
+        };
         self.tax_amount(tax_total);
+
     };
 
 

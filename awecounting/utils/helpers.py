@@ -63,12 +63,16 @@ def json_from_object(obj):
     data = {
         'id': obj.id
     }
+
     if hasattr(obj, 'name'):
         data['name'] = obj.name
     elif hasattr(obj, 'title'):
         data['name'] = obj.title
     else:
         data['name'] = str(obj)
+    
+    if hasattr(obj, 'percent'):
+        data['percent'] = obj.percent # Percent attr for tax scheme
     return JsonResponse(data)
 
 
