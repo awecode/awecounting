@@ -124,6 +124,17 @@ function PurchaseViewModel(data) {
         return round2(sum);
     }
 
+    self.discount = function () {
+        var sum = 0;
+        self.table_view.rows().forEach(function (i) {
+            if (i.discount()) {
+                sum += parseFloat(i.discount());
+            }
+        });
+        return round2(sum);
+    }
+
+
     self.tax_amount = function () {
         var sum = 0;
         if (self.tax_vm.get_scheme()) {
@@ -197,6 +208,8 @@ function PurchaseViewModel(data) {
             }
         });
     }
+
+
 }
 
 
