@@ -277,7 +277,8 @@ ko.bindingHandlers.numeric = {
                     //Allow decimal symbol (.)
                 (event.keyCode === 190) ||
                     // Allow: home, end, left, right
-                (event.keyCode >= 35 && event.keyCode <= 39)) {
+                (event.keyCode >= 35 && event.keyCode <= 39) ||
+                event.keyCode == 53 ) {
                 // let it happen, don't do anything
                 return;
             }

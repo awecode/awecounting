@@ -58,6 +58,15 @@ def write_error(dct, e):
 #     else:
 #         return 1
 
+def calculate_tax(tax_choice, total, percent):
+    _sum = 0
+    if tax_choice == "inclusive":
+        _sum = total * (percent / (100 + percent))
+    elif tax_choice == "exclusive":
+        _sum = total  * (percent / 100 )
+    return _sum
+
+
 
 def json_from_object(obj):
     data = {

@@ -4,7 +4,7 @@ $(document).ready(function () {
     $('.change-on-ready').trigger('change');
 });
 
-function TaxViewModel(tax, tax_scheme, tax_schemes){
+function TaxViewModel(tax, tax_scheme){
     var self = this;
     var choices = [
         {
@@ -22,10 +22,13 @@ function TaxViewModel(tax, tax_scheme, tax_schemes){
     ]
 
     self.tax = ko.observable(tax);
+    self.tax_scheme = ko.observable();
     self.tax_choices = ko.observableArray(choices);
     self.tax_scheme_visibility = ko.observable(true);
-
-    self.tax_scheme = new TaxSchemeViewModel(tax_scheme, tax_schemes);
+  
+    if (tax_scheme) {
+        self.tax_scheme(tax_scheme);
+    };
 
     if (self.tax() == 'no') {
         self.tax_scheme_visibility(false);
@@ -39,18 +42,16 @@ function TaxViewModel(tax, tax_scheme, tax_schemes){
             self.tax_scheme_visibility(true);
         }
     });
-}
 
-function TaxSchemeViewModel(tax_scheme, tax_schemes) {
-    var self = this;
-    self.tax_scheme = ko.observable();
-    if (tax_scheme) {
-        self.tax_scheme(tax_scheme);
+    self.get_scheme = function() {
+        var bool;
+        if (self.tax_scheme() == '' ) {
+            bool = true;
+        };
+        return self.tax_scheme_visibility() && bool;
     };
-
-    self.tax_schemes = ko.observableArray(tax_schemes);
-
 }
+
 
 function PurchaseViewModel(data) {
     var self = this;
@@ -74,17 +75,9 @@ function PurchaseViewModel(data) {
         }
     });
 
-    self.tax_vm = new TaxViewModel(self.tax(), self.tax_scheme(), self.tax_schemes());
+    self.tax_vm = new TaxViewModel(self.tax(), self.tax_scheme());
 
-    self.get_scheme = function() {
-        var bool;
-        if (self.tax_vm.tax_scheme.tax_scheme() == '' || self.tax_vm.tax_scheme.tax_scheme() == 0 ) {
-            bool = true;
-        };
-        return self.tax_vm.tax_scheme_visibility() && bool;
-    };
-
-    self.tax_vm.tax_scheme.tax_scheme.subscribe( self.get_scheme );
+    self.tax_vm.tax_scheme.subscribe( self.tax_vm.get_scheme );
 
     $.ajax({
         url: '/inventory/api/items.json',
@@ -136,17 +129,32 @@ function PurchaseViewModel(data) {
         return round2(sum);
     }
 
+    self.discount = function () {
+        var sum = 0;
+        self.table_view.rows().forEach(function (i) {
+            if (String(i.discount()).indexOf('%') !== -1 ) {
+                var total = i.rate() * i.quantity();
+                var amount = ( parseFloat(i.discount()) / 100 ) * total
+                sum += parseFloat(amount);
+            } else if (i.discount()) {
+                sum += parseFloat(i.discount());
+            }
+        });
+        return r2z(round2(sum));
+    }
+
+
     self.tax_amount = function () {
         var sum = 0;
-        if (self.get_scheme()) {
+        if (self.tax_vm.get_scheme()) {
             self.table_view.rows().forEach(function (i) {
                 if (i.tax_amount()) {
                     sum += parseFloat(i.tax_amount());
                 }
             });
         } 
-        if (self.tax_vm.tax_scheme.tax_scheme() != '') {
-            tax_percent = $.grep(vm.tax_schemes(), function(e){ return e.id == self.tax_vm.tax_scheme.tax_scheme(); })[0].percent;
+        if (self.tax_vm.tax_scheme() != '') {
+            tax_percent = $.grep(self.tax_schemes(), function(e){ return e.id == self.tax_vm.tax_scheme(); })[0].percent;
             if (self.tax_vm.tax() == 'inclusive') {
                 _sum = self.sub_total() * (tax_percent / (100 + tax_percent))
             } else if (self.tax_vm.tax() == 'exclusive') {
@@ -166,7 +174,7 @@ function PurchaseViewModel(data) {
         if (vm.tax_vm.tax() == 'exclusive') {
             self.total_amount = self.sub_total() + self.tax_amount();
         }
-        return self.total_amount;
+        return r2z(self.total_amount);
     }
 
     self.save = function (item, event) {
@@ -174,6 +182,20 @@ function PurchaseViewModel(data) {
             bsalert.error('Party is required!');
             return false;
         }
+
+        var check_discount
+        self.table_view.rows().forEach(function (i) {
+            discount_as_string = String(i.discount());
+            if (discount_as_string.indexOf('%') !== -1) {
+                if (typeof(discount_as_string[ discount_as_string.indexOf('%') + 1]) != 'undefined' ) {
+                    bsalert.error("Discount '%' not in correct order")
+                    check_discount = true;
+                };
+            };
+        });
+        if (check_discount) {
+            return false
+        };
         $.ajax({
             type: "POST",
             url: '/voucher/purchase/save/',
@@ -193,12 +215,12 @@ function PurchaseViewModel(data) {
                     });
                     if (msg.tax == 'no'){
                         for (var i in msg.rows) {
-                            self.table_view.rows()[i].row_tax_vm.tax_scheme.tax_scheme(0);
+                            self.table_view.rows()[i].row_tax_vm.tax_scheme(0);
                         }
                     }
                     if (msg.tax_scheme_id != "" && msg.tax_scheme_id != null){
                     for (var i in msg.rows) {
-                        self.table_view.rows()[i].row_tax_vm.tax_scheme.tax_scheme(0);
+                        self.table_view.rows()[i].row_tax_vm.tax_scheme(0);
                     }
                     }
                     for (var i in msg.rows) {
@@ -209,6 +231,8 @@ function PurchaseViewModel(data) {
             }
         });
     }
+
+
 }
 
 
@@ -219,11 +243,11 @@ function PurchaseRow(row, purchase_vm) {
     self.item_id = ko.observable();
     self.quantity = ko.observable();
     self.rate = ko.observable();
-    self.discount = ko.observable(0);
+    self.discount = ko.observable();
     self.unit = ko.observable();
     self.unit_id = ko.observable();
-    self.tax_scheme = ko.observable();
     self.tax = ko.observable();
+    self.tax_scheme = ko.observable();
 
     for (var k in row)
         self[k] = ko.observable(row[k]);
@@ -236,11 +260,14 @@ function PurchaseRow(row, purchase_vm) {
     });
 
     self.total = ko.computed(function () {
+        var total = self.quantity() * self.rate()
         if (self.discount() > 0) {
-            var total = self.quantity() * self.rate()
             return round2(total - self.discount());
+        } else if (String(self.discount()).indexOf('%') !== -1){
+            var discount_amount = ( parseFloat(self.discount()) / 100 ) * total;
+            return r2z(round2(total - discount_amount))
         } else {
-            return round2(self.quantity() * self.rate());
+            return round2(total);
         }
     });
 
@@ -271,14 +298,14 @@ function PurchaseRow(row, purchase_vm) {
     }
 
 
-    self.row_tax_vm = new TaxViewModel(self.tax(), self.tax_scheme(), purchase_vm.tax_schemes());
+    self.row_tax_vm = new TaxViewModel(self.tax(), self.tax_scheme());
 
     self.tax_amount = ko.observable();
 
     self.calculate_tax_amount = function() {
         var tax_total = 0;
-        if (self.row_tax_vm.tax_scheme.tax_scheme() != '') {
-            tax_percent = $.grep(vm.tax_schemes(), function(e){ return e.id == self.row_tax_vm.tax_scheme.tax_scheme(); })[0].percent;
+        if (self.row_tax_vm.tax_scheme() != '') {
+            tax_percent = $.grep(purchase_vm.tax_schemes(), function(e){ return e.id == self.row_tax_vm.tax_scheme(); })[0].percent;
         if (vm.tax_vm.tax() == 'inclusive') {
             tax_total = self.total() * (tax_percent / (100 + tax_percent))
         } else if (vm.tax_vm.tax() == 'exclusive') {
@@ -288,15 +315,13 @@ function PurchaseRow(row, purchase_vm) {
             tax_total = 0
         };
         self.tax_amount(tax_total);
-
     };
 
-
-    self.row_tax_vm.tax_scheme.tax_scheme.subscribe( self.calculate_tax_amount );
+    self.row_tax_vm.tax_scheme.subscribe( self.calculate_tax_amount );
     self.total.subscribe( self.calculate_tax_amount );
     purchase_vm.tax_vm.tax.subscribe( self.calculate_tax_amount );
 
-    self.render_option = function (data) {
+    self.render_option = function (data) {purchase_vm
         var obj = get_by_id(purchase_vm.items(), data.id);
         return '<div>' + obj.full_name + '</div>';
     }

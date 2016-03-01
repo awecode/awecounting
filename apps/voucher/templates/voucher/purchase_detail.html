@@ -67,7 +67,20 @@
         </div>
         {% endif %}
    </div>
-
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <label for="party">{% trans 'Tax' %}</label>
+            <p> {{ object.get_tax_display }}</p>
+        </div>
+        {% if object.tax_scheme %}
+        <div>
+            <div class="col-md-6 col-sm-12">
+                <label for="due_date">{% trans 'Tax Scheme' %}</label>
+                <p> {{ object.tax_scheme }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
 </div>
 <div class="well">
     <table class="table table-striped">
@@ -78,6 +91,9 @@
                 <th>{% trans "Quantity" %}</th>
                 <th>{% trans "Rate" %}</th>
                 <th>{% trans "Unit" %}</th>
+                {% if object.tax != "no" and not object.tax_scheme %}
+                <th>{% trans "Tax Scheme" %}</th>
+                {% endif %}
                 <th>{% trans 'Discount' %}</th>
                 <th>{% trans 'Total' %}</th>
             </tr>
@@ -101,6 +117,11 @@
                 <td>
                     {{ row.unit }}
                 </td>
+                {% if object.tax != "no" and not object.tax_scheme %}
+                <td>
+                    {{ row.tax_scheme | default:''}}
+                </td>
+                {% endif %}
                 <td>
                     {{ row.discount }}
                 </td>
@@ -109,12 +130,25 @@
                 </td>
             </tr>
             {% endfor %}
+            <tr class="sub-total total">
+                <td colspan="6">
+                    {% trans 'Sub Total' %}
+                </td>
+                <td>{{ object.sub_total }}</td>
+
+            </tr>
+            <tr class="tax-total total">
+                <td colspan="6">
+                    {% trans 'Tax Amount' %}
+                </td>
+                <td colspan="2">{{ object.tax_amount }}</td>
+
+            </tr>
             <tr class="total">
                 <td colspan="6">
                     {% trans 'Grand Total' %}
                 </td>
                 <td colspan="2">{{ object.total }}</td>
-
             </tr>
         </tbody>
 

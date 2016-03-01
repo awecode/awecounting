@@ -219,6 +219,7 @@ def save_cash_payment(request):
 class PurchaseView(CompanyView):
     model = Purchase
     serializer_class = PurchaseSerializer
+    success_url = reverse_lazy("purchase-list")
 
 
 class SaleView(CompanyView):
@@ -252,6 +253,9 @@ class JournalVoucherDetailView(CompanyView, StaffMixin, DetailView):
 
 
 class PurchaseList(PurchaseView, ListView):
+    pass
+
+class PurchaseDelete(PurchaseView, DeleteView):
     pass
 
 # def purchase_list(request):
@@ -331,7 +335,6 @@ def save_purchase(request):
     if request.is_ajax():
         params = json.loads(request.body)
     dct = {'rows': {}, 'tax':{} }
-
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
 
@@ -340,20 +343,16 @@ def save_purchase(request):
 
     if params.get('tax_vm').get('tax') == 'no':
         tax_scheme_id = None
-    elif params.get('tax_vm').get('tax_scheme').get('tax_scheme') == '0':
-        tax_scheme_id = None
     else:
-        tax_scheme_id = params.get('tax_vm').get('tax_scheme').get('tax_scheme')
-    
+        tax_scheme_id = params.get('tax_vm').get('tax_scheme')
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
                      'party_id': params.get('party_id'), 'due_date': params.get('due_date'),
-                     'credit': params.get('credit'), 'tax': tax, 'tax_scheme_id': tax_scheme_id, 'company': request.company}
+                     'credit': params.get('credit'), 'tax': tax, 'tax_scheme_id': empty_to_none(tax_scheme_id), 'company': request.company}
 
     if params.get('id'):
         obj = Purchase.objects.get(id=params.get('id'), company=request.company)
     else:
         obj = Purchase(company=request.company)
-    # if True:
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
@@ -368,20 +367,15 @@ def save_purchase(request):
                 if params.get('tax_vm').get('tax') == 'no':
                     row_tax_scheme_id = None
                     row.get('row_tax_vm')['tax'] = 'no'
-                elif row.get('row_tax_vm').get('tax_scheme').get('tax_scheme') == '0':
-                    row_tax_scheme_id = None
-                    row.get('row_tax_vm')['tax'] = 'no'
                 else:
-                    row_tax_scheme_id = row.get('row_tax_vm').get('tax_scheme').get('tax_scheme')
-                # import ipdb; ipdb.set_trace()
-                if params.get('tax_vm').get('tax_scheme').get('tax_scheme') != '0' and params.get('tax_vm').get('tax_scheme').get('tax_scheme') != '':
+                    row_tax_scheme_id = row.get('row_tax_vm').get('tax_scheme')
+                if params.get('tax_vm').get('tax_scheme') != '0' and params.get('tax_vm').get('tax_scheme') != '':
                     row_tax_scheme_id = None
                     row.get('row_tax_vm')['tax'] = 'no'
 
                 values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'quantity': row.get('quantity'),
                           'rate': row.get('rate'), 'unit_id': row.get('unit')['id'], 'discount': row.get('discount'),
                           'tax_scheme_id': row_tax_scheme_id,
-                           # 'tax' : row.get('row_tax_vm').get('tax'),
                           'purchase': obj}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
@@ -404,7 +398,9 @@ def save_purchase(request):
                                              obj.total],
                                             # ['cr', sales_tax_account, tax_amount],
                                             )
+
         delete_rows(params.get('table_view').get('deleted_rows'), model)
+
         obj.total_amount = grand_total
         if obj.credit:
             obj.pending_amount = grand_total

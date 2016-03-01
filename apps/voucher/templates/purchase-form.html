@@ -75,7 +75,7 @@
                     <select name="tax" class="form-control" id="tax" data-bind="selectize: tax_choices, optionsText: 'value', value: tax"></select>
                 </div>
                 <div data-bind="visible: tax_scheme_visibility">
-                    <div class="col-md-6 col-sm-12" data-bind="with: tax_scheme">
+                    <div class="col-md-6 col-sm-12">
                         <label for="due_date">{% trans 'Tax Scheme' %}</label>
                         <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme"
                         data-url="{% url 'tax_scheme_add' %}"></select>
@@ -95,7 +95,7 @@
                     <th>{% trans "Quantity" %}</th>
                     <th>{% trans "Rate" %}</th>
                     <th>{% trans "Unit" %}</th>
-                    <th data-bind="visible: $root.get_scheme()">{% trans "Tax Scheme" %}</th>
+                    <th data-bind="visible: $root.tax_vm.get_scheme()">{% trans "Tax Scheme" %}</th>
                     <th>{% trans 'Discount' %}</th>
                     <th>{% trans 'Total' %}</th>
                     <th></th>
@@ -120,12 +120,12 @@
                                 data-url="{% url 'unit_add' %}"></select>
                     </td>
                     <!-- ko with: row_tax_vm -->
-                    <td data-bind="visible: $root.get_scheme(), with:tax_scheme">
+                    <td data-bind="visible: $root.tax_vm.get_scheme()">
                         <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme"
                         data-url="{% url 'tax_scheme_add' %}"></select>
                     </td>
                     <!-- /ko -->
-                    <td data-bind="editableText: discount"></td>
+                    <td data-bind="editableText: discount, numeric: true"></td>
                     <td data-bind="text: total"></td>
                     <td class="hide-on-print text-center">
                         <a href="#" class="red fa fa-trash-o fa-2x" data-bind="click: $parent.removeRow"></a>
@@ -133,7 +133,7 @@
                 </tr>
 
                 <!-- /ko -->
-                <tr class="sub-total total" data-bind="visible: $root.get_scheme()">
+                <tr class="sub-total total" data-bind="visible: $root.tax_vm.tax_scheme_visibility">
                     <td colspan="6">
                         {% trans 'Sub Total' %}
                     </td>
@@ -145,7 +145,12 @@
                         {% trans 'Tax Amount' %}
                     </td>
                     <td colspan="2" data-bind="text: $root.tax_amount(), localize: 1"></td>
-
+                </tr>
+                <tr class="discount-total total">
+                    <td colspan="6">
+                        {% trans 'Discount Amount' %}
+                    </td>
+                    <td colspan="2" data-bind="text: $root.discount(), localize: 1"></td>
                 </tr>
                 <tr class="grand-total total">
                     <td colspan="6">
@@ -162,7 +167,9 @@
             </a>
         </div>
         <input type="submit" class="btn btn-raised btn-info" value="{% trans 'Save' %}">
-
+        {% if scenario == 'Update' %}
+            <a class="btn btn-danger btn-raised" href="{% url 'purchase_delete' obj.id %}">{% trans 'Delete!' %}</a>
+        {% endif %}
     </form>
 
 
