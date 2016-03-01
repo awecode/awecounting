@@ -10,6 +10,7 @@ web_urls = [
     url(r'^purchase/list/$', views.PurchaseList.as_view(), name='purchase-list'),
     url(r'^purchase/(?P<pk>[0-9]+)/$', views.PurchaseCreate.as_view(), name='purchase-edit'),
     url(r'^purchase/detail/(?P<pk>[0-9]+)/$', views.PurchaseDetailView.as_view(), name='purchase-detail'),
+    url(r'^purchase/delete/(?P<pk>[0-9]+)$', views.PurchaseDelete.as_view(), name='purchase_delete'),
 
 
     url(r'^sale/$', views.SaleCreate.as_view(), name='sale-create'),

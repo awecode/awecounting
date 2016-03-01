@@ -219,6 +219,7 @@ def save_cash_payment(request):
 class PurchaseView(CompanyView):
     model = Purchase
     serializer_class = PurchaseSerializer
+    success_url = reverse_lazy("purchase-list")
 
 
 class SaleView(CompanyView):
@@ -252,6 +253,9 @@ class JournalVoucherDetailView(CompanyView, StaffMixin, DetailView):
 
 
 class PurchaseList(PurchaseView, ListView):
+    pass
+
+class PurchaseDelete(PurchaseView, DeleteView):
     pass
 
 # def purchase_list(request):
@@ -394,7 +398,7 @@ def save_purchase(request):
                                              obj.total],
                                             # ['cr', sales_tax_account, tax_amount],
                                             )
-                    delete_rows(params.get('table_view').get('deleted_rows'), model)
+                delete_rows(params.get('table_view').get('deleted_rows'), model)
         obj.total_amount = grand_total
         if obj.credit:
             obj.pending_amount = grand_total

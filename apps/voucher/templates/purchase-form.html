@@ -125,7 +125,7 @@
                         data-url="{% url 'tax_scheme_add' %}"></select>
                     </td>
                     <!-- /ko -->
-                    <td data-bind="editableText: discount"></td>
+                    <td data-bind="editableText: discount, numeric: true"></td>
                     <td data-bind="text: total"></td>
                     <td class="hide-on-print text-center">
                         <a href="#" class="red fa fa-trash-o fa-2x" data-bind="click: $parent.removeRow"></a>
@@ -148,7 +148,7 @@
                 </tr>
                 <tr class="discount-total total">
                     <td colspan="6">
-                        {% trans 'Discount' %}
+                        {% trans 'Discount Amount' %}
                     </td>
                     <td colspan="2" data-bind="text: $root.discount(), localize: 1"></td>
                 </tr>
@@ -167,7 +167,9 @@
             </a>
         </div>
         <input type="submit" class="btn btn-raised btn-info" value="{% trans 'Save' %}">
-
+        {% if scenario == 'Update' %}
+            <a class="btn btn-danger btn-raised" href="{% url 'purchase_delete' obj.id %}">{% trans 'Delete!' %}</a>
+        {% endif %}
     </form>
 
 

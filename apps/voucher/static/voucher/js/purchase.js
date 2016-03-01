@@ -127,11 +127,15 @@ function PurchaseViewModel(data) {
     self.discount = function () {
         var sum = 0;
         self.table_view.rows().forEach(function (i) {
-            if (i.discount()) {
+            if (String(i.discount()).indexOf('%') !== -1 ) {
+                var total = i.rate() * i.quantity();
+                var amount = ( parseFloat(i.discount()) / 100 ) * total
+                sum += parseFloat(amount);
+            } else if (i.discount()) {
                 sum += parseFloat(i.discount());
             }
         });
-        return round2(sum);
+        return r2z(round2(sum));
     }
 
 
@@ -165,7 +169,7 @@ function PurchaseViewModel(data) {
         if (vm.tax_vm.tax() == 'exclusive') {
             self.total_amount = self.sub_total() + self.tax_amount();
         }
-        return self.total_amount;
+        return r2z(self.total_amount);
     }
 
     self.save = function (item, event) {
@@ -173,6 +177,20 @@ function PurchaseViewModel(data) {
             bsalert.error('Party is required!');
             return false;
         }
+
+        var check_discount
+        self.table_view.rows().forEach(function (i) {
+            discount_as_string = String(i.discount());
+            if (discount_as_string.indexOf('%') !== -1) {
+                if (typeof(discount_as_string[ discount_as_string.indexOf('%') + 1]) != 'undefined' ) {
+                    bsalert.error("Discount '%' not in correct order")
+                    check_discount = true;
+                };
+            };
+        });
+        if (check_discount) {
+            return false
+        };
         $.ajax({
             type: "POST",
             url: '/voucher/purchase/save/',
@@ -220,7 +238,7 @@ function PurchaseRow(row, purchase_vm) {
     self.item_id = ko.observable();
     self.quantity = ko.observable();
     self.rate = ko.observable();
-    self.discount = ko.observable(0);
+    self.discount = ko.observable();
     self.unit = ko.observable();
     self.unit_id = ko.observable();
     self.tax = ko.observable();
@@ -237,11 +255,14 @@ function PurchaseRow(row, purchase_vm) {
     });
 
     self.total = ko.computed(function () {
+        var total = self.quantity() * self.rate()
         if (self.discount() > 0) {
-            var total = self.quantity() * self.rate()
             return round2(total - self.discount());
+        } else if (String(self.discount()).indexOf('%') !== -1){
+            var discount_amount = ( parseFloat(self.discount()) / 100 ) * total;
+            return r2z(round2(total - discount_amount))
         } else {
-            return round2(self.quantity() * self.rate());
+            return round2(total);
         }
     })
 
