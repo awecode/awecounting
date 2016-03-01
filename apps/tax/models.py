@@ -37,4 +37,4 @@ class TaxScheme(models.Model):
 @receiver(company_creation)
 def handle_company_creation(sender, **kwargs):
     company = kwargs.get('company')
-    TaxScheme.objects.create(full_name="Value Added Tax", short_name='VAT', company=company, percent=13, recoverable=True)
+    TaxScheme.objects.create(name="Value Added Tax", short_name='VAT', company=company, percent=13, recoverable=True)
