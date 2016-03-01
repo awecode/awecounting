@@ -238,7 +238,7 @@ function PurchaseRow(row, purchase_vm) {
     self.item_id = ko.observable();
     self.quantity = ko.observable();
     self.rate = ko.observable();
-    self.discount = ko.observable(0);
+    self.discount = ko.observable();
     self.unit = ko.observable();
     self.unit_id = ko.observable();
     self.tax = ko.observable();
