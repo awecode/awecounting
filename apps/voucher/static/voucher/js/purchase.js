@@ -127,11 +127,15 @@ function PurchaseViewModel(data) {
     self.discount = function () {
         var sum = 0;
         self.table_view.rows().forEach(function (i) {
-            if (i.discount()) {
+            if (String(i.discount()).indexOf('%') !== -1 ) {
+                var total = i.rate() * i.quantity();
+                var amount = ( parseFloat(i.discount()) / 100 ) * total
+                sum += parseFloat(amount);
+            } else if (i.discount()) {
                 sum += parseFloat(i.discount());
             }
         });
-        return round2(sum);
+        return r2z(round2(sum));
     }
 
 
@@ -165,7 +169,7 @@ function PurchaseViewModel(data) {
         if (vm.tax_vm.tax() == 'exclusive') {
             self.total_amount = self.sub_total() + self.tax_amount();
         }
-        return self.total_amount;
+        return r2z(self.total_amount);
     }
 
     self.save = function (item, event) {
@@ -237,11 +241,14 @@ function PurchaseRow(row, purchase_vm) {
     });
 
     self.total = ko.computed(function () {
+        var total = self.quantity() * self.rate()
         if (self.discount() > 0) {
-            var total = self.quantity() * self.rate()
             return round2(total - self.discount());
+        } else if (String(self.discount()).indexOf('%') !== -1){
+            var discount_amount = ( parseFloat(self.discount()) / 100 ) * total;
+            return r2z(round2(total - discount_amount))
         } else {
-            return round2(self.quantity() * self.rate());
+            return round2(total);
         }
     })
 
