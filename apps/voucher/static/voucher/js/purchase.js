@@ -177,6 +177,20 @@ function PurchaseViewModel(data) {
             bsalert.error('Party is required!');
             return false;
         }
+
+        var check_discount
+        self.table_view.rows().forEach(function (i) {
+            discount_as_string = String(i.discount());
+            if (discount_as_string.indexOf('%') !== -1) {
+                if (typeof(discount_as_string[ discount_as_string.indexOf('%') + 1]) != 'undefined' ) {
+                    bsalert.error("Discount '%' not in correct order")
+                    check_discount = true;
+                };
+            };
+        });
+        if (check_discount) {
+            return false
+        };
         $.ajax({
             type: "POST",
             url: '/voucher/purchase/save/',

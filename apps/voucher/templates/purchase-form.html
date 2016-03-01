@@ -125,7 +125,7 @@
                         data-url="{% url 'tax_scheme_add' %}"></select>
                     </td>
                     <!-- /ko -->
-                    <td data-bind="editableText: discount"></td>
+                    <td data-bind="editableText: discount, numeric: true"></td>
                     <td data-bind="text: total"></td>
                     <td class="hide-on-print text-center">
                         <a href="#" class="red fa fa-trash-o fa-2x" data-bind="click: $parent.removeRow"></a>
