@@ -47,7 +47,14 @@ function TaxViewModel(tax, tax_scheme){
         var bool;
         if (self.tax_scheme() == '' ) {
             bool = true;
-        };
+        };  
+        $( "tr.total td:first-child" ).each(function() {
+            if (self.tax_scheme_visibility() && bool) {
+              $( this ).attr( "colspan", 7 );
+            } else {
+              $( this ).attr( "colspan", 6 );
+            }
+        });
         return self.tax_scheme_visibility() && bool;
     };
 }
