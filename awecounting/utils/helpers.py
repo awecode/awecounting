@@ -24,6 +24,11 @@ def empty_to_none(o):
         return None
     return o
 
+def empty_to_zero(o):
+    if o == '':
+        return 0
+    return o
+
 
 def zero_for_none(obj):
     if obj is None:

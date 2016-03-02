@@ -12,6 +12,8 @@ from awecounting.utils.helpers import get_next_voucher_no, calculate_tax
 from django.utils.translation import ugettext_lazy as _
 from datetime import date
 from ..tax.models import TaxScheme
+from awecounting.utils.helpers import empty_to_zero
+
 
 
 class Purchase(models.Model):
@@ -100,10 +102,13 @@ class PurchaseRow(models.Model):
     purchase = models.ForeignKey(Purchase, related_name='rows')
 
     def get_total(self):
-        if self.discount.find('%') != -1:
-            discount = self.discount[:-1]
-            return float(self.quantity) * float(self.rate) - float(discount)
-        return float(self.quantity) * float(self.rate) - float(self.discount)
+        try:
+            if self.discount[-1] == '%':
+                discount = self.discount[:-1]
+                return float(self.quantity) * float(self.rate) - float(discount)
+        except IndexError:
+            pass
+        return float(self.quantity) * float(self.rate) - float(empty_to_zero(self.discount))
 
     def get_voucher_no(self):
         return self.purchase.voucher_no
