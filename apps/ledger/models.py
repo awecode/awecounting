@@ -243,7 +243,10 @@ def set_transactions(submodel, date, *args):
 
         # the following code lies outside if,else block, inside for loop
         transaction.account.save()
-        journal_entry.transactions.add(transaction, bulk=False)
+        try:
+            journal_entry.transactions.add(transaction, bulk=False)
+        except TypeError:  # for Django <1.9
+            journal_entry.transactions.add(transaction)
 
 
 def delete_rows(rows, model):
