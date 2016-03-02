@@ -176,6 +176,8 @@ function PurchaseViewModel(data) {
         }
         if (self.voucher_discount() > 0 ) {
             self.total_amount = self.total_amount - self.voucher_discount()
+        } else if (String(self.voucher_discount()).indexOf('%') !== -1 ) {
+            self.total_amount = self.total_amount - ( ( parseFloat(self.voucher_discount()) / 100 ) * self.total_amount )
         }
         return r2z(self.total_amount);
     }

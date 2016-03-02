@@ -28,7 +28,7 @@ class Purchase(models.Model):
     pending_amount = models.FloatField(null=True, blank=True)
     total_amount = models.FloatField(null=True, blank=True)
     company = models.ForeignKey(Company)
-    discount = models.FloatField(blank=True, null=True)
+    discount = models.CharField(max_length=50, blank=True, null=True)
 
     def type(self):
         if self.credit:
