@@ -17,7 +17,7 @@ from awecounting.utils.helpers import empty_to_zero
 
 
 class Purchase(models.Model):
-    tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'),]
+    tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'), ]
     party = models.ForeignKey(Party)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     credit = models.BooleanField(default=False)
@@ -38,7 +38,7 @@ class Purchase(models.Model):
 
     def clean(self):
         if self.company.settings.unique_voucher_number:
-            if self.__class__.objects.filter(voucher_no=self.voucher_no).filter(
+            if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).filter(
                     date__gte=self.company.settings.get_fy_start(self.date),
                     date__lte=self.company.settings.get_fy_end(self.date)).exclude(pk=self.pk):
                 raise ValidationError(_('Voucher no. already exists for the fiscal year!'))
@@ -59,7 +59,7 @@ class Purchase(models.Model):
                 grand_total += total - float(discount)
             else:
                 grand_total += total
-        return grand_total  
+        return grand_total
 
     @property
     def tax_amount(self):
@@ -80,7 +80,6 @@ class Purchase(models.Model):
         if self.tax == "exclusive":
             amount = self.sub_total + self.tax_amount
         return amount
-    
 
     @property
     def voucher_type(self):
@@ -141,7 +140,7 @@ class Sale(models.Model):
 
     def clean(self):
         if self.company.settings.unique_voucher_number:
-            if self.__class__.objects.filter(voucher_no=self.voucher_no).filter(
+            if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).filter(
                     date__gte=self.company.settings.get_fy_start(self.date),
                     date__lte=self.company.settings.get_fy_end(self.date)).exclude(pk=self.pk):
                 raise ValidationError(_('Voucher no. already exists for the fiscal year!'))
@@ -364,7 +363,6 @@ class FixedAsset(models.Model):
             total = obj.amount
             grand_total += total
         return grand_total
-
 
 
 class FixedAssetRow(models.Model):

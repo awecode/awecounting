@@ -55,6 +55,9 @@ function TaxViewModel(tax, tax_scheme){
 
 function PurchaseViewModel(data) {
     var self = this;
+    
+    self.tax = ko.observable();
+    self.tax_scheme = ko.observable();
 
     self.voucher_discount = ko.observable(0);
     for (var k in data) {
@@ -65,6 +68,8 @@ function PurchaseViewModel(data) {
     }
 
     self.status = ko.observable();
+    
+    
 
     $.ajax({
         url: '/tax/api/tax_schemes.json',
@@ -274,7 +279,34 @@ function PurchaseRow(row, purchase_vm) {
         } else {
             return round2(total);
         }
-    })
+    });
+
+    self.unit.subscription_changed(function (new_val, old_val) {
+        if (old_val && old_val != new_val) {
+            var conversion_rate = old_val.convertible_units[new_val.id];
+            if (conversion_rate) {
+                if (self.quantity()) {
+                    self.quantity(self.quantity() * conversion_rate);
+                }
+                if (self.rate()) {
+                    self.rate(self.rate() / conversion_rate);
+                }
+            }
+        }
+    });
+
+    self.render_unit_options = function (data) {
+        var obj = get_by_id(purchase_vm.units(), data.id);
+        var klass = '';
+        if (self.unit_id() && obj.id != self.unit_id()) {
+            if (obj.convertible_units[self.unit_id()])
+                klass = 'green';
+            else
+                klass = 'red';
+        }
+        return '<div class="' + klass + '">' + obj.name + '</div>';
+    }
+
 
     self.row_tax_vm = new TaxViewModel(self.tax(), self.tax_scheme());
 

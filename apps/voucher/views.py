@@ -398,7 +398,9 @@ def save_purchase(request):
                                              obj.total],
                                             # ['cr', sales_tax_account, tax_amount],
                                             )
-                delete_rows(params.get('table_view').get('deleted_rows'), model)
+
+        delete_rows(params.get('table_view').get('deleted_rows'), model)
+
         obj.total_amount = grand_total
         if obj.credit:
             obj.pending_amount = grand_total

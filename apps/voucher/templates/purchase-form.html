@@ -116,7 +116,7 @@
                     <td data-bind="editableText: quantity, numeric: true"></td>
                     <td data-bind="editableText: rate, numeric: true"></td>
                     <td class="unit-cell">
-                        <select data-bind="selectize: $root.units, value: unit_id, object: unit"
+                        <select data-bind="selectize: $root.units, value: unit_id, object:unit, selectize_options:{render: {'option': render_unit_options}}"
                                 data-url="{% url 'unit_add' %}"></select>
                     </td>
                     <!-- ko with: row_tax_vm -->

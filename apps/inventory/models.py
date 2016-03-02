@@ -222,5 +222,8 @@ def set_transactions(model, date, *args):
         transaction.account.current_balance += diff
         transaction.current_balance = transaction.account.current_balance
         transaction.account.save()
-        journal_entry.transactions.add(transaction, bulk=False)
+        try:
+            journal_entry.transactions.add(transaction, bulk=False)
+        except TypeError: # for Django <1.9
+            journal_entry.transactions.add(transaction)
         alter(transaction.account, date, diff)
