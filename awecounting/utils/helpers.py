@@ -29,6 +29,15 @@ def empty_to_zero(o):
         return 0
     return o
 
+def get_discount_with_percent(total, discount):
+    try:
+        if str(discount)[-1] == '%':
+            _discount = discount[:-1]
+            return float((float(_discount) / 100 ) * total) 
+        else:
+            return float(empty_to_zero(discount))
+    except IndexError:
+        return empty_to_zero(discount)
 
 def zero_for_none(obj):
     if obj is None:

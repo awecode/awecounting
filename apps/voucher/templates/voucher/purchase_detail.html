@@ -144,6 +144,20 @@
                 <td colspan="2">{{ object.tax_amount }}</td>
 
             </tr>
+            <tr class="discount total">
+                <td colspan="6">
+                    {% trans 'Discount Amount' %}
+                </td>
+                <td colspan="2">{{ object.row_discount_total }}</td>
+
+            </tr>
+            <tr class="discount-voucher total">
+                <td colspan="6">
+                    {% trans 'Discount on voucher' %}
+                </td>
+                <td colspan="2">{{ object.discount |default:'0'}}</td>
+
+            </tr>
             <tr class="total">
                 <td colspan="6">
                     {% trans 'Grand Total' %}

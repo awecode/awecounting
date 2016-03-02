@@ -198,14 +198,21 @@ function PurchaseViewModel(data) {
             discount_as_string = String(i.discount());
             if (discount_as_string.indexOf('%') !== -1) {
                 if (typeof(discount_as_string[ discount_as_string.indexOf('%') + 1]) != 'undefined' ) {
-                    bsalert.error("Discount '%' not in correct order")
+                    bsalert.error("Discount '%' not in correct order");
                     check_discount = true;
                 };
             };
         });
+
         if (check_discount) {
-            return false
+            return false;
         };
+
+        if (String(self.voucher_discount()).indexOf('%') !== -1 ) {
+            bsalert.error("Discount '%' not in correct order");
+            return false;        
+        };
+
         $.ajax({
             type: "POST",
             url: '/voucher/purchase/save/',
