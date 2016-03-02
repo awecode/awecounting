@@ -56,8 +56,13 @@ function TaxViewModel(tax, tax_scheme){
 function PurchaseViewModel(data) {
     var self = this;
 
-    for (var k in data)
+    self.voucher_discount = ko.observable(0);
+    for (var k in data) {
+        if ( k == 'discount' ) {
+            self.voucher_discount(data[k])
+        };
         self[k] = ko.observable(data[k]);
+    }
 
     self.status = ko.observable();
 
@@ -168,6 +173,9 @@ function PurchaseViewModel(data) {
         self.total_amount = rnum(self.sub_total());
         if (vm.tax_vm.tax() == 'exclusive') {
             self.total_amount = self.sub_total() + self.tax_amount();
+        }
+        if (self.voucher_discount() > 0 ) {
+            self.total_amount = self.total_amount - self.voucher_discount()
         }
         return r2z(self.total_amount);
     }

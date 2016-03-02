@@ -346,7 +346,7 @@ def save_purchase(request):
     else:
         tax_scheme_id = params.get('tax_vm').get('tax_scheme')
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
-                     'party_id': params.get('party_id'), 'due_date': params.get('due_date'),
+                     'party_id': params.get('party_id'), 'due_date': params.get('due_date'), 'discount': params.get('voucher_discount'),
                      'credit': params.get('credit'), 'tax': tax, 'tax_scheme_id': empty_to_none(tax_scheme_id), 'company': request.company}
 
     if params.get('id'):
