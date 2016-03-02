@@ -59,8 +59,13 @@ function PurchaseViewModel(data) {
     self.tax = ko.observable();
     self.tax_scheme = ko.observable();
 
-    for (var k in data)
+    self.voucher_discount = ko.observable(0);
+    for (var k in data) {
+        if ( k == 'discount' ) {
+            self.voucher_discount(data[k])
+        };
         self[k] = ko.observable(data[k]);
+    }
 
     self.status = ko.observable();
     
@@ -174,6 +179,11 @@ function PurchaseViewModel(data) {
         if (vm.tax_vm.tax() == 'exclusive') {
             self.total_amount = self.sub_total() + self.tax_amount();
         }
+        if (self.voucher_discount() > 0 ) {
+            self.total_amount = self.total_amount - self.voucher_discount()
+        } else if (String(self.voucher_discount()).indexOf('%') !== -1 ) {
+            self.total_amount = self.total_amount - ( ( parseFloat(self.voucher_discount()) / 100 ) * self.total_amount )
+        }
         return r2z(self.total_amount);
     }
 
@@ -188,14 +198,21 @@ function PurchaseViewModel(data) {
             discount_as_string = String(i.discount());
             if (discount_as_string.indexOf('%') !== -1) {
                 if (typeof(discount_as_string[ discount_as_string.indexOf('%') + 1]) != 'undefined' ) {
-                    bsalert.error("Discount '%' not in correct order")
+                    bsalert.error("Discount '%' not in correct order");
                     check_discount = true;
                 };
             };
         });
+
         if (check_discount) {
-            return false
+            return false;
         };
+
+        if (String(self.voucher_discount()).indexOf('%') !== -1 ) {
+            bsalert.error("Discount '%' not in correct order");
+            return false;        
+        };
+
         $.ajax({
             type: "POST",
             url: '/voucher/purchase/save/',

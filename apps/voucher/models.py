@@ -12,7 +12,7 @@ from awecounting.utils.helpers import get_next_voucher_no, calculate_tax
 from django.utils.translation import ugettext_lazy as _
 from datetime import date
 from ..tax.models import TaxScheme
-from awecounting.utils.helpers import empty_to_zero
+from awecounting.utils.helpers import empty_to_zero, get_discount_with_percent
 
 
 
@@ -28,6 +28,7 @@ class Purchase(models.Model):
     pending_amount = models.FloatField(null=True, blank=True)
     total_amount = models.FloatField(null=True, blank=True)
     company = models.ForeignKey(Company)
+    discount = models.CharField(max_length=50, blank=True, null=True)
 
     def type(self):
         if self.credit:
@@ -53,11 +54,8 @@ class Purchase(models.Model):
         grand_total = 0
         for obj in self.rows.all():
             total = obj.quantity * obj.rate
-            if obj.discount.find('%') != -1:
-                discount = obj.discount[:-1]
-                grand_total += total - float(discount)
-            else:
-                grand_total += total
+            discount = get_discount_with_percent(total, obj.discount)
+            grand_total += total - discount
         return grand_total
 
     @property
@@ -78,11 +76,23 @@ class Purchase(models.Model):
         amount = self.sub_total
         if self.tax == "exclusive":
             amount = self.sub_total + self.tax_amount
+        if self.discount:
+            discount = get_discount_with_percent(amount, self.discount)
+            amount = amount - discount
         return amount
 
     @property
     def voucher_type(self):
         return _('Purchase')
+
+    @property
+    def row_discount_total(self):
+        grand_total = 0
+        for obj in self.rows.all():
+            total = obj.quantity * obj.rate
+            discount = get_discount_with_percent(total, obj.discount)
+            grand_total += discount
+        return grand_total
 
     def get_absolute_url(self):
         return reverse_lazy('purchase-edit', kwargs={'pk': self.pk})
@@ -94,20 +104,14 @@ class PurchaseRow(models.Model):
     quantity = models.FloatField()
     rate = models.FloatField()
     discount = models.CharField(max_length=50, blank=True, null=True)
-    # tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'),]
-    # tax = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True, blank=True)
     tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True)
     unit = models.ForeignKey(Unit)
     purchase = models.ForeignKey(Purchase, related_name='rows')
 
     def get_total(self):
-        try:
-            if self.discount[-1] == '%':
-                discount = self.discount[:-1]
-                return float(self.quantity) * float(self.rate) - float(discount)
-        except IndexError:
-            pass
-        return float(self.quantity) * float(self.rate) - float(empty_to_zero(self.discount))
+        total = float(self.quantity) * float(self.rate)
+        discount = get_discount_with_percent(total, self.discount)
+        return total - discount
 
     def get_voucher_no(self):
         return self.purchase.voucher_no
