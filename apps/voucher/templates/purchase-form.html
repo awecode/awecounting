@@ -22,7 +22,7 @@
     <form method="post" data-bind="submit: save">
         {% csrf_token %}
         <div class="well">
-
+            <h1>{{ request.company.settings.discount_on_voucher }}</h1>
             <div class="row">
                 <div class="col-md-6 col-sm-12">
                     <label for="voucher-no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
@@ -96,7 +96,9 @@
                     <th>{% trans "Rate" %}</th>
                     <th>{% trans "Unit" %}</th>
                     <th data-bind="visible: $root.tax_vm.get_scheme()">{% trans "Tax Scheme" %}</th>
-                    <th>{% trans 'Discount' %}</th>
+                    {% if not request.company.settings.discount_on_voucher %}
+                        <th>{% trans 'Discount' %}</th>
+                    {% endif %}
                     <th>{% trans 'Total' %}</th>
                     <th></th>
                 </tr>
@@ -125,7 +127,9 @@
                         data-url="{% url 'tax_scheme_add' %}"></select>
                     </td>
                     <!-- /ko -->
-                    <td data-bind="editableText: discount, numeric: true"></td>
+                    {% if not request.company.settings.discount_on_voucher %}
+                        <td data-bind="editableText: discount, numeric: true"></td>
+                    {% endif %}
                     <td data-bind="text: total"></td>
                     <td class="hide-on-print text-center">
                         <a href="#" class="red fa fa-trash-o fa-2x" data-bind="click: $parent.removeRow"></a>
@@ -146,18 +150,23 @@
                     </td>
                     <td colspan="2" data-bind="text: $root.tax_amount(), localize: 1"></td>
                 </tr>
-                <tr class="discount-total total">
-                    <td colspan="7">
-                        {% trans 'Discount Amount' %}
-                    </td>
-                    <td colspan="2" data-bind="text: $root.discount(), localize: 1"></td>
-                </tr>
-                <tr class="discount-total total">
-                    <td colspan="7">
-                        {% trans 'Discount on voucher' %}
-                    </td>
-                    <td colspan="2" data-bind="editableText: $root.voucher_discount,numeric: true, localize: 1"></td>
-                </tr>
+                {% if not request.company.settings.discount_on_voucher %}
+                    <tr class="discount-total total">
+                        <td colspan="7">
+                            {% trans 'Discount Amount' %}
+                        </td>
+                        <td colspan="2" data-bind="text: $root.discount(), localize: 1"></td>
+                    </tr>
+                {% endif %}
+                {% if request.company.settings.discount_on_voucher %}
+                    <tr class="discount-total total">
+                        <td colspan="7">
+                            {% trans 'Discount on voucher' %}
+                        </td>
+                        <td colspan="2" data-bind="editableText: $root.voucher_discount,numeric: true, localize: 1"></td>
+                    </tr>
+                {% endif %}
+              
                 <tr class="grand-total total">
                     <td colspan="7">
                         {% trans 'Grand Amount' %}
