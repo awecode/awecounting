@@ -15,6 +15,14 @@
     <script>
         ko_data = {{data|jsonify}};
     </script>
+    <script>
+        {% if request.company.settings.discount_on_voucher %}
+           colspan = 5;
+        {% else %}
+           colspan = 6
+        {% endif %}
+    </script>
+
 {% endblock %}
 
 {% block content %}

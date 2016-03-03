@@ -345,6 +345,10 @@ def save_purchase(request):
         tax_scheme_id = None
     else:
         tax_scheme_id = params.get('tax_vm').get('tax_scheme')
+    # if not request.company.settings.discount_on_voucher:
+    #     voucher_discount = None
+    # else:
+    #     voucher_discount = params.get('voucher_discount')
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
                      'party_id': params.get('party_id'), 'due_date': params.get('due_date'), 'discount': params.get('voucher_discount'),
                      'credit': params.get('credit'), 'tax': tax, 'tax_scheme_id': empty_to_none(tax_scheme_id), 'company': request.company}
@@ -373,6 +377,10 @@ def save_purchase(request):
                     row_tax_scheme_id = None
                     row.get('row_tax_vm')['tax'] = 'no'
 
+                # if request.company.settings.discount_on_voucher:
+                #     discount = None
+                # else:
+                #     discount = row.get('discount')
                 values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'quantity': row.get('quantity'),
                           'rate': row.get('rate'), 'unit_id': row.get('unit')['id'], 'discount': row.get('discount'),
                           'tax_scheme_id': row_tax_scheme_id,

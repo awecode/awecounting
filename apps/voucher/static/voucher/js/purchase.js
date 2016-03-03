@@ -50,9 +50,9 @@ function TaxViewModel(tax, tax_scheme){
         };  
         $( "tr.total td:first-child" ).each(function() {
             if (self.tax_scheme_visibility() && bool) {
-              $( this ).attr( "colspan", 7 );
+              $( this ).attr( "colspan", colspan + 1 );
             } else {
-              $( this ).attr( "colspan", 6 );
+              $( this ).attr( "colspan", colspan );
             }
         });
         return self.tax_scheme_visibility() && bool;
