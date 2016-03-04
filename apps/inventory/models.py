@@ -7,6 +7,7 @@ from ..ledger.models import Account
 from ..users.models import Company
 from awecounting.utils.helpers import none_for_zero, zero_for_none
 from ..users.signals import company_creation
+from ..users.models import CompanySetting
 from django.dispatch import receiver
 
 
@@ -78,6 +79,7 @@ class Unit(models.Model):
 def handle_company_creation(sender, **kwargs):
     company = kwargs.get('company')
     Unit.objects.create(name="Pieces", short_name='pcs', company=company)
+    CompanySetting.objects.create(company=company)
 
 
 class UnitConversion(models.Model):
