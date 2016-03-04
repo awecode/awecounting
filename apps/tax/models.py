@@ -1,7 +1,7 @@
 from django.db import models
 from django.dispatch import receiver
 from ..users.signals import company_creation
-from ..ledger.models import Account
+from ..ledger.models import Account, Party
 from ..users.models import Company
 
 
@@ -33,6 +33,11 @@ class TaxScheme(models.Model):
     def __str__(self):
         return self.name + ' (' + str(self.percent) + '%)'
 
+
+class PartyTaxPreference(models.Models):
+    company = models.ForeignKey(Company)
+    tax = models.ForeignKey(TaxScheme)
+    party = models.ForeignKey(Party, related_name="tax_preference")
 
 @receiver(company_creation)
 def handle_company_creation(sender, **kwargs):
