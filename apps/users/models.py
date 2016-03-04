@@ -9,7 +9,6 @@ from django.utils.translation import ugettext_lazy as _
 from njango.fields import BSDateField, today, get_calendar
 from .signals import company_creation
 from njango.nepdate import ad2bs, string_from_tuple, tuple_from_string, bs2ad, bs
-
 import os
 
 
@@ -237,11 +236,16 @@ if 'rest_framework.authtoken' in settings.INSTALLED_APPS:
 
 
 class CompanySetting(models.Model):
+    tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'), ]
     company = models.OneToOneField(Company, related_name='settings')
     unique_voucher_number = models.BooleanField(default=True)
     use_nepali_fy_system = models.BooleanField(default=True)
-    discount_on_voucher = models.BooleanField(default=True)
-    discount_on_voucher_row = models.BooleanField(default=False)
+    single_discount_on_whole_invoice = models.BooleanField(default=True)
+    discount_on_each_invoice_particular = models.BooleanField(default=False)
+    invoice_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True, blank=True)
+    single_discount_on_whole_purchase = models.BooleanField(default=True)
+    discount_on_each_purchase_particular = models.BooleanField(default=False)
+    purchase_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True, blank=True)
     voucher_number_start_date = BSDateField(default=today)
     # voucher_number_restart_years = models.IntegerField(default=1)
     # voucher_number_restart_months = models.IntegerField(default=0)
