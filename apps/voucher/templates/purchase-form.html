@@ -18,7 +18,7 @@
     <script>
         {% if request.company.settings.discount_on_voucher %}
            colspan = 5;
-        {% else %}
+        {% elif request.company.settings.discount_on_voucher_row %}
            colspan = 6
         {% endif %}
     </script>
@@ -104,7 +104,7 @@
                     <th>{% trans "Rate" %}</th>
                     <th>{% trans "Unit" %}</th>
                     <th data-bind="visible: $root.tax_vm.get_scheme()">{% trans "Tax Scheme" %}</th>
-                    {% if not request.company.settings.discount_on_voucher %}
+                    {% if request.company.settings.discount_on_voucher_row %}
                         <th>{% trans 'Discount' %}</th>
                     {% endif %}
                     <th>{% trans 'Total' %}</th>
@@ -135,7 +135,7 @@
                         data-url="{% url 'tax_scheme_add' %}"></select>
                     </td>
                     <!-- /ko -->
-                    {% if not request.company.settings.discount_on_voucher %}
+                    {% if request.company.settings.discount_on_voucher_row %}
                         <td data-bind="editableText: discount, numeric: true"></td>
                     {% endif %}
                     <td data-bind="text: total"></td>
@@ -158,7 +158,7 @@
                     </td>
                     <td colspan="2" data-bind="text: $root.tax_amount(), localize: 1"></td>
                 </tr>
-                {% if not request.company.settings.discount_on_voucher %}
+                {% if request.company.settings.discount_on_voucher_row %}
                     <tr class="discount-total total">
                         <td colspan="7">
                             {% trans 'Discount Amount' %}

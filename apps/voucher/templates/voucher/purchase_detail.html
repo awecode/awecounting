@@ -94,7 +94,7 @@
                 {% if object.tax != "no" and not object.tax_scheme %}
                 <th>{% trans "Tax Scheme" %}</th>
                 {% endif %}
-                {% if not request.company.settings.discount_on_voucher %}
+                {% if request.company.settings.discount_on_voucher_row %}
                     <th>{% trans 'Discount' %}</th>
                 {% endif %}
                 <th>{% trans 'Total' %}</th>
@@ -124,7 +124,7 @@
                     {{ row.tax_scheme | default:''}}
                 </td>
                 {% endif %}
-                {% if not request.company.settings.discount_on_voucher %}
+                {% if request.company.settings.discount_on_voucher_row %}
                 <td>
                     {{ row.discount }}
                 </td>
@@ -148,7 +148,7 @@
                 <td colspan="2">{{ object.tax_amount }}</td>
 
             </tr>
-            {% if not request.company.settings.discount_on_voucher %}
+            {% if request.company.settings.discount_on_voucher_row %}
             <tr class="discount total">
                 <td colspan="6">
                     {% trans 'Discount Amount' %}

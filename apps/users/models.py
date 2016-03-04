@@ -241,6 +241,7 @@ class CompanySetting(models.Model):
     unique_voucher_number = models.BooleanField(default=True)
     use_nepali_fy_system = models.BooleanField(default=True)
     discount_on_voucher = models.BooleanField(default=True)
+    discount_on_voucher_row = models.BooleanField(default=False)
     voucher_number_start_date = BSDateField(default=today)
     # voucher_number_restart_years = models.IntegerField(default=1)
     # voucher_number_restart_months = models.IntegerField(default=0)
