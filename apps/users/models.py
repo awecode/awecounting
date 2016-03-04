@@ -7,7 +7,7 @@ from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from njango.fields import BSDateField, today, get_calendar
-
+from .signals import company_creation
 from njango.nepdate import ad2bs, string_from_tuple, tuple_from_string, bs2ad, bs
 
 import os
@@ -301,6 +301,12 @@ class CompanySetting(models.Model):
 
     def __unicode__(self):
         return self.company.name
+
+
+@receiver(company_creation)
+def handle_company_creation(sender, **kwargs):
+    company = kwargs.get('company')
+    CompanySetting.objects.create(company=company)
 
 
 class File(models.Model):
