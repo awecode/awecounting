@@ -323,3 +323,12 @@ class File(models.Model):
 
     def __str__(self):
         return self.description or self.filename()
+
+
+class Pin(models.Model):
+    code = models.IntegerField()
+    company = models.ForeignKey(Company, related_name="pin")
+    used_by = models.ForeignKey(Company, related_name="used_pin")
+
+
+
