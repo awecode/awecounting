@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin, UserChangeForm as DjangoUserCha
     UserCreationForm as DjangoUserCreationForm
 from django import forms
 from awecounting.utils.mixins import CompanyAdmin
-from .models import File, User, GroupProxy, Company, Role, CompanySetting
+from .models import File, User, GroupProxy, Company, Role, CompanySetting, Pin
 
 
 class UserCreationForm(DjangoUserCreationForm):
@@ -115,5 +115,6 @@ admin.site.register(Role, CompanyAdmin)
 admin.site.register(Company)
 admin.site.register(CompanySetting, CompanyAdmin)
 admin.site.register(File)
+admin.site.register(Pin)
 
 

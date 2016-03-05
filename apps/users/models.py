@@ -328,7 +328,7 @@ class File(models.Model):
 class Pin(models.Model):
     code = models.IntegerField()
     company = models.ForeignKey(Company, related_name="pin")
-    used_by = models.ForeignKey(Company, related_name="used_pin")
+    used_by = models.ForeignKey(Company, related_name="used_pin", blank=True, null=True)
 
 
 
