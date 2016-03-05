@@ -1,0 +1,100 @@
+{% extends base_template %}
+{% load i18n %}
+
+{% block title %}{{ scenario }} {{ form.instance }}{% endblock %}
+
+{% block breadcrumbs %}
+    <li>{% trans 'Settings' %}</li>
+    <li>{% trans 'Company Settings' %}</li>
+{% endblock %}
+
+{% block page-header %}
+{% trans "Company Setting" %}
+{% endblock %}
+
+{% block content %}
+
+    <form method="POST">
+        <div class="well">
+            {% csrf_token %}
+
+            {{ form.non_field_errors }}
+
+            {{ form.as_p }}
+        </div>
+       
+        <h1>{% trans "Voucher Setting" %}</h1>
+        <div class="well">
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        {{ secondary_form.unique_voucher_number }} {{ secondary_form.unique_voucher_number.label }}
+                    </label>
+                </div>
+                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+            </div>            
+            <br>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        {{ secondary_form.use_nepali_fy_system }} {{ secondary_form.use_nepali_fy_system.label }}
+                    </label>
+                </div>
+                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+            </div>            
+            
+        </div>
+
+        <h1> {% trans "Invoice Settings" %}</h1>
+        <div class="well">
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        {{ secondary_form.single_discount_on_whole_invoice }} {{ secondary_form.single_discount_on_whole_invoice.label }}
+                    </label>
+                </div>
+                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+            </div>            
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        {{ secondary_form.discount_on_each_invoice_particular }} {{ secondary_form.discount_on_each_invoice_particular.label }}
+                    </label>
+                </div>
+                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+            </div>            
+            <p>
+            <label>{{ secondary_form.invoice_default_tax_application_type.label }}</label>
+                {{ secondary_form.invoice_default_tax_application_type }}
+            </p>
+        </div>
+
+        <h1> {% trans "Purchase Settings" %}</h1>
+        <div class="well">
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        {{ secondary_form.single_discount_on_whole_purchase }} {{ secondary_form.single_discount_on_whole_purchase.label }}
+                    </label>
+                </div>
+                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+            </div>            
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        {{ secondary_form.discount_on_each_purchase_particular }} {{ secondary_form.discount_on_each_purchase_particular.label }}
+                    </label>
+                </div>
+                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+            </div>            
+            <p>
+            <label>{{ secondary_form.purchase_default_tax_application_type.label }}</label>
+                {{ secondary_form.purchase_default_tax_application_type }}
+            </p>
+        </div>
+        <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
+    </form>
+
+
+
+{% endblock %}

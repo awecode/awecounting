@@ -1,5 +1,5 @@
 from django import forms
-from .models import User, Role
+from .models import User, Role, Company, CompanySetting
 from django.contrib.auth.models import Group
 from awecounting.utils.forms import HTML5BootstrapModelForm
 from django.utils.translation import ugettext_lazy as _
@@ -114,3 +114,15 @@ class RoleForm(HTML5BootstrapModelForm):
     class Meta:
         model = Role
         exclude = ('user', 'company')
+
+
+class CompanyForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = Company
+        exclude  = ()
+
+
+class CompanySettingForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = CompanySetting
+        exclude = ('company', 'voucher_number_start_date')
