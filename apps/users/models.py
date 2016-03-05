@@ -52,6 +52,7 @@ class Company(models.Model):
     name = models.CharField(max_length=254)
     location = models.TextField()
     type_of_business = models.CharField(max_length=254)
+    tax_registration_number = models.IntegerField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         new = False
