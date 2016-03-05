@@ -16,10 +16,12 @@
         ko_data = {{data|jsonify}};
     </script>
     <script>
-        {% if request.company.settings.discount_on_voucher %}
+        {% if request.company.settings.single_discount_on_whole_purchase %}
            colspan = 5;
-        {% elif request.company.settings.discount_on_voucher_row %}
-           colspan = 6
+        {% elif request.company.settings.discount_on_each_purchase_particular %}
+           colspan = 6;
+        {% else %}
+            colspan = 5;
         {% endif %}
     </script>
 
@@ -30,7 +32,7 @@
     <form method="post" data-bind="submit: save">
         {% csrf_token %}
         <div class="well">
-            <h1>{{ request.company.settings.discount_on_voucher }}</h1>
+            <h1>{{ request.company.settings.single_discount_on_whole_purchase }}</h1>
             <div class="row">
                 <div class="col-md-6 col-sm-12">
                     <label for="voucher-no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
@@ -104,7 +106,7 @@
                     <th>{% trans "Rate" %}</th>
                     <th>{% trans "Unit" %}</th>
                     <th data-bind="visible: $root.tax_vm.get_scheme()">{% trans "Tax Scheme" %}</th>
-                    {% if request.company.settings.discount_on_voucher_row %}
+                    {% if request.company.settings.discount_on_each_purchase_particular %}
                         <th>{% trans 'Discount' %}</th>
                     {% endif %}
                     <th>{% trans 'Total' %}</th>
@@ -135,7 +137,7 @@
                         data-url="{% url 'tax_scheme_add' %}"></select>
                     </td>
                     <!-- /ko -->
-                    {% if request.company.settings.discount_on_voucher_row %}
+                    {% if request.company.settings.discount_on_each_purchase_particular %}
                         <td data-bind="editableText: discount, numeric: true"></td>
                     {% endif %}
                     <td data-bind="text: total"></td>
@@ -158,7 +160,7 @@
                     </td>
                     <td colspan="2" data-bind="text: $root.tax_amount(), localize: 1"></td>
                 </tr>
-                {% if request.company.settings.discount_on_voucher_row %}
+                {% if request.company.settings.discount_on_each_purchase_particular %}
                     <tr class="discount-total total">
                         <td colspan="7">
                             {% trans 'Discount Amount' %}
@@ -166,7 +168,7 @@
                         <td colspan="2" data-bind="text: $root.discount(), localize: 1"></td>
                     </tr>
                 {% endif %}
-                {% if request.company.settings.discount_on_voucher %}
+                {% if request.company.settings.single_discount_on_whole_purchase %}
                     <tr class="discount-total total">
                         <td colspan="7">
                             {% trans 'Discount on voucher' %}
