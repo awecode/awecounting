@@ -16,9 +16,7 @@
         ko_data = {{data|jsonify}};
     </script>
     <script>
-        {% if request.company.settings.single_discount_on_whole_purchase %}
-           colspan = 5;
-        {% elif request.company.settings.discount_on_each_purchase_particular %}
+        {% if not request.company.settings.purchase_default_tax_scheme and request.company.settings.discount_on_each_purchase_particular or request.company.settings.purchase_default_tax_scheme and request.company.settings.discount_on_each_purchase_particular %}
            colspan = 6;
         {% else %}
             colspan = 5;

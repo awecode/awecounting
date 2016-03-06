@@ -135,14 +135,14 @@
             </tr>
             {% endfor %}
             <tr class="sub-total total">
-                <td colspan="6">
+                <td colspan="{% colspan %}">
                     {% trans 'Sub Total' %}
                 </td>
-                <td>{{ object.sub_total }}</td>
+                <td colspan="2">{{ object.sub_total }}</td>
 
             </tr>
             <tr class="tax-total total">
-                <td colspan="6">
+                <td colspan="{% colspan %}">
                     {% trans 'Tax Amount' %}
                 </td>
                 <td colspan="2">{{ object.tax_amount }}</td>
@@ -150,7 +150,7 @@
             </tr>
             {% if request.company.settings.discount_on_each_purchase_particular %}
             <tr class="discount total">
-                <td colspan="6">
+                <td colspan="{% colspan %}">
                     {% trans 'Discount Amount' %}
                 </td>
                 <td colspan="2">{{ object.row_discount_total }}</td>
@@ -159,7 +159,7 @@
             {% endif %}
             {% if request.company.settings.single_discount_on_whole_purchase %}
             <tr class="discount-voucher total">
-                <td colspan="6">
+                <td colspan="{% colspan %}">
                     {% trans 'Discount on voucher' %}
                 </td>
                 <td colspan="2">{{ object.discount |default:'0'}}</td>
@@ -167,7 +167,7 @@
             </tr>
             {% endif %}
             <tr class="total">
-                <td colspan="6">
+                <td colspan="{% colspan %}">
                     {% trans 'Grand Total' %}
                 </td>
                 <td colspan="2">{{ object.total }}</td>

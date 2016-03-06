@@ -184,7 +184,7 @@ function PurchaseViewModel(data) {
             } else if (self.tax_vm.tax() == 'exclusive') {
                 _sum = self.sub_total() * ( tax_percent / 100 );
             } else {
-                sum = 0
+                _sum = 0
             }
             return r2z(round2(_sum));
         } 
