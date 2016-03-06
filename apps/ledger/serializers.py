@@ -19,6 +19,7 @@ class PartyBalanceSerializer(serializers.ModelSerializer):
     current_cr = serializers.ReadOnlyField(source='account.current_cr')
     current_dr = serializers.ReadOnlyField(source='account.current_dr')
     balance = serializers.ReadOnlyField(source='account.balance')
+    tax_preference = PartyTaxPreferenceSerializer()
 
     class Meta:
         model = Party
