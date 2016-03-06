@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Account, Party, Category
+from ..tax.serializers import PartyTaxPreferenceSerializer
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -8,6 +9,8 @@ class AccountSerializer(serializers.ModelSerializer):
 
 
 class PartySerializer(serializers.ModelSerializer):
+    tax_preference = PartyTaxPreferenceSerializer()
+
     class Meta:
         model = Party
 
