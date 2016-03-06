@@ -237,6 +237,8 @@ if 'rest_framework.authtoken' in settings.INSTALLED_APPS:
 
 
 class CompanySetting(models.Model):
+    from ..tax.models import TaxScheme
+
     tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'), ]
     company = models.OneToOneField(Company, related_name='settings')
     unique_voucher_number = models.BooleanField(default=True)
@@ -244,9 +246,12 @@ class CompanySetting(models.Model):
     single_discount_on_whole_invoice = models.BooleanField(default=True)
     discount_on_each_invoice_particular = models.BooleanField(default=False)
     invoice_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True, blank=True)
+    invoice_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True, related_name="default_invoice_tax_scheme")
+
     single_discount_on_whole_purchase = models.BooleanField(default=True)
     discount_on_each_purchase_particular = models.BooleanField(default=False)
     purchase_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True, blank=True)
+    purchase_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True, related_name="default_purchase_tax_scheme")
     voucher_number_start_date = BSDateField(default=today)
     # voucher_number_restart_years = models.IntegerField(default=1)
     # voucher_number_restart_months = models.IntegerField(default=0)
@@ -330,5 +335,10 @@ class Pin(models.Model):
     company = models.ForeignKey(Company, related_name="pin")
     used_by = models.ForeignKey(Company, related_name="used_pin", blank=True, null=True)
 
+    def __str__(self):
+        _str = str(self.code) + '-' + self.company.name
+        if self.used_by:
+            _str += '-' + self.used_by.name
+        return _str 
 
 

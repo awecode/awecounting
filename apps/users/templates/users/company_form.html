@@ -67,6 +67,10 @@
             <label>{{ secondary_form.invoice_default_tax_application_type.label }}</label>
                 {{ secondary_form.invoice_default_tax_application_type }}
             </p>
+            <p>
+                <label>{{ secondary_form.invoice_default_tax_scheme.label }}</label>
+                {{ secondary_form.invoice_default_tax_scheme }}
+            </p>
         </div>
 
         <h1> {% trans "Purchase Settings" %}</h1>
@@ -90,6 +94,10 @@
             <p>
             <label>{{ secondary_form.purchase_default_tax_application_type.label }}</label>
                 {{ secondary_form.purchase_default_tax_application_type }}
+            </p>
+            <p>
+                <label>{{ secondary_form.purchase_default_tax_scheme.label }}</label>
+                {{ secondary_form.purchase_default_tax_scheme }}
             </p>
         </div>
         <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
