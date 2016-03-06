@@ -81,6 +81,13 @@ class TableObjectMixin(ListView):
             scenario = 'Update'
         else:
             obj = self.model(company=self.request.company)
+            if obj.__class__.__name__ == 'Purchase':
+                tax = self.request.company.settings.purchase_default_tax_application_type
+                tax_scheme = self.request.company.settings.purchase_default_tax_scheme 
+                if tax:
+                    obj.tax = tax
+                if tax_scheme:
+                    obj.tax_scheme = tax_scheme
             scenario = 'Create'
         data = self.serializer_class(obj).data
         context['data'] = data
