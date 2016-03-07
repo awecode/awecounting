@@ -126,7 +126,7 @@
                 {% endif %}
                 {% if request.company.settings.discount_on_each_purchase_particular %}
                 <td>
-                    {{ row.discount }}
+                    {{ row.discount | default:''}}
                 </td>
                 {% endif %}
                 <td>

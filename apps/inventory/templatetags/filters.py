@@ -32,8 +32,8 @@ def colspan(context):
     tax_scheme = True
     if obj.tax == 'no':
         tax_scheme = False
-    if obj.tax != 'no' and tax_scheme == False:
-        tax_scheme = True
+    # if obj.tax != 'no' and tax_scheme == False:
+    #     tax_scheme = True
     _bool = False
     if not obj.tax_scheme:
         _bool = True
