@@ -25,7 +25,7 @@ def empty_to_none(o):
     return o
 
 def empty_to_zero(o):
-    if o == '':
+    if o == '' or o == None:
         return 0
     return o
 

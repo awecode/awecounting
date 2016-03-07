@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import TaxScheme
+from .models import TaxScheme, PartyTaxPreference
 
 
 class TaxSchemeSerializer(serializers.ModelSerializer):
@@ -11,3 +11,8 @@ class TaxSchemeSerializer(serializers.ModelSerializer):
 
     def get_name(self, obj):
     	return obj.__str__()
+
+
+class PartyTaxPreferenceSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = PartyTaxPreference

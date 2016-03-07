@@ -1,8 +1,9 @@
 from django import forms
-from .models import User, Role
+from .models import User, Role, Company, CompanySetting
 from django.contrib.auth.models import Group
 from awecounting.utils.forms import HTML5BootstrapModelForm
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse_lazy
 
 
 class UserAdminForm(forms.ModelForm):
@@ -114,3 +115,22 @@ class RoleForm(HTML5BootstrapModelForm):
     class Meta:
         model = Role
         exclude = ('user', 'company')
+
+
+class CompanyForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = Company
+        exclude  = ()
+
+
+class CompanySettingForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = CompanySetting
+        exclude = ('company', 'voucher_number_start_date')
+        widgets = {
+            'invoice_default_tax_application_type': forms.Select(attrs={'class': 'selectize'}),
+            'purchase_default_tax_application_type': forms.Select(attrs={'class': 'selectize'}),
+            'invoice_default_tax_scheme': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('tax_scheme_add')}),
+            'purchase_default_tax_scheme': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('tax_scheme_add')}),
+        }
+        company_filters = ('invoice_default_tax_scheme', 'purchase_default_tax_scheme')

@@ -9,8 +9,8 @@ from django.utils.translation import ugettext_lazy as _
 from njango.fields import BSDateField, today, get_calendar
 from .signals import company_creation
 from njango.nepdate import ad2bs, string_from_tuple, tuple_from_string, bs2ad, bs
-
 import os
+import random
 
 
 class UserManager(BaseUserManager):
@@ -53,6 +53,7 @@ class Company(models.Model):
     name = models.CharField(max_length=254)
     location = models.TextField()
     type_of_business = models.CharField(max_length=254)
+    tax_registration_number = models.IntegerField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         new = False
@@ -237,11 +238,21 @@ if 'rest_framework.authtoken' in settings.INSTALLED_APPS:
 
 
 class CompanySetting(models.Model):
+    from ..tax.models import TaxScheme
+
+    tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'), ]
     company = models.OneToOneField(Company, related_name='settings')
     unique_voucher_number = models.BooleanField(default=True)
     use_nepali_fy_system = models.BooleanField(default=True)
-    discount_on_voucher = models.BooleanField(default=True)
-    discount_on_voucher_row = models.BooleanField(default=False)
+    single_discount_on_whole_invoice = models.BooleanField(default=True)
+    discount_on_each_invoice_particular = models.BooleanField(default=False)
+    invoice_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True, blank=True)
+    invoice_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True, related_name="default_invoice_tax_scheme")
+
+    single_discount_on_whole_purchase = models.BooleanField(default=True)
+    discount_on_each_purchase_particular = models.BooleanField(default=False)
+    purchase_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True, blank=True)
+    purchase_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True, related_name="default_purchase_tax_scheme")
     voucher_number_start_date = BSDateField(default=today)
     # voucher_number_restart_years = models.IntegerField(default=1)
     # voucher_number_restart_months = models.IntegerField(default=0)
@@ -318,3 +329,35 @@ class File(models.Model):
 
     def __str__(self):
         return self.description or self.filename()
+
+
+class Pin(models.Model):
+    code = models.IntegerField()
+    company = models.ForeignKey(Company, related_name="pin")
+    used_by = models.ForeignKey(Company, related_name="used_pin", blank=True, null=True)
+
+    def __str__(self):
+        _str = str(self.code) + '-' + self.company.name
+        if self.used_by:
+            _str += '-' + self.used_by.name
+        return _str 
+
+    @staticmethod
+    def generate_pin(company, count=10):
+        pins = Pin.objects.filter(company=company, used_by__isnull=True).count()
+        for i in range(pins, count):
+            Pin.objects.create(company=company)
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = self.get_code(10000, 99999)
+        super(Pin, self).save(*args, **kwargs)
+
+    def get_code(self, range_start, range_end):
+        if not self.code:
+            number_range = range(range_start, range_end)
+            code = random.choice(number_range)
+            return code
+
+
+

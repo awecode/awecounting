@@ -120,6 +120,18 @@ function PurchaseViewModel(data) {
 
     self.party = ko.observable();
 
+    self.party_id.subscribe(function(id) {
+        selected_party = $.grep(self.parties(), function(e){ return e.id == id; })[0]
+        if (selected_party) {
+            if (selected_party.tax_preference != null) {
+                self.tax_vm.tax_scheme(selected_party.tax_preference.tax_scheme)
+                if (selected_party.tax_preference.default_tax_application_type != 'no-peference' && selected_party.tax_preference.default_tax_application_type != null ) {
+                    self.tax_vm.tax(selected_party.tax_preference.default_tax_application_type)
+                };
+            }
+        };
+    });
+
     self.party_balance = ko.computed(function () {
         if (self.party())
             return -1 * self.party().balance;
@@ -172,7 +184,7 @@ function PurchaseViewModel(data) {
             } else if (self.tax_vm.tax() == 'exclusive') {
                 _sum = self.sub_total() * ( tax_percent / 100 );
             } else {
-                sum = 0
+                _sum = 0
             }
             return r2z(round2(_sum));
         } 
