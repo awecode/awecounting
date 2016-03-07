@@ -30,7 +30,6 @@
     <form method="post" data-bind="submit: save">
         {% csrf_token %}
         <div class="well">
-            <h1>{{ request.company.settings.single_discount_on_whole_purchase }}</h1>
             <div class="row">
                 <div class="col-md-6 col-sm-12">
                     <label for="voucher-no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
