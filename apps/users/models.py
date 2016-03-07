@@ -10,6 +10,7 @@ from njango.fields import BSDateField, today, get_calendar
 from .signals import company_creation
 from njango.nepdate import ad2bs, string_from_tuple, tuple_from_string, bs2ad, bs
 import os
+import random
 
 
 class UserManager(BaseUserManager):
@@ -340,5 +341,23 @@ class Pin(models.Model):
         if self.used_by:
             _str += '-' + self.used_by.name
         return _str 
+
+    @staticmethod
+    def generate_pin(company, count=10):
+        pins = Pin.objects.filter(company=company, used_by__isnull=True).count()
+        for i in range(pins, count):
+            Pin.objects.create(company=company)
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = self.get_code(10000, 99999)
+        super(Pin, self).save(*args, **kwargs)
+
+    def get_code(self, range_start, range_end):
+        if not self.code:
+            number_range = range(range_start, range_end)
+            code = random.choice(number_range)
+            return code
+
 
 
