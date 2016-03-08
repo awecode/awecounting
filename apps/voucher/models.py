@@ -283,7 +283,7 @@ class CashReceiptRow(models.Model):
         return reverse_lazy('cash_receipt_edit', kwargs={'pk': self.cash_receipt_id})
 
     def overdue_days(self):
-        if self.invoice.due_date < date.today():
+        if self.invoice.due_date and self.invoice.due_date < date.today():
             overdue_days = date.today() - self.invoice.due_date
             return overdue_days.days
         return ''
@@ -336,10 +336,11 @@ class CashPaymentRow(models.Model):
         return reverse_lazy('cash_payment_edit', kwargs={'pk': self.cash_payment_id})
 
     def overdue_days(self):
-        if self.invoice.due_date < date.today():
+        if self.invoice.due_date and self.invoice.due_date < date.today():
             overdue_days = date.today() - self.invoice.due_date
-        return overdue_days.days
-
+            return overdue_days.days
+        return ''
+        
     class Meta:
         unique_together = ('invoice', 'cash_payment')
 
