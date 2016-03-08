@@ -28,7 +28,7 @@
             <tbody>
             {% for item in paginated_objects %}
                 <tr>
-                    <td>
+                    <td class="link">
                         <a href="{% url 'item_edit' item.pk %}">{{ item.name }}</a>
                     </td>
                     <td>
