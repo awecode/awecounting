@@ -11,17 +11,6 @@ $(document).ready(function () {
         value = $(this).text().slice(1, -1);
         $(this).html(value);
     });
-
-
-    if ($('.selectize').length) {
-        var $select = $('.selectize').selectize();
-        $($select).each(function () {
-            init_selectize(this.selectize);
-            selectize_validation_fix(this.selectize);
-        });
-    }
-
-
 });
 
 function ItemVM(data) {
