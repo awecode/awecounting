@@ -13,7 +13,6 @@
     <script src="{% static 'inventory/js/item.js' %}"></script>
     <script>
         item_data = {{ form.instance.other_properties| jsonify }};
-        item_unit_id = '{{ form.instance.unit_id|default:'' }}';
     </script>
     <script>
         {% if base_template == "_modal.html" %}

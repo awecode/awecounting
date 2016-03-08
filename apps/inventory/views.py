@@ -74,7 +74,7 @@ def item(request, pk=None):
             item_obj.save(account_no=form.cleaned_data['account_no'])
             if request.is_ajax():
                 return JsonResponse(ItemSerializer(item_obj).data)
-            return redirect('/inventory/item')
+            return redirect(reverse('item_list'))
     else:
         form = ItemForm(instance=item_obj, request=request)
     if request.is_ajax():
@@ -84,7 +84,7 @@ def item(request, pk=None):
     return render(request, 'item_form.html',
                   {'form': form, 'base_template': base_template, 'scenario': scenario,
                    'item_data': item_obj.other_properties,
-                   'item_unit_id': unit})
+                   })
 
 
 class ItemView(CompanyView):

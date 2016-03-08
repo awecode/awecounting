@@ -2,7 +2,7 @@ $(document).ready(function () {
     if (typeof(item_data) == "undefined") {
         item = new ItemVM();
     } else {
-        item = new ItemVM(item_data, item_unit_id);
+        item = new ItemVM(item_data);
     }
     var item_form = document.getElementById("other-properties");
     ko.applyBindings(item, item_form);
@@ -24,14 +24,9 @@ $(document).ready(function () {
 
 });
 
-function ItemVM(data, unit_id) {
+function ItemVM(data) {
     var self = this;
     self.other_properties = ko.observableArray([]);
-    //if (unit_id) {
-    //    self.unit_id = ko.observable(unit_id)
-    //} else {
-    //    self.unit_id = ko.observable();
-    //};
 
     if (data != null) {
         for (var item_property in data) {
