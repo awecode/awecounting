@@ -4,6 +4,8 @@ from django.contrib.auth.admin import UserAdmin, UserChangeForm as DjangoUserCha
 from django import forms
 from awecounting.utils.mixins import CompanyAdmin
 from .models import File, User, GroupProxy, Company, Role, CompanySetting, Pin
+from django.contrib.admin import ModelAdmin
+
 
 
 class UserCreationForm(DjangoUserCreationForm):
@@ -107,12 +109,22 @@ class FileInline(admin.TabularInline):
     model = File
 
 
+class CompanySettingStacked(admin.StackedInline):
+    model = CompanySetting
+
+
+class _CompanyAdmin(ModelAdmin):
+    inlines = [
+        CompanySettingStacked,
+    ]
+
+
 from django.contrib.auth.models import Group
 
 admin.site.unregister(Group)
 admin.site.register(GroupProxy, GroupAdmin)
 admin.site.register(Role, CompanyAdmin)
-admin.site.register(Company)
+admin.site.register(Company, _CompanyAdmin)
 admin.site.register(CompanySetting, CompanyAdmin)
 admin.site.register(File)
 admin.site.register(Pin)
