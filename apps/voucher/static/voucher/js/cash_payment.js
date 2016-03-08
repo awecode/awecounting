@@ -129,7 +129,6 @@ function CashPaymentVM(data) {
                     }
                     else {
                         bsalert.success('Saved!');
-                        self.table_view.deleted_rows([]);
                         if (msg.id) {
                             if (!self.id())
                                 update_url_with_id(msg.id);
