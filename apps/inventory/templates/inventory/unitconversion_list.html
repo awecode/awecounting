@@ -28,7 +28,7 @@
                 <tbody>
                 {% for unit_conversion in paginated_objects %}
                     <tr>
-                        <td>
+                        <td class="link">
                             <a href="{% url 'unit_conversion_edit' unit_conversion.pk %}">{{ unit_conversion.base_unit }}</a>
                         </td>
                         <td>
