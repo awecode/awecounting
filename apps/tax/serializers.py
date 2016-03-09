@@ -10,9 +10,9 @@ class TaxSchemeSerializer(serializers.ModelSerializer):
         exclude = ('name',)
 
     def get_name(self, obj):
-    	return obj.__str__()
+        return obj.__str__()
 
 
 class PartyTaxPreferenceSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = PartyTaxPreference
+    class Meta:
+        model = PartyTaxPreference
