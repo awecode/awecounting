@@ -1,6 +1,5 @@
 from rest_framework import generics
 from awecounting.utils.mixins import CompanyAPI
-from .models import TaxScheme
 from .serializers import TaxSchemeSerializer
 
 
