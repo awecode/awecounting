@@ -37,6 +37,32 @@ function CashPaymentVM(data) {
         self[k] = ko.observable(data[k]);
     }
 
+    self.row_total_amount = function () {
+        var sum = 0;
+        if (typeof(self.table_vm().rows()) != 'undefined') {
+            self.table_vm().rows().forEach(function (i) {
+                if (i.total_amount()) {
+                    sum += parseFloat(i.total_amount());
+                }
+            });
+            return round2(sum);
+            
+        };
+    }
+
+    self.row_pending_amount = function () {
+        var sum = 0;
+        if (typeof(self.table_vm().rows()) != 'undefined') {
+            self.table_vm().rows().forEach(function (i) {
+                if (i.pending_amount()) {
+                    sum += parseFloat(i.pending_amount());
+                }
+            });
+            return round2(sum);
+            
+        };
+    }
+
     self.party.subscribe(function (party) {
         self.party_address(party.address);
         self.current_balance(-1 * party.balance);
@@ -188,6 +214,12 @@ function CashPaymentRowVM(row) {
     for (var k in row) {
         self[k] = ko.observable(row[k]);
     }
+
+    // self.payment.subscribe( function() {
+    //     actual_payment = self.pending_amount()
+    //     console.log(actual_payment)
+
+    // });
 
     self.overdue_days = function () {
         if (self.due_date()) {
