@@ -215,11 +215,17 @@ function CashPaymentRowVM(row) {
         self[k] = ko.observable(row[k]);
     }
 
-    // self.payment.subscribe( function() {
-    //     actual_payment = self.pending_amount()
-    //     console.log(actual_payment)
+    self.actual_pending_amount = self.pending_amount()
 
-    // });
+    self.payment.subscribe( function() {
+        if (typeof(self.payment()) == 'undefined' || self.payment() == '') {
+            self.pending_amount(self.actual_pending_amount);
+        } else {
+            self.pending_amount(self.actual_pending_amount - self.payment())
+        };
+    });
+
+  
 
     self.overdue_days = function () {
         if (self.due_date()) {
