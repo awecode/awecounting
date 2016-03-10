@@ -359,5 +359,16 @@ class Pin(models.Model):
             code = random.choice(number_range)
             return code
 
+    @staticmethod
+    def validate_pin(pin):
+        try:
+            if not isinstance(pin, str):
+                return "Set argument in string"
+            company_id = int(pin.split('-')[0])
+            get_pin = Pin.objects.get(company=company_id, code=pin)
+            return get_pin.company 
+        except Pin.DoesNotExist:
+            return None
+
 
 
