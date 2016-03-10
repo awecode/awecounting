@@ -8,10 +8,27 @@ from django.contrib.auth import logout as auth_logout
 
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, group_required
 from django.views.generic.list import ListView
-from .forms import UserForm, UserUpdateForm, RoleForm, CompanyForm, CompanySettingForm
-from .models import User, Company, Role, CompanySetting
+from .forms import UserForm, UserUpdateForm, RoleForm, CompanyForm, CompanySettingForm, PinForm
+from .models import User, Company, Role, CompanySetting, Pin
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
+from django.http import HttpResponseRedirect
+
+
+class AddUserPin(CreateView):
+    model = Pin
+    form_class = PinForm
+    success_url = reverse_lazy('home')
+
+    def post(self, request, *args, **kwargs):
+        # import ipdb; ipdb.set_trace()
+        # response = super(AddUserPin, self).post(request, *args, **kwargs)
+        messages.add_message(request, messages.INFO, 'Hello world.')
+        return HttpResponseRedirect(reverse('home'))
+
+    # def get_context_data(self, *args, *kwargs):
 
 
 class UserView(object):

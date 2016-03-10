@@ -1,0 +1,24 @@
+{% extends base_template %}
+{% load i18n %}
+
+{% block title %}{% trans "Send Pin" %}{% endblock %}
+
+{% block breadcrumbs %}
+    <li>{% trans 'Send Pin' %}</li>
+{% endblock %}
+
+{% block page-header %}{% trans "Send Pin" %}{% endblock %}
+{% block content %}
+    <form method="POST">
+        <div class="well">
+            {% csrf_token %}
+
+            {{ form.non_field_errors }}
+
+            {{ form.as_p }}
+        </div>
+        <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
+
+    </form>
+
+{% endblock %}
