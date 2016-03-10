@@ -14,7 +14,9 @@ from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
+from .serializers import CompanySerializer
+from django.views.generic import View
 
 
 class AddUserPin(CreateView):
@@ -29,6 +31,18 @@ class AddUserPin(CreateView):
         return HttpResponseRedirect(reverse('home'))
 
     # def get_context_data(self, *args, *kwargs):
+
+
+class ValidatePin(View):
+    model = Pin
+
+    def get(self, request, *args, **kwargs):
+        pin = kwargs.get('pin')
+        company = self.model.validate_pin(pin)
+        if company is None:
+            return JsonResponse({})
+        data = CompanySerializer(company).data
+        return JsonResponse(data)
 
 
 class UserView(object):

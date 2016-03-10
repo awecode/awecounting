@@ -362,7 +362,7 @@ class Pin(models.Model):
     @staticmethod
     def validate_pin(pin):
         try:
-            if not isinstance(pin, str):
+            if not isinstance(pin, str) and not isinstance(pin, unicode):
                 return "Set argument in string"
             company_id = int(pin.split('-')[0])
             get_pin = Pin.objects.get(company=company_id, code=pin)
@@ -370,5 +370,6 @@ class Pin(models.Model):
         except Pin.DoesNotExist:
             return None
 
-
+    class Meta:
+        unique_together = ("company", "used_by")
 
