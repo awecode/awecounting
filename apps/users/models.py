@@ -332,7 +332,7 @@ class File(models.Model):
 
 
 class Pin(models.Model):
-    code = models.IntegerField()
+    code = models.CharField(max_length=100)
     company = models.ForeignKey(Company, related_name="pin")
     used_by = models.ForeignKey(Company, related_name="used_pin", blank=True, null=True)
 
@@ -350,7 +350,7 @@ class Pin(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.code:
-            self.code = self.get_code(10000, 99999)
+            self.code = str(self.company.id) + '-' + str(self.get_code(10000, 99999)) 
         super(Pin, self).save(*args, **kwargs)
 
     def get_code(self, range_start, range_end):
