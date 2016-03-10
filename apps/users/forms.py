@@ -1,5 +1,5 @@
 from django import forms
-from .models import User, Role, Company, CompanySetting
+from .models import User, Role, Company, CompanySetting, Pin
 from django.contrib.auth.models import Group
 from awecounting.utils.forms import HTML5BootstrapModelForm
 from django.utils.translation import ugettext_lazy as _
@@ -134,3 +134,10 @@ class CompanySettingForm(HTML5BootstrapModelForm):
             'purchase_default_tax_scheme': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('tax_scheme_add')}),
         }
         company_filters = ('invoice_default_tax_scheme', 'purchase_default_tax_scheme')
+
+
+
+class PinForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = Pin
+        exclude = ('company', 'used_by',)
