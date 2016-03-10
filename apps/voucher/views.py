@@ -187,7 +187,8 @@ def save_cash_payment(request):
                     continue
                 row['payment'] = zero_for_none(empty_to_none(row['payment']))
                 invoice = Purchase.objects.get(voucher_no=row.get('voucher_no'), company=request.company)
-
+                invoice.pending_amount = row.get('pending_amount')
+                invoice.save()
                 values = {'payment': row.get('payment'), 'cash_payment': obj, 'invoice': invoice}
                 try:
                     old_value = model.objects.get(invoice_id=row.get('id'), cash_payment_id=obj.id).payment or 0
@@ -303,6 +304,8 @@ def save_cash_receipt(request):
                     continue
                 row['payment'] = zero_for_none(empty_to_none(row['payment']))
                 invoice = Sale.objects.get(voucher_no=row.get('voucher_no'), company=request.company)
+                invoice.pending_amount = row.get('pending_amount')
+                invoice.save()
                 values = {'receipt': row.get('payment'), 'cash_receipt': obj, 'invoice': invoice}
                 try:
                     old_value = model.objects.get(invoice_id=row.get('id'), cash_receipt_id=obj.id).receipt or 0

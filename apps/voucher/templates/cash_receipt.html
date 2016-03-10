@@ -123,7 +123,11 @@
                         <!-- /ko -->
                     </div>
                     <tr class="total">
-                        <td colspan="6">{% trans 'TOTAL' %}</td>
+                    <tr class="total">
+                        <td colspan="2">{% trans 'TOTAL' %}</td>
+                        <td data-bind="text: $root.row_total_amount()"></td>
+                        <td data-bind="text: $root.row_pending_amount()"></td>
+                        <td colspan="2"></td>
                         <td data-bind="text: get_total('payment')"></td>
                     </tr>
 

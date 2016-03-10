@@ -88,6 +88,32 @@ function CashReceiptVM(data) {
         return self.table_vm().get_total('discount');
     }, self);
 
+    self.row_total_amount = function () {
+        var sum = 0;
+        if (typeof(self.table_vm().rows()) != 'undefined') {
+            self.table_vm().rows().forEach(function (i) {
+                if (i.total_amount()) {
+                    sum += parseFloat(i.total_amount());
+                }
+            });
+            return round2(sum);
+            
+        };
+    }
+
+    self.row_pending_amount = function () {
+        var sum = 0;
+        if (typeof(self.table_vm().rows()) != 'undefined') {
+            self.table_vm().rows().forEach(function (i) {
+                if (i.pending_amount()) {
+                    sum += parseFloat(i.pending_amount());
+                }
+            });
+            return round2(sum);
+            
+        };
+    }
+
     self.validate = function () {
         if (!self.party()) {
             bsalert.error('"Party" field is required!')
@@ -174,6 +200,16 @@ function CashReceiptRowVM(row) {
     for (var k in row) {
         self[k] = ko.observable(row[k]);
     }
+
+    self.actual_pending_amount = self.pending_amount()
+
+    self.payment.subscribe( function() {
+        if (typeof(self.payment()) == 'undefined' || self.payment() == '') {
+            self.pending_amount(self.actual_pending_amount);
+        } else {
+            self.pending_amount(self.actual_pending_amount - self.payment())
+        };
+    });
 
     self.overdue_days = function () {
         if (self.due_date()) {
