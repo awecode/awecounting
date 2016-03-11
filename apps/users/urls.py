@@ -21,4 +21,6 @@ urlpatterns = [
     url(r'^send_pin/', views.AddUserPin.as_view(), name="add_user_with_pin"),
     url(r'^company_setting/(?P<pk>\d+)/$', views.CompanySettingUpdateView.as_view(), name='company_setting'),
     url(r'^api/pin/(?P<pin>\d+-\d+)/$', views.ValidatePin.as_view(), name='validate_pin'),
+
+    url(r'^company_pin/', views.CompanyPin.as_view(), name="company_pin"),
 ]

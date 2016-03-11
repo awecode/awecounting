@@ -344,7 +344,7 @@ class Pin(models.Model):
 
     @staticmethod
     def generate_pin(company, count=10):
-        pins = Pin.objects.filter(company=company, used_by__isnull=True).count()
+        pins = Pin.objects.filter(company=company, used_by__isnull=False).count()
         for i in range(pins, count):
             Pin.objects.create(company=company)
 

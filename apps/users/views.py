@@ -20,7 +20,21 @@ from django.views.generic import View
 from django.db import IntegrityError
 
 
-class AddUserPin(CreateView):
+class CompanyPin(ListView):
+    model = Company
+    template_name = 'company_pin.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CompanyPin, self).get_context_data(**kwargs)
+        context['unused_pins'] = self.request.company.pin.filter(used_by__isnull=True)
+        context['used_pins'] = self.request.company.pin.filter(used_by__isnull=False)
+        if not context['unused_pins']:
+            Pin.generate_pin(self.request.company)
+            context['unused_pins'] = self.request.company.pin.filter(used_by__isnull=True)
+        return context
+
+
+class AddUserPin(View):
     model = Pin
     form_class = PinForm
     success_url = reverse_lazy('home')

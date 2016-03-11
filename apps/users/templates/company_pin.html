@@ -1,0 +1,41 @@
+{% extends '_base.html' %}
+{% load i18n filters %}
+
+{% block page-title %}{{ request.company }} {% trans 'Pin' %}{% endblock %}
+
+{% block breadcrumbs %}
+    <li>{% trans 'Pins' %}</li>
+{% endblock %}
+
+{% block page-header %}{% trans "Pins" %}{% endblock %}
+
+{% block content %}
+    {% if unused_pins %}
+    <div class='well'>
+    <ul class="list-group row">
+        {% for used_pin in unused_pins %}
+             <li class="list-group-item col-xs-6"><h1> {{ used_pin.code }} </h1></li>
+        {% endfor %}
+    </ul>    
+    </div>
+    {% endif %}  
+    {% if used_pins %}
+    <div class='well'>
+        <table class="table table-striped">
+            <thead>
+                <th>{% trans "Pin code" %}</th>
+                <th>{% trans "Used by" %}</th>
+            </thead>
+            <tbody>
+                {% for used_pin in used_pins %}
+                <tr>
+                    <td>{{ used_pin.code }}</td>
+                    <td>{{ used_pin.used_by }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+{% endblock %}
