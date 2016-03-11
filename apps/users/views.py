@@ -8,10 +8,52 @@ from django.contrib.auth import logout as auth_logout
 
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, group_required
 from django.views.generic.list import ListView
-from .forms import UserForm, UserUpdateForm, RoleForm, CompanyForm, CompanySettingForm
-from .models import User, Company, Role, CompanySetting
+from .forms import UserForm, UserUpdateForm, RoleForm, CompanyForm, CompanySettingForm, PinForm
+from .models import User, Company, Role, CompanySetting, Pin
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
+from django.http import HttpResponseRedirect, JsonResponse
+from .serializers import CompanySerializer
+from django.views.generic import View
+from django.db import IntegrityError
+
+
+class AddUserPin(CreateView):
+    model = Pin
+    form_class = PinForm
+    success_url = reverse_lazy('home')
+
+    def post(self, request, *args, **kwargs):
+        pin = request.POST.get('code')
+        company_id = int(pin.split('-')[0])
+        if request.company.id == company_id:
+            messages.add_message(request, messages.ERROR, 'Sending request to same company')
+            return HttpResponseRedirect(reverse('users:add_user_with_pin'))
+        try:
+            obj = Pin.objects.get(company_id=company_id, code=pin, used_by__isnull=True)
+            obj.used_by = request.company
+            obj.save()
+            return HttpResponseRedirect(reverse('home'))
+        except Pin.DoesNotExist:
+            messages.add_message(request, messages.ERROR, 'Invalid Pin.')
+            return HttpResponseRedirect(reverse('users:add_user_with_pin'))
+        except IntegrityError as e:
+            messages.add_message(request, messages.ERROR, 'Company already accessible.')
+            return HttpResponseRedirect(reverse('users:add_user_with_pin'))
+
+
+class ValidatePin(View):
+    model = Pin
+
+    def get(self, request, *args, **kwargs):
+        pin = kwargs.get('pin')
+        company = self.model.validate_pin(pin)
+        if company is None:
+            return JsonResponse({})
+        data = CompanySerializer(company).data
+        return JsonResponse(data)
 
 
 class UserView(object):
