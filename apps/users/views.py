@@ -17,20 +17,43 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect, JsonResponse
 from .serializers import CompanySerializer
 from django.views.generic import View
+from django.db import IntegrityError
 
 
-class AddUserPin(CreateView):
+class CompanyPin(ListView):
+    model = Company
+    template_name = 'company_pin.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CompanyPin, self).get_context_data(**kwargs)
+        Pin.generate_pin(self.request.company)
+        context['unused_pins'] = self.request.company.pin.filter(used_by__isnull=True)
+        context['used_pins'] = self.request.company.pin.filter(used_by__isnull=False)
+        return context
+
+
+class AddUserPin(View):
     model = Pin
     form_class = PinForm
     success_url = reverse_lazy('home')
 
     def post(self, request, *args, **kwargs):
-        # import ipdb; ipdb.set_trace()
-        # response = super(AddUserPin, self).post(request, *args, **kwargs)
-        messages.add_message(request, messages.INFO, 'Hello world.')
-        return HttpResponseRedirect(reverse('home'))
-
-    # def get_context_data(self, *args, *kwargs):
+        pin = request.POST.get('code')
+        company_id = int(pin.split('-')[0])
+        if request.company.id == company_id:
+            messages.add_message(request, messages.ERROR, 'Sending request to same company')
+            return HttpResponseRedirect(reverse('users:add_user_with_pin'))
+        try:
+            obj = Pin.objects.get(company_id=company_id, code=pin, used_by__isnull=True)
+            obj.used_by = request.company
+            obj.save()
+            return HttpResponseRedirect(reverse('home'))
+        except Pin.DoesNotExist:
+            messages.add_message(request, messages.ERROR, 'Invalid Pin.')
+            return HttpResponseRedirect(reverse('users:add_user_with_pin'))
+        except IntegrityError as e:
+            messages.add_message(request, messages.ERROR, 'Company already accessible.')
+            return HttpResponseRedirect(reverse('users:add_user_with_pin'))
 
 
 class ValidatePin(View):

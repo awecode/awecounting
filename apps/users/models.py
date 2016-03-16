@@ -375,5 +375,5 @@ class Pin(models.Model):
         return map(str, accessible_by.used_pin.all().values_list('company__name', flat=True))
 
     class Meta:
-        unique_together = ("company", "used_by")
+        unique_together = (("company", "used_by"),)
 
