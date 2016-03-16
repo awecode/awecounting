@@ -1,7 +1,9 @@
 from django.conf.urls import patterns, url
-from . import views
+from . import views, api
+from rest_framework.urlpatterns import format_suffix_patterns
 
-urlpatterns = [
+
+web_urls = [
     url(r'^$', views.UserListView.as_view(), name='user_list'),
     url(r'^login/$', views.web_login, name='login'),
     url(r'^logout/$', views.logout, name='logout'),
@@ -22,3 +24,12 @@ urlpatterns = [
     url(r'^company_setting/(?P<pk>\d+)/$', views.CompanySettingUpdateView.as_view(), name='company_setting'),
     url(r'^api/pin/(?P<pin>\d+-\d+)/$', views.ValidatePin.as_view(), name='validate_pin'),
 ]
+
+api_urls = [
+    url(r'^api/asseccible_company/$', api.AccessibleCompanyAPI.as_view()),
+]
+
+api_urls = format_suffix_patterns(api_urls)
+
+urlpatterns = web_urls + api_urls
+
