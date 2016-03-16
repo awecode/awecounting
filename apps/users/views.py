@@ -21,7 +21,19 @@ from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 
 
-class AddUserPin(CreateView):
+class CompanyPin(ListView):
+    model = Company
+    template_name = 'company_pin.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CompanyPin, self).get_context_data(**kwargs)
+        Pin.generate_pin(self.request.company)
+        context['unused_pins'] = self.request.company.pin.filter(used_by__isnull=True)
+        context['used_pins'] = self.request.company.pin.filter(used_by__isnull=False)
+        return context
+
+
+class AddUserPin(View):
     model = Pin
     form_class = PinForm
     success_url = reverse_lazy('home')
