@@ -45,7 +45,6 @@ class AddUserPin(CreateView):
             return HttpResponseRedirect(reverse('users:add_user_with_pin'))
 
 
-@csrf_exempt
 class ValidatePin(View):
     model = Pin
 
