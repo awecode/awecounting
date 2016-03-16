@@ -18,6 +18,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from .serializers import CompanySerializer
 from django.views.generic import View
 from django.db import IntegrityError
+from django.views.decorators.csrf import csrf_exempt
 
 
 class AddUserPin(CreateView):
@@ -44,6 +45,7 @@ class AddUserPin(CreateView):
             return HttpResponseRedirect(reverse('users:add_user_with_pin'))
 
 
+@csrf_exempt
 class ValidatePin(View):
     model = Pin
 
