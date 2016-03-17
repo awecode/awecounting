@@ -18,7 +18,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from .serializers import CompanySerializer
 from django.views.generic import View
 from django.db import IntegrityError
-from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 
 
 class CompanyPin(ListView):
@@ -62,11 +62,22 @@ class ValidatePin(View):
 
     def get(self, request, *args, **kwargs):
         pin = kwargs.get('pin')
-        company = self.model.validate_pin(pin)
-        if company is None:
-            return JsonResponse({})
-        data = CompanySerializer(company).data
-        return JsonResponse(data)
+        company_id = int(pin.split('-')[0])
+        if request.company:
+            if request.company.id == company_id:
+                return JsonResponse({'Error': 'Sending request to same company'})
+            try:
+                company = self.model.validate_pin(pin)
+                obj = Pin.objects.get(company_id=company_id, code=pin, used_by__isnull=True)
+                obj.used_by = request.company
+                obj.save()
+                data = CompanySerializer(company).data
+                return JsonResponse(data)
+            except Pin.DoesNotExist:
+                return JsonResponse({'Error': 'Invalid Pin / Pin already used.'})
+            except IntegrityError as e:
+                return JsonResponse({'Error': 'Company already accessible.'})
+        return JsonResponse({'Error': 'Authorization Token required.'})
 
 
 class UserView(object):
