@@ -19,7 +19,7 @@ from .serializers import CompanySerializer
 from django.views.generic import View
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
-
+from rest_framework import status
 
 class CompanyPin(ListView):
     model = Company
@@ -65,7 +65,7 @@ class ValidatePin(View):
         company_id = int(pin.split('-')[0])
         if request.company:
             if request.company.id == company_id:
-                return JsonResponse({'Error': 'Sending request to same company'})
+                return JsonResponse({'Error': 'Sending request to same company'}, status=status.HTTP_400_BAD_REQUEST)
             try:
                 company = self.model.validate_pin(pin)
                 obj = Pin.objects.get(company_id=company_id, code=pin, used_by__isnull=True)
@@ -74,10 +74,10 @@ class ValidatePin(View):
                 data = CompanySerializer(company).data
                 return JsonResponse(data)
             except Pin.DoesNotExist:
-                return JsonResponse({'Error': 'Invalid Pin / Pin already used.'})
+                return JsonResponse({'Error': 'Invalid Pin / Pin already used.'}, status=status.HTTP_400_BAD_REQUEST)
             except IntegrityError as e:
-                return JsonResponse({'Error': 'Company already accessible.'})
-        return JsonResponse({'Error': 'Authorization Token required.'})
+                return JsonResponse({'Error': 'Company already accessible.'}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'Error': 'Authorization Token required.'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UserView(object):
