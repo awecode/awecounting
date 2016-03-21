@@ -20,5 +20,11 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class CompanySerializer(serializers.ModelSerializer):
+    added_date = serializers.SerializerMethodField()
+
     class Meta:
         model = Company
+
+    def get_added_date(self, obj):
+    	self.request = self.context['request'].company
+    	return self.request.used_pin.get(company=obj).date
