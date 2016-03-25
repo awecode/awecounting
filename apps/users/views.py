@@ -6,7 +6,7 @@ from django.contrib.auth.views import login
 from django.contrib.auth import logout as auth_logout
 # from allauth.account.forms import LoginForm, SignupForm
 
-from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, group_required
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, group_required, CompanyView
 from django.views.generic.list import ListView
 from .forms import UserForm, UserUpdateForm, RoleForm, CompanyForm, CompanySettingForm, PinForm
 from .models import User, Company, Role, CompanySetting, Pin
@@ -101,7 +101,10 @@ class UserDelete(UserView, DeleteView):
 
 
 class UserListView(UserView, ListView):
-    pass
+
+    def get_queryset(self):
+        return super(UserListView, self).get_queryset().filter(roles__company=self.request.company)
+
 
 
 class UserCreate(UserView, CreateView):
