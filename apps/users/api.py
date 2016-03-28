@@ -14,15 +14,15 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
 
 
-class SetPagination(pagination.PageNumberPagination):
-    page_size = 10
-    page_size_query_param = 'page_size'
-    max_page_size = 1000
+# class SetPagination(pagination.PageNumberPagination):
+#     page_size = 10
+#     page_size_query_param = 'page_size'
+#     max_page_size = 1000
 
 
 class AccessibleCompanyAPI(generics.ListAPIView):
 	serializer_class = CompanySerializer
-	pagination_class = SetPagination
+	# pagination_class = SetPagination
 
 	def get_queryset(self):
 		return Pin.accessible_companies(self.request.company)
