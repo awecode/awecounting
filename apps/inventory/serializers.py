@@ -23,7 +23,11 @@ class ItemSerializer(serializers.ModelSerializer):
         return obj.name
 
     def get_current_balance(self,obj):
-        return obj.account.account_transaction.filter(account=obj.account).last().current_balance
+        if obj.account.account_transaction.filter(account=obj.account):
+            return obj.account.account_transaction.filter(account=obj.account).last().current_balance
+        else:
+            return 0
+
 
     class Meta:
         model = Item
