@@ -20,6 +20,7 @@ from django.views.generic import View
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from rest_framework import status
+from njango.fields import today
 
 class CompanyPin(ListView):
     model = Company
@@ -37,6 +38,10 @@ class AddUserPin(View):
     model = Pin
     form_class = PinForm
     success_url = reverse_lazy('home')
+    template_name = 'users/pin_form.html'
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, {'form': self.form_class})
 
     def post(self, request, *args, **kwargs):
         pin = request.POST.get('code')
@@ -47,6 +52,7 @@ class AddUserPin(View):
         try:
             obj = Pin.objects.get(company_id=company_id, code=pin, used_by__isnull=True)
             obj.used_by = request.company
+            obj.date = today
             obj.save()
             return HttpResponseRedirect(reverse('home'))
         except Pin.DoesNotExist:
