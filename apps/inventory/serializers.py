@@ -17,9 +17,13 @@ class ItemSerializer(serializers.ModelSerializer):
     unit = UnitSerializer()
     name = serializers.ReadOnlyField(source='__unicode__')
     full_name = serializers.SerializerMethodField()
+    current_balance = serializers.SerializerMethodField()
 
     def get_full_name(self, obj):
         return obj.name
+
+    def get_current_balance(self,obj):
+        return obj.account.account_transaction.filter(account=obj.account).last().current_balance
 
     class Meta:
         model = Item
