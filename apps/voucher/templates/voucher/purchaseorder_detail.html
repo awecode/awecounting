@@ -51,7 +51,6 @@
                 {# <th rowspan="2" class="span3 hidden-print">{% trans 'Vattable' %}</th> #}
                 <th colspan="2" class="span2">{% trans 'Price' %}</th>
                 <th rowspan="2" class="span2">{% trans 'Remarks' %}</th>
-                <th rowspan="2" class="hidden-print"></th>
             </tr>
             <tr>
                 <th>{% trans 'Rate' %}</th>
@@ -81,6 +80,9 @@
                     </td>
                     <td>
                         {{ row.get_total }}
+                    </td>
+                    <td>
+                        {{ row.remarks |default:''}}
                     </td>
                 </tr>
         {% endfor %}
