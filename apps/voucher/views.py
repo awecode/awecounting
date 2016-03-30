@@ -14,9 +14,9 @@ from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete
 
 from .forms import CashReceiptForm, JournalVoucherForm, CashPaymentForm
 from .serializers import FixedAssetSerializer, FixedAssetRowSerializer, AdditionalDetailSerializer, CashReceiptSerializer, \
-    CashPaymentSerializer, JournalVoucherSerializer, PurchaseSerializer, SaleSerializer
+    CashPaymentSerializer, JournalVoucherSerializer, PurchaseSerializer, SaleSerializer, PurchaseOrderSerializer
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, Purchase, JournalVoucher, JournalVoucherRow, \
-    PurchaseRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow
+    PurchaseRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow
 
 
 class FixedAssetView(CompanyView):
@@ -625,3 +625,92 @@ def journal_voucher_save(request):
         dct = write_error(dct, e)
     delete_rows(params.get('table_view').get('deleted_rows'), model)
     return JsonResponse(dct)
+
+
+class PurchaseOrderView(CompanyView):
+    model = PurchaseOrder
+    serializer_class = PurchaseOrderSerializer
+    success_url = reverse_lazy("purchase_order_list")
+
+
+class PurchaseOrderList(PurchaseOrderView, ListView):
+    pass
+
+class PurchaseOrderDelete(PurchaseOrderView, DeleteView):
+    pass
+
+# def purchase_list(request):
+#     obj = PurchaseOrder.objects.filter(company=request.company)
+#     return render(request, 'purchase_list.html', {'objects': obj})
+
+
+class PurchaseOrderCreate(PurchaseOrderView, TableObjectMixin):
+    template_name = 'voucher/purchase_order_form.html'
+
+
+class PurchaseOrderDetailView(PurchaseOrderView, StaffMixin, DetailView):
+
+    def get_context_data(self, **kwargs):
+        context = super(PurchaseOrderDetailView, self).get_context_data(**kwargs)
+        context['rows'] = PurchaseOrderRow.objects.select_related('item', 'unit').filter(purchase_order=self.object)
+        return context
+
+
+def save_purchase_order(request):
+    if request.is_ajax():
+        params = json.loads(request.body)
+    dct = {'rows': {} }
+    if params.get('voucher_no') == '':
+        params['voucher_no'] = None
+
+    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
+                     'party_id': params.get('party_id'), 'company': request.company}
+
+    if params.get('id'):
+        obj = PurchaseOrder.objects.get(id=params.get('id'), company=request.company)
+    else:
+        obj = PurchaseOrder(company=request.company)
+    try:
+        obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = PurchaseOrderRow
+        # grand_total = 0
+        for ind, row in enumerate(params.get('table_view').get('rows')):
+            if invalid(row, ['item_id', 'quantity', 'unit_id']):
+                continue
+            else:
+                values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'specification': row.get('specification'), 'quantity': row.get('quantity'),
+                          'rate': row.get('rate'), 'unit_id': row.get('unit')['id'], 'remarks': row.get('remarks'),
+                          'purchase_order': obj}
+                submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+                if not created:
+                    submodel = save_model(submodel, values)
+                # grand_total += submodel.get_total()
+                dct['rows'][ind] = submodel.id
+                # set_transactions(submodel, obj.date,
+                #                  ['dr', submodel.item.account, submodel.quantity],
+                #                  )
+                # if obj.credit:
+                #     set_ledger_transactions(submodel, obj.date,
+                #                             ['cr', obj.party.account, obj.total],
+                #                             ['dr', submodel.item.ledger, obj.total],
+                #                             # ['cr', sales_tax_account, tax_amount],
+                #                             )
+                # else:
+                #     set_ledger_transactions(submodel, obj.date,
+                #                             ['dr', submodel.item.ledger, obj.total],
+                #                             ['cr', Account.objects.get(name='Cash', company=request.company),
+                #                              obj.total],
+                #                             # ['cr', sales_tax_account, tax_amount],
+                #                             )
+
+        delete_rows(params.get('table_view').get('deleted_rows'), model)
+
+        # obj.total_amount = grand_total
+        # if obj.credit:
+            # obj.pending_amount = grand_total
+        # obj.save()
+    except Exception as e:
+        dct = write_error(dct, e)
+    return JsonResponse(dct)
+

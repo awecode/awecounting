@@ -1,0 +1,243 @@
+{% extends "inventory_base.html" %}
+{% load i18n %}
+{% load filters %}
+{% load staticfiles %}
+
+{% block title %}{% trans scenario %} {% trans 'Purchase Order' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url "list_purchase_orders" %}">{% trans 'Purchase' %} {% trans 'Orders' %}</a></li>
+    <li><span> {% trans scenario %} {% trans 'Purchase Order' %}</span></li>
+{% endblock %}
+
+{% block head_end %}
+    <script src="{% static 'js/inventory/purchase_order.js' %}"></script>
+    <script>
+        ko_data = {{data|jsonify}};
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="visible-print-block form-header">
+        <span class="right pull-right">{% trans 'FCGO' %} {% trans 'F.N.' %}
+            {% trans '4' %}{% trans '5' %}</span>
+        <br>
+        <h4 class="center">{% localize_header %}</h4>
+        <h4 class="center">{% trans 'Purchase Order' %}</h4>
+    </div>
+
+    <form method="post" data-bind="submit: save">
+        {% csrf_token %}
+        <div class="well">
+        <div class="row">
+
+            <div class="col-lg-6 col-sm-6 selectize-inline">
+                {% trans 'Shree' %} <input type="hidden" class="form-control" name="table_model"
+                                           data-bind="value: ko.toJSON($data.demand_rows, null, 2)">
+                <select data-bind="selectize: $root.parties, value: party, event: {change: $root.party_changed}"
+                        data-url="{% url 'create_party' %}" class="change-on-ready"></select>
+                <br>
+                {% trans 'Address' %}: <span data-bind="text:party_address"></span>
+                <br>
+                {% trans "VAT/PAN" %}: <span data-bind="text:party_pan_no, localize: true"></span>
+                <br/>
+            </div>
+
+            <div class="col-lg-6 col-sm-6 pull-right text-right">
+                <div class="pull-right text-right">
+                    {% trans 'Purchase Order' %} {% trans 'No.' %}:
+                    <div class="form-inline inline">
+
+                    <input type="text" class="pull-right text-right form-control" name="order_no" id="id_order_no" required
+                           data-bind="value: order_no, localize: true, autosize:3">
+                    </div>
+                    {{ form.order_no.errors }}
+                </div>
+                <div class="pull-right text-right clear">
+                    {% trans 'Date' %}: 
+                    <div class="form-inline inline">
+                    <input type="text" class="pull-right text-right form-control" required="required"
+                                               name="date" id="id_date"
+                                               data-bind="value: date, localize: true, autosize:3">
+                    </div>
+                    {{ form.date.errors }}
+                </div>
+            </div>
+        </div>
+        <div class="centre">
+            देहाय बमोजिमका सामानहरु
+            <input class="inline" type="text" size="" required="required" name="due_days" id="id_due_days"
+                   data-bind="value: due_days, autosize: 0, localize: true">
+            दिन भित्र यस कार्यालयमा दाखिला गरि विल / इन्भ्वाईस प्रस्तुत गर्नु होला ।
+            {{ form.due_days.errors }}
+        </div>
+        </div>
+
+        <div class="row">
+            <span>
+
+            </span>
+
+        </div>
+
+        <div class="well">
+        <div data-bind="with:table_view">
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th rowspan="2" class="span1">{% trans 'SN' %}</th>
+                    <th rowspan="2" class="span2">{% trans 'Budget Title No.' %}</th>
+                    <th rowspan="2" class="span2">{% trans 'Particular' %}</th>
+                    <th rowspan="2" class="span2">{% trans 'Specification' %}</th>
+                    <th rowspan="2" class="span3">{% trans 'Item Quantity' %}</th>
+                    <th rowspan="2" class="span3">{% trans 'Unit' %}</th>
+                    <th rowspan="2" class="span3 hidden-print">{% trans 'Vattable' %}</th>
+                    <th colspan="2" class="span2">{% trans 'Price' %}</th>
+                    <th rowspan="2" class="span2">{% trans 'Remarks' %}</th>
+                    <th rowspan="2" class="hidden-print"></th>
+                </tr>
+                <tr>
+                    <th>{% trans 'Rate' %}</th>
+                    <th>{% trans 'Total Amount' %}</th>
+                </tr>
+                </thead>
+
+                <tbody id="tbody">
+                <!-- ko foreach: rows -->
+                <tr>
+                    <td>
+                        <span data-bind="text:  $index()+1, localize: true"> </span>
+                    </td>
+                    <td data-bind="editableText: budget_title_no, localize: true"></td>
+                    <td>
+                        <select data-bind="selectize: $root.items, value: item_id, event: {change: $root.item_changed}"
+                                data-url="{% url 'create_inventory_item' %}" data-script="/static/js/inventory/item.js"></select>
+                    </td>
+                    <td data-bind="editableText: specification"></td>
+                    <td data-bind="editableText: quantity, localize: true"></td>
+                    <td data-bind="editableText: unit"></td>
+                    <td class="hidden-print">
+                        <input type="checkbox" data-bind="checked: vattable">
+                    </td>
+                    <td data-bind="editableText: rate, localize: 2"></td>
+                    <td data-bind="text: total_amount(), localize: 2"></td>
+                    <td class="remarks-cell" data-bind="editableText: remarks"></td>
+                    <td class="hidden-print">
+                        <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
+                    </td>
+                </tr>
+                <!-- /ko -->
+                <tr class="dont-validate">
+                    <td colspan="7" class="text-right"><span>{% trans 'Total' %}</span></td>
+                    <td colspan="3" data-bind="text: $root.sub_total(), localize: 2"></td>
+                </tr>
+                <tr class="dont-validate">
+                    <td colspan="7" class="text-right"><span>{% trans '1' %}{% trans '3' %}% {% trans 'VAT' %}</span></td>
+                    <td colspan="3" data-bind="text: $root.vat_amount(), localize: 2"></td>
+                </tr>
+                <tr class="dont-validate">
+                    <td colspan="7" class="text-right"><span>{% trans 'Grand Total' %}</span></td>
+                    <td colspan="3" data-bind="text: $root.grand_total(), localize: 2"></td>
+                </tr>
+
+                </tbody>
+            </table>
+            <a class="btn btn-default btn-raised" data-bind="click: addRow">
+                {% trans 'Add New Row' %}
+            </a>
+        </div>
+        </div>
+
+        <input type="submit" class="btn btn-info btn-raised btn-lg" value="{% trans 'Save' %}">
+        <span data-bind="text: msg, css: status"></span>
+
+        {% if scenario == 'Update' %}
+            <a href="{% url 'convert_purchase_order' form.instance.id %}"
+               class="btn btn-info btn-raised btn-lg">{% trans 'Export as XLS' %}</a>
+            <a href="{% url 'purchase_order_as_pdf' form.instance.id %}"
+               class="btn btn-info btn-raised btn-lg">{% trans 'Export as PDF' %}</a>
+            <a class="btn btn-danger btn-raised btn-lg"
+               href="{% url 'delete_purchase_order' form.instance.id %}">{% trans 'Delete!' %}</a>
+        {% endif %}
+
+        <a class="btn btn-info btn-raised btn-lg" target="_blank"
+           data-bind="visible: $root.id(), attr: {'href': '/inventory/entry-report/purchase/'+$root.id()}">{% trans 'Entry Report' %}</a>
+
+
+    </form>
+
+    <div class="row visible-print-block">
+        <div class="col-lg-6 col-sm-6">
+            {% trans "Faantwaala's" %} {% trans 'Signature' %}:-
+            <br>
+            {% trans 'Date' %}:-
+        </div>
+        <div class="col-lg-6 col-sm-6">
+            {% trans 'Section' %} {% trans "Head's" %} {% trans 'Signature' %}:-
+            <br>
+            {% trans 'Date' %}:-
+        </div>
+    </div>
+
+    <div class="visible-print-block bordered">
+
+        <div><u>{% trans 'To be filled by financial administration section' %}</u>:</div>
+        <div>
+            माथि उल्लेखि सामानहरु बजट उपशिर्षक न. .............. को खर्च शिर्षक न. .......... बाट भुक्तानी दिन बजेट
+            बाँकी देखिन्छ / देखिदैंन ।
+        </div>
+
+        <div class="row">
+            <span class="col-lg-6 col-sm-6"></span>
+
+            <div class="col-lg-6 col-sm-6">
+                {% trans 'Accounting' %} {% trans "Head's" %} {% trans 'Signature' %}:-
+                <br>
+                {% trans 'Date' %}:-
+            </div>
+        </div>
+    </div>
+    <br/>
+
+    <div class="container-fluid visible-print-block ">
+        <div class="row bordered">
+            <span class="col-lg-6 col-sm-6"></span>
+
+            <div class="col-lg-6 col-sm-6">
+                {% trans "Signature of Head of Office" %}:-
+                <br>
+                {% trans 'Date' %}:-
+            </div>
+        </div>
+    </div>
+
+    <div class="visible-print-block">
+
+        माथि उल्लेखित सामानहरु मिति .......................... भित्र
+        .............................................................. कार्यालयमा बुझाउने छु भनी सहिछाप गर्ने ।
+        <br>
+
+    </div>
+
+
+    <div class="row visible-print-block">
+        <div class="col-lg-4 col-sm-4">
+            <b>{% trans "Firm's Name" %}</b>
+            <br>
+            <span data-bind="text:party_name"></span>
+        </div>
+        <div class="col-lg-4 col-sm-4">
+            <b>{% trans 'Signature' %}</b>
+            <br>
+        </div>
+        <div class="col-lg-4 col-sm-4">
+            <b>{% trans 'Date' %}</b>
+            <br>
+        </div>
+    </div>
+
+
+
+{% endblock %}

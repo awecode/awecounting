@@ -12,6 +12,12 @@ web_urls = [
     url(r'^purchase/detail/(?P<pk>[0-9]+)/$', views.PurchaseDetailView.as_view(), name='purchase-detail'),
     url(r'^purchase/delete/(?P<pk>[0-9]+)$', views.PurchaseDelete.as_view(), name='purchase_delete'),
 
+    url(r'^purchase_order/create/$', views.PurchaseOrderCreate.as_view(), name='purchase_order_create'),
+    url(r'^purchase_order/save/$', views.save_purchase_order, name='purchase_order_save'),
+    url(r'^purchase_order/list/$', views.PurchaseOrderList.as_view(), name='purchase_order_list'),
+    url(r'^purchase_order/(?P<pk>[0-9]+)/$', views.PurchaseOrderCreate.as_view(), name='purchase_order_edit'),
+    url(r'^purchase_order/detail/(?P<pk>[0-9]+)/$', views.PurchaseOrderDetailView.as_view(), name='purchase_order_detail'),
+    url(r'^purchase_order/delete/(?P<pk>[0-9]+)$', views.PurchaseOrderDelete.as_view(), name='purchase_order_delete'),
 
     url(r'^sale/$', views.SaleCreate.as_view(), name='sale-create'),
     url(r'^sale/save/$', views.save_sale, name='sale-save'),

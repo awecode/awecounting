@@ -1,0 +1,127 @@
+{% extends "_base.html" %}
+{% load staticfiles i18n filters njango_filters %}
+
+{% block page-title %}
+    {{ scenario }} {% trans 'Purchase' %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'purchase_order_list' %}">{% trans 'Purchases' %}</a></li>
+    <li>{{ scenario }} {% trans 'Purchase' %}</li>
+{% endblock %}
+
+{% block extrahead %}
+    <script src="{% static 'voucher/js/purchase_order.js' %}"></script>
+    <script>
+        ko_data = {{data|jsonify}};
+    </script>
+
+{% endblock %}
+
+{% block content %}
+<form method="post" data-bind="submit: save">
+        {% csrf_token %}
+
+        <div class="well">
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <label for="voucher-no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
+                    <input type="text" data-bind="value: voucher_no" class="form-control" id="voucher-no">
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <label for="date">{% trans 'Date' %}</label>
+                    <input type="text" data-bind="value: date" class="form-control {% calendar_class %}" id="date">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <label for="party">{% trans 'Party' %}</label>
+                    <select id="party" data-bind="selectize: $root.parties, value: party_id, object: party"
+                            data-url="{% url 'party_add' %}"></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="well">
+        <div data-bind="with:table_view">
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th rowspan="2" class="span1">{% trans 'SN' %}</th>
+                    <th rowspan="2" class="span2">{% trans 'Item' %}</th>
+                    <th rowspan="2" class="span2">{% trans 'Specification' %}</th>
+                    <th rowspan="2" class="span3">{% trans 'Quantity' %}</th>
+                    <th rowspan="2" class="span3">{% trans 'Unit' %}</th>
+                    {# <th rowspan="2" class="span3 hidden-print">{% trans 'Vattable' %}</th> #}
+                    <th colspan="2" class="span2">{% trans 'Price' %}</th>
+                    <th rowspan="2" class="span2">{% trans 'Remarks' %}</th>
+                    <th rowspan="2" class="hidden-print"></th>
+                </tr>
+                <tr>
+                    <th>{% trans 'Rate' %}</th>
+                    <th>{% trans 'Total Amount' %}</th>
+                </tr>
+                </thead>
+
+                <tbody id="tbody">
+                <!-- ko foreach: rows -->
+                <tr>
+                    <td>
+                        <span data-bind="text:  $index()+1, localize: true"> </span>
+                    </td>
+                    <td>
+                        <select data-url="{% url 'item_add' %}" data-script="/static/inventory/js/item.js"
+                                data-bind="selectize: $root.items, value: item_id, object: item, selectize_options:{render: {'option': render_option, 'item':render_option}}">
+                        </select>
+                        {# <select data-bind="selectize: $root.items, value: item_id, event: {change: $root.item_changed}" #}
+                                {# data-url="{% url 'create_inventory_item' %}" data-script="/static/js/inventory/item.js"></select> #}
+                    </td>
+                    <td data-bind="editableText: specification"></td>
+                    <td data-bind="editableText: quantity, localize: true"></td>
+                    <td>
+                        <select data-bind="selectize: $root.units, value: unit_id, object:unit, selectize_options:{render: {'option': render_unit_options}}"
+                                data-url="{% url 'unit_add' %}"></select>
+                    </td>
+                    {# <td class="hidden-print"> #}
+                        {# <input type="checkbox" data-bind="checked: vattable"> #}
+                    {# </td> #}
+                    <td data-bind="editableText: rate, localize: 2"></td>
+                    <td data-bind="text: total_amount(), localize: 2"></td>
+                    <td class="remarks-cell" data-bind="editableText: remarks"></td>
+                    <td class="hidden-print">
+                        <a href="#" class="red fa fa-trash-o fa-2x" data-bind="click: $parent.removeRow"></a>
+                    </td>
+                </tr>
+                <!-- /ko -->
+                {# <tr class="dont-validate"> #}
+                    {# <td colspan="7" class="text-right"><span>{% trans 'Total' %}</span></td> #}
+                    {# <td colspan="3" data-bind="text: $root.sub_total(), localize: 2"></td> #}
+                {# </tr> #}
+                {# <tr class="dont-validate"> #}
+                    {# <td colspan="7" class="text-right"><span>{% trans '1' %}{% trans '3' %}% {% trans 'VAT' %}</span></td> #}
+                    {# <td colspan="3" data-bind="text: $root.vat_amount(), localize: 2"></td> #}
+                {# </tr> #}
+                <tr class="dont-validate">
+                    <td colspan="6" class="text-right"><span>{% trans 'Grand Total' %}</span></td>
+                    <td colspan="3" data-bind="text: $root.grand_total(), localize: 2"></td>
+                </tr>
+
+                </tbody>
+            </table>
+            <a class="btn btn-default btn-raised" data-bind="click: addRow">
+                {% trans 'Add New Row' %}
+            </a>
+        </div>
+        </div>
+
+        <input type="submit" class="btn btn-info btn-raised btn-lg" value="{% trans 'Save' %}">
+
+        {% if scenario == 'Update' %}
+            {# <a class="btn btn-danger btn-raised btn-lg" #}
+               {# href="{% url 'purchase_order_delete' form.instance.id %}">{% trans 'Delete!' %}</a> #}
+        {% endif %}
+
+
+{% endblock %}

@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashPayment, CashPaymentRow, CashReceipt, CashReceiptRow, PurchaseRow, Purchase, SaleRow, Sale, JournalVoucherRow, JournalVoucher
-
+from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashPayment, CashPaymentRow, CashReceipt, CashReceiptRow, PurchaseRow, Purchase, SaleRow, Sale, JournalVoucherRow, JournalVoucher, \
+PurchaseOrder, PurchaseOrderRow
 
 class CashReceiptRowSerializer(serializers.ModelSerializer):
     class Meta:
@@ -46,6 +46,25 @@ class PurchaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Purchase
+        exclude = ['party']
+
+
+class PurchaseOrderRowSerializer(serializers.ModelSerializer):
+    item_id = serializers.ReadOnlyField(source='item.id')
+    unit_id = serializers.ReadOnlyField(source='unit.id')
+
+    class Meta:
+        model = PurchaseOrderRow
+        exclude = ['item', 'unit']
+
+
+class PurchaseOrderSerializer(serializers.ModelSerializer):
+    rows = PurchaseOrderRowSerializer(many=True)
+    date = serializers.DateField(format=None)
+    party_id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = PurchaseOrder
         exclude = ['party']
 
 

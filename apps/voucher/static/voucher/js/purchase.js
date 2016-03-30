@@ -83,7 +83,6 @@ function PurchaseViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            debugger;
             self.tax_schemes = ko.observableArray(data['results']);
         }
     });
