@@ -18,6 +18,8 @@ web_urls = [
     url(r'^purchase_order/(?P<pk>[0-9]+)/$', views.PurchaseOrderCreate.as_view(), name='purchase_order_edit'),
     url(r'^purchase_order/detail/(?P<pk>[0-9]+)/$', views.PurchaseOrderDetailView.as_view(), name='purchase_order_detail'),
     url(r'^purchase_order/delete/(?P<pk>[0-9]+)$', views.PurchaseOrderDelete.as_view(), name='purchase_order_delete'),
+    url(r'^incoming/purchase_order/$', views.IncomingPurchaseOrder.as_view(), name='incoming_purchase_order'),
+
 
     url(r'^sale/$', views.SaleCreate.as_view(), name='sale-create'),
     url(r'^sale/save/$', views.save_sale, name='sale-save'),

@@ -429,7 +429,8 @@ class Party(models.Model):
     phone_no = models.CharField(max_length=100, blank=True, null=True)
     pan_no = models.CharField(max_length=50, blank=True, null=True)
     account = models.ForeignKey(Account, null=True)
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company, related_name="parties")
+    related_company = models.ForeignKey(Company, blank=True, null=True)
 
     def get_absolute_url(self):
         return reverse_lazy('party_edit', kwargs={'pk': self.pk})
@@ -447,4 +448,4 @@ class Party(models.Model):
 
     class Meta:
         verbose_name_plural = 'Parties'
-        # unique_together = ['pan_no', 'company']
+        unique_together = ['name', 'related_company']

@@ -21,6 +21,7 @@ from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from rest_framework import status
 from njango.fields import today
+from ..ledger.models import Party
 
 class CompanyPin(ListView):
     model = Company
@@ -54,7 +55,10 @@ class AddUserPin(View):
             obj.used_by = request.company
             obj.date = today
             obj.save()
-            return HttpResponseRedirect(reverse('home'))
+            party, created = Party.objects.get_or_create(name=obj.company.name, company=request.company)
+            party.related_company = obj.company
+            party.save()
+            return HttpResponseRedirect(reverse('party_edit', kwargs={'pk': party.id }))
         except Pin.DoesNotExist:
             messages.add_message(request, messages.ERROR, 'Invalid Pin.')
             return HttpResponseRedirect(reverse('users:add_user_with_pin'))

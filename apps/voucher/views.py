@@ -700,3 +700,10 @@ def save_purchase_order(request):
         dct = write_error(dct, e)
     return JsonResponse(dct)
 
+
+
+class IncomingPurchaseOrder(ListView):
+    model = PurchaseOrder
+
+    def get_queryset(self):
+        return self.model.objects.filter(party__related_company=self.request.company)
