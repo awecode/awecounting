@@ -1,16 +1,16 @@
 from django.contrib import admin
 from awecounting.utils.mixins import CompanyAdmin
-from .models import FixedAsset, FixedAssetRow, AdditionalDetail, PurchaseRow, SaleRow, Purchase, Sale, JournalVoucher, \
+from .models import FixedAsset, FixedAssetRow, AdditionalDetail, PurchaseVoucherRow, SaleRow, PurchaseVoucher, Sale, JournalVoucher, \
     JournalVoucherRow, CashReceipt, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow
 
 
-class PurchaseRowInline(admin.TabularInline):
-    model = PurchaseRow
+class PurchaseVoucherRowInline(admin.TabularInline):
+    model = PurchaseVoucherRow
 
 
-class PurchaseAdmin(CompanyAdmin):
+class PurchaseVoucherAdmin(CompanyAdmin):
     inlines = [
-        PurchaseRowInline,
+        PurchaseVoucherRowInline,
     ]
 
 
@@ -57,8 +57,8 @@ class PurchaseOrderAdmin(admin.ModelAdmin):
         PurchaseOrderRowInline,
     ]
 
-admin.site.register(Purchase, PurchaseAdmin)
-admin.site.register(PurchaseRow)
+admin.site.register(PurchaseVoucher, PurchaseVoucherAdmin)
+admin.site.register(PurchaseVoucherRow)
 admin.site.register(Sale, SaleAdmin)
 admin.site.register(SaleRow)
 admin.site.register(FixedAsset, FixedAssetAdmin)

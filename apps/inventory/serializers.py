@@ -88,7 +88,7 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
                     return obj.creator.rate
 
     def get_expense_quantity(self, obj):
-        if obj.creator.__class__.__name__ == 'PurchaseRow':
+        if obj.creator.__class__.__name__ == 'PurchaseVoucherRow':
             return ''
         else:
             default_unit = self.context.get('default_unit')
@@ -109,7 +109,7 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
                     return obj.creator.quantity
 
     def get_expense_rate(self, obj):
-        if obj.creator.__class__.__name__ == 'PurchaseRow':
+        if obj.creator.__class__.__name__ == 'PurchaseVoucherRow':
             return ''
         return obj.creator.rate
 

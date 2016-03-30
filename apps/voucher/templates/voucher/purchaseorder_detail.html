@@ -2,12 +2,12 @@
 {% load staticfiles i18n filters %}
 
 {% block page-title %}
-    {% trans 'Detail' %} {% trans 'Purchase' %}
+    {% trans 'Detail' %} {% trans 'Purchase Order' %}
 {% endblock %}
 
 {% block breadcrumbs %}
-    <li><a href="{% url 'purchase-list' %}">{% trans 'Purchases' %}</a></li>
-    <li>{% trans 'Detail' %} {% trans 'Purchases' %}</li>
+    <li><a href="{% url 'purchase-list' %}">{% trans 'Purchase Orders' %}</a></li>
+    <li>{% trans 'Detail' %} {% trans 'Purchase Orders' %}</li>
 {% endblock %}
 
 

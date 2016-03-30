@@ -1,6 +1,6 @@
 from rest_framework import generics
-from .serializers import SaleSerializer, PurchaseSerializer, CashPaymentSerializer, CashReceiptSerializer, FixedAssetSerializer
-from .models import Sale, CashReceipt, Purchase
+from .serializers import SaleSerializer, PurchaseVoucherSerializer, CashPaymentSerializer, CashReceiptSerializer, FixedAssetSerializer
+from .models import Sale, CashReceipt, PurchaseVoucher
 from awecounting.utils.mixins import CompanyAPI
 
 
@@ -21,10 +21,10 @@ class PendingSaleListAPI(generics.ListCreateAPIView):
 
 
 class PendingPurchaseListAPI(generics.ListCreateAPIView):
-    serializer_class = PurchaseSerializer
+    serializer_class = PurchaseVoucherSerializer
 
     def get_queryset(self):
-        queryset = Purchase.objects.all()
+        queryset = PurchaseVoucher.objects.all()
         if self.request.company:
             queryset = queryset.filter(company=self.request.company)
         queryset = queryset.filter(party_id=self.kwargs.get('party_pk'))

@@ -5,12 +5,12 @@ import views
 import api
 
 web_urls = [
-    url(r'^purchase/create/$', views.PurchaseCreate.as_view(), name='purchase-create'),
+    url(r'^purchase/create/$', views.PurchaseVoucherCreate.as_view(), name='purchase-create'),
     url(r'^purchase/save/$', views.save_purchase, name='purchase-save'),
-    url(r'^purchase/list/$', views.PurchaseList.as_view(), name='purchase-list'),
-    url(r'^purchase/(?P<pk>[0-9]+)/$', views.PurchaseCreate.as_view(), name='purchase-edit'),
-    url(r'^purchase/detail/(?P<pk>[0-9]+)/$', views.PurchaseDetailView.as_view(), name='purchase-detail'),
-    url(r'^purchase/delete/(?P<pk>[0-9]+)$', views.PurchaseDelete.as_view(), name='purchase_delete'),
+    url(r'^purchase/list/$', views.PurchaseVoucherList.as_view(), name='purchase-list'),
+    url(r'^purchase/(?P<pk>[0-9]+)/$', views.PurchaseVoucherCreate.as_view(), name='purchase-edit'),
+    url(r'^purchase/detail/(?P<pk>[0-9]+)/$', views.PurchaseVoucherDetailView.as_view(), name='purchase-detail'),
+    url(r'^purchase/delete/(?P<pk>[0-9]+)$', views.PurchaseVoucherDelete.as_view(), name='purchase_delete'),
 
     url(r'^purchase_order/create/$', views.PurchaseOrderCreate.as_view(), name='purchase_order_create'),
     url(r'^purchase_order/save/$', views.save_purchase_order, name='purchase_order_save'),
