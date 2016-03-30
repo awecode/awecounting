@@ -704,6 +704,16 @@ def save_purchase_order(request):
 
 class IncomingPurchaseOrder(ListView):
     model = PurchaseOrder
+    template_name = "voucher/incoming_purchase_order_list.html"
 
     def get_queryset(self):
         return self.model.objects.filter(party__related_company=self.request.company)
+
+class IncomingPurchaseOrderDetailView(DetailView):
+    model = PurchaseOrder
+
+    def get_context_data(self, **kwargs):
+        context = super(IncomingPurchaseOrderDetailView, self).get_context_data(**kwargs)
+        context['rows'] = PurchaseOrderRow.objects.select_related('item', 'unit').filter(purchase_order=self.object)
+        return context
+

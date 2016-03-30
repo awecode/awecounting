@@ -1,0 +1,43 @@
+{% extends "_base.html" %}
+{% load i18n staticfiles %}
+{% load filters %}
+
+{% block page-title %}{% trans 'Purchases Order' %}{% endblock %}
+
+{% block header-buttons %}
+    <a class="btn btn-success btn-raised" href="{% url 'purchase_order_create' %}">{% trans 'New' %} {% trans 'Purchase Order' %}</a>
+{% endblock %}
+
+
+{% block content %}
+    <div class="well">
+        {% load pagination_tags %}
+        {% load sorting_tags %}
+        {% load filters %}
+        {% autosort object_list as sorted_objects %}
+        {% autopaginate sorted_objects 25 as paginated_objects %}
+
+        <table class="table table-striped">
+            <thead>
+            <th>{% anchor voucher_no _('Voucher No.') %}</th>
+            <th>{% anchor date _('Date') %}</th>
+            </thead>
+            <tbody>
+            {% for purchase_order in paginated_objects %}
+                <tr>
+                    <td class="link">
+                        <a href="{% url 'incoming_purchase_order_detail' purchase_order.pk %}">{{ purchase_order.voucher_no }}</a>
+                    </td>
+                    <td>
+                        {{ purchase_order.date }}
+                    </td>
+                 </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% paginate %}
+
+
+{% endblock %}
