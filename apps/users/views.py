@@ -22,6 +22,7 @@ from django.contrib.auth.decorators import login_required
 from rest_framework import status
 from njango.fields import today
 from ..ledger.models import Party
+from ..ledger.forms import PartyForm
 
 def set_company_to_party(request, company_id):
     party_id = int(request.POST.get('party_id'))
@@ -63,17 +64,14 @@ class AddUserPin(View):
             obj.used_by = request.company
             obj.date = today
             obj.save()
-            if request.POST.get('create-party'):
-                party, created = Party.objects.get_or_create(related_company=obj.company, company=request.company)
-                if created:
-                    party.name = obj.company.name
-                    party.save()
-                    return HttpResponseRedirect(reverse('party_edit', kwargs={'pk': party.id }))
-                messages.add_message(request, messages.INFO, 'Party with this company exists as ' + party.name)
-                return HttpResponseRedirect(reverse('party_edit', kwargs={'pk': party.id }))
-            else:
-                parties = Party.objects.filter(company=request.company, related_company__isnull=True)
-                return render(request, 'party_for_company.html', {'parties': parties, 'pin': obj})
+            # obj = Pin.objects.get(code="2-51429")
+            form = PartyForm(initial={
+                'name': obj.company.name, 
+                'address': obj.company.location, 
+                'pan_no': obj.company.tax_registration_number
+                })
+            parties = Party.objects.filter(company=request.company, related_company__isnull=True)
+            return render(request, 'party_for_company.html', {'parties': parties, 'pin': obj, 'form': form})
         except Pin.DoesNotExist:
             messages.add_message(request, messages.ERROR, 'Invalid Pin.')
             return HttpResponseRedirect(reverse('users:add_user_with_pin'))

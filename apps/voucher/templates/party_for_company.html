@@ -1,23 +1,67 @@
 {% extends "_base.html" %}
 {% load i18n %}
 
-
 {% block content %}
-	<form method="POST" action="{% url 'users:set_company_to_party' pin.company.pk %}">
-	{% csrf_token %}
-		<div class="well">
-			{% for party in parties %}
-			<div class="radio">
-	              <label>
-	                <input type="radio" name="party_id" value="{{ party.pk }}" checked="">
-	                <p class="select-party">{{ party.name }}</p>
-	              </label>
-	        </div>
-			{% endfor %}
-		</div>
+<div class="row">
+	<div class="col-sm-12 col-md-6">
+		<form method="POST" action="{% url 'users:set_company_to_party' pin.company.pk %}">
+		 	<div class="row">
+		        <div class="col-lg-9 col-md-9 col-sm-9">
+		            <h1>{% trans "Select party for company" %}</h1>
+		        </div>
+		        <div class="col-lg-3 col-md-3 col-sm-3">
+		            <div class="pull-right">
+		                <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
+		            </div>
+		        </div>
+		    </div>
+			<div class='well'>
+		    <ul class="list-group row">
+				{% csrf_token %}
+				{% for party in parties %}
+			        <li class="list-group-item col-xs-6">
+			            <div class="radio">
+			                <label>
+								{% if party.name == pin.company.name %}
+				                	<input type="radio" name="party_id" value="{{ party.pk }}" checked="checked"><span class="checked"></span>
+				                {% else %}
+				                	<input type="radio" name="party_id" value="{{ party.pk }}" checked="">
+								{% endif %}
+				                <p class="select-party">{{ party.name }}</p>
+			                </label>
+				        </div>
+			        </li>
+			    {% endfor %}
+			    <br/>
+		    </ul>    
+		    </div>
+		</form>
+	</div>
+	<div class="col-sm-12 col-md-6">
+		<form method="post" id='form' action="{% url 'party_add' %}">
+		 	<div class="row">
+		        <div class="col-lg-9 col-md-9 col-sm-9">
+		            <h1>{% trans "Create New Party" %}</h1>
+		        </div>
+		        <div class="col-lg-3 col-md-3 col-sm-3">
+		            <div class="pull-right">
+				        <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
+		            </div>
+		        </div>
+		    </div>
 
-        <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
+		    <div class="row">
+				<div class="col-md-12 col-sm-12">
+				        <div class="well">
+				            {% csrf_token %}
+				            {{ form.as_p }}
+				            <input type="hidden" name="related_company" value="{{ pin.company.pk }}">
+				        </div>
 
-	</form>
+				</div>
+			</div>
+	    </form>
+	</div>
+</div>
 
 {% endblock %}

@@ -53,6 +53,10 @@ class PartyView(CompanyView):
     success_url = reverse_lazy('party_list')
     form_class = PartyForm
 
+    def form_valid(self, form):
+        if self.request.POST.get('related_company'):
+            form.instance.related_company_id = int(self.request.POST.get('related_company'))
+        return super(PartyView, self).form_valid(form)
 
 class PartyList(PartyView, ListView):
     pass
