@@ -448,4 +448,4 @@ class Party(models.Model):
 
     class Meta:
         verbose_name_plural = 'Parties'
-        unique_together = ['name', 'related_company']
+        unique_together = ['company', 'related_company']

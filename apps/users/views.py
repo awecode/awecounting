@@ -55,10 +55,15 @@ class AddUserPin(View):
             obj.used_by = request.company
             obj.date = today
             obj.save()
-            party, created = Party.objects.get_or_create(name=obj.company.name, company=request.company)
-            party.related_company = obj.company
-            party.save()
+            party, created = Party.objects.get_or_create(related_company=obj.company, company=request.company)
+            if created:
+                party.name = obj.company.name
+                party.save()
+                return HttpResponseRedirect(reverse('party_edit', kwargs={'pk': party.id }))
+            messages.add_message(request, messages.INFO, 'Party with this company exists as ' + party.name)
             return HttpResponseRedirect(reverse('party_edit', kwargs={'pk': party.id }))
+
+
         except Pin.DoesNotExist:
             messages.add_message(request, messages.ERROR, 'Invalid Pin.')
             return HttpResponseRedirect(reverse('users:add_user_with_pin'))
