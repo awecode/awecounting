@@ -23,6 +23,14 @@ from rest_framework import status
 from njango.fields import today
 from ..ledger.models import Party
 
+def set_company_to_party(request, company_id):
+    party_id = int(request.POST.get('party_id'))
+    party = Party.objects.get(pk=party_id)
+    party.related_company_id = int(company_id)
+    party.save()
+    return HttpResponseRedirect(reverse('home'))
+
+
 class CompanyPin(ListView):
     model = Company
     template_name = 'company_pin.html'
@@ -55,15 +63,17 @@ class AddUserPin(View):
             obj.used_by = request.company
             obj.date = today
             obj.save()
-            party, created = Party.objects.get_or_create(related_company=obj.company, company=request.company)
-            if created:
-                party.name = obj.company.name
-                party.save()
+            if request.POST.get('create-party'):
+                party, created = Party.objects.get_or_create(related_company=obj.company, company=request.company)
+                if created:
+                    party.name = obj.company.name
+                    party.save()
+                    return HttpResponseRedirect(reverse('party_edit', kwargs={'pk': party.id }))
+                messages.add_message(request, messages.INFO, 'Party with this company exists as ' + party.name)
                 return HttpResponseRedirect(reverse('party_edit', kwargs={'pk': party.id }))
-            messages.add_message(request, messages.INFO, 'Party with this company exists as ' + party.name)
-            return HttpResponseRedirect(reverse('party_edit', kwargs={'pk': party.id }))
-
-
+            else:
+                parties = Party.objects.filter(company=request.company, related_company__isnull=True)
+                return render(request, 'party_for_company.html', {'parties': parties, 'pin': obj})
         except Pin.DoesNotExist:
             messages.add_message(request, messages.ERROR, 'Invalid Pin.')
             return HttpResponseRedirect(reverse('users:add_user_with_pin'))

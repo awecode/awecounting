@@ -1,0 +1,23 @@
+{% extends "_base.html" %}
+{% load i18n %}
+
+
+{% block content %}
+	<form method="POST" action="{% url 'users:set_company_to_party' pin.company.pk %}">
+	{% csrf_token %}
+		<div class="well">
+			{% for party in parties %}
+			<div class="radio">
+	              <label>
+	                <input type="radio" name="party_id" value="{{ party.pk }}" checked="">
+	                <p class="select-party">{{ party.name }}</p>
+	              </label>
+	        </div>
+			{% endfor %}
+		</div>
+
+        <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
+
+	</form>
+
+{% endblock %}

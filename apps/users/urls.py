@@ -25,6 +25,8 @@ web_urls = [
     url(r'^api/pin/(?P<pin>\d+-\d+)/$', views.ValidatePin.as_view(), name='validate_pin'),
 
     url(r'^company_pin/', views.CompanyPin.as_view(), name="company_pin"),
+
+    url(r'^set_company_to_party/(?P<company_id>\d+)/$', views.set_company_to_party, name='set_company_to_party'),
 ]
 
 api_urls = [
