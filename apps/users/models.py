@@ -246,12 +246,14 @@ class CompanySetting(models.Model):
     use_nepali_fy_system = models.BooleanField(default=True)
     single_discount_on_whole_invoice = models.BooleanField(default=True)
     discount_on_each_invoice_particular = models.BooleanField(default=False)
-    invoice_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True, blank=True)
+    invoice_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True,
+                                                            blank=True)
     invoice_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True, related_name="default_invoice_tax_scheme")
 
     single_discount_on_whole_purchase = models.BooleanField(default=True)
     discount_on_each_purchase_particular = models.BooleanField(default=False)
-    purchase_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True, blank=True)
+    purchase_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True,
+                                                             blank=True)
     purchase_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True, related_name="default_purchase_tax_scheme")
     voucher_number_start_date = BSDateField(default=today)
     # voucher_number_restart_years = models.IntegerField(default=1)
@@ -340,7 +342,7 @@ class Pin(models.Model):
         _str = str(self.code) + '-' + self.company.name
         if self.used_by:
             _str += '-' + self.used_by.name
-        return _str 
+        return _str
 
     @staticmethod
     def generate_pin(company, count=10):
@@ -350,7 +352,7 @@ class Pin(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.code:
-            self.code = str(self.company.id) + '-' + str(self.get_code(10000, 99999)) 
+            self.code = str(self.company.id) + '-' + str(self.get_code(10000, 99999))
         super(Pin, self).save(*args, **kwargs)
 
     def get_code(self, range_start, range_end):
@@ -366,7 +368,7 @@ class Pin(models.Model):
                 return "Set argument in string"
             company_id = int(pin.split('-')[0])
             get_pin = Pin.objects.get(company=company_id, code=pin)
-            return get_pin.company 
+            return get_pin.company
         except Pin.DoesNotExist:
             return None
 
@@ -376,4 +378,3 @@ class Pin(models.Model):
 
     class Meta:
         unique_together = ("company", "used_by")
-
