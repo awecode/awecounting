@@ -4,13 +4,13 @@
 {% block content %}
 <div class="row">
 	<div class="col-sm-12 col-md-6">
-		<form method="POST" action="{% url 'users:set_company_to_party' pin.company.pk %}">
+		<form method="POST" action="{% url 'users:set_company_to_party' company.pk %}">
 		 	<div class="row">
 		        <div class="col-lg-9 col-md-9 col-sm-9">
 		            <h1>{% trans "Select party for company" %}</h1>
 		        </div>
 		        <div class="col-lg-3 col-md-3 col-sm-3">
-		            <div class="pull-right">
+		            <div class="pull-right margin-top-5">
 		                <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
 		            </div>
 		        </div>
@@ -22,10 +22,10 @@
 			        <li class="list-group-item col-xs-6">
 			            <div class="radio">
 			                <label>
-								{% if party.name == pin.company.name %}
-				                	<input type="radio" name="party_id" value="{{ party.pk }}" checked="checked"><span class="checked"></span>
+								{% if party.name == company.name %}
+				                	<input type="radio" name="party_id" value="{{ party.pk }}" checked>
 				                {% else %}
-				                	<input type="radio" name="party_id" value="{{ party.pk }}" checked="">
+				                	<input type="radio" name="party_id" value="{{ party.pk }}">
 								{% endif %}
 				                <p class="select-party">{{ party.name }}</p>
 			                </label>
@@ -44,7 +44,7 @@
 		            <h1>{% trans "Create New Party" %}</h1>
 		        </div>
 		        <div class="col-lg-3 col-md-3 col-sm-3">
-		            <div class="pull-right">
+		            <div class="pull-right margin-top-5">
 				        <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
 		            </div>
 		        </div>
@@ -55,7 +55,7 @@
 				        <div class="well">
 				            {% csrf_token %}
 				            {{ form.as_p }}
-				            <input type="hidden" name="related_company" value="{{ pin.company.pk }}">
+				            <input type="hidden" name="related_company" value="{{ company.pk }}">
 				        </div>
 
 				</div>

@@ -24,12 +24,30 @@ from njango.fields import today
 from ..ledger.models import Party
 from ..ledger.forms import PartyForm
 
+def party_for_company(request, company_id):
+    company = Company.objects.get(pk=company_id)
+    parties = Party.objects.filter(company=request.company, related_company__isnull=True)
+    form = PartyForm(initial={
+        'name': company.name, 
+        'address': company.location, 
+        'pan_no': company.tax_registration_number
+        })
+    return render(request, 'party_for_company.html', {'parties': parties, 'company': company, 'form': form})
+
 def set_company_to_party(request, company_id):
     party_id = int(request.POST.get('party_id'))
     party = Party.objects.get(pk=party_id)
     party.related_company_id = int(company_id)
     party.save()
     return HttpResponseRedirect(reverse('home'))
+
+
+class AccessibleCompanies(ListView):
+    model = Pin
+    template_name = 'users/accessible_companies.html'
+
+    def get_queryset(self):
+        return Pin.accessible_companies(self.request.company)
 
 
 class CompanyPin(ListView):
@@ -64,14 +82,13 @@ class AddUserPin(View):
             obj.used_by = request.company
             obj.date = today
             obj.save()
-            # obj = Pin.objects.get(code="2-51429")
             form = PartyForm(initial={
                 'name': obj.company.name, 
                 'address': obj.company.location, 
                 'pan_no': obj.company.tax_registration_number
                 })
             parties = Party.objects.filter(company=request.company, related_company__isnull=True)
-            return render(request, 'party_for_company.html', {'parties': parties, 'pin': obj, 'form': form})
+            return render(request, 'party_for_company.html', {'parties': parties, 'company': obj.company, 'form': form})
         except Pin.DoesNotExist:
             messages.add_message(request, messages.ERROR, 'Invalid Pin.')
             return HttpResponseRedirect(reverse('users:add_user_with_pin'))

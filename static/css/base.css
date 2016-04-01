@@ -579,3 +579,13 @@ ul.navbar-right li form div select.btn option{
 .select-party {
     margin-top: -3px;
 }
+
+.margin-top-5 {
+    margin-top: 5px;
+}
+
+.add-party {
+    margin: -3px 0 0 0;
+    padding: 5px;
+
+}
