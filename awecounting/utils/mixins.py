@@ -81,7 +81,7 @@ class TableObjectMixin(ListView):
             scenario = 'Update'
         else:
             obj = self.model(company=self.request.company)
-            if obj.__class__.__name__ == 'Purchase':
+            if obj.__class__.__name__ == 'PurchaseVoucher':
                 tax = self.request.company.settings.purchase_default_tax_application_type
                 tax_scheme = self.request.company.settings.purchase_default_tax_scheme 
                 if tax:

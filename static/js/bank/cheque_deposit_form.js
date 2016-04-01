@@ -31,7 +31,7 @@ function ChequeDepositViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.bank_account_array = ko.observableArray(data);
+            self.bank_account_array = ko.observableArray(data['results']);
         }
     });
 
@@ -40,7 +40,7 @@ function ChequeDepositViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.benefactor_array = ko.observableArray(data);
+            self.benefactor_array = ko.observableArray(data['results']);
         }
     });
 

@@ -2,10 +2,10 @@
 {% load i18n staticfiles %}
 {% load filters %}
 
-{% block page-title %}{% trans 'Purchases' %}{% endblock %}
+{% block page-title %}{% trans 'Purchases Order' %}{% endblock %}
 
 {% block header-buttons %}
-    <a class="btn btn-success btn-raised" href="{% url 'purchase-create' %}">{% trans 'New' %} {% trans 'Purchase' %}</a>
+    <a class="btn btn-success btn-raised" href="{% url 'purchase_order_create' %}">{% trans 'New' %} {% trans 'Purchase Order' %}</a>
 {% endblock %}
 
 
@@ -14,7 +14,6 @@
         {% load pagination_tags %}
         {% load sorting_tags %}
         {% load filters %}
-
         {% autosort object_list as sorted_objects %}
         {% autopaginate sorted_objects 25 as paginated_objects %}
 
@@ -23,31 +22,27 @@
             <th>{% anchor voucher_no _('Voucher No.') %}</th>
             <th>{% anchor date _('Date') %}</th>
             <th>{% anchor party _('Party') %}</th>
-            <th>{% anchor credit _('Credit/Cash') %}</th>
             {% ifrole "Accountant" %}
                 <th>{% trans "Action" %}</th>
             {% endrole %}
             </thead>
             <tbody>
-            {% for purchase in paginated_objects %}
+            {% for purchase_order in paginated_objects %}
                 <tr>
                     <td class="link">
-                        <a href="{% url 'purchase-detail' purchase.pk %}">{{ purchase.voucher_no }}</a>
+                        <a href="{% url 'purchase_order_detail' purchase_order.pk %}">{{ purchase_order.voucher_no }}</a>
                     </td>
                     <td>
-                        {{ purchase.date }}
+                        {{ purchase_order.date }}
                     </td>
                     <td>
-                        <a href="{{ purchase.party.get_absolute_url }}">
-                            {{ purchase.party }}
+                        <a href="{{ purchase_order.party.get_absolute_url }}">
+                            {{ purchase_order.party }}
                         </a>
-                    </td>
-                    <td>
-                        {{ purchase.type }}
                     </td>
                     {% ifrole "Accountant" %}
                     <td>
-                        <a href="{% url 'purchase-edit' purchase.id %}">{% trans "Edit" %}</a>
+                        <a href="{% url 'purchase_order_edit' purchase_order.id %}">{% trans "Edit" %}</a>
                     </td>
                     {% endrole %}
                 </tr>

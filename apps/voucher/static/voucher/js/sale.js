@@ -17,7 +17,7 @@ function SaleViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.items = ko.observableArray(data);
+            self.items = ko.observableArray(data['results']);
         }
     });
 
@@ -26,7 +26,7 @@ function SaleViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.parties = ko.observableArray(data);
+            self.parties = ko.observableArray(data['results']);
         }
     });
 
@@ -35,7 +35,7 @@ function SaleViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.units = ko.observableArray(data);
+            self.units = ko.observableArray(data['results']);
         }
     });
 

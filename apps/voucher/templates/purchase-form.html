@@ -2,12 +2,12 @@
 {% load staticfiles i18n filters njango_filters %}
 
 {% block page-title %}
-    {{ scenario }} {% trans 'Purchase' %}
+    {{ scenario }} {% trans 'Purchase Voucher' %}
 {% endblock %}
 
 {% block breadcrumbs %}
-    <li><a href="{% url 'purchase-list' %}">{% trans 'Purchases' %}</a></li>
-    <li>{{ scenario }} {% trans 'Purchase' %}</li>
+    <li><a href="{% url 'purchase-list' %}">{% trans 'Purchase Vouchers' %}</a></li>
+    <li>{{ scenario }} {% trans 'Purchase Voucher' %}</li>
 {% endblock %}
 
 {% block extrahead %}

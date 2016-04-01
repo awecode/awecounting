@@ -17,9 +17,17 @@ class ItemSerializer(serializers.ModelSerializer):
     unit = UnitSerializer()
     name = serializers.ReadOnlyField(source='__unicode__')
     full_name = serializers.SerializerMethodField()
+    current_balance = serializers.SerializerMethodField()
 
     def get_full_name(self, obj):
         return obj.name
+
+    def get_current_balance(self,obj):
+        if obj.account.account_transaction.filter(account=obj.account):
+            return obj.account.account_transaction.filter(account=obj.account).last().current_balance
+        else:
+            return 0
+
 
     class Meta:
         model = Item
@@ -80,7 +88,7 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
                     return obj.creator.rate
 
     def get_expense_quantity(self, obj):
-        if obj.creator.__class__.__name__ == 'PurchaseRow':
+        if obj.creator.__class__.__name__ == 'PurchaseVoucherRow':
             return ''
         else:
             default_unit = self.context.get('default_unit')
@@ -101,7 +109,7 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
                     return obj.creator.quantity
 
     def get_expense_rate(self, obj):
-        if obj.creator.__class__.__name__ == 'PurchaseRow':
+        if obj.creator.__class__.__name__ == 'PurchaseVoucherRow':
             return ''
         return obj.creator.rate
 

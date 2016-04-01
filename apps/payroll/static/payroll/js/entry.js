@@ -17,7 +17,7 @@ function EntryViewModel(data) {
         data: "categories=bank_account,cash_account",
         async: false,
         success: function (data) {
-            self.pay_headings = ko.observableArray(data);
+            self.pay_headings = ko.observableArray(data['results']);
         }
     });
 
@@ -26,7 +26,7 @@ function EntryViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.employees = ko.observableArray(data);
+            self.employees = ko.observableArray(data['results']);
         }
     });
 

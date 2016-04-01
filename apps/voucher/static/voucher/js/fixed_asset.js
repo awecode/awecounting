@@ -19,7 +19,7 @@ function FixedAssetViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.accounts = ko.observableArray(data);
+            self.accounts = ko.observableArray(data['results']);
         }
     });
 

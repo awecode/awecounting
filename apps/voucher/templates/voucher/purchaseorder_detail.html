@@ -1,0 +1,100 @@
+{% extends "_base.html" %}
+{% load staticfiles i18n filters %}
+
+{% block page-title %}
+    {% trans 'Detail' %} {% trans 'Purchase Order' %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'purchase-list' %}">{% trans 'Purchase Orders' %}</a></li>
+    <li>{% trans 'Detail' %} {% trans 'Purchase Orders' %}</li>
+{% endblock %}
+
+
+{% block content %}
+<div class="well">
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <div>
+            <label for="voucher-no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
+            <p>
+                {{ object.voucher_no }}
+            </p>
+            </div>
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <label for="date">{% trans 'Date' %}</label>
+            <p>
+                {{ object.date }}
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <label for="party">{% trans 'Party' %}</label>
+            <p>
+                {{ object.party.name }}
+            </p>
+        </div>
+    </div>
+</div>
+<div class="well">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th rowspan="2" class="span1">{% trans 'SN' %}</th>
+                <th rowspan="2" class="span2">{% trans 'Item' %}</th>
+                <th rowspan="2" class="span2">{% trans 'Specification' %}</th>
+                <th rowspan="2" class="span3">{% trans 'Quantity' %}</th>
+                <th rowspan="2" class="span3">{% trans 'Unit' %}</th>
+                {# <th rowspan="2" class="span3 hidden-print">{% trans 'Vattable' %}</th> #}
+                <th colspan="2" class="span2">{% trans 'Price' %}</th>
+                <th rowspan="2" class="span2">{% trans 'Remarks' %}</th>
+            </tr>
+            <tr>
+                <th>{% trans 'Rate' %}</th>
+                <th>{% trans 'Total Amount' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+                <tr>
+                    <td>
+                        {{ row.sn }}
+                    </td>
+                    <td>
+                        {{ row.item }}
+                    </td>
+                    <td>
+                        {{ row.specification }}
+                    </td>
+                    <td>
+                        {{ row.quantity }}
+                    </td>
+                    <td>
+                        {{ row.unit }}
+                    </td>
+                    <td>
+                        {{ row.rate }}
+                    </td>
+                    <td>
+                        {{ row.get_total }}
+                    </td>
+                    <td>
+                        {{ row.remarks |default:''}}
+                    </td>
+                </tr>
+        {% endfor %}
+            <tr class="total">
+                <td colspan="6">
+                    {% trans 'Grand Total' %}
+                </td>
+                <td colspan="3">{{ object.total }}</td>
+            </tr>
+        </tbody>
+
+    </table>
+</div>
+
+{% endblock %}

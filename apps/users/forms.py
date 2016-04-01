@@ -140,4 +140,4 @@ class CompanySettingForm(HTML5BootstrapModelForm):
 class PinForm(HTML5BootstrapModelForm):
     class Meta:
         model = Pin
-        exclude = ('company', 'used_by',)
+        exclude = ('company', 'used_by', 'date')

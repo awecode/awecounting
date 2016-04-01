@@ -335,6 +335,7 @@ class File(models.Model):
 
 class Pin(models.Model):
     code = models.CharField(max_length=100)
+    date = BSDateField(blank=True, null=True)
     company = models.ForeignKey(Company, related_name="pin")
     used_by = models.ForeignKey(Company, related_name="used_pin", blank=True, null=True)
 
@@ -353,6 +354,9 @@ class Pin(models.Model):
     def save(self, *args, **kwargs):
         if not self.code:
             self.code = str(self.company.id) + '-' + str(self.get_code(10000, 99999))
+        if self.used_by:
+            self.date = today()
+
         super(Pin, self).save(*args, **kwargs)
 
     def get_code(self, range_start, range_end):
@@ -373,8 +377,12 @@ class Pin(models.Model):
             return None
 
     @staticmethod
+    def companies_list(id):
+        return Company.objects.get(pk=id)
+
+    @staticmethod
     def accessible_companies(accessible_by):
-        return map(str, accessible_by.used_pin.all().values_list('company__name', flat=True))
+        return map(Pin.companies_list, accessible_by.used_pin.all().values_list('company__id', flat=True))
 
     class Meta:
         unique_together = ("company", "used_by")

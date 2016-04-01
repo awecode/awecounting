@@ -1,0 +1,62 @@
+{% extends "_base.html" %}
+{% load i18n staticfiles %}
+{% load filters %}
+
+{% block page-title %}{% trans 'Purchase Voucher' %}{% endblock %}
+
+{% block header-buttons %}
+    <a class="btn btn-success btn-raised" href="{% url 'purchase-create' %}">{% trans 'New' %} {% trans 'Purchase' %}</a>
+{% endblock %}
+
+
+{% block content %}
+    <div class="well">
+        {% load pagination_tags %}
+        {% load sorting_tags %}
+        {% load filters %}
+
+        {% autosort object_list as sorted_objects %}
+        {% autopaginate sorted_objects 25 as paginated_objects %}
+
+        <table class="table table-striped">
+            <thead>
+            <th>{% anchor voucher_no _('Voucher No.') %}</th>
+            <th>{% anchor date _('Date') %}</th>
+            <th>{% anchor party _('Party') %}</th>
+            <th>{% anchor credit _('Credit/Cash') %}</th>
+            {% ifrole "Accountant" %}
+                <th>{% trans "Action" %}</th>
+            {% endrole %}
+            </thead>
+            <tbody>
+            {% for purchase in paginated_objects %}
+                <tr>
+                    <td class="link">
+                        <a href="{% url 'purchase-detail' purchase.pk %}">{{ purchase.voucher_no }}</a>
+                    </td>
+                    <td>
+                        {{ purchase.date }}
+                    </td>
+                    <td>
+                        <a href="{{ purchase.party.get_absolute_url }}">
+                            {{ purchase.party }}
+                        </a>
+                    </td>
+                    <td>
+                        {{ purchase.type }}
+                    </td>
+                    {% ifrole "Accountant" %}
+                    <td>
+                        <a href="{% url 'purchase-edit' purchase.id %}">{% trans "Edit" %}</a>
+                    </td>
+                    {% endrole %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% paginate %}
+
+
+{% endblock %}

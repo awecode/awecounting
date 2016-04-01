@@ -72,6 +72,8 @@
                 </div>
 
                 <div class="col-md-6 col-xs-12">
+                    <label>{% trans 'Total Received Amount' %}</label>
+
                     {{ form.amount.label_tag }}
                     <!-- ko if:!table_vm().rows() -->
                     {{ form.amount }}
