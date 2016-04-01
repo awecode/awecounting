@@ -15,7 +15,7 @@ class PartyForm(HTML5BootstrapModelForm):
 
     class Meta:
         model = Party
-        exclude = ('account', 'company')
+        exclude = ('account', 'company', 'related_company')
 
 class AccountForm(HTML5BootstrapModelForm):
 

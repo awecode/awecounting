@@ -101,6 +101,8 @@
                             <li role="separator" class="divider"></li>
                         {% endif %}
                         <li><a href="{% url 'users:company_pin' %}">{% trans "Generate Pins" %}</a></li>
+                        <li><a href="{% url 'users:accessible_company_list' %}">{% trans "Accessible Companies" %}</a></li>
+                        <li><a href="{% url 'users:add_user_with_pin' %}">{% trans "Add Company" %}</a></li>
                         <li><a href="{% url 'users:company_setting' request.company.id %}">{% trans "Settings" %}</a></li>
 
                         {% if request.user.is_authenticated %}
