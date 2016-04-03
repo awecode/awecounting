@@ -589,3 +589,19 @@ ul.navbar-right li form div select.btn option{
     padding: 5px;
 
 }
+
+ul.list-group > li.list-group-item > a{
+    font-weight: bold;
+}
+
+ul.list-group > li.list-group-item > .children > li.list-group-item > .children > li.list-group-item{
+    padding-top: 0.5em;
+}
+
+ul.list-group > li.list-group-item > .children > li.list-group-item{
+    padding-top: 1em;
+}
+
+ul.list-group > li.list-group-item{
+    padding-top: 2em;
+}

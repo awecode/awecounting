@@ -17,7 +17,7 @@ class ViewAccount(ListView):
         pk = int(self.kwargs.get('pk'))
         obj = get_object_or_404(self.model, pk=pk, company=self.request.company)
         journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.pk).order_by('pk',
-                                                                                                    'date') \
+                                                                                                'date') \
             .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
         context['account'] = obj
         context['journal_entries'] = journal_entries
@@ -29,6 +29,7 @@ class CategoryView(CompanyView):
     model = Category
     success_url = reverse_lazy('category_list')
     form_class = CategoryForm
+
 
 class CategoryList(CategoryView, ListView):
     pass
@@ -46,7 +47,6 @@ class CategoryDelete(CategoryView, DeleteView):
     pass
 
 
-
 # Party CRUD with mixins
 class PartyView(CompanyView):
     model = Party
@@ -57,6 +57,7 @@ class PartyView(CompanyView):
         if self.request.POST.get('related_company'):
             form.instance.related_company_id = int(self.request.POST.get('related_company'))
         return super(PartyView, self).form_valid(form)
+
 
 class PartyList(PartyView, ListView):
     pass
