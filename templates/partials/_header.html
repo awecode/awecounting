@@ -103,7 +103,9 @@
                         <li><a href="{% url 'users:company_pin' %}">{% trans "Generate Pins" %}</a></li>
                         <li><a href="{% url 'users:accessible_company_list' %}">{% trans "Accessible Companies" %}</a></li>
                         <li><a href="{% url 'users:add_user_with_pin' %}">{% trans "Add Company" %}</a></li>
-                        <li><a href="{% url 'users:company_setting' request.company.id %}">{% trans "Settings" %}</a></li>
+                        {% if request.company %}
+                            <li><a href="{% url 'users:company_setting' request.company.id %}">{% trans "Settings" %}</a></li>
+                        {% endif %}
 
                         {% if request.user.is_authenticated %}
                             <li><a href="{% url 'users:logout' %}">{% trans 'Log out' %}</a></li>

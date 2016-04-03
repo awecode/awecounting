@@ -2,11 +2,13 @@ from django.http import JsonResponse
 from django.views.generic.edit import UpdateView as BaseUpdateView, CreateView as BaseCreateView, DeleteView as BaseDeleteView
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.views.generic import ListView
+from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
 from django.contrib.admin import ModelAdmin
+from django.http import HttpResponseForbidden
+
 
 from modeltranslation.admin import TranslationAdmin
 
@@ -32,11 +34,19 @@ class LoginRequiredMixin(object):
         return login_required(view)
 
 
+class CompanyRequiredMixin(LoginRequiredMixin):
+    def dispatch(self, request, *args, **kwargs):
+        if not request.company:
+            return HttpResponseForbidden()
+        return super(CompanyRequiredMixin, self).dispatch(request, *args, **kwargs)
+
+
 class UpdateView(BaseUpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         context['scenario'] = _('Edit')
         context['base_template'] = '_base.html'
+        super(UpdateView, self).get_context_data()
         return context
 
 
@@ -72,7 +82,7 @@ class AjaxableResponseMixin(object):
             return response
 
 
-class TableObjectMixin(ListView):
+class TableObjectMixin(TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super(TableObjectMixin, self).get_context_data(**kwargs)
         if self.kwargs:
@@ -83,7 +93,7 @@ class TableObjectMixin(ListView):
             obj = self.model(company=self.request.company)
             if obj.__class__.__name__ == 'PurchaseVoucher':
                 tax = self.request.company.settings.purchase_default_tax_application_type
-                tax_scheme = self.request.company.settings.purchase_default_tax_scheme 
+                tax_scheme = self.request.company.settings.purchase_default_tax_scheme
                 if tax:
                     obj.tax = tax
                 if tax_scheme:
@@ -96,7 +106,7 @@ class TableObjectMixin(ListView):
         return context
 
 
-class CompanyView(object):
+class CompanyView(CompanyRequiredMixin):
     def form_valid(self, form):
         form.instance.company = self.request.company
         return super(CompanyView, self).form_valid(form)

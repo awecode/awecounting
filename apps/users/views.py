@@ -24,15 +24,17 @@ from njango.fields import today
 from ..ledger.models import Party
 from ..ledger.forms import PartyForm
 
+
 def party_for_company(request, company_id):
     company = Company.objects.get(pk=company_id)
     parties = Party.objects.filter(company=request.company, related_company__isnull=True)
     form = PartyForm(initial={
-        'name': company.name, 
-        'address': company.location, 
+        'name': company.name,
+        'address': company.location,
         'pan_no': company.tax_registration_number
-        })
+    })
     return render(request, 'party_for_company.html', {'parties': parties, 'company': company, 'form': form})
+
 
 def set_company_to_party(request, company_id):
     party_id = int(request.POST.get('party_id'))
@@ -83,10 +85,10 @@ class AddUserPin(View):
             obj.date = today
             obj.save()
             form = PartyForm(initial={
-                'name': obj.company.name, 
-                'address': obj.company.location, 
+                'name': obj.company.name,
+                'address': obj.company.location,
                 'pan_no': obj.company.tax_registration_number
-                })
+            })
             parties = Party.objects.filter(company=request.company, related_company__isnull=True)
             return render(request, 'party_for_company.html', {'parties': parties, 'company': obj.company, 'form': form})
         except Pin.DoesNotExist:
@@ -141,10 +143,8 @@ class UserDelete(UserView, DeleteView):
 
 
 class UserListView(UserView, ListView):
-
     def get_queryset(self):
         return super(UserListView, self).get_queryset().filter(roles__company=self.request.company)
-
 
 
 class UserCreate(UserView, CreateView):
@@ -214,7 +214,7 @@ class CompanySettingUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(CompanySettingUpdateView, self).get_context_data(**kwargs)
-        context['secondary_form'] = self.secondary_form_class(instance = self.object.settings, prefix='secondary_form')
+        context['secondary_form'] = self.secondary_form_class(instance=self.object.settings, prefix='secondary_form')
         return context
 
     def post(self, request, **kwargs):
