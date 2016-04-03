@@ -1,0 +1,35 @@
+{% extends "_base.html" %}
+{% load i18n staticfiles filters %}
+
+{% block page-title %}{% trans 'Trial Balance' %}{% endblock %}
+
+{% block header-buttons %}
+    {#    <a class="btn btn-success btn-raised" href="{% url 'category_add' %}">{% trans 'New' %} {% trans 'Category' %}</a>#}
+{% endblock %}
+
+{% block content %}
+    {% load mptt_tags %}
+
+    <div class="well">
+        <div class="row">
+            <div class="col-xs-6">{% trans 'Category' %}/{% trans 'Account' %}</div>
+            <div class="col-xs-3">{% trans 'Dr' %}</div>
+            <div class="col-xs-3">{% trans 'Cr' %}</div>
+        </div>
+        <ul class="list-group">
+            {% recursetree categories %}
+                <li class="list-group-item link row">
+                    <a class="col-xs-6" href="{% url 'category_edit' node.id %}">{{ node.name }}</a>
+                    <a class="col-xs-3" href="{% url 'category_edit' node.id %}">Dr</a>
+                    <a class="col-xs-3" href="{% url 'category_edit' node.id %}">Cr</a>
+                    {% if not node.is_leaf_node %}
+                        <ul class="children">
+                            {{ children }}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endrecursetree %}
+        </ul>
+    </div>
+
+{% endblock %}

@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^voucher/', include('apps.voucher.urls')),
     url(r'^api/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^bank/', include('apps.bank.urls', namespace='bank')),
+    url(r'^report/', include('apps.report.urls', namespace='report')),
     url(r'^njango/', include('njango.urls')),
 
     url(r'^api-token-auth/', views.obtain_auth_token)
