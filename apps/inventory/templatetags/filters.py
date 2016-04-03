@@ -24,6 +24,7 @@ USURPERS = {
     'SuperOwner': ['SuperOwner'],
 }
 
+
 @register.simple_tag(takes_context=True)
 def colspan(context):
     obj = context['object']
@@ -48,6 +49,7 @@ def colspan(context):
         column = column + 1
     return column
 
+
 @register.tag
 def ifrole(parser, token):
     try:
@@ -61,7 +63,7 @@ def ifrole(parser, token):
         raise template.TemplateSyntaxError(
             "%r tag's argument should be in quotes" % tag_name
         )
-    nodelist = parser.parse('endrole',)
+    nodelist = parser.parse('endrole', )
     parser.delete_first_token()
     return RoleInGroup(role[1:-1], nodelist)
 
@@ -73,7 +75,7 @@ class RoleInGroup(template.Node):
 
     def render(self, context):
         request = template.resolve_variable('request', context)
-        if request.role.group.name in USURPERS[self.role]:
+        if request.role and request.role.group.name in USURPERS[self.role]:
             return self.nodelist.render(context)
         else:
             return ''
@@ -514,9 +516,11 @@ def do_usemacro(parser, token):
 def tel(no):
     return mark_safe('<a href="tel:%s">%s</a>' % (no, no))
 
+
 @register.filter
 def remove_lines(string):
     return str(string).replace('\n', '')
+
 
 @register.filter
 def last_word(string):

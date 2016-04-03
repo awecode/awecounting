@@ -7,8 +7,6 @@ from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
 from django.contrib.admin import ModelAdmin
-from django.http import HttpResponseForbidden
-
 
 from modeltranslation.admin import TranslationAdmin
 
@@ -37,7 +35,7 @@ class LoginRequiredMixin(object):
 class CompanyRequiredMixin(LoginRequiredMixin):
     def dispatch(self, request, *args, **kwargs):
         if not request.company:
-            return HttpResponseForbidden()
+            raise PermissionDenied()
         return super(CompanyRequiredMixin, self).dispatch(request, *args, **kwargs)
 
 

@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load filters %}
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -103,9 +104,9 @@
                         <li><a href="{% url 'users:company_pin' %}">{% trans "Generate Pins" %}</a></li>
                         <li><a href="{% url 'users:accessible_company_list' %}">{% trans "Accessible Companies" %}</a></li>
                         <li><a href="{% url 'users:add_user_with_pin' %}">{% trans "Add Company" %}</a></li>
-                        {% if request.company %}
+                        {% ifrole "SuperOwner" %}
                             <li><a href="{% url 'users:company_setting' request.company.id %}">{% trans "Settings" %}</a></li>
-                        {% endif %}
+                        {% endrole %}
 
                         {% if request.user.is_authenticated %}
                             <li><a href="{% url 'users:logout' %}">{% trans 'Log out' %}</a></li>
