@@ -8,29 +8,41 @@
 {% endblock %}
 
 {% block content %}
-    {% load mptt_tags %}
 
-    {{ root }}
+    {#    {{ root }}#}
     <div class="well">
         <div class="row">
             <div class="col-xs-6">{% trans 'Category' %}/{% trans 'Account' %}</div>
             <div class="col-xs-3">{% trans 'Dr' %}</div>
             <div class="col-xs-3">{% trans 'Cr' %}</div>
         </div>
-        <ul class="list-group">
-            {% recursetree categories %}
-                <li class="list-group-item link row">
-                    <a class="col-xs-6" href="{% url 'category_edit' node.id %}">{{ node.name }}</a>
-                    <a class="col-xs-3" href="{% url 'category_edit' node.id %}">Dr</a>
-                    <a class="col-xs-3" href="{% url 'category_edit' node.id %}">Cr</a>
-                    {% if not node.is_leaf_node %}
-                        <ul class="children">
-                            {{ children }}
-                        </ul>
-                    {% endif %}
-                </li>
-            {% endrecursetree %}
-        </ul>
+        <hr/>
+
+        {% for root_category in root %}
+            <div class="row">
+                <div class="col-xs-6 type-{{ root_category.type }} type-root">{{ root_category.name }}</div>
+                <div class="col-xs-3">{{ root_category.dr }}</div>
+                <div class="col-xs-3">{{ root_category.cr }}</div>
+            </div>
+            {% for child in root_category.children %}
+                {% include 'parse_child.html' with node=child %}
+            {% endfor %}
+
+        {% endfor %}
+        {#        <ul class="list-group">#}
+        {#            {% recursetree categories %}#}
+        {#                <li class="list-group-item link row">#}
+        {#                    <a class="col-xs-6" href="{% url 'category_edit' node.id %}">{{ node.name }}</a>#}
+        {#                    <a class="col-xs-3" href="{% url 'category_edit' node.id %}">Dr</a>#}
+        {#                    <a class="col-xs-3" href="{% url 'category_edit' node.id %}">Cr</a>#}
+        {#                    {% if not node.is_leaf_node %}#}
+        {#                        <ul class="children">#}
+        {#                            {{ children }}#}
+        {#                        </ul>#}
+        {#                    {% endif %}#}
+        {#                </li>#}
+        {#            {% endrecursetree %}#}
+        {#        </ul>#}
     </div>
 
 {% endblock %}
