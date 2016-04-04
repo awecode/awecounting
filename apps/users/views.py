@@ -64,7 +64,7 @@ class CompanyPin(ListView):
         return context
 
 
-class AddUserPin(View, SuperOwnerMixin):
+class AddUserPin(SuperOwnerMixin, View):
     model = Pin
     form_class = PinForm
     success_url = reverse_lazy('home')
@@ -138,23 +138,23 @@ class RoleUpdate(RoleView, UpdateView):
     pass
 
 
-class UserDelete(UserView, DeleteView, SuperOwnerMixin):
+class UserDelete(UserView, SuperOwnerMixin, DeleteView):
     pass
 
 
-class UserListView(UserView, ListView, SuperOwnerMixin):
+class UserListView(UserView, SuperOwnerMixin, ListView):
     def get_queryset(self):
         return super(UserListView, self).get_queryset().filter(roles__company=self.request.company)
 
 
-class UserCreate(UserView, CreateView, SuperOwnerMixin):
+class UserCreate(UserView, SuperOwnerMixin, CreateView):
     def get_form(self, form_class=None):
         kwargs = self.get_form_kwargs()
         kwargs['request'] = self.request
         return self.form_class(**kwargs)
 
 
-class UserUpdate(UserView, UpdateView, SuperOwnerMixin):
+class UserUpdate(UserView, SuperOwnerMixin, UpdateView):
     form_class = UserUpdateForm
 
 
