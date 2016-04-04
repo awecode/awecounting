@@ -27,7 +27,7 @@
         <hr/>
 
 
-        <div id="nav-bar" data-bind="template: { name: 'tree-template', data: tree_data }"></div>
+        <div id="trial-balance" data-bind="template: { name: 'tree-template', data: tree_data }"></div>
 
 
         <script type="text/html" id="tree-template">
@@ -73,19 +73,25 @@
         </script>
 
         <script type="text/html" id="node-name-template">
-
+            <div class="row">
+                <div class="col-xs-6" data-bind="style: get_style()">
             <span class="tree-item" data-bind="
     css: { 
         'fa fa-minus': isExpanded() && nodes().length > 0, 
         'fa fa-plus': !isExpanded() && nodes().length > 0,
-        'fa fa-stop': nodes().length === 0 
+        'pl-15': nodes().length === 0 
     }
     "></span>
 
             <span data-bind="
     text: name, 
-    attr: { 'title': description }, 
+    attr: { 'title': type }, 
     tooltip: { delay: { show: 500, hide: 10 } }"></span>
+                </div>
+                <div class="col-xs-3" data-bind="text: dr"></div>
+                <div class="col-xs-3" data-bind="text: cr"></div>
+            </div>
+
 
         </script>
 

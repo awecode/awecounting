@@ -48,7 +48,8 @@ class Node(object):
             'type': self.type,
             'dr': self.dr,
             'cr': self.cr,
-            'nodes': self.children
+            'nodes': self.children,
+            'depth': self.depth,
         }
         return data
 

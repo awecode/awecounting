@@ -18,7 +18,6 @@ var NodeModel = function (data) {
     var self = this;
 
     self.isExpanded = ko.observable(true);
-    self.description = ko.observable();
     self.name = ko.observable();
     self.nodes = ko.observableArray([]);
 
@@ -26,7 +25,13 @@ var NodeModel = function (data) {
         self.isExpanded(!self.isExpanded());
     };
 
+
     ko.mapping.fromJS(data, self.mapOptions, self);
+
+    self.get_style = function () {
+        var padding = (self.depth() + 1) * 15;
+        return {'padding-left': padding + 'px'};
+    }
 
 };
 

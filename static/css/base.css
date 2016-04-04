@@ -605,3 +605,30 @@ ul.list-group > li.list-group-item > .children > li.list-group-item{
 ul.list-group > li.list-group-item{
     padding-top: 2em;
 }
+
+#trial-balance ul {
+	list-style-type: none;
+    padding-left: 0;
+}
+ 
+#trial-balance {
+	padding-left: 0;
+}
+ 
+#trial-balance > ul {
+	/*padding-left: 20px;*/
+}
+ 
+.tree-item {
+	font-family: 'FontAwesome';
+	-webkit-font-smoothing: antialiased;
+	font-size: 75%;
+}
+ 
+.pointer-icon {
+	cursor: pointer;
+}
+
+.pl-15{
+    padding-left: 15px;
+}
