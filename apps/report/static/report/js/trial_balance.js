@@ -39,28 +39,27 @@ var NodeModel = function (data, settings) {
     }
 
     self.is_visible = function () {
-        if (self.settings.show_root_categories_only() && self.depth() > 0) {
+        if (self.depth() > 0 && self.settings.show_root_categories_only()) {
             return false;
         }
+        if (self.type() == 'Account' && self.settings.hide_all_ledgers()) {
+            return false;
+        }
+        if (self.type() == 'Category' && self.settings.show_ledgers_only()) {
+            return false;
+        }
+        if (self.type() == 'Category' && !self.settings.show_zero_balance_categories() && self.dr() == 0 && self.cr() == 0) {
+            return false;
+        }
+        if (self.type() == 'Account' && !self.settings.show_zero_balance_ledgers() && self.dr() == 0 && self.cr() == 0) {
+            return false;
+        }
+
         return true;
+
     }
 
 };
-
-//NodeModel.prototype.mapOptions = {
-//    nodes: {
-//        create: function (args) {
-//            return new NodeModel(args.data);
-//        }
-//    }
-//};
-
-var Setting = function (settings) {
-    var self = this;
-    self.show_root_categories_only = ko.observable(settings.show_root_categories_only);
-    //ko.mapping.fromJS(settings, self);
-}
-
 
 var TreeModel = function () {
 
@@ -71,7 +70,7 @@ var TreeModel = function () {
     self.total_cr = ko.observable();
 
     self.loadData = function (data) {
-        self.settings = new Setting(data.settings);
+        self.settings = ko.mapping.fromJS(data.settings);
         console.log(self.settings);
         self.tree_data(new NodeModel(data, self.settings));
         self.total_dr(data.total_dr);

@@ -532,49 +532,48 @@ input.attachment {
 }
 
 input.ad-date:after, input.bs-date:after {
-  background: transparent url(../img/calendar.png) center right no-repeat !important;
+    background: transparent url(../img/calendar.png) center right no-repeat !important;
 }
 
-td.link a{
+td.link a {
     display: block;
 }
 
-.highlighted{
+.highlighted {
     background-color: #ffa !important;
 }
 
-.right-bordered{
-      border-right: 1px solid #ccc;
+.right-bordered {
+    border-right: 1px solid #ccc;
 }
 
-.green{
+.green {
     color: green !important;
 }
 
-.yellow{
+.yellow {
     color: yellow !important;
 }
 
 .body-center {
-   width: 400px;
-   height: 400px;
-   position: absolute;
-   left: 50%;
-   top: 50%; 
-   margin-left: -200px;
-   margin-top: -200px;
+    width: 400px;
+    height: 400px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -200px;
+    margin-top: -200px;
 }
 
-ul.navbar-right li form div select.btn{
+ul.navbar-right li form div select.btn {
     color: #FFFFFF !important;
     /*display: none;*/
 }
 
-ul.navbar-right li form div select.btn option{
+ul.navbar-right li form div select.btn option {
     color: #000000 !important;
     /*display: none;*/
 }
-
 
 .select-party {
     margin-top: -3px;
@@ -590,56 +589,60 @@ ul.navbar-right li form div select.btn option{
 
 }
 
-ul.list-group > li.list-group-item > a{
+ul.list-group > li.list-group-item > a {
     font-weight: bold;
 }
 
-ul.list-group > li.list-group-item > .children > li.list-group-item > .children > li.list-group-item{
+ul.list-group > li.list-group-item > .children > li.list-group-item > .children > li.list-group-item {
     padding-top: 0.5em;
 }
 
-ul.list-group > li.list-group-item > .children > li.list-group-item{
+ul.list-group > li.list-group-item > .children > li.list-group-item {
     padding-top: 1em;
 }
 
-ul.list-group > li.list-group-item{
+ul.list-group > li.list-group-item {
     padding-top: 2em;
 }
 
+/* Trial Balance */
+
 #trial-balance ul {
-	list-style-type: none;
+    list-style-type: none;
     padding-left: 0;
 }
 
 #trial-balance ul li {
-	padding-top: 0.5em;
+    padding-top: 0.5em;
     border-bottom: 1px solid #FAFAFA;
     border-collapse: collapse;
-    
-}
- 
-#trial-balance {
-	padding-left: 0;
-}
- 
-#trial-balance > ul {
-	/*padding-left: 20px;*/
-}
- 
-.tree-item {
-	font-family: 'FontAwesome';
-	-webkit-font-smoothing: antialiased;
-	font-size: 75%;
-}
- 
-.pointer-icon {
-	cursor: pointer;
+
 }
 
-.pl-15{
+#trial-balance {
+    padding-left: 0;
+}
+
+#trial-balance > ul {
+    /*padding-left: 20px;*/
+}
+
+.tree-item {
+    font-family: 'FontAwesome';
+    -webkit-font-smoothing: antialiased;
+    font-size: 75%;
+}
+
+.pointer-icon {
+    cursor: pointer;
+}
+
+.pl-15 {
     padding-left: 15px;
 }
 
-.page-header-right ul{
+.page-header-right ul {
     list-style: none;
 }
+
+/* EO Trial Balance */

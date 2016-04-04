@@ -52,7 +52,10 @@ def get_trial_balance_data(company):
     root = {'nodes': [], 'total_dr': 0, 'total_cr': 0,
             'settings': {
                 'show_root_categories_only': False,
-                'show_ledgers_only': True,
+                'show_zero_balance_ledgers': False,
+                'show_zero_balance_categories': False,
+                'hide_all_ledgers': True,
+                'show_ledgers_only': False,
             }
             }
     for root_category in root_categories:
