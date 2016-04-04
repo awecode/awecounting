@@ -36,6 +36,8 @@ def index(request):
 def item_search(request):
     code = request.POST.get('search-code')
     obj = Item.objects.filter(code=code, company=request.company)
+    if not obj:
+        obj = Item.objects.filter(name=code, company=request.company)
     if len(obj) == 1:
         itm = obj[0]
         inventory_account = InventoryAccount.objects.get(item__name=itm.name, company=request.company)
