@@ -45,6 +45,7 @@
         <script type="text/html" id="tree-template">
 
             <ul data-bind="foreach: nodes">
+                <!-- ko if: is_visible() -->
                 <li>
             <span data-bind="
                 template: { name: 'node-name-template', data: $data },
@@ -53,6 +54,7 @@
 
                     <div data-bind="template: { name: 'folder-template', data: $data }, visible: isExpanded"></div>
                 </li>
+                <!-- /ko -->
             </ul>
 
         </script>
@@ -60,11 +62,13 @@
         <script type="text/html" id="folder-template">
 
             <ul data-bind="foreach: nodes">
+                <!-- ko if: is_visible() -->
                 <li>
 
                     <div data-bind="template: { name: 'node-template', data: $data }"></div>
 
                 </li>
+                <!-- /ko -->
             </ul>
 
         </script>
@@ -85,6 +89,7 @@
         </script>
 
         <script type="text/html" id="node-name-template">
+
             <div class="row">
                 <div class="col-xs-6" data-bind="style: get_style()">
             <span class="tree-item" data-bind="

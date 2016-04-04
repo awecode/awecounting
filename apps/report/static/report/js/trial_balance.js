@@ -1,18 +1,3 @@
-ko.bindingHandlers.tooltip = {
-    init: function (element, valueAccessor) {
-        var local = ko.utils.unwrapObservable(valueAccessor()),
-            options = {};
-
-        ko.utils.extend(options, local);
-
-        $(element).tooltip(options);
-
-        ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
-            $(element).tooltip("destroy");
-        });
-    }
-};
-
 var NodeModel = function (data) {
 
     var self = this;
@@ -44,6 +29,10 @@ var NodeModel = function (data) {
         }
     }
 
+    self.is_visible = function () {
+        return false;
+    }
+
 };
 
 NodeModel.prototype.mapOptions = {
@@ -71,7 +60,7 @@ var TreeModel = function () {
 }
 
 
-$(document).ready(function () {
+$(function () {
     vm = new TreeModel();
     vm.loadData(trial_balance_data);
     ko.applyBindings(vm);
@@ -84,10 +73,5 @@ $(document).ready(function () {
             $('li.dropdown.mega-dropdown').removeClass('open');
         }
     });
-
-});
-
-$(function () {
-    //$(".dropdown-toggle").dropdown('toggle'); // this works
 
 });
