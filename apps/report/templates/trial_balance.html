@@ -19,10 +19,12 @@
             </a>
 
             <ul class="dropdown-menu mega-dropdown-menu">
-                <li data-bind="with: settings">
+                <li data-bind="foreachprop: settings">
+
                     <div>
-                        <input type="checkbox" data-bind="checked: show_root_categories_only" id="show_root_categories_only">
-                        <label for="show_root_categories_only">Show root categories only</label>
+                        {#                        <span data-bind="text: key"></span>#}
+                        <input type="checkbox" data-bind="checked: value, attr:{'id': key}">
+                        <label data-bind="text: name, attr:{'for': key}"></label>
                     </div>
                 </li>
             </ul>
