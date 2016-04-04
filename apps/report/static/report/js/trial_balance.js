@@ -1,10 +1,19 @@
-var NodeModel = function (data) {
-
+var NodeModel = function (data, settings) {
     var self = this;
 
+    self.settings = settings;
     self.isExpanded = ko.observable(true);
     self.name = ko.observable();
     self.nodes = ko.observableArray([]);
+
+    self.mapOptions = {
+        nodes: {
+            create: function (args) {
+
+                return new NodeModel(args.data, settings);
+            }
+        }
+    };
 
     ko.mapping.fromJS(data, self.mapOptions, self);
 
@@ -30,18 +39,24 @@ var NodeModel = function (data) {
     }
 
     self.is_visible = function () {
-        return false;
+        return true;
     }
 
 };
 
-NodeModel.prototype.mapOptions = {
-    nodes: {
-        create: function (args) {
-            return new NodeModel(args.data);
-        }
-    }
-};
+//NodeModel.prototype.mapOptions = {
+//    nodes: {
+//        create: function (args) {
+//            return new NodeModel(args.data);
+//        }
+//    }
+//};
+
+var Setting = function (settings) {
+    var self = this;
+    self.show_root_categories_only = ko.observable(settings.show_root_categories_only);
+    //ko.mapping.fromJS(settings, self);
+}
 
 
 var TreeModel = function () {
@@ -53,7 +68,9 @@ var TreeModel = function () {
     self.total_cr = ko.observable();
 
     self.loadData = function (data) {
-        self.tree_data(new NodeModel(data));
+        self.settings = new Setting(data.settings);
+        console.log(self.settings);
+        self.tree_data(new NodeModel(data, self.settings));
         self.total_dr(data.total_dr);
         self.total_cr(data.total_cr);
     };
