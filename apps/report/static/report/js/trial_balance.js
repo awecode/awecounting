@@ -21,16 +21,27 @@ var NodeModel = function (data) {
     self.name = ko.observable();
     self.nodes = ko.observableArray([]);
 
-    self.toggleVisibility = function () {
-        self.isExpanded(!self.isExpanded());
-    };
-
-
     ko.mapping.fromJS(data, self.mapOptions, self);
 
     self.get_style = function () {
         var padding = (self.depth() + 1) * 15;
         return {'padding-left': padding + 'px'};
+    }
+
+    self.toggleVisibility = function () {
+        if (self.url()) {
+            return true;
+        } else {
+            self.isExpanded(!self.isExpanded());
+        }
+    };
+
+    self.get_url = function () {
+        if (self.url()) {
+            return self.url();
+        } else {
+            return 'javascript: void()';
+        }
     }
 
 };

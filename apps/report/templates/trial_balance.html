@@ -83,10 +83,13 @@
     }
     "></span>
 
-            <span data-bind="
+            <a data-bind="
     text: name, 
-    attr: { 'title': type }, 
-    tooltip: { delay: { show: 500, hide: 10 } }"></span>
+    attr: { 'title': type, 'href': get_url() }, 
+{#    tooltip: { delay: { show: 500, hide: 10 } }#}
+    ">
+                
+            </a>
                 </div>
                 <div class="col-xs-3" data-bind="text: dr"></div>
                 <div class="col-xs-3" data-bind="text: cr"></div>
