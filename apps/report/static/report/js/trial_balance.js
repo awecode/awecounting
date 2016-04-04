@@ -75,5 +75,19 @@ $(document).ready(function () {
     vm = new TreeModel();
     vm.loadData(trial_balance_data);
     ko.applyBindings(vm);
+    $('li.dropdown.mega-dropdown a').on('click', function (event) {
+        $(this).parent().toggleClass("open");
+    });
+
+    $('body').on('click', function (e) {
+        if (!$('li.dropdown.mega-dropdown').is(e.target) && $('li.dropdown.mega-dropdown').has(e.target).length === 0 && $('.open').has(e.target).length === 0) {
+            $('li.dropdown.mega-dropdown').removeClass('open');
+        }
+    });
+
+});
+
+$(function () {
+    //$(".dropdown-toggle").dropdown('toggle'); // this works
 
 });

@@ -639,3 +639,7 @@ ul.list-group > li.list-group-item{
 .pl-15{
     padding-left: 15px;
 }
+
+.page-header-right ul{
+    list-style: none;
+}
