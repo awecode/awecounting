@@ -4,19 +4,6 @@ from django.shortcuts import render
 from apps.ledger.models import Category, Account
 
 
-class NodeEncoder(json.JSONEncoder):
-    def __init__(self, *args, **kwargs):
-        super(NodeEncoder, self).__init__(*args, **kwargs)
-
-    def iterencode(self, o, _one_shot=False):
-        return 1
-
-
-def handler(obj):
-    print(obj)
-    return 1
-
-
 class Node(object):
     def __init__(self, model, parent=None, depth=0):
         self.children = []
@@ -25,6 +12,7 @@ class Node(object):
         self.type = self.model.__class__.__name__
         self.dr = 0
         self.cr = 0
+        self.url = None
         self.depth = depth
         self.parent = parent
         if self.type == 'Category':
@@ -35,6 +23,7 @@ class Node(object):
         if self.type == 'Account':
             self.dr = self.model.current_dr or 0
             self.cr = self.model.current_cr or 0
+            self.url = self.model.get_absolute_url()
         if self.parent:
             self.parent.dr += self.dr
             self.parent.cr += self.cr
@@ -50,6 +39,7 @@ class Node(object):
             'cr': self.cr,
             'nodes': self.children,
             'depth': self.depth,
+            'url': self.url,
         }
         return data
 
