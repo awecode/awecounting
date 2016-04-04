@@ -19,8 +19,11 @@
             </a>
 
             <ul class="dropdown-menu mega-dropdown-menu">
-                <li>
-                    Haha
+                <li data-bind="with: settings">
+                    <div>
+                        <input type="checkbox" data-bind="checked: show_root_categories_only" id="show_root_categories_only">
+                        <label for="show_root_categories_only">Show root categories only</label>
+                    </div>
                 </li>
             </ul>
         </li>

@@ -39,6 +39,9 @@ var NodeModel = function (data, settings) {
     }
 
     self.is_visible = function () {
+        if (self.settings.show_root_categories_only() && self.depth() > 0) {
+            return false;
+        }
         return true;
     }
 

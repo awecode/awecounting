@@ -51,7 +51,8 @@ def get_trial_balance_data(company):
     root_categories = Category.objects.filter(company=company, parent=None)
     root = {'nodes': [], 'total_dr': 0, 'total_cr': 0,
             'settings': {
-                'show_root_categories_only': True
+                'show_root_categories_only': False,
+                'show_ledgers_only': True,
             }
             }
     for root_category in root_categories:
