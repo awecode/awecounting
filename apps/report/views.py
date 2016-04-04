@@ -29,9 +29,9 @@ class Node(object):
         self.parent = parent
         if self.type == 'Category':
             for child in self.model.children.all():
-                print self.add_child(Node(child, parent=self, depth=self.depth + 1))
+                self.add_child(Node(child, parent=self, depth=self.depth + 1))
             for account in self.model.accounts.all():
-                print self.add_child(Node(account, parent=self, depth=self.depth + 1))
+                self.add_child(Node(account, parent=self, depth=self.depth + 1))
         if self.type == 'Account':
             self.dr = self.model.current_dr or 0
             self.cr = self.model.current_cr or 0
@@ -55,16 +55,23 @@ class Node(object):
     def __str__(self):
         return self.name
 
-def trial_balance(request):
-    root_categories = Category.objects.filter(company=request.company, parent=None)
+
+def get_trial_balance_data(company):
+    root_categories = Category.objects.filter(company=company, parent=None)
     root = {'items': []}
     for root_category in root_categories:
         node = Node(root_category)
         root['items'].append(node.get_data())
-    print(type(root))
-    return JsonResponse(root)
+    return root
+
+
+def trial_balance_json(request):
+    return JsonResponse(get_trial_balance_data(request.company))
+
+
+def trial_balance(request):
+    data = get_trial_balance_data(request.company)
     context = {
-        'categories': root_categories,
-        'root': root,
+        'data': data,
     }
     return render(request, 'trial_balance.html', context)
