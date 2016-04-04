@@ -10,3 +10,6 @@ class ReportSetting(models.Model):
     show_zero_balance_categories = models.BooleanField(default=False)
     hide_all_ledgers = models.BooleanField(default=False)
     show_ledgers_only = models.BooleanField(default=False)
+
+    def __str__(self):
+        return 'Report Settings for ' + str(self.company)

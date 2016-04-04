@@ -1,7 +1,9 @@
 import json
+from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import render
 from apps.ledger.models import Category, Account
+from apps.report.models import ReportSetting
 
 
 class Node(object):
@@ -50,14 +52,15 @@ class Node(object):
 def get_trial_balance_data(company):
     root_categories = Category.objects.filter(company=company, parent=None)
     root = {'nodes': [], 'total_dr': 0, 'total_cr': 0,
-            'settings': {
-                'show_root_categories_only': False,
-                'show_zero_balance_ledgers': False,
-                'show_zero_balance_categories': False,
-                'hide_all_ledgers': True,
-                'show_ledgers_only': False,
+            # 'settings': {
+            #     'show_root_categories_only': False,
+            #     'show_zero_balance_ledgers': False,
+            #     'show_zero_balance_categories': False,
+            #     'hide_all_ledgers': True,
+            #     'show_ledgers_only': False,
+            # }
             }
-            }
+    root['settings'] = model_to_dict(ReportSetting.objects.get(company=company))
     for root_category in root_categories:
         node = Node(root_category)
         root['nodes'].append(node.get_data())
