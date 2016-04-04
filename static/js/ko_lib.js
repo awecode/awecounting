@@ -278,7 +278,7 @@ ko.bindingHandlers.numeric = {
                 (event.keyCode === 190) ||
                     // Allow: home, end, left, right
                 (event.keyCode >= 35 && event.keyCode <= 39) ||
-                event.keyCode == 53 ) {
+                event.keyCode == 53) {
                 // let it happen, don't do anything
                 return;
             }
@@ -404,16 +404,16 @@ ko.bindingHandlers.foreachprop = {
         var properties = [];
         for (var key in obj) {
             if (obj.hasOwnProperty(key)) {
-                if (key=='__ko_mapping__') continue;
-                properties.push({ key: key, name: key.toTitleCase().replaceAll('_', ' '), value: obj[key] });
+                if (key == '__ko_mapping__') continue;
+                properties.push({key: key, name: key.toTitleCase().replaceAll('_', ' '), value: obj[key]});
             }
         }
         return properties;
     },
-    init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+    init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
         var value = ko.utils.unwrapObservable(valueAccessor()),
             properties = ko.bindingHandlers.foreachprop.transformObject(value);
-        ko.applyBindingsToNode(element, { foreach: properties }, bindingContext);
-        return { controlsDescendantBindings: true };
+        ko.applyBindingsToNode(element, {foreach: properties}, bindingContext);
+        return {controlsDescendantBindings: true};
     }
 };
