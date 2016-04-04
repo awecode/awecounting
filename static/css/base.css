@@ -610,6 +610,13 @@ ul.list-group > li.list-group-item{
 	list-style-type: none;
     padding-left: 0;
 }
+
+#trial-balance ul li {
+	padding-top: 0.5em;
+    border-bottom: 1px solid #FAFAFA;
+    border-collapse: collapse;
+    
+}
  
 #trial-balance {
 	padding-left: 0;
