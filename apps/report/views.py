@@ -59,10 +59,13 @@ class Node(object):
 
 def get_trial_balance_data(company):
     root_categories = Category.objects.filter(company=company, parent=None)
-    root = {'nodes': []}
+    root = {'nodes': [], 'total_dr': 0, 'total_cr': 0}
+
     for root_category in root_categories:
         node = Node(root_category)
         root['nodes'].append(node.get_data())
+        root['total_dr'] += node.dr
+        root['total_cr'] += node.cr
     return root
 
 

@@ -20,9 +20,9 @@
     {#    {{ root }}#}
     <div class="well">
         <div class="row">
-            <div class="col-xs-6">{% trans 'Category' %}/{% trans 'Account' %}</div>
-            <div class="col-xs-3">{% trans 'Dr' %}</div>
-            <div class="col-xs-3">{% trans 'Cr' %}</div>
+            <div class="col-xs-6"><strong>{% trans 'Category' %}/{% trans 'Account' %}</strong></div>
+            <div class="col-xs-3"><strong>{% trans 'Dr' %}</strong></div>
+            <div class="col-xs-3"><strong>{% trans 'Cr' %}</strong></div>
         </div>
         <hr/>
 
@@ -94,7 +94,12 @@
 
 
         </script>
-
+        <hr/>
+        <div class="row">
+            <div class="col-xs-6"><strong>TOTAL</strong></div>
+            <div class="col-xs-3"><strong><span data-bind="text: total_dr"></span></strong></div>
+            <div class="col-xs-3"><strong><span data-bind="text: total_cr"></span></strong></div>
+        </div>
 
     </div>
 

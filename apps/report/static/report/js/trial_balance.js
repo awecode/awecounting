@@ -49,9 +49,13 @@ var TreeModel = function () {
     var self = this;
 
     self.tree_data = ko.observable();
+    self.total_dr = ko.observable();
+    self.total_cr = ko.observable();
 
     self.loadData = function (data) {
         self.tree_data(new NodeModel(data));
+        self.total_dr(data.total_dr);
+        self.total_cr(data.total_cr);
     };
 }
 
