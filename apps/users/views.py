@@ -64,7 +64,7 @@ class CompanyPin(ListView):
         return context
 
 
-class AddUserPin(SuperOwnerMixin, View):
+class AddUserPin(View):
     model = Pin
     form_class = PinForm
     success_url = reverse_lazy('home')
