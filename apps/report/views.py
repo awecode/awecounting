@@ -48,7 +48,7 @@ class Node(object):
             'type': self.type,
             'dr': self.dr,
             'cr': self.cr,
-            'children': self.children
+            'nodes': self.children
         }
         return data
 
@@ -58,10 +58,10 @@ class Node(object):
 
 def get_trial_balance_data(company):
     root_categories = Category.objects.filter(company=company, parent=None)
-    root = {'items': []}
+    root = {'nodes': []}
     for root_category in root_categories:
         node = Node(root_category)
-        root['items'].append(node.get_data())
+        root['nodes'].append(node.get_data())
     return root
 
 

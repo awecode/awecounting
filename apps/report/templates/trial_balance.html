@@ -25,26 +25,69 @@
             <div class="col-xs-3">{% trans 'Cr' %}</div>
         </div>
         <hr/>
-        <!-- ko foreach: nodes.items() -->
-        <script id="formElementNodeTemplate" type="text/html">
-            <ul>
+
+
+        <div id="nav-bar" data-bind="template: { name: 'tree-template', data: tree_data }"></div>
+
+
+        <script type="text/html" id="tree-template">
+
+            <ul data-bind="foreach: nodes">
                 <li>
-                    <div class="row">
-                        <div class="col-xs-6"><span data-bind="text: name"></span></div>
-                        <div class="col-xs-3"><span data-bind="text: dr"></span></div>
-                        <div class="col-xs-3"><span data-bind="text: cr"></span></div>
-                    </div>
-                    <!-- ko template: { name: 'formElementNodeTemplate',  
-                                        foreach: children } -->
-                    <!-- /ko -->
+            <span data-bind="
+                template: { name: 'node-name-template', data: $data },
+                css: { 'pointer-icon': nodes().length > 0 },
+                click: toggleVisibility"></span>
+
+                    <div data-bind="template: { name: 'folder-template', data: $data }, visible: isExpanded"></div>
                 </li>
             </ul>
+
         </script>
 
-        <div data-bind="template: { name: 'formElementNodeTemplate', data: $data }">
-        </div>
+        <script type="text/html" id="folder-template">
 
-        <!-- /ko -->
+            <ul data-bind="foreach: nodes">
+                <li>
+
+                    <div data-bind="template: { name: 'node-template', data: $data }"></div>
+
+                </li>
+            </ul>
+
+        </script>
+
+        <script type="text/html" id="node-template">
+
+            <span data-bind="
+        template: { name: 'node-name-template', data: $data },
+        css: { 'pointer-icon': nodes().length > 0 },
+        click: toggleVisibility"></span>
+
+            <!-- ko if: nodes().length !== 0 -->
+
+            <div data-bind="template: { name: 'folder-template', data: $data }, visible: isExpanded"></div>
+
+            <!-- /ko -->
+
+        </script>
+
+        <script type="text/html" id="node-name-template">
+
+            <span class="tree-item" data-bind="
+    css: { 
+        'fa fa-minus': isExpanded() && nodes().length > 0, 
+        'fa fa-plus': !isExpanded() && nodes().length > 0,
+        'fa fa-stop': nodes().length === 0 
+    }
+    "></span>
+
+            <span data-bind="
+    text: name, 
+    attr: { 'title': description }, 
+    tooltip: { delay: { show: 500, hide: 10 } }"></span>
+
+        </script>
 
 
     </div>
