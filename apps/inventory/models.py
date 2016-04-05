@@ -8,6 +8,8 @@ from ..users.models import Company
 from awecounting.utils.helpers import none_for_zero, zero_for_none
 from ..users.signals import company_creation
 from django.dispatch import receiver
+from django.core.urlresolvers import reverse_lazy
+
 
 
 class Unit(models.Model):
@@ -106,7 +108,8 @@ class InventoryAccount(models.Model):
         return str(self.account_no) + ' [' + self.name + ']'
 
     def get_absolute_url(self):
-        return '/inventory_account/' + str(self.id)
+        # return '/inventory_account/' + str(self.id)
+        return reverse_lazy('view_inventory_account', kwargs={'pk': self.pk})
 
     @staticmethod
     def get_next_account_no():
