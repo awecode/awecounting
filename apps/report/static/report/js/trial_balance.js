@@ -91,6 +91,7 @@ var TreeModel = function () {
 
     self.save_settings = function () {
         ajax_save(self.settings_save_url, ko.toJSON(self.settings));
+        $('.dropdown.mega-dropdown.open .dropdown-toggle').dropdown('toggle');
     }
 }
 
@@ -99,14 +100,9 @@ $(function () {
     vm = new TreeModel();
     vm.load_data(trial_balance_data);
     ko.applyBindings(vm);
-    $('li.dropdown.mega-dropdown a').on('click', function (event) {
-        $(this).parent().toggleClass("open");
-    });
 
-    $('body').on('click', function (e) {
-        if (!$('li.dropdown.mega-dropdown').is(e.target) && $('li.dropdown.mega-dropdown').has(e.target).length === 0 && $('.open').has(e.target).length === 0) {
-            $('li.dropdown.mega-dropdown').removeClass('open');
-        }
+    $('.dropdown-menu.mega-dropdown-menu').click(function (e) {
+        e.stopPropagation();
     });
 
 });
