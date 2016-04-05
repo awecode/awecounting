@@ -1671,3 +1671,26 @@ $(document).on('show.bs.modal', '.modal', function () {
 function update_url_with_id(id) {
     history.pushState(id, id, window.location.href.replace('/create/', '').replace('/add/', '').replace('/create', '').replace('/add', '').replace(/\/+$/, "") + '/' + id + '/');
 }
+
+save_success = function (msg) {
+    if (typeof (msg.error_message) != 'undefined') {
+        bsalert.error(msg.error_message);
+    }
+    else {
+        bsalert.success('Saved!');
+    }
+}
+
+save_error = function (XMLHttpRequest, textStatus, errorThrown) {
+    bsalert.error(textStatus);
+}
+
+ajax_save = function (save_url, data) {
+    $.ajax({
+        type: "POST",
+        url: save_url,
+        data: data,
+        success: save_success,
+        error: save_error,
+    });
+}

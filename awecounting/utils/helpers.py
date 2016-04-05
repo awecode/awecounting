@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+import json
 
 
 def save_model(model, values):
@@ -141,3 +142,17 @@ def invalid(row, required_fields):
     if len(invalid_attrs) is 0:
         return False
     return invalid_attrs
+
+
+def save_qs_from_ko(model, filter_kwargs, request_body):
+    qs = model.objects.filter(**filter_kwargs)
+    params = json.loads(request_body)
+    try:
+        del params['__ko_mapping__']
+    except KeyError:
+        pass
+    try:
+        qs.update(**params)
+        return {}
+    except Exception as e:
+        return {'error': str(e)}

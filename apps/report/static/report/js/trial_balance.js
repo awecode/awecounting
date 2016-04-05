@@ -81,19 +81,23 @@ var TreeModel = function () {
     self.total_dr = ko.observable();
     self.total_cr = ko.observable();
 
-    self.loadData = function (data) {
+    self.load_data = function (data) {
         self.settings = ko.mapping.fromJS(data.settings);
-        console.log(self.settings);
+        self.settings_save_url = data.settings_save_url
         self.tree_data(new NodeModel(data, self.settings));
         self.total_dr(data.total_dr);
         self.total_cr(data.total_cr);
     };
+
+    self.save_settings = function () {
+        ajax_save(self.settings_save_url, ko.toJSON(self.settings));
+    }
 }
 
 
 $(function () {
     vm = new TreeModel();
-    vm.loadData(trial_balance_data);
+    vm.load_data(trial_balance_data);
     ko.applyBindings(vm);
     $('li.dropdown.mega-dropdown a').on('click', function (event) {
         $(this).parent().toggleClass("open");

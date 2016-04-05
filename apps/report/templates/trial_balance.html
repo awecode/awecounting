@@ -15,15 +15,19 @@
     <ul class="nav navbar-right">
         <li class="dropdown mega-dropdown ">
             <a href="javascript:;" class="dropdown-toggle">
-                <i class="fa fa-cog"></i> Settings <span class="fa fa-chevron-down pull-right"></span>
+                <i class="fa fa-cog"></i> {% trans 'Settings' %}<span class="fa fa-chevron-down pull-right"></span>
             </a>
 
-            <ul class="dropdown-menu mega-dropdown-menu" data-bind="foreachprop: settings">
+            <ul class="dropdown-menu mega-dropdown-menu">
+                <div data-bind="foreachprop: settings">
+                    <li>
+                        <input type="checkbox" data-bind="checked: value, attr:{'id': key}">
+                        <label data-bind="text: name, attr:{'for': key}"></label>
+                    </li>
+                </div>
                 <li>
-                    <input type="checkbox" data-bind="checked: value, attr:{'id': key}">
-                    <label data-bind="text: name, attr:{'for': key}"></label>
+                    <button data-bind="click: save_settings" class="btn btn-raised btn-info">{% trans 'Save Settings' %}</button>
                 </li>
-
             </ul>
         </li>
     </ul>
