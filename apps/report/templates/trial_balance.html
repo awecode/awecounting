@@ -92,9 +92,9 @@
 
         <script type="text/html" id="node-name-template">
             <!-- ko if: is_row_visible() -->
-            <div class="row">
+            <div class="row tb-row">
                 <div class="col-xs-6" data-bind="style: get_style">
-            <span class="tree-item" data-bind="
+            <span class="hidden-print tree-item" data-bind="
     css: { 
         'fa fa-minus': isExpanded() && nodes().length > 0, 
         'fa fa-plus': !isExpanded() && nodes().length > 0,
