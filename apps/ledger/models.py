@@ -40,7 +40,8 @@ class Account(models.Model):
     opening_cr = models.FloatField(default=0)
 
     def get_absolute_url(self):
-        return '/ledger/' + str(self.id)
+        # return '/ledger/' + str(self.id)
+        return reverse_lazy('view_account', kwargs={'pk': self.pk})
 
     # def get_last_day_last_transaction(self):
     #     transactions = Transaction.objects.filter(account=self, date__lt=date.today()).order_by('-id', '-date')[:1]
