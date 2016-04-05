@@ -5,6 +5,8 @@ var NodeModel = function (data, settings) {
     self.isExpanded = ko.observable(true);
     self.name = ko.observable();
     self.nodes = ko.observableArray([]);
+    self.type = ko.observable();
+    self.depth = ko.observable();
 
     self.mapOptions = {
         nodes: {
@@ -17,10 +19,15 @@ var NodeModel = function (data, settings) {
 
     ko.mapping.fromJS(data, self.mapOptions, self);
 
-    self.get_style = function () {
-        var padding = (self.depth() + 1) * 15;
+    self.get_style = ko.computed(function () {
+        var padding;
+        if (self.type() == 'Account' && self.settings.show_ledgers_only()) {
+            padding = 0;
+        } else {
+            padding = (self.depth() + 1) * 15;
+        }
         return {'padding-left': padding + 'px'};
-    }
+    });
 
     self.toggleVisibility = function () {
         if (self.url()) {
@@ -42,12 +49,10 @@ var NodeModel = function (data, settings) {
         if (self.depth() > 0 && self.settings.show_root_categories_only()) {
             return false;
         }
-        if (self.type() == 'Account' && self.settings.hide_all_ledgers()) {
-            return false;
-        }
-        if (self.type() == 'Category' && self.settings.show_ledgers_only()) {
-            return false;
-        }
+        //if (self.type() == 'Account' && self.settings.hide_all_ledgers()) {
+        //    return false;
+        //}
+
         if (self.type() == 'Category' && !self.settings.show_zero_balance_categories() && self.dr() == 0 && self.cr() == 0) {
             return false;
         }
@@ -57,6 +62,13 @@ var NodeModel = function (data, settings) {
 
         return true;
 
+    }
+
+    self.is_row_visible = function () {
+        if (self.type() == 'Category' && self.settings.show_ledgers_only()) {
+            return false;
+        }
+        return true;
     }
 
 };

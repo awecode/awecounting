@@ -613,7 +613,7 @@ ul.list-group > li.list-group-item {
 }
 
 #trial-balance ul li {
-    padding-top: 0.5em;
+    /*padding-top: 0.5em;*/
     border-bottom: 1px solid #FAFAFA;
     border-collapse: collapse;
 
@@ -643,6 +643,11 @@ ul.list-group > li.list-group-item {
 
 .page-header-right ul {
     list-style: none;
+}
+
+ul.mega-dropdown-menu li {
+    min-width: 250px;
+    padding: 0.5em;
 }
 
 /* EO Trial Balance */

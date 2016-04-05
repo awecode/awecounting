@@ -12,20 +12,18 @@
 {% endblock %}
 
 {% block header-buttons %}
-    <ul>
+    <ul class="nav navbar-right">
         <li class="dropdown mega-dropdown ">
             <a href="javascript:;" class="dropdown-toggle">
                 <i class="fa fa-cog"></i> Settings <span class="fa fa-chevron-down pull-right"></span>
             </a>
 
-            <ul class="dropdown-menu mega-dropdown-menu">
-                <li data-bind="foreachprop: settings">
-
-                    <div>
-                        <input type="checkbox" data-bind="checked: value, attr:{'id': key}">
-                        <label data-bind="text: name, attr:{'for': key}"></label>
-                    </div>
+            <ul class="dropdown-menu mega-dropdown-menu" data-bind="foreachprop: settings">
+                <li>
+                    <input type="checkbox" data-bind="checked: value, attr:{'id': key}">
+                    <label data-bind="text: name, attr:{'for': key}"></label>
                 </li>
+
             </ul>
         </li>
     </ul>
@@ -93,9 +91,9 @@
         </script>
 
         <script type="text/html" id="node-name-template">
-
+            <!-- ko if: is_row_visible() -->
             <div class="row">
-                <div class="col-xs-6" data-bind="style: get_style()">
+                <div class="col-xs-6" data-bind="style: get_style">
             <span class="tree-item" data-bind="
     css: { 
         'fa fa-minus': isExpanded() && nodes().length > 0, 
@@ -115,7 +113,7 @@
                 <div class="col-xs-3" data-bind="text: dr"></div>
                 <div class="col-xs-3" data-bind="text: cr"></div>
             </div>
-
+            <!-- /ko -->
 
         </script>
         <hr/>
