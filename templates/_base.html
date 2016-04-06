@@ -47,7 +47,6 @@
 </head>
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
 
-
 <div class='container'>
 
     {% if not is_popup %}
@@ -87,7 +86,7 @@
     </div>
 
 
-    <div id="content" class="{% block coltype %}colM{% endblock %}">
+    <div id="content" class="{% block coltype %}col{% endblock %}">
         {% block content %}
             {% block object-tools %}{% endblock %}
         {% endblock %}
