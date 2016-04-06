@@ -7,16 +7,16 @@ from django.views.generic import ListView
 import json
 from django.views.generic.detail import DetailView
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, OwnerMixin, AccountantMixin, StaffMixin, \
-    group_required, TableObjectMixin
+    group_required, TableObjectMixin, UpdateView
 from ..inventory.models import set_transactions
 from ..ledger.models import set_transactions as set_ledger_transactions, Account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
 
-from .forms import CashReceiptForm, JournalVoucherForm, CashPaymentForm
+from .forms import CashReceiptForm, JournalVoucherForm, CashPaymentForm, VoucherSettingForm
 from .serializers import FixedAssetSerializer, FixedAssetRowSerializer, AdditionalDetailSerializer, CashReceiptSerializer, \
     CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, JournalVoucherRow, \
-    PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow
+    PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, VoucherSetting
 
 
 class FixedAssetView(CompanyView):
@@ -731,3 +731,18 @@ class IncomingPurchaseOrderDetailView(DetailView):
         context['rows'] = PurchaseOrderRow.objects.select_related('item', 'unit').filter(purchase_order=self.object)
         return context
 
+
+
+class VoucherSettingUpdateView(SuperOwnerMixin, UpdateView):
+    model = VoucherSetting
+    form_class = VoucherSettingForm
+    success_url = reverse_lazy('home')
+    template_name = 'voucher/voucher_setting.html'
+
+    def get_object(self, queryset=None):
+        return self.model.objects.get(company=self.request.company)
+
+    def get_context_data(self, **kwargs):
+        context = super(VoucherSettingUpdateView, self).get_context_data(**kwargs)
+        context['base_template'] = '_base_settings.html'
+        return context
