@@ -107,7 +107,7 @@
                         <li><a href="{% url 'users:accessible_company_list' %}">{% trans "Accessible Companies" %}</a></li>
                         <li><a href="{% url 'users:add_user_with_pin' %}">{% trans "Add Company" %}</a></li>
                         {% ifrole "SuperOwner" %}
-                            <li><a href="{% url 'users:company_setting' request.company.id %}">{% trans "Settings" %}</a></li>
+                            <li><a href="{% url 'users:company_setting' %}">{% trans "Settings" %}</a></li>
                         {% endrole %}
 
                         {% if request.user.is_authenticated %}

@@ -21,7 +21,7 @@ web_urls = [
     url(r'^role/delete/(?P<pk>[0-9]+)/$', views.delete_role, name='delete_role'),
     url(r'^role/(?P<pk>\d+)/$', views.RoleUpdate.as_view(), name='edit_role'),
     url(r'^send_pin/', views.AddUserPin.as_view(), name="add_user_with_pin"),
-    url(r'^company_setting/(?P<pk>\d+)/$', views.CompanySettingUpdateView.as_view(), name='company_setting'),
+    url(r'^company_setting/$', views.CompanySettingUpdateView.as_view(), name='company_setting'),
     url(r'^api/pin/(?P<pin>\d+-\d+)/$', views.ValidatePin.as_view(), name='validate_pin'),
 
     url(r'^company_pin/', views.CompanyPin.as_view(), name="company_pin"),

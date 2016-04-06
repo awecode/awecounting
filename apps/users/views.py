@@ -211,6 +211,11 @@ class CompanySettingUpdateView(SuperOwnerMixin, UpdateView):
     form_class = CompanyForm
     success_url = reverse_lazy('home')
 
+    def get_object(self, queryset=None):
+        obj = self.request.company
+        return obj
+
+
     def get_context_data(self, **kwargs):
         context = super(CompanySettingUpdateView, self).get_context_data(**kwargs)
         context['base_template'] = '_base_settings.html'
