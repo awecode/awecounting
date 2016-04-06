@@ -8,8 +8,8 @@ from django.contrib.auth import logout as auth_logout
 
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, group_required, CompanyView, SuperOwnerMixin
 from django.views.generic.list import ListView
-from .forms import UserForm, UserUpdateForm, RoleForm, CompanyForm, CompanySettingForm, PinForm
-from .models import User, Company, Role, CompanySetting, Pin
+from .forms import UserForm, UserUpdateForm, RoleForm, CompanyForm, PinForm
+from .models import User, Company, Role, Pin
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
@@ -209,21 +209,21 @@ class GroupDeleteView(GroupView, DeleteView):
 class CompanySettingUpdateView(SuperOwnerMixin, UpdateView):
     model = Company
     form_class = CompanyForm
-    secondary_form_class = CompanySettingForm
+    # secondary_form_class = CompanySettingForm
     success_url = reverse_lazy('home')
 
     def get_context_data(self, **kwargs):
         context = super(CompanySettingUpdateView, self).get_context_data(**kwargs)
-        context['secondary_form'] = self.secondary_form_class(instance=self.object.settings, prefix='secondary_form')
+        # context['secondary_form'] = self.secondary_form_class(instance=self.object.settings, prefix='secondary_form')
         return context
 
     def post(self, request, **kwargs):
         self.object = self.get_object()
-        if request.POST:
-            secondary = self.secondary_form_class(request.POST or None, instance=self.object.settings, prefix='secondary_form')
-            secondary.company = request.company
-            if secondary.is_valid():
-                secondary.save()
+        # if request.POST:
+            # secondary = self.secondary_form_class(request.POST or None, instance=self.object.settings, prefix='secondary_form')
+            # secondary.company = request.company
+            # if secondary.is_valid():
+            #     secondary.save()
         return super(CompanySettingUpdateView, self).post(request, **kwargs)
 
 
