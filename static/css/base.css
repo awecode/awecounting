@@ -592,6 +592,9 @@ ul.navbar-right li form div select.btn option{
 }
 
 .nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
-    color: #fff;
-    background-color: #009688;
+    color: #009688;
+    background-color: transparent;
+    border-bottom: 2px solid #009688;
+    border-radius: 0;
+    padding-bottom: 3px;
 }

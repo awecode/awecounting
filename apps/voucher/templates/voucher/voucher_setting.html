@@ -7,19 +7,11 @@
     <li>{% trans 'Settings' %}</li>
 {% endblock %}
 
-{% block page-header %}
-<ul class="nav nav-pills">
-  <li><a href="{% url 'users:company_setting' %}">{% trans "Company Setting" %}</a></li>
-  <li class="active"><a href="{% url 'voucher_setting' %}">{% trans "Voucher Setting" %}</a></li>
-  </li>
-</ul>
-{% endblock %}
 
-{% block content %}
-
+{% block settings_form %}
     <form method="POST">
             {% csrf_token %}
-        <div class="well">
+        
             <div class="form-group">
                 <div class="checkbox">
                     <label>
@@ -38,10 +30,10 @@
                 {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
             </div>            
             
-        </div>
+        
 
         <h1> {% trans "Invoice Settings" %}</h1>
-        <div class="well">
+        
             <div class="form-group">
                 <div class="checkbox">
                     <label>
@@ -66,10 +58,10 @@
                 <label>{{ form.invoice_default_tax_scheme.label }}</label>
                 {{ form.invoice_default_tax_scheme }}
             </p>
-        </div>
+        
 
         <h1> {% trans "Purchase Settings" %}</h1>
-        <div class="well">
+        
             <div class="form-group">
                 <div class="checkbox">
                     <label>
@@ -94,7 +86,7 @@
                 <label>{{ form.purchase_default_tax_scheme.label }}</label>
                 {{ form.purchase_default_tax_scheme }}
             </p>
-        </div>
+        
         <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
     </form>
 

@@ -7,15 +7,6 @@
     <li>{% trans 'Settings' %}</li>
 {% endblock %}
 
-{% block page-header %}
-<ul class="nav nav-pills">
-  <li class="active"><a href="{% url 'users:company_setting' %}">{% trans "Company Setting" %}</a></li>
-  <li><a href="{% url 'voucher_setting' %}">{% trans "Voucher Setting" %}</a></li>
-  </li>
-</ul>
-
-{% endblock %}
-
 {% block content %}
 
     <form method="POST">

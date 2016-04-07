@@ -745,4 +745,5 @@ class VoucherSettingUpdateView(SuperOwnerMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(VoucherSettingUpdateView, self).get_context_data(**kwargs)
         context['base_template'] = '_base_settings.html'
+        context['setting'] = 'VoucherSetting'
         return context
