@@ -8,7 +8,11 @@
 {% endblock %}
 
 {% block page-header %}
-{% trans "Voucher Settings" %}
+<ul class="nav nav-pills">
+  <li><a href="{% url 'users:company_setting' %}">{% trans "Company Setting" %}</a></li>
+  <li class="active"><a href="{% url 'voucher_setting' %}">{% trans "Voucher Setting" %}</a></li>
+  </li>
+</ul>
 {% endblock %}
 
 {% block content %}
