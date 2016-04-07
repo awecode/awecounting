@@ -1,4 +1,33 @@
 {% extends "_base.html" %}
+{% load i18n %}
+
+{% block sidebar %}
+	<div class='nav-wrapper'>
+		<a href="{% url 'users:company_setting' %}">
+		<div class="list-group">
+	        <div class="list-group-item">
+	          <div>
+	            <h4 class="list-group-item-heading">{% trans "Company Settings" %}</h4>
+
+	            <p class="list-group-item-text">{% trans "Edit company name, location type of business and registration number." %}</p>
+	          </div>
+	        </div>
+	    </div>
+	    </a>
+		<a href="{% url 'voucher_setting' %}">
+		<div class="list-group">
+	        <div class="list-group-item">
+	          <div>
+	            <h4 class="list-group-item-heading">{% trans "Voucher Settings" %}</h4>
+
+	            <p class="list-group-item-text">{% trans "Config invoice, purchase and voucher settings." %}</p>
+	          </div>
+	        </div>
+	    </div>
+	    </a>
+	</div>
+{% endblock %}
+
 {% block content %}
 
 {% endblock %}

@@ -46,6 +46,7 @@
 
 </head>
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+{% block sidebar %}{% endblock %}
 
 <div class='container'>
 
@@ -90,7 +91,6 @@
         {% block content %}
             {% block object-tools %}{% endblock %}
         {% endblock %}
-        {% block sidebar %}{% endblock %}
     </div>
 
     {% block footer %}

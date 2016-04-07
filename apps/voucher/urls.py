@@ -59,7 +59,7 @@ web_urls = [
     url(r'^fixed_asset/delete/(?P<pk>[0-9]+)$', views.FixedAssetDelete.as_view(), name='fixed_asset_delete'),
     url(r'^fixed_asset/detail/(?P<pk>[0-9]+)/$', views.FixedAssetDetailView.as_view(), name='fixed_asset_detail'),
 
-    url(r'^voucher_setting/$', views.VoucherSettingUpdateView.as_view(), name='company_setting'),
+    url(r'^voucher_setting/$', views.VoucherSettingUpdateView.as_view(), name='voucher_setting'),
 
 ]
 
