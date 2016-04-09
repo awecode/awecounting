@@ -299,5 +299,10 @@ class Pin(models.Model):
     def accessible_companies(accessible_by):
         return map(Pin.companies_list, accessible_by.used_pin.all().values_list('company__id', flat=True))
 
+
+    @staticmethod
+    def connected_companies(company):
+        return map(Pin.companies_list, company.pin.filter(used_by__isnull=False).values_list('used_by__id', flat=True))
+
     class Meta:
         unique_together = ("company", "used_by")

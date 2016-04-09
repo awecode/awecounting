@@ -52,6 +52,14 @@ class AccessibleCompanies(ListView):
         return Pin.accessible_companies(self.request.company)
 
 
+class ConnectedCompanies(ListView):
+    model = Pin
+    template_name = 'users/connected_companies.html'
+
+    def get_queryset(self):
+        return Pin.connected_companies(self.request.company)
+
+
 class CompanyPin(ListView):
     model = Company
     template_name = 'company_pin.html'
