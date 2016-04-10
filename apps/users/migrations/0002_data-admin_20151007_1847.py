@@ -9,7 +9,7 @@ def create_admin(apps, schema_editor):
 
     try:
         with transaction.atomic():
-            User.objects.create_superuser('admin', 'webadmin@awecode.com', 'admin', full_name='admin')
+            User.objects.create_superuser('admin', 'webadmin@awecode.com', 'awedmin', full_name='admin')
     except IntegrityError:
         pass
 

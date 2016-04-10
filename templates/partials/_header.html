@@ -103,9 +103,10 @@
                         {% if request.user.roles.all.count > 1 %}
                             <li role="separator" class="divider"></li>
                         {% endif %}
-                        <li><a href="{% url 'users:company_pin' %}">{% trans "Generate Pins" %}</a></li>
+                        <li><a href="{% url 'users:company_pin' %}">{% trans "Pins" %}</a></li>
                         <li><a href="{% url 'users:accessible_company_list' %}">{% trans "Accessible Companies" %}</a></li>
-                        <li><a href="{% url 'users:add_user_with_pin' %}">{% trans "Add Company" %}</a></li>
+                        <li><a href="{% url 'users:connected_company_list' %}">{% trans "Connected Companies" %}</a></li>
+                        <li><a href="{% url 'users:add_user_with_pin' %}">{% trans "Enter Pin" %}</a></li>
                         {% ifrole "SuperOwner" %}
                             <li><a href="{% url 'users:company_setting' %}">{% trans "Settings" %}</a></li>
                         {% endrole %}
