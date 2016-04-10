@@ -6,6 +6,7 @@ from django.db import migrations
 
 def create_groups(apps, schema_editor):
     from django.contrib.auth.models import Group, Permission
+    from apps.users.models import User
 
     admin_group = Group.objects.create(name='SuperOwner')
     Group.objects.create(name='Owner')
@@ -14,6 +15,15 @@ def create_groups(apps, schema_editor):
     all_permissions = Permission.objects.all()
     admin_group.permissions = all_permissions
 
+
+    try:
+        with transaction.atomic():
+            admin = User.objects.get(username='admin')
+        # import ipdb; ipdb.set_trace()
+        group_list = Group.objects.all()
+        admin.groups = group_list 
+    except User.DoesNotExist:
+        pass
 
 def add_admin_user_to_admin_group(apps, schema_editor):
     from apps.users.models import User

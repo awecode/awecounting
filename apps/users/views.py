@@ -138,23 +138,23 @@ class RoleUpdate(RoleView, UpdateView):
     pass
 
 
-class UserDelete(UserView, DeleteView):
+class UserDelete(UserView, SuperOwnerMixin, DeleteView):
     pass
 
 
-class UserListView(UserView, ListView):
+class UserListView(UserView, SuperOwnerMixin, ListView):
     def get_queryset(self):
         return super(UserListView, self).get_queryset().filter(roles__company=self.request.company)
 
 
-class UserCreate(UserView, CreateView):
+class UserCreate(UserView, SuperOwnerMixin, CreateView):
     def get_form(self, form_class=None):
         kwargs = self.get_form_kwargs()
         kwargs['request'] = self.request
         return self.form_class(**kwargs)
 
 
-class UserUpdate(UserView, UpdateView):
+class UserUpdate(UserView, SuperOwnerMixin, UpdateView):
     form_class = UserUpdateForm
 
 

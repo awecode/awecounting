@@ -36,6 +36,8 @@ def index(request):
 def item_search(request):
     code = request.POST.get('search-code')
     obj = Item.objects.filter(code=code, company=request.company)
+    if not obj:
+        obj = Item.objects.filter(name=code, company=request.company)
     if len(obj) == 1:
         itm = obj[0]
         inventory_account = InventoryAccount.objects.get(item__name=itm.name, company=request.company)
@@ -183,8 +185,8 @@ def list_inventory_accounts(request):
     return render(request, 'list_inventory_accounts.html', {'objects': objects})
 
 
-def view_inventory_account(request, id):
-    obj = get_object_or_404(InventoryAccount, id=id, company=request.company)
+def view_inventory_account(request, pk):
+    obj = get_object_or_404(InventoryAccount, pk=pk, company=request.company)
     if hasattr(obj, 'item'):
         if request.POST:
             unit = Unit.objects.get(pk=request.POST.get('unit_id'), company=request.company)
@@ -208,8 +210,8 @@ def view_inventory_account(request, id):
                    'multiple': multiple})
 
 
-def view_inventory_account_with_rate(request, id):
-    obj = get_object_or_404(InventoryAccount, id=id, company=request.company)
+def view_inventory_account_with_rate(request, pk):
+    obj = get_object_or_404(InventoryAccount, pk=pk, company=request.company)
     if hasattr(obj, 'item'):
         if request.POST:
             unit = Unit.objects.get(pk=request.POST.get('unit_id'), company=request.company)

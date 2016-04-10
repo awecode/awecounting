@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.contrib.admin import ModelAdmin
 
 from modeltranslation.admin import TranslationAdmin
@@ -89,13 +89,13 @@ class TableObjectMixin(TemplateView):
             scenario = 'Update'
         else:
             obj = self.model(company=self.request.company)
-            if obj.__class__.__name__ == 'PurchaseVoucher':
-                tax = self.request.company.settings.purchase_default_tax_application_type
-                tax_scheme = self.request.company.settings.purchase_default_tax_scheme
-                if tax:
-                    obj.tax = tax
-                if tax_scheme:
-                    obj.tax_scheme = tax_scheme
+            # if obj.__class__.__name__ == 'PurchaseVoucher':
+            #     tax = self.request.company.settings.purchase_default_tax_application_type
+            #     tax_scheme = self.request.company.settings.purchase_default_tax_scheme
+            #     if tax:
+            #         obj.tax = tax
+            #     if tax_scheme:
+            #         obj.tax_scheme = tax_scheme
             scenario = 'Create'
         data = self.serializer_class(obj).data
         context['data'] = data

@@ -222,7 +222,6 @@ class PurchaseVoucherView(CompanyView):
     serializer_class = PurchaseVoucherSerializer
     success_url = reverse_lazy("purchase-list")
 
-
 class SaleView(CompanyView):
     model = Sale
     serializer_class = SaleSerializer
@@ -231,7 +230,7 @@ class SaleView(CompanyView):
 class PurchaseVoucherDetailView(PurchaseVoucherView, StaffMixin, DetailView):
 
     def get_context_data(self, **kwargs):
-        context = super(PurchaseDetailView, self).get_context_data(**kwargs)
+        context = super(PurchaseVoucherDetailView, self).get_context_data(**kwargs)
         context['rows'] = PurchaseVoucherRow.objects.select_related('item', 'unit').filter(purchase=self.object)
         return context
 
@@ -263,6 +262,21 @@ class PurchaseVoucherDelete(PurchaseVoucherView, DeleteView):
 
 class PurchaseVoucherCreate(PurchaseVoucherView, TableObjectMixin):
     template_name = 'purchase-form.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(PurchaseVoucherCreate, self).get_context_data(**kwargs)
+        if not self.kwargs:
+            obj = context['obj']
+            tax = self.request.company.settings.purchase_default_tax_application_type
+            tax_scheme = self.request.company.settings.purchase_default_tax_scheme
+            if tax:
+                obj.tax = tax
+            if tax_scheme:
+                obj.tax_scheme = tax_scheme
+            data = self.serializer_class(obj).data
+            context['obj'] = obj
+            context['data'] = data
+        return context
 
 
 @group_required('Accountant')
