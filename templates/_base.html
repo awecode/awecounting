@@ -33,6 +33,8 @@
     <link rel="stylesheet" href="{% static 'css/material.awe.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
+    <link rel="stylesheet" href='{% static "css/print.css" %}' media="print">
+
     <script src='{% static "js/libs/jquery-2.1.4.min.js" %}'></script>
     <script src="{% static 'js/libs/jquery.autosize.input.js' %}"></script>
     <script src="{% static 'js/libs/selectize.js' %}"></script>
@@ -75,11 +77,11 @@
         {% endif %}
     {% endblock %}
 
-    <div class="row">
+    <div class="page-header-bar row">
         <div class="col-lg-9 col-md-9 col-sm-9">
             <h1>{% block page-header %}{% usekwacro page-title %}{% endblock %}</h1>
         </div>
-        <div class="col-lg-3 col-md-3 col-sm-3">
+        <div class="col-lg-3 col-md-3 col-sm-3 page-header-right hidden-print">
             <div class="pull-right">
                 {% block header-buttons %}{% endblock %}
             </div>

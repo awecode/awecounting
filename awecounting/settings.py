@@ -27,6 +27,7 @@ INSTALLED_APPS = (
     'apps.voucher',
     'apps.tax',
     'apps.payroll',
+    'apps.report',
 
     'njango',
     'rest_framework',
@@ -90,7 +91,6 @@ REST_FRAMEWORK = {
         'apps.users.middleware.RoleMiddleware',
     )
 }
-
 
 ROOT_URLCONF = 'awecounting.urls'
 

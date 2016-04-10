@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+import json
 
 
 def save_model(model, values):
@@ -24,20 +25,23 @@ def empty_to_none(o):
         return None
     return o
 
+
 def empty_to_zero(o):
     if o == '' or o == None:
         return 0
     return o
 
+
 def get_discount_with_percent(total, discount):
     try:
         if str(discount)[-1] == '%':
             _discount = discount[:-1]
-            return float((float(_discount) / 100 ) * total) 
+            return float((float(_discount) / 100) * total)
         else:
             return float(empty_to_zero(discount))
     except IndexError:
         return empty_to_zero(discount)
+
 
 def zero_for_none(obj):
     if obj is None:
@@ -77,9 +81,8 @@ def calculate_tax(tax_choice, total, percent):
     if tax_choice == "inclusive":
         _sum = total * (percent / (100 + percent))
     elif tax_choice == "exclusive":
-        _sum = total  * (percent / 100 )
+        _sum = total * (percent / 100)
     return _sum
-
 
 
 def json_from_object(obj):
@@ -93,9 +96,9 @@ def json_from_object(obj):
         data['name'] = obj.title
     else:
         data['name'] = str(obj)
-    
+
     if hasattr(obj, 'percent'):
-        data['percent'] = obj.percent # Percent attr for tax scheme
+        data['percent'] = obj.percent  # Percent attr for tax scheme
     return JsonResponse(data)
 
 
@@ -139,3 +142,17 @@ def invalid(row, required_fields):
     if len(invalid_attrs) is 0:
         return False
     return invalid_attrs
+
+
+def save_qs_from_ko(model, filter_kwargs, request_body):
+    qs = model.objects.filter(**filter_kwargs)
+    params = json.loads(request_body)
+    try:
+        del params['__ko_mapping__']
+    except KeyError:
+        pass
+    try:
+        qs.update(**params)
+        return {}
+    except Exception as e:
+        return {'error': str(e)}

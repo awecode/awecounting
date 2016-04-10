@@ -1,0 +1,132 @@
+{% extends "_base.html" %}
+{% load i18n staticfiles filters %}
+
+{% block page-title %}{% trans 'Trial Balance' %}{% endblock %}
+
+{% block extrahead %}
+    <script src="{% static 'report/js/trial_balance.js' %}"></script>
+    <script src="{% static 'js/libs/knockout.mapping.js' %}"></script>
+    <script>
+        trial_balance_data = {{ data|jsonify }};
+    </script>
+{% endblock %}
+
+{% block header-buttons %}
+    <ul class="nav navbar-right">
+        <li class="dropdown mega-dropdown ">
+            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
+                <i class="fa fa-cog"></i> {% trans 'Settings' %}<span class="fa fa-chevron-down pull-right"></span>
+            </a>
+
+            <ul class="dropdown-menu mega-dropdown-menu">
+                <div data-bind="foreachprop: settings">
+                    <li>
+                        <input type="checkbox" data-bind="checked: value, attr:{'id': key}">
+                        <label data-bind="text: name, attr:{'for': key}"></label>
+                    </li>
+                </div>
+                <li>
+                    <button data-bind="click: save_settings" class="btn btn-raised btn-info">{% trans 'Save Settings' %}</button>
+                </li>
+            </ul>
+        </li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+
+    {#    {{ root }}#}
+    <div class="well">
+        <div class="row">
+            <div class="col-xs-6"><strong>{% trans 'Category' %}/{% trans 'Account' %}</strong></div>
+            <div class="col-xs-3"><strong>{% trans 'Dr' %}</strong></div>
+            <div class="col-xs-3"><strong>{% trans 'Cr' %}</strong></div>
+        </div>
+        <hr/>
+
+
+        <div id="trial-balance" data-bind="template: { name: 'tree-template', data: tree_data }"></div>
+
+
+        <script type="text/html" id="tree-template">
+
+            <ul data-bind="foreach: nodes">
+                <!-- ko if: is_visible() -->
+                <li>
+            <span data-bind="
+                template: { name: 'node-name-template', data: $data },
+                css: { 'pointer-icon': nodes().length > 0 },
+                click: toggleVisibility"></span>
+
+                    <div data-bind="template: { name: 'folder-template', data: $data }, visible: isExpanded"></div>
+                </li>
+                <!-- /ko -->
+            </ul>
+
+        </script>
+
+        <script type="text/html" id="folder-template">
+
+            <ul data-bind="foreach: nodes">
+                <!-- ko if: is_visible() -->
+                <li>
+
+                    <div data-bind="template: { name: 'node-template', data: $data }"></div>
+
+                </li>
+                <!-- /ko -->
+            </ul>
+
+        </script>
+
+        <script type="text/html" id="node-template">
+
+            <span data-bind="
+        template: { name: 'node-name-template', data: $data },
+        css: { 'pointer-icon': nodes().length > 0 },
+        click: toggleVisibility"></span>
+
+            <!-- ko if: nodes().length !== 0 -->
+
+            <div data-bind="template: { name: 'folder-template', data: $data }, visible: isExpanded"></div>
+
+            <!-- /ko -->
+
+        </script>
+
+        <script type="text/html" id="node-name-template">
+            <!-- ko if: is_row_visible() -->
+            <div class="row tb-row">
+                <div class="col-xs-6" data-bind="style: get_style">
+            <span class="hidden-print tree-item" data-bind="
+    css: { 
+        'fa fa-minus': isExpanded() && nodes().length > 0, 
+        'fa fa-plus': !isExpanded() && nodes().length > 0,
+        'pl-15': nodes().length === 0 
+    }
+    "></span>
+
+                    <a data-bind="
+    text: name, 
+    attr: { 'title': type, 'href': get_url() }, 
+{#    tooltip: { delay: { show: 500, hide: 10 } }#}
+    ">
+
+                    </a>
+                </div>
+                <div class="col-xs-3" data-bind="text: dr"></div>
+                <div class="col-xs-3" data-bind="text: cr"></div>
+            </div>
+            <!-- /ko -->
+
+        </script>
+        <hr/>
+        <div class="row">
+            <div class="col-xs-6"><strong>TOTAL</strong></div>
+            <div class="col-xs-3"><strong><span data-bind="text: total_dr"></span></strong></div>
+            <div class="col-xs-3"><strong><span data-bind="text: total_cr"></span></strong></div>
+        </div>
+
+    </div>
+
+{% endblock %}
