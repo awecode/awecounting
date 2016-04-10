@@ -35,11 +35,11 @@ class DefineMacroNode(template.Node):
         ## empty string - {% macro %} tag does no output
         return ''
 
-@register.simple_tag(takes_context=True)
-def get_related_party(context, accessible_company):
-    request = context['request']
-    related_party = request.company.parties.filter(related_company=accessible_company)
-    return related_party
+# @register.simple_tag(takes_context=True)
+# def get_related_party(context, accessible_company):
+#     request = context['request']
+#     related_party = request.company.parties.filter(related_company=accessible_company)
+#     return related_party
 
 @register.tag(name="kwacro")
 def do_macro(parser, token):
