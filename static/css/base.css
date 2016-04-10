@@ -1,6 +1,7 @@
 body {
     line-height: 1.3;
     cursor: auto;
+    height: 100%;
 }
 
 select, input[type="text"], input[type="password"], input[type="number"], input[type="email"] {
@@ -590,6 +591,7 @@ ul.navbar-right li form div select.btn option{
 
 }
 
+
 ul.list-group > li.list-group-item > a{
     font-weight: bold;
 }
@@ -602,6 +604,19 @@ ul.list-group > li.list-group-item > .children > li.list-group-item{
     padding-top: 1em;
 }
 
-ul.list-group > li.list-group-item{
+ul.list-group > li.list-group-item {
     padding-top: 2em;
 }
+
+/* Settings */
+
+.nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
+    color: #009688;
+    background-color: transparent;
+    border-bottom: 2px solid #009688;
+    border-radius: 0;
+    padding-bottom: 3px;
+
+}
+
+/* EO Settings */

@@ -1,22 +1,23 @@
 import datetime
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse_lazy
-from django.http import JsonResponse
+from django.core.urlresolvers import reverse, reverse_lazy
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView
 import json
 from django.views.generic.detail import DetailView
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, OwnerMixin, AccountantMixin, StaffMixin, \
-    group_required, TableObjectMixin
+    group_required, TableObjectMixin, UpdateView
 from ..inventory.models import set_transactions
 from ..ledger.models import set_transactions as set_ledger_transactions, Account
+from ..users.models import Pin
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
 
-from .forms import CashReceiptForm, JournalVoucherForm, CashPaymentForm
+from .forms import CashReceiptForm, JournalVoucherForm, CashPaymentForm, VoucherSettingForm
 from .serializers import FixedAssetSerializer, FixedAssetRowSerializer, AdditionalDetailSerializer, CashReceiptSerializer, \
     CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, JournalVoucherRow, \
-    PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow
+    PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, VoucherSetting
 
 
 class FixedAssetView(CompanyView):
@@ -715,6 +716,14 @@ def save_purchase_order(request):
     return JsonResponse(dct)
 
 
+class CheckifConnected(object):
+    def dispatch(self, *args, **kwargs):
+        querying_company = self.get_object().company
+        if self.request.company.parties.filter(related_company=querying_company):
+            return super(CheckifConnected, self).dispatch(*args, **kwargs)
+        else:
+            return HttpResponseRedirect(reverse('users:party_for_company', kwargs={'company_id': querying_company.id}))
+
 
 class IncomingPurchaseOrder(ListView):
     model = PurchaseOrder
@@ -723,7 +732,7 @@ class IncomingPurchaseOrder(ListView):
     def get_queryset(self):
         return self.model.objects.filter(party__related_company=self.request.company)
 
-class IncomingPurchaseOrderDetailView(DetailView):
+class IncomingPurchaseOrderDetailView(CheckifConnected, DetailView):
     model = PurchaseOrder
 
     def get_context_data(self, **kwargs):
@@ -731,3 +740,19 @@ class IncomingPurchaseOrderDetailView(DetailView):
         context['rows'] = PurchaseOrderRow.objects.select_related('item', 'unit').filter(purchase_order=self.object)
         return context
 
+
+
+class VoucherSettingUpdateView(SuperOwnerMixin, UpdateView):
+    model = VoucherSetting
+    form_class = VoucherSettingForm
+    success_url = reverse_lazy('home')
+    template_name = 'voucher/voucher_setting.html'
+
+    def get_object(self, queryset=None):
+        return self.model.objects.get(company=self.request.company)
+
+    def get_context_data(self, **kwargs):
+        context = super(VoucherSettingUpdateView, self).get_context_data(**kwargs)
+        context['base_template'] = '_base_settings.html'
+        context['setting'] = 'VoucherSetting'
+        return context

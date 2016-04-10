@@ -21,11 +21,12 @@ web_urls = [
     url(r'^role/delete/(?P<pk>[0-9]+)/$', views.delete_role, name='delete_role'),
     url(r'^role/(?P<pk>\d+)/$', views.RoleUpdate.as_view(), name='edit_role'),
     url(r'^send_pin/', views.AddUserPin.as_view(), name="add_user_with_pin"),
-    url(r'^company_setting/(?P<pk>\d+)/$', views.CompanySettingUpdateView.as_view(), name='company_setting'),
+    url(r'^company_setting/$', views.CompanySettingUpdateView.as_view(), name='company_setting'),
     url(r'^api/pin/(?P<pin>\d+-\d+)/$', views.ValidatePin.as_view(), name='validate_pin'),
 
     url(r'^company_pin/', views.CompanyPin.as_view(), name="company_pin"),
     url(r'^accessible_company_list/', views.AccessibleCompanies.as_view(), name="accessible_company_list"),
+    url(r'^connected_company_list/', views.ConnectedCompanies.as_view(), name="connected_company_list"),
 
     url(r'^set_company_to_party/(?P<company_id>\d+)/$', views.set_company_to_party, name='set_company_to_party'),
     url(r'^party_for_company/(?P<company_id>\d+)/$', views.party_for_company, name='party_for_company'),
