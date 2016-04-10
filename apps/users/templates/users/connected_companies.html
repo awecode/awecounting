@@ -34,9 +34,8 @@
                                 {{ company.tax_registration_number |default:'' }}
                             </td>
                             <td>
-                                {% get_related_party company as related_party %}
-                                {% if related_party %}
-                                    <a href="{% url 'party_edit' related_party.first.id %}">{{ related_party.first }}</a>
+                                {% if company.related_party %}
+                                    <a href="{% url 'party_edit' company.related_party.id %}">{{ company.related_party }}</a>
                                 {% else %}
                                     <a href="{% url 'users:party_for_company' company.id %}" class="btn btn-success btn-raised add-party">{% trans "Connect Party" %}</a>
                                 {% endif %}
