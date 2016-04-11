@@ -7,6 +7,9 @@ $(document).ready(function () {
 function PurchaseViewModel(data) {
     var self = this;
 
+    var company_items = []
+    self.items_of_current_company = ko.observable(); 
+
     for (var k in data) {
         self[k] = ko.observable(data[k]);
     }
@@ -19,6 +22,8 @@ function PurchaseViewModel(data) {
         async: false,
         success: function (data) {
             self.items = ko.observableArray(data['results']);
+            self.items_of_current_company(self.items()[0].company);
+            company_items.push({'id': self.items_of_current_company(), 'items': self.items()})
         }
     });
 
@@ -30,6 +35,48 @@ function PurchaseViewModel(data) {
             self.parties = ko.observableArray(data['results']);
         }
     });
+
+
+    self.party_id.subscribe(function(party_id) {
+        if (party_id) {
+            party = get_by_id(vm.parties, party_id);
+            company = get_by_id(company_items, party.related_company);
+            if (party.related_company != null && typeof(company) == 'undefined' ) {
+                $.ajax({
+                    url: '/inventory/api/items/' + party.related_company + '/?format=json',
+                    dataType: 'json',
+                    async: false,
+                    success: function (data) {
+                        if (data['results'].length >= 1) {
+                            self.items(data['results'])
+                            self.items_of_current_company(data['results'][0].company);
+                            company_items.push({'id': data['results'][0].company, 'items': self.items()})
+                        } else {
+                            bsalert.error('Requested company has no item');
+                        };
+                    }
+                });
+                console.log(company_items)
+            } else if (party.related_company == null && party.company != self.items_of_current_company()) {
+                company_item = get_by_id(company_items, party.company);
+                self.items(company_item.items);
+                self.items_of_current_company(party.company)
+            } else if (party.related_company != null && typeof(company) != 'undefined' ){
+                company_item = get_by_id(company_items, party.related_company);
+                self.items(company_item.items);
+                self.items_of_current_company(party.related_company)
+            };
+        };
+    });
+
+    self.render_party_options = function (data) {
+        var obj = get_by_id(vm.parties(), data.id);
+        var klass = '';
+        if (obj.related_company != null) {
+            klass = 'green'
+        }
+        return '<div class="' + klass + '">' + obj.name + '</div>';
+    }
 
     $.ajax({
         url: '/inventory/api/units.json',
