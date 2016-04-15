@@ -21,6 +21,7 @@
             <thead>
             <th>{% anchor voucher_no _('Voucher No.') %}</th>
             <th>{% anchor date _('Date') %}</th>
+            <th>{% trans 'Request by' %}</th>
             </thead>
             <tbody>
             {% for purchase_order in paginated_objects %}
@@ -30,6 +31,9 @@
                     </td>
                     <td>
                         {{ purchase_order.date }}
+                    </td>
+                    <td>
+                        {{ purchase_order.party.company}}
                     </td>
                  </tr>
             {% endfor %}
