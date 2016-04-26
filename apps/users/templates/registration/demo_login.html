@@ -43,14 +43,15 @@
                 {% endif %}
                 <div class="required">
                     <label for="id_username">{% trans 'Username:' %}</label>
-                    <input type="text" class="form-control" name="username" id="id_username" value="{{ username }}"
+                    <input type="text" class="form-control" name="username" id="id_username" value="{% firstof username 'demo' %}"
                            required
                            autofocus/>
                 </div>
 
                 <div class="form-group">
                     <label for="id_password">{% trans 'Password:' %}</label>
-                    <input type="password" name="password" class="form-control" id="id_password" value="{{ password }}"
+                    <input type="password" name="password" class="form-control" id="id_password"
+                           value="{% firstof password 'demo' %}"
                            required/>
                 </div>
 

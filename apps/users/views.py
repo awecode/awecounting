@@ -184,6 +184,18 @@ def web_login(request, **kwargs):
                 request.session.set_expiry(0)
         return login(request, **kwargs)
 
+def demo_login(request, **kwargs):
+    if request.user.is_authenticated():
+        return redirect('/', **kwargs)
+    else:
+        if request.method == 'POST':
+            if 'remember_me' in request.POST:
+                request.session.set_expiry(1209600)  # 2 weeks
+            else:
+                request.session.set_expiry(0)
+        return login(request, template_name = 'registration/demo_login.html', **kwargs)
+
+    
 
 def logout(request, next_page=None):
     auth_logout(request)

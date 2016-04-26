@@ -1,7 +1,7 @@
-from django.conf.urls import patterns, url
-from . import views, api
+from django.conf.urls import url
 from rest_framework.urlpatterns import format_suffix_patterns
 
+from . import views, api
 
 web_urls = [
     url(r'^$', views.UserListView.as_view(), name='user_list'),
@@ -39,4 +39,3 @@ api_urls = [
 api_urls = format_suffix_patterns(api_urls)
 
 urlpatterns = web_urls + api_urls
-

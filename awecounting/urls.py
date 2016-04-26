@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^$', 'apps.inventory.views.index', name='home'),
+    url(r'^demo/$', 'apps.users.views.demo_login', name='demo'),
 
     url(r'^users/', include('apps.users.urls', namespace='users')),
     url(r'^share/', include('apps.share.urls', namespace='share')),
