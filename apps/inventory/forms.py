@@ -17,7 +17,7 @@ class ItemForm(HTML5BootstrapModelForm, KOModelForm, TranslationModelForm):
         if self.instance.account:
             self.fields['account_no'].initial = self.instance.account.account_no
         else:
-            self.fields['account_no'].initial = InventoryAccount.get_next_account_no()
+            self.fields['account_no'].initial = InventoryAccount.get_next_account_no(company=self.request.company)
         if self.instance.id:
             self.fields['account_no'].widget = forms.HiddenInput()
         self.fields['unit'].queryset = Unit.objects.filter(company=self.request.company)
