@@ -175,6 +175,11 @@ class Sale(models.Model):
     total_amount = models.FloatField(null=True, blank=True)
     company = models.ForeignKey(Company)
     description = models.TextField(null=True, blank=True)
+    tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'), ]
+    tax = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True, blank=True)
+    tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True)
+    discount = models.CharField(max_length=50, blank=True, null=True)
+
 
     def __init__(self, *args, **kwargs):
         super(Sale, self).__init__(*args, **kwargs)
@@ -206,12 +211,36 @@ class Sale(models.Model):
         return _('Sale')
 
     @property
-    def total(self):
+    def sub_total(self):
         grand_total = 0
         for obj in self.rows.all():
-            total = obj.quantity * obj.rate - obj.discount
-            grand_total += total
+            total = obj.quantity * obj.rate
+            discount = get_discount_with_percent(total, obj.discount)
+            grand_total += total - discount
         return grand_total
+
+    @property
+    def tax_amount(self):
+        _sum = 0
+        if self.tax_scheme:
+            _sum = calculate_tax(self.tax, self.sub_total, self.tax_scheme.percent)
+        else:
+            for obj in self.rows.all():
+                if obj.tax_scheme:
+                    total = obj.quantity * obj.rate - float(obj.discount)
+                    amount = calculate_tax(self.tax, total, obj.tax_scheme.percent)
+                    _sum += amount
+        return _sum
+
+    @property
+    def total(self):
+        amount = self.sub_total
+        if self.tax == "exclusive":
+            amount = self.sub_total + self.tax_amount
+        if self.discount:
+            discount = get_discount_with_percent(amount, self.discount)
+            amount = amount - discount
+        return amount
 
 
 class SaleRow(models.Model):
@@ -222,6 +251,7 @@ class SaleRow(models.Model):
     discount = models.FloatField(default=0)
     unit = models.ForeignKey(Unit)
     sale = models.ForeignKey(Sale, related_name='rows')
+    tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True)
 
     def get_total(self):
         return float(self.quantity) * float(self.rate) - float(self.discount)
