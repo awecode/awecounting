@@ -3,7 +3,7 @@
 {% load filters %}
 
 {% block title %}
-	{% trans 'Item Search' %}
+    {% trans 'Item Search' %}
 {% endblock %}
 
 {% block content %}
@@ -14,29 +14,31 @@
     {% autosort objects as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
     <div class="well">
-    <table class="table table-striped">
-        <thead>
-        <th>{% trans 'ID' %}</th>
-        <th>{% trans 'Name' %}</th>
-        <th>{% trans 'Other Properties' %}</th>
+        <table class="table table-striped">
+            <thead>
+            <th>{% trans 'ID' %}</th>
+            <th>{% trans 'Name' %}</th>
+            <th>{% trans 'Other Properties' %}</th>
 
-        </thead>
-        <tbody>
-        {% for item in paginated_objects %}
-            <tr>
-                <td class="link">
-                    <a href="{% url 'view_inventory_account' item.account.id %}">{{ item.id }}</a>
-                </td>
-                <td>
-                    {{ item.name }}
-                </td>
-                <td>
-                    {{ item.other_properties |default:'' }}
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            {% for item in paginated_objects %}
+                <tr>
+                    <td class="link">
+                        {% if item.account %}
+                            <a href="{% url 'view_inventory_account' item.account.id %}">{{ item.id }}</a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ item.name }}
+                    </td>
+                    <td>
+                        {{ item.other_properties |default:'' }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
 
     {% paginate %}
