@@ -118,7 +118,7 @@
                         <span data-bind="text:  $index()+1, localize: 1"> </span>
                     </td>
                     <td>
-                        <select data-url="{% url 'item_add' %}" data-script="/static/inventory/js/item.js"
+                        <select data-url="{% url 'item_add' %}?source=purchase" data-script="/static/inventory/js/item.js"
                                 data-bind="selectize: $root.items, value: item_id, object: item, selectize_options:{render: {'option': render_option, 'item':render_option}}">
                         </select>
                     </td>

@@ -116,7 +116,7 @@
                         <span data-bind="text:  $index()+1, localize: 1"> </span>
                     </td>
                     <td>
-                        <select data-url="{% url 'item_add' %}" data-script="/static/inventory/js/item.js"
+                        <select data-url="{% url 'item_add' %}?source=sale" data-script="/static/inventory/js/item.js"
                                 data-bind="selectize: $root.items, value: item_id, object:item, selectize_options:{render: {'option': render_option, 'item':render_option}}">
                         </select>
                     </td>
@@ -124,7 +124,7 @@
                     <td data-bind="editableText: rate, numeric: true"></td>
                     <td>
                         <select data-bind="selectize: $root.units, value: unit_id, object:unit, selectize_options:{render: {'option': render_unit_options}}"
-                                data-url="{% url 'unit_add' %}"></select>
+                                data-url="{% url 'unit_add' %}?"></select>
                     </td>
                     <!-- ko with: row_tax_vm -->
                     <td data-bind="visible: $root.tax_vm.get_scheme()">

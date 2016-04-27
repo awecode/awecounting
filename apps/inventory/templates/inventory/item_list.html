@@ -38,7 +38,9 @@
                     </td>
                     <td>
                         <a href="{% url 'view_account' item.ledger.pk %}">{% trans 'View Ledger' %}</a>,
-                        <a href="{% url 'view_inventory_account' item.account.pk %}">{% trans 'View Inventory Ledger' %}</a>
+                        {% if item.account %}
+                            <a href="{% url 'view_inventory_account' item.account.pk %}">{% trans 'View Inventory Ledger' %}</a>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}

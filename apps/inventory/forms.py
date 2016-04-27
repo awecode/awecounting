@@ -8,7 +8,7 @@ from awecounting.utils.forms import HTML5BootstrapModelForm, KOModelForm
 
 
 class ItemForm(HTML5BootstrapModelForm, KOModelForm, TranslationModelForm):
-    account_no = forms.Field(widget=forms.TextInput(), label=_('Inventory Account No.'))
+    account_no = forms.Field(widget=forms.TextInput(), label=_('Inventory Account No.'), required=False)
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
