@@ -1,16 +1,12 @@
-from django.core.urlresolvers import reverse_lazy
+import os
+import random
+
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Group
-from django.core.exceptions import PermissionDenied
-from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from njango.fields import BSDateField, today, get_calendar
-from .signals import company_creation
-from njango.nepdate import ad2bs, string_from_tuple, tuple_from_string, bs2ad, bs
-import os
-import random
+from njango.fields import BSDateField, today
 
 
 class UserManager(BaseUserManager):
@@ -52,8 +48,18 @@ class UserManager(BaseUserManager):
 class Company(models.Model):
     name = models.CharField(max_length=254)
     location = models.TextField()
-    type_of_business = models.CharField(max_length=254)
+    ORGANIZATION_TYPES = (
+        ('sole_proprietorship', 'Sole Proprietorship'), ('partnership', 'Partnership'), ('corporation', 'Corporation'),
+        ('non_profit', 'Non-profit'))
+    organization_type = models.CharField(max_length=254, choices=ORGANIZATION_TYPES, default='sole_proprietorship')
     tax_registration_number = models.IntegerField(blank=True, null=True)
+    sells_goods = models.BooleanField(default=True)
+    sells_services = models.BooleanField(default=False)
+    purchases_goods = models.BooleanField(default=True)
+    purchases_services = models.BooleanField(default=True)
+
+    def has_shareholders(self):
+        return True if self.organization_type in ['partnership', 'corporation'] else False
 
     def save(self, *args, **kwargs):
         new = False
@@ -298,7 +304,6 @@ class Pin(models.Model):
     @staticmethod
     def accessible_companies(accessible_by):
         return map(Pin.companies_list, accessible_by.used_pin.all().values_list('company__id', flat=True))
-
 
     @staticmethod
     def connected_companies(company):
