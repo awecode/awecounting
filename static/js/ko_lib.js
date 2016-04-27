@@ -275,7 +275,7 @@ ko.bindingHandlers.numeric = {
                     // Allow: Ctrl combinations
                 (event.ctrlKey === true) ||
                     //Allow decimal symbol (.)
-                (event.keyCode === 190) ||
+                (event.keyCode === 190 || event.keyCode === 110) ||
                     // Allow: home, end, left, right
                 (event.keyCode >= 35 && event.keyCode <= 39)) {
                 // let it happen, don't do anything
@@ -302,7 +302,7 @@ ko.bindingHandlers.percentage_numeric = {
                     // Allow: Ctrl combinations
                 (event.ctrlKey === true) ||
                     //Allow decimal symbol (.)
-                (event.keyCode === 190) ||
+                (event.keyCode === 190 || event.keyCode === 110) ||
                     // Allow: home, end, left, right
                 (event.keyCode >= 35 && event.keyCode <= 39) ||
                 event.keyCode == 53) {
