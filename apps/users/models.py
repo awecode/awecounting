@@ -7,6 +7,7 @@ from django.contrib.auth.models import Group
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from njango.fields import BSDateField, today
+from apps.users.signals import company_creation
 
 
 class UserManager(BaseUserManager):
@@ -80,7 +81,7 @@ class Company(models.Model):
 
 
 class Subscription(models.Model):
-    company = models.ForeignKey(Company)
+    company = models.OneToOneField(Company)
     enable_purchase = models.BooleanField(default=True)
     enable_purchase_order = models.BooleanField(default=True)
     enable_sales = models.BooleanField(default=True)
@@ -94,6 +95,7 @@ class Subscription(models.Model):
 
     def __str__(self):
         return 'Subscription for ' + str(self.company)
+
 
 
 class User(AbstractBaseUser):

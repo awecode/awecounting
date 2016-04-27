@@ -438,13 +438,13 @@ class VoucherSetting(models.Model):
     use_nepali_fy_system = models.BooleanField(default=True)
     single_discount_on_whole_invoice = models.BooleanField(default=True)
     discount_on_each_invoice_particular = models.BooleanField(default=False)
-    invoice_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True,
+    invoice_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='exclusive', null=True,
                                                             blank=True)
     invoice_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True, related_name="default_invoice_tax_scheme")
 
     single_discount_on_whole_purchase = models.BooleanField(default=True)
     discount_on_each_purchase_particular = models.BooleanField(default=False)
-    purchase_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True,
+    purchase_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='exclusive', null=True,
                                                              blank=True)
     purchase_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True, related_name="default_purchase_tax_scheme")
     voucher_number_start_date = BSDateField(default=today)

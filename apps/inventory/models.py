@@ -2,14 +2,14 @@ from django.db import models
 from jsonfield import JSONField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
-from django.db.models import F, Q
+from django.db.models import F
+from django.dispatch import receiver
+from django.core.urlresolvers import reverse_lazy
+
 from ..ledger.models import Account
 from ..users.models import Company
 from awecounting.utils.helpers import none_for_zero, zero_for_none
 from ..users.signals import company_creation
-from django.dispatch import receiver
-from django.core.urlresolvers import reverse_lazy
-
 
 
 class Unit(models.Model):
@@ -61,6 +61,7 @@ class Unit(models.Model):
                             # print 'writing: ' + str(key) + ' : ' + str(val)
                             data[key] = val * conversion.multiple
             return data
+
         all_convertibles = find_convertibles({}, [], 1)
         all_convertibles.pop(self.id, None)
         return all_convertibles
@@ -79,7 +80,10 @@ class Unit(models.Model):
 @receiver(company_creation)
 def handle_company_creation(sender, **kwargs):
     company = kwargs.get('company')
-    Unit.objects.create(name="Pieces", short_name='pcs', company=company)
+    if company.sells_goods or company.purchases_goods:
+        Unit.objects.create(name="Pieces", short_name='pcs', company=company)
+    if company.sells_services or company.purchases_services:
+        Unit.objects.create(name="Units", short_name='units', company=company)
 
 
 class UnitConversion(models.Model):
@@ -227,6 +231,6 @@ def set_transactions(model, date, *args):
         transaction.account.save()
         try:
             journal_entry.transactions.add(transaction, bulk=False)
-        except TypeError: # for Django <1.9
+        except TypeError:  # for Django <1.9
             journal_entry.transactions.add(transaction)
         alter(transaction.account, date, diff)
