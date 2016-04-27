@@ -426,6 +426,20 @@ def save_purchase(request):
 class SaleCreate(SaleView, TableObjectMixin):
     template_name = 'sale_form.html'
 
+    def get_context_data(self, *args, **kwargs):
+        context = super(SaleCreate, self).get_context_data(**kwargs)
+        if not self.kwargs:
+            obj = context['obj']
+            tax = self.request.company.settings.invoice_default_tax_application_type
+            tax_scheme = self.request.company.settings.invoice_default_tax_scheme
+            if tax:
+                obj.tax = tax
+            if tax_scheme:
+                obj.tax_scheme = tax_scheme
+            data = self.serializer_class(obj).data
+            context['obj'] = obj
+            context['data'] = data
+        return context
 
 # def sale(request, id=None):
 #     if id:
@@ -444,9 +458,19 @@ def save_sale(request):
     dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
+
+    if params.get('tax_vm').get('tax'):
+        tax = params.get('tax_vm').get('tax')
+
+    if params.get('tax_vm').get('tax') == 'no':
+        tax_scheme_id = None
+    else:
+        tax_scheme_id = params.get('tax_vm').get('tax_scheme')
+
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
                      'party_id': params.get('party_id'), 'due_date': params.get('due_date'),
-                     'credit': params.get('credit'), 'company': request.company}
+                     'credit': params.get('credit'), 'tax': tax, 'tax_scheme_id': empty_to_none(tax_scheme_id), 'company': request.company}
+
     if params.get('id'):
         obj = Sale.objects.get(id=params.get('id'), company=request.company)
     else:
@@ -454,35 +478,48 @@ def save_sale(request):
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
+        dct['tax'] = obj.tax
+        dct['tax_scheme_id'] = obj.tax_scheme_id
         model = SaleRow
         grand_total = 0
         for ind, row in enumerate(params.get('table_view').get('rows')):
             invalid_check = invalid(row, ['item_id', 'quantity', 'unit_id'])
             if invalid_check:
                 continue
-            values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'quantity': row.get('quantity'),
-                      'rate': row.get('rate'), 'unit_id': row.get('unit')['id'], 'discount': row.get('discount'),
-                      'sale': obj}
-            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
-            if not created:
-                submodel = save_model(submodel, values)
-            grand_total += submodel.get_total()
-            dct['rows'][ind] = submodel.id
-            set_transactions(submodel, obj.date,
-                             ['cr', submodel.item.account, submodel.quantity],
-                             )
-            if obj.credit:
-                set_ledger_transactions(submodel, obj.date,
-                                        ['dr', obj.party.account, obj.total],
-                                        ['cr', submodel.item.ledger, obj.total],
-                                        # ['cr', sales_tax_account, tax_amount],
-                                        )
             else:
-                set_ledger_transactions(submodel, obj.date,
-                                        ['dr', Account.objects.get(name='Cash', company=request.company), obj.total],
-                                        ['cr', submodel.item.ledger, obj.total],
-                                        # ['cr', sales_tax_account, tax_amount],
-                                        )
+                if params.get('tax_vm').get('tax') == 'no':
+                    row_tax_scheme_id = None
+                    row.get('row_tax_vm')['tax'] = 'no'
+                else:
+                    row_tax_scheme_id = row.get('row_tax_vm').get('tax_scheme')
+                if params.get('tax_vm').get('tax_scheme') != '0' and params.get('tax_vm').get('tax_scheme') != '':
+                    row_tax_scheme_id = None
+                    row.get('row_tax_vm')['tax'] = 'no'
+
+                values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'quantity': row.get('quantity'),
+                          'rate': row.get('rate'), 'unit_id': row.get('unit')['id'], 'discount': row.get('discount'),
+                          'tax_scheme_id': row_tax_scheme_id,
+                          'sale': obj}
+                submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+                if not created:
+                    submodel = save_model(submodel, values)
+                grand_total += submodel.get_total()
+                dct['rows'][ind] = submodel.id
+                set_transactions(submodel, obj.date,
+                                 ['cr', submodel.item.account, submodel.quantity],
+                                 )
+                if obj.credit:
+                    set_ledger_transactions(submodel, obj.date,
+                                            ['dr', obj.party.account, obj.total],
+                                            ['cr', submodel.item.ledger, obj.total],
+                                            # ['cr', sales_tax_account, tax_amount],
+                                            )
+                else:
+                    set_ledger_transactions(submodel, obj.date,
+                                            ['dr', Account.objects.get(name='Cash', company=request.company), obj.total],
+                                            ['cr', submodel.item.ledger, obj.total],
+                                            # ['cr', sales_tax_account, tax_amount],
+                                            )
         delete_rows(params.get('table_view').get('deleted_rows'), model)
         obj.total_amount = grand_total
         if obj.credit:
