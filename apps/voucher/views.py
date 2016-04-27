@@ -426,6 +426,20 @@ def save_purchase(request):
 class SaleCreate(SaleView, TableObjectMixin):
     template_name = 'sale_form.html'
 
+    def get_context_data(self, *args, **kwargs):
+        context = super(SaleCreate, self).get_context_data(**kwargs)
+        if not self.kwargs:
+            obj = context['obj']
+            tax = self.request.company.settings.purchase_default_tax_application_type
+            tax_scheme = self.request.company.settings.purchase_default_tax_scheme
+            if tax:
+                obj.tax = tax
+            if tax_scheme:
+                obj.tax_scheme = tax_scheme
+            data = self.serializer_class(obj).data
+            context['obj'] = obj
+            context['data'] = data
+        return context
 
 # def sale(request, id=None):
 #     if id:
