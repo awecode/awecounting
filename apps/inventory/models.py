@@ -116,10 +116,10 @@ class InventoryAccount(models.Model):
         return reverse_lazy('view_inventory_account', kwargs={'pk': self.pk})
 
     @staticmethod
-    def get_next_account_no():
+    def get_next_account_no(company):
         from django.db.models import Max
 
-        max_voucher_no = InventoryAccount.objects.all().aggregate(Max('account_no'))['account_no__max']
+        max_voucher_no = InventoryAccount.objects.filter(company_id=company.id).aggregate(Max('account_no'))['account_no__max']
         if max_voucher_no:
             return max_voucher_no + 1
         else:
