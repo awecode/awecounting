@@ -2,9 +2,11 @@ from django.core.urlresolvers import reverse
 from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import render
+
 from apps.ledger.models import Category
 from apps.report.models import ReportSetting
 from awecounting.utils.helpers import save_qs_from_ko
+from awecounting.utils.mixins import group_required
 
 
 class Node(object):
@@ -64,10 +66,12 @@ def get_trial_balance_data(company):
     return root
 
 
+@group_required('Accountant')
 def trial_balance_json(request):
     return JsonResponse(get_trial_balance_data(request.company))
 
 
+@group_required('Accountant')
 def trial_balance(request):
     data = get_trial_balance_data(request.company)
     context = {
@@ -76,6 +80,7 @@ def trial_balance(request):
     return render(request, 'trial_balance.html', context)
 
 
+@group_required('Accountant')
 def save_report_settings(request):
     filter_kwargs = {'company': request.company}
     return JsonResponse(save_qs_from_ko(ReportSetting, filter_kwargs, request.body))

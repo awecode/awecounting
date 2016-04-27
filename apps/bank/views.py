@@ -1,30 +1,28 @@
+import json
+
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from django.views.generic.detail import DetailView
+
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView, AjaxableResponseMixin, TableObjectMixin, \
-    SuperOwnerMixin, OwnerMixin, AccountantMixin, StaffMixin, \
+    AccountantMixin, StaffMixin, \
     group_required
 from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRow, ChequePayment
 from apps.users.models import File as AttachFile
 from apps.users.serializers import FileSerializer
 from .forms import BankAccountForm, BankCashDepositForm, ChequePaymentForm
 from .serializers import ChequeDepositSerializer
-from ..ledger.models import Account, delete_rows, set_transactions
-from datetime import date
-from django.shortcuts import render, get_object_or_404, redirect
-import json
+from ..ledger.models import delete_rows
 from awecounting.utils.helpers import save_model, invalid, write_error
-from django.http import JsonResponse
-from django.views.generic.detail import DetailView
-
-
-class ChequeDepositDetailView(CompanyView, StaffMixin, DetailView):
-    model = ChequeDeposit
 
 
 class BankAccountView(CompanyView):
     model = BankAccount
     success_url = reverse_lazy('bank:bankaccount_list')
     form_class = BankAccountForm
+    check = 'show_bank_vouchers'
 
 
 class BankAccountList(BankAccountView, StaffMixin, ListView):
@@ -49,6 +47,7 @@ class CashDepositView(CompanyView):
     model = BankCashDeposit
     success_url = reverse_lazy('bank:cash_deposit_list')
     form_class = BankCashDepositForm
+    check = 'show_bank_vouchers'
 
 
 class CashDepositDelete(CashDepositView, AccountantMixin, DeleteView):
@@ -77,9 +76,14 @@ class ChequeDepositView(CompanyView):
     model = ChequeDeposit
     success_url = reverse_lazy('bank:cheque_deposit_list')
     serializer_class = ChequeDepositSerializer
+    check = 'show_bank_vouchers'
 
 
 class ChequeDepositList(ChequeDepositView, StaffMixin, ListView):
+    pass
+
+
+class ChequeDepositDetailView(ChequeDepositView, StaffMixin, DetailView):
     pass
 
 
@@ -157,6 +161,7 @@ class ChequePaymentView(CompanyView):
     model = ChequePayment
     success_url = reverse_lazy('bank:cheque_payment_list')
     form_class = ChequePaymentForm
+    check = 'show_bank_vouchers'
 
 
 class ChequePaymentList(ChequePaymentView, StaffMixin, ListView):

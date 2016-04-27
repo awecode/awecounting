@@ -9,7 +9,7 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, StaffMixin, \
-    group_required, TableObjectMixin, UpdateView
+    group_required, TableObjectMixin, UpdateView, CompanyRequiredMixin
 from ..inventory.models import set_transactions
 from ..ledger.models import set_transactions as set_ledger_transactions, Account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
@@ -733,7 +733,7 @@ class CheckifConnected(object):
             return HttpResponseRedirect(reverse('users:party_for_company', kwargs={'company_id': querying_company.id}))
 
 
-class IncomingPurchaseOrder(ListView):
+class IncomingPurchaseOrder(CompanyRequiredMixin, ListView):
     model = PurchaseOrder
     template_name = "voucher/incoming_purchase_order_list.html"
     check = 'show_purchase_orders'
@@ -742,7 +742,7 @@ class IncomingPurchaseOrder(ListView):
         return self.model.objects.filter(party__related_company=self.request.company)
 
 
-class IncomingPurchaseOrderDetailView(CheckifConnected, DetailView):
+class IncomingPurchaseOrderDetailView(CompanyRequiredMixin, CheckifConnected, DetailView):
     model = PurchaseOrder
     check = 'show_purchase_orders'
 
