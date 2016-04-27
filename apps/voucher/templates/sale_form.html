@@ -133,7 +133,7 @@
                     </td>
                     <!-- /ko -->
                     {% if request.company.settings.discount_on_each_purchase_particular %}
-                        <td data-bind="editableText: discount, numeric: true"></td>
+                        <td data-bind="editableText: discount, percentage_numeric: true"></td>
                     {% endif %}
                     <td data-bind="text: total"></td>
                     <td class="hide-on-print text-center">
@@ -168,7 +168,7 @@
                         <td colspan="7">
                             {% trans 'Discount' %}
                         </td>
-                        <td colspan="2" data-bind="editableText: $root.voucher_discount,numeric: true, localize: 1"></td>
+                        <td colspan="2" data-bind="editableText: $root.voucher_discount,percentage_numeric: true, localize: 1"></td>
                     </tr>
                 {% endif %}
 
