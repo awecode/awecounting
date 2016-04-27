@@ -79,6 +79,23 @@ class Company(models.Model):
         verbose_name_plural = _('Companies')
 
 
+class Subscription(models.Model):
+    company = models.ForeignKey(Company)
+    enable_purchase = models.BooleanField(default=True)
+    enable_purchase_order = models.BooleanField(default=True)
+    enable_sales = models.BooleanField(default=True)
+    enable_cash_vouchers = models.BooleanField(default=True)
+    enable_journal_voucher = models.BooleanField(default=True)
+    enable_fixed_assets_voucher = models.BooleanField(default=True)
+    enable_bank_vouchers = models.BooleanField(default=True)
+    enable_share_management = models.BooleanField(default=True)
+    enable_payroll = models.BooleanField(default=True)
+    enable_reports = models.BooleanField(default=True)
+
+    def __str__(self):
+        return 'Subscription for ' + str(self.company)
+
+
 class User(AbstractBaseUser):
     username = models.CharField(max_length=50, unique=True)
     full_name = models.CharField(max_length=245)
