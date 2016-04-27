@@ -7,7 +7,6 @@ from django.contrib.auth.models import Group
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from njango.fields import BSDateField, today
-from apps.users.signals import company_creation
 
 
 class UserManager(BaseUserManager):
@@ -62,6 +61,36 @@ class Company(models.Model):
     def has_shareholders(self):
         return True if self.organization_type in ['partnership', 'corporation'] else False
 
+    def show_purchases(self):
+        return (self.purchases_goods or self.purchases_services) and self.subscription.enable_purchase
+
+    def show_purchase_orders(self):
+        return (self.purchases_goods or self.purchases_services) and self.subscription.enable_purchase_order
+
+    def show_sales(self):
+        return (self.sells_goods or self.sells_services) and self.subscription.enable_sales
+
+    def show_cash_vouchers(self):
+        return self.subscription.enable_cash_vouchers
+
+    def show_journal_vouchers(self):
+        return self.subscription.enable_journal_voucher
+
+    def show_fixed_assets_vouchers(self):
+        return self.subscription.enable_fixed_assets_voucher
+
+    def show_bank_vouchers(self):
+        return self.subscription.enable_bank_vouchers
+
+    def show_shares(self):
+        return self.has_shareholders() and self.subscription.enable_share_management
+
+    def show_payroll(self):
+        return self.subscription.enable_payroll
+
+    def show_reports(self):
+        return self.subscription.enable_reports
+
     def save(self, *args, **kwargs):
         new = False
         if not self.pk:
@@ -81,7 +110,7 @@ class Company(models.Model):
 
 
 class Subscription(models.Model):
-    company = models.OneToOneField(Company)
+    company = models.OneToOneField(Company, related_name='subscription')
     enable_purchase = models.BooleanField(default=True)
     enable_purchase_order = models.BooleanField(default=True)
     enable_sales = models.BooleanField(default=True)
@@ -95,7 +124,6 @@ class Subscription(models.Model):
 
     def __str__(self):
         return 'Subscription for ' + str(self.company)
-
 
 
 class User(AbstractBaseUser):
