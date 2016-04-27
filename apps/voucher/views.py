@@ -1,23 +1,24 @@
 import datetime
-from django.contrib.auth.decorators import login_required
+import json
+
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import JsonResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from django.views.generic import ListView
-import json
+
 from django.views.generic.detail import DetailView
-from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, OwnerMixin, AccountantMixin, StaffMixin, \
+
+from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, StaffMixin, \
     group_required, TableObjectMixin, UpdateView
 from ..inventory.models import set_transactions
 from ..ledger.models import set_transactions as set_ledger_transactions, Account
-from ..users.models import Pin
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
-
-from .forms import CashReceiptForm, JournalVoucherForm, CashPaymentForm, VoucherSettingForm
-from .serializers import FixedAssetSerializer, FixedAssetRowSerializer, AdditionalDetailSerializer, CashReceiptSerializer, \
+from .forms import JournalVoucherForm, VoucherSettingForm
+from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
     CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, JournalVoucherRow, \
-    PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, VoucherSetting
+    PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, \
+    VoucherSetting
 
 
 class FixedAssetView(CompanyView):
@@ -105,7 +106,6 @@ class CashReceiptList(CashReceiptView, ListView):
 
 
 class CashReceiptDetailView(CashReceiptView, DetailView):
-
     def get_context_data(self, **kwargs):
         context = super(CashReceiptDetailView, self).get_context_data(**kwargs)
         context['rows'] = CashReceiptRow.objects.select_related('invoice').filter(cash_receipt=self.object)
@@ -222,14 +222,16 @@ class PurchaseVoucherView(CompanyView):
     model = PurchaseVoucher
     serializer_class = PurchaseVoucherSerializer
     success_url = reverse_lazy("purchase-list")
+    check = 'show_purchases'
+
 
 class SaleView(CompanyView):
     model = Sale
     serializer_class = SaleSerializer
+    check = 'show_sales'
 
 
 class PurchaseVoucherDetailView(PurchaseVoucherView, StaffMixin, DetailView):
-
     def get_context_data(self, **kwargs):
         context = super(PurchaseVoucherDetailView, self).get_context_data(**kwargs)
         context['rows'] = PurchaseVoucherRow.objects.select_related('item', 'unit').filter(purchase=self.object)
@@ -237,7 +239,6 @@ class PurchaseVoucherDetailView(PurchaseVoucherView, StaffMixin, DetailView):
 
 
 class SaleDetailView(SaleView, StaffMixin, DetailView):
-
     def get_context_data(self, **kwargs):
         context = super(SaleDetailView, self).get_context_data(**kwargs)
         context['rows'] = SaleRow.objects.select_related('item', 'unit').filter(sale=self.object)
@@ -246,6 +247,7 @@ class SaleDetailView(SaleView, StaffMixin, DetailView):
 
 class JournalVoucherDetailView(CompanyView, StaffMixin, DetailView):
     model = JournalVoucher
+    check = 'show_journal_vouchers'
 
     def get_context_data(self, **kwargs):
         context = super(JournalVoucherDetailView, self).get_context_data(**kwargs)
@@ -335,10 +337,11 @@ def save_cash_receipt(request):
     return JsonResponse(dct)
 
 
+@group_required('Accountant')
 def save_purchase(request):
     if request.is_ajax():
         params = json.loads(request.body)
-    dct = {'rows': {}, 'tax':{} }
+    dct = {'rows': {}, 'tax': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
 
@@ -354,8 +357,10 @@ def save_purchase(request):
     # else:
     #     voucher_discount = params.get('voucher_discount')
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
-                     'party_id': params.get('party_id'), 'due_date': params.get('due_date'), 'discount': params.get('voucher_discount'),
-                     'credit': params.get('credit'), 'tax': tax, 'tax_scheme_id': empty_to_none(tax_scheme_id), 'company': request.company}
+                     'party_id': params.get('party_id'), 'due_date': params.get('due_date'),
+                     'discount': params.get('voucher_discount'),
+                     'credit': params.get('credit'), 'tax': tax, 'tax_scheme_id': empty_to_none(tax_scheme_id),
+                     'company': request.company}
 
     if params.get('id'):
         obj = PurchaseVoucher.objects.get(id=params.get('id'), company=request.company)
@@ -422,7 +427,6 @@ def save_purchase(request):
     return JsonResponse(dct)
 
 
-
 class SaleCreate(SaleView, TableObjectMixin):
     template_name = 'sale_form.html'
 
@@ -437,7 +441,7 @@ class SaleCreate(SaleView, TableObjectMixin):
 #     data = SaleSerializer(obj).data
 #     return render(request, 'sale_form.html', {'data': data, 'scenario': scenario, 'sale': obj})
 
-
+@group_required('Accountant')
 def save_sale(request):
     if request.is_ajax():
         params = json.loads(request.body)
@@ -493,15 +497,15 @@ def save_sale(request):
     return JsonResponse(dct)
 
 
-
 class SaleList(SaleView, ListView):
     pass
+
 
 # def sale_list(request):
 #     objects = Sale.objects.filter(company=request.company).prefetch_related('rows')
 #     return render(request, 'sale_list.html', {'objects': objects})
 
-
+@group_required('Accountant')
 def sale_day(request, voucher_date):
     objects = Sale.objects.filter(date=voucher_date, company=request.company).prefetch_related('rows')
     total_amount = 0
@@ -521,7 +525,7 @@ def sale_day(request, voucher_date):
     }
     return render(request, 'sale_report.html', context)
 
-
+@group_required('Accountant')
 def sale_date_range(request, from_date, to_date):
     objects = Sale.objects.filter(date__gte=from_date, date__lte=to_date, company=request.company).prefetch_related('rows')
     total_amount = 0
@@ -542,7 +546,7 @@ def sale_date_range(request, from_date, to_date):
     }
     return render(request, 'sale_report.html', context)
 
-
+@group_required('Accountant')
 def sales_report_router(request):
     if request.GET.get('date'):
         return sale_day(request, request.GET.get('date'))
@@ -553,12 +557,12 @@ def sales_report_router(request):
     else:
         return redirect(reverse_lazy('home'))
 
-
+@group_required('Accountant')
 def daily_sale_today(request):
     today = datetime.date.today()
     return sale_day(request, today)
 
-
+@group_required('Accountant')
 def daily_sale_yesterday(request):
     yesterday = datetime.date.today() - datetime.timedelta(1)
     return sale_day(request, yesterday)
@@ -569,6 +573,7 @@ class JournalVoucherView(CompanyView):
     success_url = reverse_lazy('journal_voucher_list')
     form_class = JournalVoucherForm
     serializer_class = JournalVoucherSerializer
+    check = 'show_journal_vouchers'
 
 
 class JournalVoucherList(JournalVoucherView, ListView):
@@ -589,7 +594,7 @@ class JournalVoucherCreate(JournalVoucherView, TableObjectMixin):
 #     data = JournalVoucherSerializer(journal_voucher).data
 #     return render(request, 'voucher/journal_voucher_form.html', {'data': data, 'scenario': scenario})
 
-
+@group_required('Accountant')
 def journal_voucher_save(request):
     if request.is_ajax():
         params = json.loads(request.body)
@@ -632,13 +637,16 @@ class PurchaseOrderView(CompanyView):
     model = PurchaseOrder
     serializer_class = PurchaseOrderSerializer
     success_url = reverse_lazy("purchase_order_list")
+    check = 'show_purchase_orders'
 
 
 class PurchaseOrderList(PurchaseOrderView, ListView):
     pass
 
+
 class PurchaseOrderDelete(PurchaseOrderView, DeleteView):
     pass
+
 
 # def purchase_list(request):
 #     obj = PurchaseOrder.objects.filter(company=request.company)
@@ -650,17 +658,16 @@ class PurchaseOrderCreate(PurchaseOrderView, TableObjectMixin):
 
 
 class PurchaseOrderDetailView(PurchaseOrderView, StaffMixin, DetailView):
-
     def get_context_data(self, **kwargs):
         context = super(PurchaseOrderDetailView, self).get_context_data(**kwargs)
         context['rows'] = PurchaseOrderRow.objects.select_related('item', 'unit').filter(purchase_order=self.object)
         return context
 
-
+@group_required('Accountant')
 def save_purchase_order(request):
     if request.is_ajax():
         params = json.loads(request.body)
-    dct = {'rows': {} }
+    dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
 
@@ -680,7 +687,8 @@ def save_purchase_order(request):
             if invalid(row, ['item_id', 'quantity', 'unit_id']):
                 continue
             else:
-                values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'specification': row.get('specification'), 'quantity': row.get('quantity'),
+                values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'specification': row.get('specification'),
+                          'quantity': row.get('quantity'),
                           'rate': row.get('rate'), 'unit_id': row.get('unit')['id'], 'remarks': row.get('remarks'),
                           'purchase_order': obj}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
@@ -709,7 +717,7 @@ def save_purchase_order(request):
 
         # obj.total_amount = grand_total
         # if obj.credit:
-            # obj.pending_amount = grand_total
+        # obj.pending_amount = grand_total
         # obj.save()
     except Exception as e:
         dct = write_error(dct, e)
@@ -728,18 +736,20 @@ class CheckifConnected(object):
 class IncomingPurchaseOrder(ListView):
     model = PurchaseOrder
     template_name = "voucher/incoming_purchase_order_list.html"
+    check = 'show_purchase_orders'
 
     def get_queryset(self):
         return self.model.objects.filter(party__related_company=self.request.company)
 
+
 class IncomingPurchaseOrderDetailView(CheckifConnected, DetailView):
     model = PurchaseOrder
+    check = 'show_purchase_orders'
 
     def get_context_data(self, **kwargs):
         context = super(IncomingPurchaseOrderDetailView, self).get_context_data(**kwargs)
         context['rows'] = PurchaseOrderRow.objects.select_related('item', 'unit').filter(purchase_order=self.object)
         return context
-
 
 
 class VoucherSettingUpdateView(SuperOwnerMixin, UpdateView):

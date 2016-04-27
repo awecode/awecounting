@@ -1,3 +1,5 @@
+from functools import wraps
+
 from django.http import JsonResponse
 from django.views.generic.edit import UpdateView as BaseUpdateView, CreateView as BaseCreateView, DeleteView as BaseDeleteView
 from django.contrib import messages
@@ -5,14 +7,11 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.contrib.admin import ModelAdmin
-
 from modeltranslation.admin import TranslationAdmin
 
 from .helpers import json_from_object
-
-from functools import wraps
 
 
 class DeleteView(BaseDeleteView):
@@ -36,6 +35,9 @@ class CompanyRequiredMixin(LoginRequiredMixin):
     def dispatch(self, request, *args, **kwargs):
         if not request.company:
             raise PermissionDenied()
+        if hasattr(self, 'check'):
+            if not getattr(request.company, self.check)():
+                raise PermissionDenied()
         return super(CompanyRequiredMixin, self).dispatch(request, *args, **kwargs)
 
 
