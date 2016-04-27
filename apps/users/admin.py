@@ -2,10 +2,11 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin, UserChangeForm as DjangoUserChangeForm, \
     UserCreationForm as DjangoUserCreationForm
 from django import forms
+from django.contrib.admin import ModelAdmin
+from apps.report.admin import ReportSettingStacked
+
 from awecounting.utils.mixins import CompanyAdmin
 from .models import File, User, GroupProxy, Company, Role, Pin, Subscription
-from django.contrib.admin import ModelAdmin
-
 
 
 class UserCreationForm(DjangoUserCreationForm):
@@ -105,17 +106,20 @@ class GroupAdmin(admin.ModelAdmin):
     #     return False
     pass
 
+
 class FileInline(admin.TabularInline):
     model = File
-    
+
+
 class SubscriptionStacked(admin.StackedInline):
     model = Subscription
 
 
 class _CompanyAdmin(ModelAdmin):
     from ..voucher.admin import VoucherSettingStacked
+
     inlines = [
-        VoucherSettingStacked, SubscriptionStacked
+        VoucherSettingStacked, ReportSettingStacked, SubscriptionStacked
     ]
 
 
@@ -127,5 +131,4 @@ admin.site.register(Role, CompanyAdmin)
 admin.site.register(Company, _CompanyAdmin)
 admin.site.register(File)
 admin.site.register(Pin)
-
-
+admin.site.register(Subscription)

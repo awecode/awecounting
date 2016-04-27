@@ -6,7 +6,10 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Group
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from django.dispatch import receiver
 from njango.fields import BSDateField, today
+
+from signals import company_creation
 
 
 class UserManager(BaseUserManager):
@@ -124,6 +127,12 @@ class Subscription(models.Model):
 
     def __str__(self):
         return 'Subscription for ' + str(self.company)
+
+
+@receiver(company_creation)
+def handle_company_creation(sender, **kwargs):
+    company = kwargs.get('company')
+    Subscription.objects.create(company=company)
 
 
 class User(AbstractBaseUser):

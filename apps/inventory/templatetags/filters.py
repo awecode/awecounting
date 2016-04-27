@@ -92,6 +92,8 @@ def handler(obj):
 
 @register.filter
 def jsonify(object):
+    import ipdb
+    # ipdb.set_trace()
     if isinstance(object, QuerySet):
         return serializers.serialize('json', object)
     if isinstance(object, Model):

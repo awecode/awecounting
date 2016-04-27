@@ -1,7 +1,7 @@
 import datetime
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
@@ -41,7 +41,7 @@ class Account(models.Model):
 
     def get_absolute_url(self):
         # return '/ledger/' + str(self.id)
-        return reverse_lazy('view_account', kwargs={'pk': self.pk})
+        return reverse('view_account', kwargs={'pk': self.pk})
 
     # def get_last_day_last_transaction(self):
     #     transactions = Transaction.objects.filter(account=self, date__lt=date.today()).order_by('-id', '-date')[:1]

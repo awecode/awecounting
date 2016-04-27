@@ -41,7 +41,7 @@ def item_search(request):
     if len(obj) == 1:
         itm = obj[0]
         inventory_account = InventoryAccount.objects.get(item__name=itm.name, company=request.company)
-        url = reverse('view_inventory_account', kwargs={'id': inventory_account.id})
+        url = reverse('view_inventory_account', kwargs={'pk': inventory_account.id})
         return redirect(url)
     else:
         return render(request, 'item_search.html', {'objects': obj})
