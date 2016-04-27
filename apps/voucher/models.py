@@ -178,6 +178,7 @@ class Sale(models.Model):
     tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'), ]
     tax = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True, blank=True)
     tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True)
+    discount = models.CharField(max_length=50, blank=True, null=True)
 
 
     def __init__(self, *args, **kwargs):
