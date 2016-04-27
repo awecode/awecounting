@@ -257,7 +257,7 @@ function PurchaseViewModel(data) {
                     if (msg.tax_scheme_id != "" && msg.tax_scheme_id != null){
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].row_tax_vm.tax_scheme(0);
-                    }
+                        }
                     }
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];
