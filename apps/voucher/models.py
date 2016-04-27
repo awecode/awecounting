@@ -1,19 +1,23 @@
 from __future__ import unicode_literals
 
+from datetime import date
+
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse_lazy
 from njango.fields import BSDateField, today
-
 from django.db import models
+from njango.middleware import get_calendar
+from njango.nepdate import tuple_from_string, string_from_tuple, bs2ad, bs, ad2bs
+from django.utils.translation import ugettext_lazy as _
+
+from django.dispatch import receiver
+
 from ..inventory.models import Item, Unit
 from ..ledger.models import Party, Account
 from ..users.models import Company
 from awecounting.utils.helpers import get_next_voucher_no, calculate_tax
-from django.utils.translation import ugettext_lazy as _
-from datetime import date
 from ..tax.models import TaxScheme
-from awecounting.utils.helpers import empty_to_zero, get_discount_with_percent
-from django.dispatch import receiver
+from awecounting.utils.helpers import get_discount_with_percent
 from ..users.signals import company_creation
 
 
@@ -147,7 +151,6 @@ class PurchaseOrder(models.Model):
         return total
 
 
-
 class PurchaseOrderRow(models.Model):
     sn = models.PositiveIntegerField()
     item = models.ForeignKey(Item)
@@ -179,7 +182,6 @@ class Sale(models.Model):
     tax = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True, blank=True)
     tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True)
     discount = models.CharField(max_length=50, blank=True, null=True)
-
 
     def __init__(self, *args, **kwargs):
         super(Sale, self).__init__(*args, **kwargs)
@@ -411,7 +413,7 @@ class CashPaymentRow(models.Model):
             overdue_days = date.today() - self.invoice.due_date
             return overdue_days.days
         return ''
-        
+
     class Meta:
         unique_together = ('invoice', 'cash_payment')
 
@@ -536,6 +538,7 @@ class VoucherSetting(models.Model):
 
     def __unicode__(self):
         return self.company.name
+
 
 @receiver(company_creation)
 def handle_company_creation(sender, **kwargs):

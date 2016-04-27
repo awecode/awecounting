@@ -18,7 +18,7 @@
     </script>
     <script>
         {% if not request.company.settings.invoice_default_tax_scheme and request.company.settings.discount_on_each_invoice_particular or request.company.settings.invoice_default_tax_scheme and request.company.settings.discount_on_each_invoice_particular %}
-           colspan = 6;
+            colspan = 6;
         {% else %}
             colspan = 5;
         {% endif %}
@@ -47,9 +47,10 @@
                     <select data-bind="selectize: $root.parties, value: party_id, object: party"
                             data-url="{% url 'party_add' %}" id="party"></select>
                 </div>
-                
+
                 <div class="col-md-6 col-sm-12 hidden-print" data-bind="if: party_balance">
                     <label>{% trans 'Due' %}</label>
+
                     <div data-bind="text: party_balance"></div>
                 </div>
             </div>
@@ -77,13 +78,14 @@
             <div class="row" data-bind="with: tax_vm">
                 <div class="col-md-6 col-sm-12">
                     <label for="party">{% trans 'Tax' %}</label>
-                    <select name="tax" class="form-control" id="tax" data-bind="selectize: tax_choices, optionsText: 'value', value: tax"></select>
+                    <select name="tax" class="form-control" id="tax"
+                            data-bind="selectize: tax_choices, optionsText: 'value', value: tax"></select>
                 </div>
                 <div data-bind="visible: tax_scheme_visibility">
                     <div class="col-md-6 col-sm-12">
                         <label for="due_date">{% trans 'Tax Scheme' %}</label>
                         <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme"
-                        data-url="{% url 'tax_scheme_add' %}"></select>
+                                data-url="{% url 'tax_scheme_add' %}"></select>
                     </div>
                 </div>
             </div>
@@ -127,7 +129,7 @@
                     <!-- ko with: row_tax_vm -->
                     <td data-bind="visible: $root.tax_vm.get_scheme()">
                         <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme"
-                        data-url="{% url 'tax_scheme_add' %}"></select>
+                                data-url="{% url 'tax_scheme_add' %}"></select>
                     </td>
                     <!-- /ko -->
                     {% if request.company.settings.discount_on_each_purchase_particular %}
@@ -164,12 +166,12 @@
                 {% if request.company.settings.single_discount_on_whole_purchase %}
                     <tr class="discount-total total">
                         <td colspan="7">
-                            {% trans 'Discount on voucher' %}
+                            {% trans 'Discount' %}
                         </td>
                         <td colspan="2" data-bind="editableText: $root.voucher_discount,numeric: true, localize: 1"></td>
                     </tr>
                 {% endif %}
-              
+
                 <tr class="grand-total total">
                     <td colspan="7">
                         {% trans 'Grand Amount' %}
