@@ -27,6 +27,7 @@ function CashPaymentVM(data) {
     self.current_balance = ko.observable();
     self.amount = ko.observable();
     self.voucher_no = ko.observable();
+    self.rows = ko.observableArray();
     self.table_vm = ko.observable({
         'rows': function () {
         }, 'get_total': function () {
@@ -91,8 +92,8 @@ function CashPaymentVM(data) {
                 dataType: 'json',
                 async: false,
                 success: function (data) {
-                    if (data.length) {
-                        self.invoices = data;
+                    if (data['results'].length) {
+                        self.invoices = data['results'];
                         for (k in self.rows()) {
                             var row = self.rows()[k];
                             $.each(self.invoices, function (i, o) {
