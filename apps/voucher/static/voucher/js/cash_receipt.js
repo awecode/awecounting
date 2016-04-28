@@ -12,7 +12,7 @@ function CashReceiptVM(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.parties = data;
+            self.parties = ko.observableArray(data['results']);
         }
     });
 
@@ -27,6 +27,7 @@ function CashReceiptVM(data) {
     self.current_balance = ko.observable();
     self.amount = ko.observable();
     self.voucher_no = ko.observable();
+    self.rows = ko.observableArray();
     self.table_vm = ko.observable({
         'rows': function () {
         }, 'get_total': function () {
@@ -97,8 +98,9 @@ function CashReceiptVM(data) {
                 }
             });
             return round2(sum);
-            
-        };
+
+        }
+        ;
     }
 
     self.row_pending_amount = function () {
@@ -110,8 +112,9 @@ function CashReceiptVM(data) {
                 }
             });
             return round2(sum);
-            
-        };
+
+        }
+        ;
     }
 
     self.validate = function () {
@@ -203,12 +206,13 @@ function CashReceiptRowVM(row) {
 
     self.actual_pending_amount = self.pending_amount()
 
-    self.payment.subscribe( function() {
+    self.payment.subscribe(function () {
         if (typeof(self.payment()) == 'undefined' || self.payment() == '') {
             self.pending_amount(self.actual_pending_amount);
         } else {
             self.pending_amount(self.actual_pending_amount - self.payment())
-        };
+        }
+        ;
     });
 
     self.overdue_days = function () {

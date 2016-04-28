@@ -10,7 +10,7 @@ from django.views.generic.detail import DetailView
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, StaffMixin, \
     group_required, TableObjectMixin, UpdateView, CompanyRequiredMixin, CreateView, TableObject
 from ..inventory.models import set_transactions
-from ..ledger.models import set_transactions as set_ledger_transactions, Account, get_ledger
+from ..ledger.models import set_transactions as set_ledger_transactions, get_ledger
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
 from .forms import JournalVoucherForm, VoucherSettingForm, CashPaymentForm, CashReceiptForm
 from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
@@ -116,6 +116,10 @@ class CashReceiptCreate(CashReceiptView, CreateView, TableObject):
     template_name = 'cash_receipt.html'
 
 
+class CashReceiptUpdate(CashReceiptView, UpdateView, TableObject):
+    template_name = 'cash_receipt.html'
+
+
 class CashPaymentView(CompanyView):
     model = CashPayment
     serializer_class = CashPaymentSerializer
@@ -127,6 +131,10 @@ class CashPaymentList(CashPaymentView, ListView):
 
 
 class CashPaymentCreate(CashPaymentView, CreateView, TableObject):
+    template_name = 'cash_payment.html'
+
+
+class CashPaymentUpdate(CashPaymentView, UpdateView, TableObject):
     template_name = 'cash_payment.html'
 
 
@@ -301,7 +309,7 @@ def save_cash_receipt(request):
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = CashReceiptRow
-        cash_account = Account.objects.get(name='Cash', company=request.company)
+        cash_account = get_ledger(request, 'Cash')
         if params.get('table_vm').get('rows'):
             total = 0
             for index, row in enumerate(params.get('table_vm').get('rows')):
@@ -330,7 +338,7 @@ def save_cash_receipt(request):
             obj.amount = params.get('amount')
         set_ledger_transactions(obj, obj.date,
                                 ['dr', cash_account, obj.amount],
-                                ['cr', obj.party.account, obj.amount]
+                                ['cr', obj.party.customer_ledger, obj.amount]
                                 )
         # obj.status = 'Unapproved'
         obj.save()

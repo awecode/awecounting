@@ -42,13 +42,13 @@ web_urls = [
 
     url(r'^cash_receipt/list/$', views.CashReceiptList.as_view(), name='cash_receipt_list'),
     url(r'^cash_receipt/create/$', views.CashReceiptCreate.as_view(), name='cash_receipt_add'),
-    url(r'^cash_receipt/(?P<pk>[0-9]+)/$', views.CashReceiptCreate.as_view(), name='cash_receipt_edit'),
+    url(r'^cash_receipt/(?P<pk>[0-9]+)/$', views.CashReceiptUpdate.as_view(), name='cash_receipt_edit'),
     url(r'^cash-receipt/save/$', views.save_cash_receipt, name='cash_receipt_save'),
     url(r'^cash_receipt/detail/(?P<pk>[0-9]+)/$', views.CashReceiptDetailView.as_view(), name='cash_receipt_detail'),
 
     url(r'^cash_payment/list/$', views.CashPaymentList.as_view(), name='cash_payment_list'),
     url(r'^cash_payment/create/$', views.CashPaymentCreate.as_view(), name='cash_payment_add'),
-    url(r'^cash_payment/(?P<pk>[0-9]+)/$', views.CashPaymentCreate.as_view(), name='cash_payment_edit'),
+    url(r'^cash_payment/(?P<pk>[0-9]+)/$', views.CashPaymentUpdate.as_view(), name='cash_payment_edit'),
     url(r'^cash_payment/save/$', views.save_cash_payment, name='cash_payment_save'),
     url(r'^cash_payment/detail/(?P<pk>[0-9]+)/$', views.CashPaymentDetailView.as_view(), name='cash_payment_detail'),
 
