@@ -3,10 +3,10 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from . import views, api
 
 web_urls = [
-    url(r'^tax_scheme/$', views.TaxSchemeList.as_view(), name='tax_scheme_list'),
-    url(r'^tax_scheme/add/$', views.TaxSchemeCreate.as_view(), name='tax_scheme_add'),
-    url(r'^tax_scheme/edit/(?P<pk>\d+)/$', views.TaxSchemeUpdate.as_view(), name='tax_scheme_edit'),
-    url(r'^tax_scheme/delete/(?P<pk>\d+)/$', views.TaxSchemeDelete.as_view(), name='tax_scheme_delete'),
+    url(r'^schemes/$', views.TaxSchemeList.as_view(), name='tax_scheme_list'),
+    url(r'^scheme/add/$', views.TaxSchemeCreate.as_view(), name='tax_scheme_add'),
+    url(r'^scheme/edit/(?P<pk>\d+)/$', views.TaxSchemeUpdate.as_view(), name='tax_scheme_edit'),
+    url(r'^scheme/delete/(?P<pk>\d+)/$', views.TaxSchemeDelete.as_view(), name='tax_scheme_delete'),
 ]
 
 api_urls = [
