@@ -256,6 +256,7 @@ class SaleRow(models.Model):
     unit = models.ForeignKey(Unit)
     sale = models.ForeignKey(Sale, related_name='rows')
     tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True)
+    journal_entry = GenericRelation(JournalEntry)
 
     def get_total(self):
         return float(self.quantity) * float(self.rate) - float(self.discount)
