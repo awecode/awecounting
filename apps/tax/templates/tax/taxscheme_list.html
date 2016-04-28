@@ -29,6 +29,7 @@
                     <th>{% anchor short_name _('Short Name') %}</th>
                     <th>{% anchor percent _('Percent') %}</th>
                     <th>{% anchor recoverable _('Recoverable') %}</th>
+                    <th></th>
                     </thead>
                     <tbody>
                     {% for object in sorted_objects %}
@@ -36,12 +37,19 @@
                             <td>
                                 <a href="{% url 'tax_scheme_edit' object.pk %}">{{ object.name }}</a>
                             </td>
-                           <td>
+                            <td>
                                 <a href="{% url 'tax_scheme_edit' object.pk %}">{{ object.short_name }}</a>
-                            </td>   <td>
+                            </td>
+                            <td>
                                 <a href="{% url 'tax_scheme_edit' object.pk %}">{{ object.percent }}</a>
-                            </td>   <td>
+                            </td>
+                            <td>
                                 <a href="{% url 'tax_scheme_edit' object.pk %}">{{ object.recoverable }}</a>
+                            </td>
+                            <td>
+                                {% if object.ledger %}
+                                    <a href="{% url 'view_ledger' object.ledger.pk %}">{% trans 'View Ledger' %}</a>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}

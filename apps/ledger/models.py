@@ -364,7 +364,7 @@ def handle_company_creation(sender, **kwargs):
     sales.save()
 
     Account(name='Non Tax Sales', category=sales, code='4-0006', company=company).save()
-    Account(name='Sales', category=sales, tax_rate=8.25, code='4-0008', company=company).save()
+    # Account(name='Sales', category=sales, tax_rate=8.25, code='4-0008', company=company).save()
 
     direct_income = Category(name='Direct Income', parent=income, company=company)
     direct_income.save()
@@ -449,7 +449,7 @@ class Party(models.Model):
         ledger.company = self.company
         if self.type == 'Customer':
             if not self.customer_ledger:
-                ledger.category = Category.objects.get(name='Customers', company=self.company)
+                ledger.category = Category.objects.get(name='Customers', parent__name='Account Receivables', company=self.company)
                 ledger.code = 'C-' + str(self.id)
                 ledger.save()
                 self.customer_ledger = ledger
@@ -458,7 +458,7 @@ class Party(models.Model):
                 self.supplier_ledger = None
         elif self.type == 'Supplier':
             if not self.supplier_ledger:
-                ledger.category = Category.objects.get(name='Suppliers', company=self.company)
+                ledger.category = Category.objects.get(name='Suppliers', parent__name='Account Payables', company=self.company)
                 ledger.code = 'S-' + str(self.id)
                 ledger.save()
                 self.supplier_ledger = ledger

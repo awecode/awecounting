@@ -2,7 +2,7 @@ from django.db import models
 from django.dispatch import receiver
 
 from ..users.signals import company_creation
-from ..ledger.models import Account, Party
+from ..ledger.models import Account, Party, Category
 from ..users.models import Company
 
 
@@ -11,7 +11,18 @@ class TaxScheme(models.Model):
     short_name = models.CharField(max_length=5, blank=True, null=True)
     percent = models.FloatField()
     recoverable = models.BooleanField(default=False)
+    ledger = models.ForeignKey(Account, null=True)
     company = models.ForeignKey(Company)
+
+    def save(self, *args, **kwargs):
+        super(TaxScheme, self).save(*args, **kwargs)
+        if not self.ledger:
+            ledger = Account(name=self.name, company=self.company)
+            ledger.category = Category.objects.get(name='Duties & Taxes', parent__name='Liabilities', company=self.company)
+            ledger.code = 'T-' + str(self.id)
+            ledger.save()
+            self.ledger = ledger
+            self.save()
 
     @property
     def get_name(self):
@@ -21,15 +32,6 @@ class TaxScheme(models.Model):
 
     def get_class_name(self):
         return self.__class__.__name__
-
-    def save(self, *args, **kwargs):
-        if self.pk is None:
-            account = Account(name=self.name)
-            account.company = self.company
-            account.add_category('Duties & Taxes')
-            account.save()
-            self.account = account
-        super(TaxScheme, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name + ' (' + str(self.percent) + '%)'
