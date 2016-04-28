@@ -106,6 +106,30 @@ class TableObjectMixin(TemplateView):
         return context
 
 
+class TableObject(object):
+    def get_context_data(self, *args, **kwargs):
+        context = super(TableObjectMixin, self).get_context_data(**kwargs)
+        if self.kwargs:
+            pk = int(self.kwargs.get('pk'))
+            obj = get_object_or_404(self.model, pk=pk, company=self.request.company)
+            scenario = 'Update'
+        else:
+            obj = self.model(company=self.request.company)
+            # if obj.__class__.__name__ == 'PurchaseVoucher':
+            #     tax = self.request.company.settings.purchase_default_tax_application_type
+            #     tax_scheme = self.request.company.settings.purchase_default_tax_scheme
+            #     if tax:
+            #         obj.tax = tax
+            #     if tax_scheme:
+            #         obj.tax_scheme = tax_scheme
+            scenario = 'Create'
+        data = self.serializer_class(obj).data
+        context['data'] = data
+        context['scenario'] = scenario
+        context['obj'] = obj
+        return context
+
+
 class CompanyView(CompanyRequiredMixin):
     def form_valid(self, form):
         form.instance.company = self.request.company

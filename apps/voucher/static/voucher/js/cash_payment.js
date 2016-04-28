@@ -199,7 +199,7 @@ function CashPaymentVM(data) {
     //         return true;
     // }
 
-    if (self.rows().length) {
+    if (typeof self.rows=='function' && self.rows().length) {
         setTimeout(self.load_related_invoices, 500);
     }
 }

@@ -8,11 +8,11 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, StaffMixin, \
-    group_required, TableObjectMixin, UpdateView, CompanyRequiredMixin
+    group_required, TableObjectMixin, UpdateView, CompanyRequiredMixin, CreateView, TableObject
 from ..inventory.models import set_transactions
 from ..ledger.models import set_transactions as set_ledger_transactions, Account, get_ledger
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
-from .forms import JournalVoucherForm, VoucherSettingForm
+from .forms import JournalVoucherForm, VoucherSettingForm, CashPaymentForm, CashReceiptForm
 from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
     CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, JournalVoucherRow, \
@@ -98,6 +98,7 @@ def save_fixed_asset(request):
 class CashReceiptView(CompanyView):
     model = CashReceipt
     serializer_class = CashReceiptSerializer
+    form_class = CashReceiptForm
 
 
 class CashReceiptList(CashReceiptView, ListView):
@@ -111,13 +112,22 @@ class CashReceiptDetailView(CashReceiptView, DetailView):
         return context
 
 
+class CashReceiptCreate(CashReceiptView, CreateView, TableObject):
+    template_name = 'cash_receipt.html'
+
+
 class CashPaymentView(CompanyView):
     model = CashPayment
     serializer_class = CashPaymentSerializer
+    form_class = CashPaymentForm
 
 
 class CashPaymentList(CashPaymentView, ListView):
     pass
+
+
+class CashPaymentCreate(CashPaymentView, CreateView, TableObject):
+    template_name = 'cash_payment.html'
 
 
 class CashPaymentDetailView(DetailView):
@@ -127,10 +137,6 @@ class CashPaymentDetailView(DetailView):
         context = super(CashPaymentDetailView, self).get_context_data(**kwargs)
         context['rows'] = CashPaymentRow.objects.select_related('invoice').filter(cash_payment=self.object)
         return context
-
-
-class CashReceiptCreate(CashReceiptView, TableObjectMixin):
-    template_name = 'cash_receipt.html'
 
 
 # @login_required
@@ -145,9 +151,6 @@ class CashReceiptCreate(CashReceiptView, TableObjectMixin):
 #     data = CashReceiptSerializer(voucher).data
 #     return render(request, 'cash_receipt.html', {'form': form, 'scenario': scenario, 'data': data})
 
-
-class CashPaymentCreate(CashPaymentView, TableObjectMixin):
-    template_name = 'cash_payment.html'
 
 
 # @login_required
@@ -179,7 +182,7 @@ def save_cash_payment(request):
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = CashPaymentRow
-        cash_account = Account.objects.get(name='Cash', company=request.company)
+        cash_account = get_ledger(request, 'Cash')
         if params.get('table_vm').get('rows'):
             total = 0
             for index, row in enumerate(params.get('table_vm').get('rows')):
@@ -208,7 +211,7 @@ def save_cash_payment(request):
             obj.amount = params.get('amount')
         set_ledger_transactions(obj, obj.date,
                                 ['cr', cash_account, obj.amount],
-                                ['dr', obj.party.account, obj.amount]
+                                ['dr', obj.party.supplier_ledger, obj.amount]
                                 )
         # obj.status = 'Unapproved'
         obj.save()
