@@ -1,5 +1,6 @@
 from django.db import models
 from django.dispatch import receiver
+
 from ..users.signals import company_creation
 from ..ledger.models import Account, Party
 from ..users.models import Company
@@ -34,12 +35,15 @@ class TaxScheme(models.Model):
         return self.name + ' (' + str(self.percent) + '%)'
 
 
-class PartyTaxPreference(models.Model):    
+class PartyTaxPreference(models.Model):
     company = models.ForeignKey(Company)
-    tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'), ('no-peference', 'No Perference'), ]
-    default_tax_application_type = models.CharField(max_length=15, choices=tax_choices, default='inclusive', null=True, blank=True)
+    tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'),
+                   ('no-preference', 'No Preference'), ]
+    default_tax_application_type = models.CharField(max_length=15, choices=tax_choices, default='inclusive', null=True,
+                                                    blank=True)
     tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True)
     party = models.OneToOneField(Party, related_name="tax_preference")
+
 
 @receiver(company_creation)
 def handle_company_creation(sender, **kwargs):

@@ -12,7 +12,7 @@ function CashPaymentVM(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.parties = data;
+            self.parties = ko.observableArray(data['results']);
         }
     });
 

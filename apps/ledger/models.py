@@ -438,6 +438,11 @@ class Party(models.Model):
     def get_absolute_url(self):
         return reverse_lazy('party_edit', kwargs={'pk': self.pk})
 
+    @property
+    def balance(self):
+        return zero_for_none(self.customer_ledger.current_dr) - zero_for_none(self.customer_ledger.current_cr) + zero_for_none(
+            self.supplier_ledger.current_cr) - zero_for_none(self.supplier_ledger.current_dr)
+
     def save(self, *args, **kwargs):
         super(Party, self).save(*args, **kwargs)
         ledger = Account(name=self.name)
@@ -466,7 +471,7 @@ class Party(models.Model):
                 ledger.category = Category.objects.get(name='Customers', company=self.company)
                 ledger.code = 'C-' + str(self.id)
                 ledger.save()
-                self.customer_ledger= ledger
+                self.customer_ledger = ledger
             if not self.supplier_ledger:
                 ledger2 = Account(name=self.name + ' (Payable)')
                 ledger2.company = self.company
