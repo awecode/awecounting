@@ -157,17 +157,17 @@ class Item(models.Model):
                 self.account = account
         super(Item, self).save(*args, **kwargs)
         if not self.purchase_ledger:
-            purchase_ledger = Account(name=self.name + ' Purchases')
+            purchase_ledger = Account(name=self.name + ' Purchases', company=self.company)
             purchase_ledger.category = Category.objects.get(name='Purchase', company=self.company, parent__name='Expenses')
             purchase_ledger.code = 'P-' + str(self.id)
             purchase_ledger.save()
             self.purchase_ledger = purchase_ledger
         if not self.sale_ledger:
-            sales_ledger = Account(name=self.name + ' Sales')
-            sales_ledger.category = Category.objects.get(name='Sales', company=self.company, parent__name='Income')
-            sales_ledger.code = 'S-' + str(self.id)
-            sales_ledger.save()
-            self.sales_ledger = sales_ledger
+            sale_ledger = Account(name=self.name + ' Sales', company=self.company)
+            sale_ledger.category = Category.objects.get(name='Sales', company=self.company, parent__name='Income')
+            sale_ledger.code = 'S-' + str(self.id)
+            sale_ledger.save()
+            self.sale_ledger = sale_ledger
         super(Item, self).save(*args, **kwargs)
 
 

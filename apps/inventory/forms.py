@@ -37,7 +37,7 @@ class ItemForm(HTML5BootstrapModelForm, KOModelForm, TranslationModelForm):
     class Meta:
         model = Item
         fields = '__all__'
-        exclude = ['other_properties', 'account', 'ledger', 'company']
+        exclude = ['other_properties', 'account', 'ledger', 'company', 'sale_ledger', 'purchase_ledger']
         widgets = {
             'unit': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('unit_add')}),
         }
