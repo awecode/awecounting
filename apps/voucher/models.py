@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from datetime import date
+from django.contrib.contenttypes.fields import GenericRelation
 
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse_lazy
@@ -13,7 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.dispatch import receiver
 
 from ..inventory.models import Item, Unit
-from ..ledger.models import Party, Account
+from ..ledger.models import Party, Account, JournalEntry
 from ..users.models import Company
 from awecounting.utils.helpers import get_next_voucher_no, calculate_tax
 from ..tax.models import TaxScheme
@@ -112,6 +113,7 @@ class PurchaseVoucherRow(models.Model):
     tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True)
     unit = models.ForeignKey(Unit)
     purchase = models.ForeignKey(PurchaseVoucher, related_name='rows')
+    journal_entry = GenericRelation(JournalEntry)
 
     def get_total(self):
         total = float(self.quantity) * float(self.rate)

@@ -1,13 +1,13 @@
 import datetime
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse_lazy, reverse
 
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
+
 from django.db.models import F
 
 from apps.users.models import Company
@@ -184,8 +184,6 @@ def set_transactions(submodel, date, *args):
         })
     for arg in args:
         # transaction = Transaction(account=arg[1], dr_amount=arg[2])
-        if arg[1] == 'cash':
-            arg[1] = Account.objects.get(name='Cash')
         matches = journal_entry.transactions.filter(account=arg[1])
         if not matches:
             transaction = Transaction()
@@ -450,3 +448,12 @@ class Party(models.Model):
     class Meta:
         verbose_name_plural = 'Parties'
         unique_together = ['company', 'related_company']
+
+
+def get_ledger(company, name):
+    if not company.__class__.__name__ == 'Company':
+        company = company.company
+    if name in ['Purchase', 'Purchases']:
+        return Account.objects.get(name='Purchase', category__name='Purchase', company=company)
+    if name in ['Cash', 'Cash Account']:
+        return Account.objects.get(name='Cash', category__name='Cash Account', company=company)

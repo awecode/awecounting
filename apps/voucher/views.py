@@ -5,13 +5,12 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.views.generic import ListView
-
 from django.views.generic.detail import DetailView
 
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, StaffMixin, \
     group_required, TableObjectMixin, UpdateView, CompanyRequiredMixin
 from ..inventory.models import set_transactions
-from ..ledger.models import set_transactions as set_ledger_transactions, Account
+from ..ledger.models import set_transactions as set_ledger_transactions, Account, get_ledger
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
 from .forms import JournalVoucherForm, VoucherSettingForm
 from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
@@ -410,8 +409,8 @@ def save_purchase(request):
                                             )
                 else:
                     set_ledger_transactions(submodel, obj.date,
-                                            ['dr', submodel.item.ledger, obj.total],
-                                            ['cr', Account.objects.get(name='Cash', company=request.company),
+                                            ['dr', get_ledger(request, 'Purchase'), obj.total],
+                                            ['cr', get_ledger(request, 'Cash'),
                                              obj.total],
                                             # ['cr', sales_tax_account, tax_amount],
                                             )
@@ -445,6 +444,7 @@ class SaleCreate(SaleView, TableObjectMixin):
             context['data'] = data
         return context
 
+
 # def sale(request, id=None):
 #     if id:
 #         obj = get_object_or_404(Sale, id=id)
@@ -473,7 +473,8 @@ def save_sale(request):
 
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
                      'party_id': params.get('party_id'), 'due_date': params.get('due_date'),
-                     'credit': params.get('credit'), 'tax': tax, 'tax_scheme_id': empty_to_none(tax_scheme_id), 'company': request.company}
+                     'credit': params.get('credit'), 'tax': tax, 'tax_scheme_id': empty_to_none(tax_scheme_id),
+                     'company': request.company}
 
     if params.get('id'):
         obj = Sale.objects.get(id=params.get('id'), company=request.company)
@@ -562,6 +563,7 @@ def sale_day(request, voucher_date):
     }
     return render(request, 'sale_report.html', context)
 
+
 @group_required('Accountant')
 def sale_date_range(request, from_date, to_date):
     objects = Sale.objects.filter(date__gte=from_date, date__lte=to_date, company=request.company).prefetch_related('rows')
@@ -583,6 +585,7 @@ def sale_date_range(request, from_date, to_date):
     }
     return render(request, 'sale_report.html', context)
 
+
 @group_required('Accountant')
 def sales_report_router(request):
     if request.GET.get('date'):
@@ -594,10 +597,12 @@ def sales_report_router(request):
     else:
         return redirect(reverse_lazy('home'))
 
+
 @group_required('Accountant')
 def daily_sale_today(request):
     today = datetime.date.today()
     return sale_day(request, today)
+
 
 @group_required('Accountant')
 def daily_sale_yesterday(request):
@@ -699,6 +704,7 @@ class PurchaseOrderDetailView(PurchaseOrderView, StaffMixin, DetailView):
         context = super(PurchaseOrderDetailView, self).get_context_data(**kwargs)
         context['rows'] = PurchaseOrderRow.objects.select_related('item', 'unit').filter(purchase_order=self.object)
         return context
+
 
 @group_required('Accountant')
 def save_purchase_order(request):
