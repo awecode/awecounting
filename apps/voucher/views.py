@@ -403,13 +403,13 @@ def save_purchase(request):
                                  )
                 if obj.credit:
                     set_ledger_transactions(submodel, obj.date,
-                                            ['cr', obj.party.account, obj.total],
-                                            ['dr', get_ledger(request, 'Purchase'), obj.total],
+                                            ['cr', obj.party.supplier_ledger, obj.total],
+                                            ['dr', submodel.item.purchase_ledger, obj.total],
                                             # ['cr', sales_tax_account, tax_amount],
                                             )
                 else:
                     set_ledger_transactions(submodel, obj.date,
-                                            ['dr', get_ledger(request, 'Purchase'), obj.total],
+                                            ['dr', submodel.item.purchase_ledger, obj.total],
                                             ['cr', get_ledger(request, 'Cash'),
                                              obj.total],
                                             # ['cr', sales_tax_account, tax_amount],
@@ -515,14 +515,14 @@ def save_sale(request):
                                  )
                 if obj.credit:
                     set_ledger_transactions(submodel, obj.date,
-                                            ['dr', obj.party.account, obj.total],
-                                            ['cr', submodel.item.ledger, obj.total],
+                                            ['dr', obj.party.customer_ledger, obj.total],
+                                            ['dr', submodel.item.sale_ledger, obj.total],
                                             # ['cr', sales_tax_account, tax_amount],
                                             )
                 else:
                     set_ledger_transactions(submodel, obj.date,
-                                            ['dr', Account.objects.get(name='Cash', company=request.company), obj.total],
-                                            ['cr', submodel.item.ledger, obj.total],
+                                            ['dr', get_ledger(request, 'Cash'), obj.total],
+                                            ['dr', submodel.item.sale_ledger, obj.total],
                                             # ['cr', sales_tax_account, tax_amount],
                                             )
         delete_rows(params.get('table_view').get('deleted_rows'), model)
