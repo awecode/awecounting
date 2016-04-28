@@ -43,11 +43,11 @@
                         {% endif %}
                         {% if item.sale_ledger %}
                             <a class="btn btn-sm btn-info btn-raised no-margin"
-                               href="{% url 'view_account' item.sale_ledger.pk %}">{% trans 'Sales Ledger' %}</a>
+                               href="{% url 'view_ledger' item.sale_ledger.pk %}">{% trans 'Sales Ledger' %}</a>
                         {% endif %}
                         {% if item.purchase_ledger %}
                             <a class="btn btn-sm btn-info btn-raised no-margin"
-                               href="{% url 'view_account' item.purchase_ledger.pk %}">{% trans 'Purchase Ledger' %}</a>
+                               href="{% url 'view_ledger' item.purchase_ledger.pk %}">{% trans 'Purchase Ledger' %}</a>
                         {% endif %}
                     </td>
                 </tr>

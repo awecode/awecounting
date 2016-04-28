@@ -40,7 +40,7 @@
                             <a href="{% url 'bank:bankaccount_edit' object.pk %}">{{ object.branch_name }}</a>
                         </td>
                         <td>
-                            <a href="{% url 'view_account' object.account.pk %}">{{ object.account.name }}</a>
+                            <a href="{% url 'view_ledger' object.account.pk %}">{{ object.account.name }}</a>
                         </td>
                     </tr>
                 {% endfor %}

@@ -9,7 +9,7 @@ from .forms import PartyForm, AccountForm, CategoryForm
 
 class ViewAccount(ListView):
     model = Account
-    template_name = 'view_account.html'
+    template_name = 'view_ledger.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super(ViewAccount, self).get_context_data(**kwargs)
