@@ -175,7 +175,7 @@ td .selectize-input {
     width: 100%;
 }
 
-.marginless-inputs input, .marginless-inputs select {
+.no-margin, .marginless-inputs input, .marginless-inputs select {
     margin: 0;
 }
 
@@ -669,4 +669,3 @@ ul.mega-dropdown-menu li {
 }
 
 /* EO Trial Balance */
-

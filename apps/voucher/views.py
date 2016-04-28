@@ -404,7 +404,7 @@ def save_purchase(request):
                 if obj.credit:
                     set_ledger_transactions(submodel, obj.date,
                                             ['cr', obj.party.account, obj.total],
-                                            ['dr', submodel.item.ledger, obj.total],
+                                            ['dr', get_ledger(request, 'Purchase'), obj.total],
                                             # ['cr', sales_tax_account, tax_amount],
                                             )
                 else:
