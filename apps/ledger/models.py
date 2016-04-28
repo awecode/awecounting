@@ -428,10 +428,10 @@ class Party(models.Model):
     phone_no = models.CharField(max_length=100, blank=True, null=True)
     pan_no = models.CharField(max_length=50, blank=True, null=True, verbose_name='Tax Reg. No.')
     account = models.ForeignKey(Account, null=True)
-    customer_account = models.OneToOneField(Account, null=True, related_name='customer_detail')
     TYPES = [('Customer', 'Customer'), ('Supplier', 'Supplier'), ('Customer/Supplier', 'Customer/Supplier')]
     type = models.CharField(choices=TYPES, max_length=17, default='Customer')
-    supplier_account = models.OneToOneField(Account, null=True, related_name='supplier_detail')
+    supplier_ledger = models.OneToOneField(Account, null=True, related_name='supplier_detail')
+    customer_ledger = models.OneToOneField(Account, null=True, related_name='customer_detail')
     company = models.ForeignKey(Company, related_name='parties')
     related_company = models.OneToOneField(Company, blank=True, null=True, related_name='related_party')
 

@@ -6,7 +6,7 @@ from django.db.models import F
 from django.dispatch import receiver
 from django.core.urlresolvers import reverse_lazy
 
-from ..ledger.models import Account
+from ..ledger.models import Account, Category
 from ..users.models import Company
 from awecounting.utils.helpers import none_for_zero, zero_for_none
 from ..users.signals import company_creation
@@ -137,6 +137,8 @@ class Item(models.Model):
     selling_rate = models.FloatField(blank=True, null=True)
     other_properties = JSONField(blank=True, null=True)
     ledger = models.ForeignKey(Account, null=True)
+    purchase_ledger = models.OneToOneField(Account, null=True, related_name='purchase_detail')
+    sale_ledger = models.OneToOneField(Account, null=True, related_name='sale_detail')
     company = models.ForeignKey(Company)
 
     def __str__(self):
@@ -144,12 +146,6 @@ class Item(models.Model):
 
     def save(self, *args, **kwargs):
         account_no = kwargs.pop('account_no')
-
-        if not self.ledger_id:
-            ledger = Account(name=self.name, company=self.company)
-            ledger.save()
-            self.ledger = ledger
-
         if account_no:
             if self.account:
                 account = self.account
@@ -159,6 +155,19 @@ class Item(models.Model):
                 account = InventoryAccount(name=self.name, account_no=account_no, company=self.company)
                 account.save()
                 self.account = account
+        super(Item, self).save(*args, **kwargs)
+        if not self.purchase_ledger:
+            purchase_ledger = Account(name=self.name + ' Purchases')
+            purchase_ledger.category = Category.objects.get(name='Purchase', company=self.company, parent__name='Expenses')
+            purchase_ledger.code = 'P-' + str(self.id)
+            purchase_ledger.save()
+            self.purchase_ledger = purchase_ledger
+        if not self.sale_ledger:
+            sales_ledger = Account(name=self.name + ' Sales')
+            sales_ledger.category = Category.objects.get(name='Sales', company=self.company, parent__name='Income')
+            sales_ledger.code = 'S-' + str(self.id)
+            sales_ledger.save()
+            self.sales_ledger = sales_ledger
         super(Item, self).save(*args, **kwargs)
 
 
