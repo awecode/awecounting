@@ -112,11 +112,11 @@ class CashReceiptDetailView(CashReceiptView, DetailView):
         return context
 
 
-class CashReceiptCreate(CashReceiptView, CreateView, TableObject):
+class CashReceiptCreate(CashReceiptView, TableObject, CreateView):
     template_name = 'cash_receipt.html'
 
 
-class CashReceiptUpdate(CashReceiptView, UpdateView, TableObject):
+class CashReceiptUpdate(CashReceiptView, TableObject, UpdateView):
     template_name = 'cash_receipt.html'
 
 
@@ -130,11 +130,11 @@ class CashPaymentList(CashPaymentView, ListView):
     pass
 
 
-class CashPaymentCreate(CashPaymentView, CreateView, TableObject):
+class CashPaymentCreate(CashPaymentView, TableObject, CreateView):
     template_name = 'cash_payment.html'
 
 
-class CashPaymentUpdate(CashPaymentView, UpdateView, TableObject):
+class CashPaymentUpdate(CashPaymentView, TableObject, UpdateView):
     template_name = 'cash_payment.html'
 
 

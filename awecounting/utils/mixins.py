@@ -108,7 +108,7 @@ class TableObjectMixin(TemplateView):
 
 class TableObject(object):
     def get_context_data(self, *args, **kwargs):
-        context = super(TableObjectMixin, self).get_context_data(**kwargs)
+        context = super(TableObject, self).get_context_data(**kwargs)
         if self.kwargs:
             pk = int(self.kwargs.get('pk'))
             obj = get_object_or_404(self.model, pk=pk, company=self.request.company)
