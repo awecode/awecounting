@@ -1,6 +1,7 @@
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from awecounting.utils.helpers import zero_for_none
-from apps.ledger.models import Account
+from apps.ledger.models import Account, JournalEntry
 from apps.users.models import Company
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse_lazy
@@ -45,6 +46,7 @@ class EntryRow(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     entry = models.ForeignKey(Entry, related_name='rows')
+    journal_entry = GenericRelation(JournalEntry)
 
     def get_absolute_url(self):
         return self.entry.get_absolute_url()
