@@ -473,15 +473,19 @@ class VoucherSetting(models.Model):
     use_nepali_fy_system = models.BooleanField(default=True)
     single_discount_on_whole_invoice = models.BooleanField(default=True)
     discount_on_each_invoice_particular = models.BooleanField(default=False)
-    invoice_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='exclusive', null=True,
+    invoice_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='exclusive',
+                                                            null=True,
                                                             blank=True)
-    invoice_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True, related_name="default_invoice_tax_scheme")
+    invoice_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True,
+                                                   related_name="default_invoice_tax_scheme")
 
     single_discount_on_whole_purchase = models.BooleanField(default=True)
     discount_on_each_purchase_particular = models.BooleanField(default=False)
-    purchase_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='exclusive', null=True,
+    purchase_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='exclusive',
+                                                             null=True,
                                                              blank=True)
-    purchase_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True, related_name="default_purchase_tax_scheme")
+    purchase_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True,
+                                                    related_name="default_purchase_tax_scheme")
     voucher_number_start_date = BSDateField(default=today)
     # voucher_number_restart_years = models.IntegerField(default=1)
     # voucher_number_restart_months = models.IntegerField(default=0)
@@ -547,3 +551,21 @@ class VoucherSetting(models.Model):
 def handle_company_creation(sender, **kwargs):
     company = kwargs.get('company')
     VoucherSetting.objects.create(company=company)
+
+
+class Expense(models.Model):
+    voucher_no = models.IntegerField(blank=True, null=True)
+    date = BSDateField(default=today)
+    company = models.ForeignKey(Company)
+
+    def __init__(self, *args, **kwargs):
+        super(Expense, self).__init__(*args, **kwargs)
+        if not self.pk and not self.voucher_no:
+            self.voucher_no = get_next_voucher_no(Expense, self.company_id)
+
+
+class ExpenseRow(models.Model):
+    expense = models.ForeignKey(Account, related_name="expense")
+    pay_head = models.ForeignKey(Account, related_name="cash_and_bank")
+    amount = models.IntegerField()
+    expense_row = models.ForeignKey(Expense, related_name="rows")
