@@ -1,6 +1,7 @@
 from rest_framework import generics
+
 from awecounting.utils.mixins import CompanyAPI
-from .models import Account
+from .models import Account, Category
 from .serializers import AccountSerializer, PartySerializer, PartyBalanceSerializer, CategorySerializer
 
 
@@ -16,7 +17,15 @@ class AccountListAPI(generics.ListCreateAPIView):
             categories = self.request.query_params['categories'].split(',')
 
             categories = [category.replace('_', ' ').title() for category in categories]
-            queryset = queryset.filter(category__name__in=categories)
+            all_ledgers = Account.objects.none()
+            for category_name in categories:
+                try:
+                    category = Category.objects.get(name=category_name, company=self.request.company)
+                except Category.MultipleObjectsReturned:
+                    continue
+                ledgers = category.get_descendant_ledgers()
+                all_ledgers = all_ledgers | ledgers
+            return all_ledgers
         return queryset
 
 

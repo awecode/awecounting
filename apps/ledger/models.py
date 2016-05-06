@@ -7,11 +7,53 @@ from mptt.models import MPTTModel, TreeForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
-
 from django.db.models import F
 
 from apps.users.models import Company
 from awecounting.utils.helpers import zero_for_none, none_for_zero
+
+
+class Node(object):
+    def __init__(self, model, parent=None, depth=0):
+        self.children = []
+        self.model = model
+        self.name = self.model.name
+        self.type = self.model.__class__.__name__
+        self.dr = 0
+        self.cr = 0
+        self.url = None
+        self.depth = depth
+        self.parent = parent
+        if self.type == 'Category':
+            for child in self.model.children.all():
+                self.add_child(Node(child, parent=self, depth=self.depth + 1))
+            for account in self.model.accounts.all():
+                self.add_child(Node(account, parent=self, depth=self.depth + 1))
+        if self.type == 'Account':
+            self.dr = self.model.current_dr or 0
+            self.cr = self.model.current_cr or 0
+            self.url = self.model.get_absolute_url()
+        if self.parent:
+            self.parent.dr += self.dr
+            self.parent.cr += self.cr
+
+    def add_child(self, obj):
+        self.children.append(obj.get_data())
+
+    def get_data(self):
+        data = {
+            'name': self.name,
+            'type': self.type,
+            'dr': self.dr,
+            'cr': self.cr,
+            'nodes': self.children,
+            'depth': self.depth,
+            'url': self.url,
+        }
+        return data
+
+    def __str__(self):
+        return self.name
 
 
 class Category(MPTTModel):
@@ -22,6 +64,16 @@ class Category(MPTTModel):
 
     def __unicode__(self):
         return self.name
+
+    def get_data(self):
+        node = Node(self)
+        return node.get_data()
+
+    def get_descendant_ledgers(self):
+        ledgers = self.accounts.all()
+        for descendant in self.get_descendants():
+            ledgers = ledgers | descendant.accounts.all()
+        return ledgers
 
     class Meta:
         verbose_name_plural = u'Categories'

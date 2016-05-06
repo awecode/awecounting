@@ -3,53 +3,10 @@ from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from apps.ledger.models import Category
+from apps.ledger.models import Category, Node
 from apps.report.models import ReportSetting
 from awecounting.utils.helpers import save_qs_from_ko
 from awecounting.utils.mixins import group_required
-
-
-class Node(object):
-    def __init__(self, model, parent=None, depth=0):
-        self.children = []
-        self.model = model
-        self.name = self.model.name
-        self.type = self.model.__class__.__name__
-        self.dr = 0
-        self.cr = 0
-        self.url = None
-        self.depth = depth
-        self.parent = parent
-        if self.type == 'Category':
-            for child in self.model.children.all():
-                self.add_child(Node(child, parent=self, depth=self.depth + 1))
-            for account in self.model.accounts.all():
-                self.add_child(Node(account, parent=self, depth=self.depth + 1))
-        if self.type == 'Account':
-            self.dr = self.model.current_dr or 0
-            self.cr = self.model.current_cr or 0
-            self.url = self.model.get_absolute_url()
-        if self.parent:
-            self.parent.dr += self.dr
-            self.parent.cr += self.cr
-
-    def add_child(self, obj):
-        self.children.append(obj.get_data())
-
-    def get_data(self):
-        data = {
-            'name': self.name,
-            'type': self.type,
-            'dr': self.dr,
-            'cr': self.cr,
-            'nodes': self.children,
-            'depth': self.depth,
-            'url': self.url,
-        }
-        return data
-
-    def __str__(self):
-        return self.name
 
 
 def get_trial_balance_data(company):

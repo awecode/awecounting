@@ -19,7 +19,6 @@ def create_groups(apps, schema_editor):
     try:
         with transaction.atomic():
             admin = User.objects.get(username='admin')
-        # import ipdb; ipdb.set_trace()
         group_list = Group.objects.all()
         admin.groups = group_list 
     except User.DoesNotExist:

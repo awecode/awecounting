@@ -534,8 +534,6 @@ class VoucherSetting(models.Model):
         if self.use_nepali_fy_system:
             fiscal_year_end = str(int(year) + 1) + '-03-' + str(bs[int(year) + 1][2])
         else:
-            # import ipdb
-            # ipdb.set_trace()
             fiscal_year_end = str(int(year) + 1) + '-' + str(self.voucher_number_start_date.month) + '-' + str(12)
         tuple_value = tuple_from_string(fiscal_year_end)
         calendar = get_calendar()

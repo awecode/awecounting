@@ -10,10 +10,11 @@ function ExpenseViewModel(data) {
     self.id = ko.observable();
     self.voucher_no = ko.observable();
     self.date = ko.observable();
-
+    
     $.ajax({
-        url: '/ledger/api/expenses/account.json',
+        url: '/ledger/api/account.json',
         dataType: 'json',
+        data: "categories=direct_expenses,indirect_expenses",
         async: false,
         success: function (data) {
             self.expense_accounts = ko.observableArray(data['results']);
