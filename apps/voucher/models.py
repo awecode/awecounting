@@ -563,9 +563,18 @@ class Expense(models.Model):
         if not self.pk and not self.voucher_no:
             self.voucher_no = get_next_voucher_no(Expense, self.company_id)
 
+    @property
+    def total(self):
+        grand_total = 0
+        for obj in self.rows.all():
+            total = obj.amount
+            grand_total += total
+        return grand_total
+
 
 class ExpenseRow(models.Model):
     expense = models.ForeignKey(Account, related_name="expense")
     pay_head = models.ForeignKey(Account, related_name="cash_and_bank")
     amount = models.IntegerField()
     expense_row = models.ForeignKey(Expense, related_name="rows")
+
