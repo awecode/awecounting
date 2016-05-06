@@ -21,7 +21,7 @@ function ExpenseViewModel(data) {
     });
 
     $.ajax({
-        url: '/ledger/api/expenses/account.json',
+        url: '/ledger/api/bank_cash_account.json',
         dataType: 'json',
         async: false,
         success: function (data) {
@@ -49,7 +49,7 @@ function ExpenseViewModel(data) {
         var form_data = new FormData()
 
 
-        form_data.append('fixed_asset', ko.toJSON(self));
+        form_data.append('expense', ko.toJSON(self));
         $.ajax({
             type: "POST",
             url: '/voucher/expense/save/',
@@ -72,11 +72,7 @@ function ExpenseViewModel(data) {
 
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];
-                        $($("tbody.fixed_asset_row > tr")[i]).removeClass('invalid-row');
-                    }
-                    for (var i in msg.additional_detail) {
-                        self.additional_detail.rows()[i].id = msg.additional_detail[i];
-                        $($("tbody.additional_details > tr")[i]).removeClass('invalid-row');
+                        $($("tbody.expense_row > tr")[i]).removeClass('invalid-row');
                     }
                 }
             }
@@ -101,6 +97,5 @@ function ExpenseRowViewModel(row) {
 
     for (var k in row)
         self[k] = ko.observable(row[k]);
-    debugger;
 }
 

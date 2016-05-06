@@ -16,7 +16,8 @@ from .forms import JournalVoucherForm, VoucherSettingForm, CashPaymentForm, Cash
 from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
     CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer, \
     ExpenseSerializer
-from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, JournalVoucherRow, \
+from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, \
+    JournalVoucherRow, \
     PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, \
     VoucherSetting, Expense, ExpenseRow
 
@@ -578,7 +579,8 @@ def sale_day(request, voucher_date):
 
 @group_required('Accountant')
 def sale_date_range(request, from_date, to_date):
-    objects = Sale.objects.filter(date__gte=from_date, date__lte=to_date, company=request.company).prefetch_related('rows')
+    objects = Sale.objects.filter(date__gte=from_date, date__lte=to_date, company=request.company).prefetch_related(
+        'rows')
     total_amount = 0
     total_quantity = 0
     total_items = 0
@@ -674,7 +676,8 @@ def journal_voucher_save(request):
                 continue
             else:
                 values = {'type': row.get('type'), 'account_id': row.get('account'),
-                          'description': row.get('description'), 'dr_amount': empty_to_none(float(row.get('dr_amount'))),
+                          'description': row.get('description'),
+                          'dr_amount': empty_to_none(float(row.get('dr_amount'))),
                           'cr_amount': empty_to_none(float(row.get('cr_amount'))),
                           'journal_voucher': obj}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
@@ -853,14 +856,13 @@ class ExpenseCreate(ExpenseView, TableObjectMixin):
 def save_expense(request):
     if request.is_ajax():
         # params = json.loads(request.body)
-        params = json.loads(request.POST.get('fixed_asset'))
-    dct = {'rows': {}, 'additional_detail': {}, }
+        params = json.loads(request.POST.get('expense'))
     company = request.company
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
+    dct = {'rows': {}}
     object_values = {'voucher_no': int(params.get('voucher_no')), 'date': params.get('date'),
-                     'from_account_id': params.get('from_account'),
-                     'reference': params.get('reference'), 'description': params.get('description'), 'company': company}
+                     'company': company}
     if params.get('id'):
         obj = Expense.objects.get(id=params.get('id'), company=request.company)
     else:
@@ -870,29 +872,16 @@ def save_expense(request):
         dct['id'] = obj.id
         model = ExpenseRow
         for ind, row in enumerate(params.get('table_view').get('rows')):
-            if invalid(row, ['asset_ledger', 'amount']):
+            if invalid(row, ['amount']):
                 continue
-            else:
-                values = {'asset_ledger_id': row.get('asset_ledger'),
-                          'description': row.get('description'), 'amount': row.get('amount'),
-                          'fixed_asset': obj}
-                submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
-                if not created:
-                    submodel = save_model(submodel, values)
-                dct['rows'][ind] = submodel.id
-        delete_rows(params.get('table_view').get('deleted_rows'), model)
-        additional_detail = AdditionalDetail
-        for ind, row in enumerate(params.get('additional_detail').get('rows')):
-            values = {'assets_code': row.get('assets_code'), 'assets_type': row.get('assets_type'),
-                      'vendor_name': row.get('vendor_name'), 'vendor_address': row.get('vendor_address'),
-                      'amount': row.get('amount'), 'useful_life': row.get('useful_life'),
-                      'description': row.get('description'), 'warranty_period': row.get('warranty_period'),
-                      'maintenance': row.get('maintenance'), 'fixed_asset': obj}
-            submodel, created = additional_detail.objects.get_or_create(id=row.get('id'), defaults=values)
+            values = {'expense_id': row.get('expense_id'),
+                      'pay_head_id': row.get('pay_head_id'), 'amount': row.get('amount'),
+                      'expense_row': obj}
+            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
             if not created:
                 submodel = save_model(submodel, values)
-            dct['additional_detail'][ind] = submodel.id
-        delete_rows(params.get('additional_detail').get('deleted_rows'), additional_detail)
+            dct['rows'][ind] = submodel.id
+        delete_rows(params.get('table_view').get('deleted_rows'), model)
     except Exception as e:
         dct = write_error(dct, e)
     return JsonResponse(dct)

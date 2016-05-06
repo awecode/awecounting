@@ -28,6 +28,7 @@ api_urls = [
     url(r'^api/parties/$', api.PartyListAPI.as_view()),
     url(r'^api/parties_with_balance/$', api.PartyBalanceListAPI.as_view()),
     url(r'^api/(?P<category>.+)/account/$', api.AccountListAPI.as_view()),
+    url(r'^api/bank_cash_account/$', api.BankAndCashAccountListAPI.as_view()),
     url(r'^api/categories/$', api.CategoryListAPI.as_view()),
     url(r'^api/category/(?P<pk>[0-9]+)/$', api.CategoryDetailAPI.as_view()),
 ]
