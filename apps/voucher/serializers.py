@@ -124,6 +124,7 @@ class ExpenseRowSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ExpenseRow
+        exclude = ('expense', 'pay_head')
 
 
 class ExpenseSerializer(serializers.ModelSerializer):

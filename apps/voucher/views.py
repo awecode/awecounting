@@ -847,7 +847,7 @@ class ExpenseDetailView(DetailView):
 
 
 class ExpenseCreate(ExpenseView, TableObjectMixin):
-    template_name = 'fixed_asset_form.html'
+    template_name = 'expense_form.html'
 
 
 def save_expense(request):
