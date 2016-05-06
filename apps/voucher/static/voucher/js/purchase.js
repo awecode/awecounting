@@ -83,7 +83,7 @@ function PurchaseViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.tax_schemes = ko.observableArray(data['results']);
+            self.tax_schemes = ko.observableArray(data);
         }
     });
 
@@ -96,7 +96,7 @@ function PurchaseViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.items = ko.observableArray(data['results']);
+            self.items = ko.observableArray(data);
         }
     });
 
@@ -105,7 +105,7 @@ function PurchaseViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.parties = ko.observableArray(data['results']);
+            self.parties = ko.observableArray(data);
         }
     });
 
@@ -114,7 +114,7 @@ function PurchaseViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.units = ko.observableArray(data['results']);
+            self.units = ko.observableArray(data);
         }
     });
 

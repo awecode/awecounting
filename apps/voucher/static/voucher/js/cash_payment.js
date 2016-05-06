@@ -12,7 +12,7 @@ function CashPaymentVM(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.parties = ko.observableArray(data['results']);
+            self.parties = ko.observableArray(data);
         }
     });
 
@@ -92,8 +92,8 @@ function CashPaymentVM(data) {
                 dataType: 'json',
                 async: false,
                 success: function (data) {
-                    if (data['results'].length) {
-                        self.invoices = data['results'];
+                    if (data.length) {
+                        self.invoices = data;
                         for (k in self.rows()) {
                             var row = self.rows()[k];
                             $.each(self.invoices, function (i, o) {
