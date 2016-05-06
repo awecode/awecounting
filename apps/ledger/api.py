@@ -1,4 +1,5 @@
 from rest_framework import generics
+from apps.voucher.pagination import CustomPagination
 
 from awecounting.utils.mixins import CompanyAPI
 from .models import Account, Category
@@ -7,6 +8,7 @@ from .serializers import AccountSerializer, PartySerializer, PartyBalanceSeriali
 
 class AccountListAPI(generics.ListCreateAPIView):
     serializer_class = AccountSerializer
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         queryset = Account.objects.filter(company=self.request.company)
