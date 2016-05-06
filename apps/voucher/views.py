@@ -14,10 +14,12 @@ from ..ledger.models import set_transactions as set_ledger_transactions, get_led
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
 from .forms import JournalVoucherForm, VoucherSettingForm, CashPaymentForm, CashReceiptForm
 from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
-    CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer
-from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, JournalVoucherRow, \
+    CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer, \
+    ExpenseSerializer
+from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, \
+    JournalVoucherRow, \
     PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, \
-    VoucherSetting
+    VoucherSetting, Expense, ExpenseRow
 
 
 class FixedAssetView(CompanyView):
@@ -577,7 +579,8 @@ def sale_day(request, voucher_date):
 
 @group_required('Accountant')
 def sale_date_range(request, from_date, to_date):
-    objects = Sale.objects.filter(date__gte=from_date, date__lte=to_date, company=request.company).prefetch_related('rows')
+    objects = Sale.objects.filter(date__gte=from_date, date__lte=to_date, company=request.company).prefetch_related(
+        'rows')
     total_amount = 0
     total_quantity = 0
     total_items = 0
@@ -673,7 +676,8 @@ def journal_voucher_save(request):
                 continue
             else:
                 values = {'type': row.get('type'), 'account_id': row.get('account'),
-                          'description': row.get('description'), 'dr_amount': empty_to_none(float(row.get('dr_amount'))),
+                          'description': row.get('description'),
+                          'dr_amount': empty_to_none(float(row.get('dr_amount'))),
                           'cr_amount': empty_to_none(float(row.get('cr_amount'))),
                           'journal_voucher': obj}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
@@ -820,3 +824,64 @@ class VoucherSettingUpdateView(SuperOwnerMixin, UpdateView):
         context['base_template'] = '_base_settings.html'
         context['setting'] = 'VoucherSetting'
         return context
+
+
+class ExpenseView(CompanyView):
+    model = Expense
+    success_url = reverse_lazy('expense_list')
+    serializer_class = ExpenseSerializer
+
+
+class ExpenseList(ExpenseView, ListView):
+    pass
+
+
+class ExpenseDelete(ExpenseView, DeleteView):
+    pass
+
+
+class ExpenseDetailView(DetailView):
+    model = Expense
+
+    def get_context_data(self, **kwargs):
+        context = super(ExpenseDetailView, self).get_context_data(**kwargs)
+        context['rows'] = ExpenseRow.objects.select_related('expense', 'pay_head').filter(expense_row=self.object)
+        return context
+
+
+class ExpenseCreate(ExpenseView, TableObjectMixin):
+    template_name = 'expense_form.html'
+
+
+def save_expense(request):
+    if request.is_ajax():
+        # params = json.loads(request.body)
+        params = json.loads(request.POST.get('expense'))
+    company = request.company
+    if params.get('voucher_no') == '':
+        params['voucher_no'] = None
+    dct = {'rows': {}}
+    object_values = {'voucher_no': int(params.get('voucher_no')), 'date': params.get('date'),
+                     'company': company}
+    if params.get('id'):
+        obj = Expense.objects.get(id=params.get('id'), company=request.company)
+    else:
+        obj = Expense(company=request.company)
+    try:
+        obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = ExpenseRow
+        for ind, row in enumerate(params.get('table_view').get('rows')):
+            if invalid(row, ['amount']):
+                continue
+            values = {'expense_id': row.get('expense_id'),
+                      'pay_head_id': row.get('pay_head_id'), 'amount': row.get('amount'),
+                      'expense_row': obj}
+            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+            if not created:
+                submodel = save_model(submodel, values)
+            dct['rows'][ind] = submodel.id
+        delete_rows(params.get('table_view').get('deleted_rows'), model)
+    except Exception as e:
+        dct = write_error(dct, e)
+    return JsonResponse(dct)
