@@ -14,8 +14,19 @@ class AccountListAPI(generics.ListCreateAPIView):
             queryset = queryset.filter(category__name=category_name)
         if 'categories' in self.request.query_params:
             categories = self.request.query_params['categories'].split(',')
+
             categories = [category.replace('_', ' ').title() for category in categories]
             queryset = queryset.filter(category__name__in=categories)
+        return queryset
+
+
+class BankAndCashAccountListAPI(generics.ListCreateAPIView):
+    serializer_class = AccountSerializer
+
+    def get_queryset(self):
+        queryset = Account.objects.filter(company=self.request.company)
+        categories = ['Bank Account', 'Cash Account']
+        queryset = queryset.filter(category__name__in=categories)
         return queryset
 
 

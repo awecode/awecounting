@@ -1,0 +1,65 @@
+{% extends "_base.html" %}
+{% load staticfiles i18n filters %}
+
+{% block page-title %}
+    {% trans 'Detail' %} {% trans 'Expense' %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url 'expense_list' %}">{% trans 'Expense' %}</a></li>
+    <li>{% trans 'Detail' %} {% trans 'Expense' %}</li>
+{% endblock %}
+
+
+{% block content %}
+<div class="well">
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <div>
+            <label for="voucher-no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
+            <p>
+                {{ object.voucher_no }}
+            </p>
+            </div>
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <label for="date">{% trans 'Date' %}</label>
+            <p>
+                {{ object.date }}
+            </p>
+        </div>
+    </div>
+</div>
+<div class="well">
+	<table class="table table-striped">
+        <thead>
+        <tr>
+            <th>{% trans "Expense" %}</th>
+            <th>{% trans "Pay Head" %}</th>
+            <th>{% trans "Amount" %}</th>
+        </tr>
+        </thead>
+
+		<tbody>
+			{% for row in rows %}
+			<tr>
+				<td>
+				{{ row.expense }}
+				</td>
+				<td>
+					{{ row.pay_head}}
+				</td>
+				<td>
+					{{ row.amount }}
+				</td>
+			</tr>
+			{% endfor %}
+            <tr class="total">
+                <td colspan="2">{% trans "Total" %}</td>
+                <td>{{ object.total }}</td>
+            </tr>
+		</tbody>
+	</table>
+</div>
+
+{% endblock %}

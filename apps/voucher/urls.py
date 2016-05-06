@@ -59,6 +59,13 @@ web_urls = [
     url(r'^fixed_asset/delete/(?P<pk>[0-9]+)$', views.FixedAssetDelete.as_view(), name='fixed_asset_delete'),
     url(r'^fixed_asset/detail/(?P<pk>[0-9]+)/$', views.FixedAssetDetailView.as_view(), name='fixed_asset_detail'),
 
+    url(r'^expense/$', views.ExpenseList.as_view(), name='expense_list'),
+    url(r'^expense/add/$', views.ExpenseCreate.as_view(), name='expense_add'),
+    url(r'^expense/(?P<pk>[0-9]+)/$', views.ExpenseCreate.as_view(), name='expense_edit'),
+    url(r'^expense/save/$', views.save_expense, name='expense_save'),
+    url(r'^expense/delete/(?P<pk>[0-9]+)$', views.ExpenseDelete.as_view(), name='expense_delete'),
+    url(r'^expense/detail/(?P<pk>[0-9]+)/$', views.ExpenseDetailView.as_view(), name='expense_detail'),
+
     url(r'^voucher_setting/$', views.VoucherSettingUpdateView.as_view(), name='voucher_setting'),
 
 ]
