@@ -14,10 +14,11 @@ from ..ledger.models import set_transactions as set_ledger_transactions, get_led
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
 from .forms import JournalVoucherForm, VoucherSettingForm, CashPaymentForm, CashReceiptForm
 from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
-    CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer
+    CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer, \
+    ExpenseSerializer
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, JournalVoucherRow, \
     PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, \
-    VoucherSetting
+    VoucherSetting, Expense, ExpenseRow
 
 
 class FixedAssetView(CompanyView):
@@ -820,3 +821,78 @@ class VoucherSettingUpdateView(SuperOwnerMixin, UpdateView):
         context['base_template'] = '_base_settings.html'
         context['setting'] = 'VoucherSetting'
         return context
+
+
+class ExpenseView(CompanyView):
+    model = Expense
+    success_url = reverse_lazy('expense_list')
+    serializer_class = ExpenseSerializer
+
+
+class ExpenseList(ExpenseView, ListView):
+    pass
+
+
+class ExpenseDelete(ExpenseView, DeleteView):
+    pass
+
+
+class ExpenseDetailView(DetailView):
+    model = Expense
+
+    def get_context_data(self, **kwargs):
+        context = super(ExpenseDetailView, self).get_context_data(**kwargs)
+        context['rows'] = ExpenseRow.objects.select_related('expense', 'pay_head').filter(expense_row=self.object)
+        return context
+
+
+class ExpenseCreate(ExpenseView, TableObjectMixin):
+    template_name = 'fixed_asset_form.html'
+
+
+def save_expense(request):
+    if request.is_ajax():
+        # params = json.loads(request.body)
+        params = json.loads(request.POST.get('fixed_asset'))
+    dct = {'rows': {}, 'additional_detail': {}, }
+    company = request.company
+    if params.get('voucher_no') == '':
+        params['voucher_no'] = None
+    object_values = {'voucher_no': int(params.get('voucher_no')), 'date': params.get('date'),
+                     'from_account_id': params.get('from_account'),
+                     'reference': params.get('reference'), 'description': params.get('description'), 'company': company}
+    if params.get('id'):
+        obj = Expense.objects.get(id=params.get('id'), company=request.company)
+    else:
+        obj = Expense(company=request.company)
+    try:
+        obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = ExpenseRow
+        for ind, row in enumerate(params.get('table_view').get('rows')):
+            if invalid(row, ['asset_ledger', 'amount']):
+                continue
+            else:
+                values = {'asset_ledger_id': row.get('asset_ledger'),
+                          'description': row.get('description'), 'amount': row.get('amount'),
+                          'fixed_asset': obj}
+                submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+                if not created:
+                    submodel = save_model(submodel, values)
+                dct['rows'][ind] = submodel.id
+        delete_rows(params.get('table_view').get('deleted_rows'), model)
+        additional_detail = AdditionalDetail
+        for ind, row in enumerate(params.get('additional_detail').get('rows')):
+            values = {'assets_code': row.get('assets_code'), 'assets_type': row.get('assets_type'),
+                      'vendor_name': row.get('vendor_name'), 'vendor_address': row.get('vendor_address'),
+                      'amount': row.get('amount'), 'useful_life': row.get('useful_life'),
+                      'description': row.get('description'), 'warranty_period': row.get('warranty_period'),
+                      'maintenance': row.get('maintenance'), 'fixed_asset': obj}
+            submodel, created = additional_detail.objects.get_or_create(id=row.get('id'), defaults=values)
+            if not created:
+                submodel = save_model(submodel, values)
+            dct['additional_detail'][ind] = submodel.id
+        delete_rows(params.get('additional_detail').get('deleted_rows'), additional_detail)
+    except Exception as e:
+        dct = write_error(dct, e)
+    return JsonResponse(dct)

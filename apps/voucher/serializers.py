@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashPayment, CashPaymentRow, CashReceipt, CashReceiptRow, PurchaseVoucherRow, PurchaseVoucher, SaleRow, Sale, JournalVoucherRow, JournalVoucher, \
-PurchaseOrder, PurchaseOrderRow
+PurchaseOrder, PurchaseOrderRow, ExpenseRow, Expense
+
 
 class CashReceiptRowSerializer(serializers.ModelSerializer):
     class Meta:
@@ -115,3 +116,18 @@ class FixedAssetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FixedAsset
+
+
+class ExpenseRowSerializer(serializers.ModelSerializer):
+    expense_id = serializers.ReadOnlyField(source='expense.id')
+    pay_head_id = serializers.ReadOnlyField(source='pay_head.id')
+
+    class Meta:
+        model = ExpenseRow
+
+
+class ExpenseSerializer(serializers.ModelSerializer):
+    rows = ExpenseRowSerializer(many=True)
+
+    class Meta:
+        model = Expense
