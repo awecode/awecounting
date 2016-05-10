@@ -6,6 +6,7 @@
 <ul class="nav nav-pills">
   <li class="{% if setting == 'Company' %}active{% endif %}"><a href="{% url 'users:company_setting' %}">{% trans "Company Setting" %}</a></li>
   <li class="{% if setting == 'VoucherSetting' %}active{% endif %}"><a href="{% url 'voucher_setting' %}">{% trans "Voucher Setting" %}</a></li>
+  <li class="{% if setting == 'ReportSetting' %}active{% endif %}"><a href="{% url 'report:report_setting' %}">{% trans "Company Setting" %}</a></li>
 </ul>
 {% endblock %}
 
