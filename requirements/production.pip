@@ -1,0 +1,10 @@
+-r requirements.pip
+
+gunicorn
+
+django-filter
+django-haystack
+pyelasticsearch
+django-froala-editor
+-e git+https://github.com/xtranophilist/nepdate.git@master#egg=nepdate
+django-redis
