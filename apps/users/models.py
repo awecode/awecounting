@@ -374,7 +374,7 @@ class Branch(models.Model):
     from apps.ledger.models import Party
 
     company = models.ForeignKey(Company, related_name='branches')
-    branch_company = models.ForeignKey(Company)
+    branch_company = models.ForeignKey(Company, blank=True, null=True)
     name = models.CharField(max_length=250)
     party = models.ForeignKey(Party, blank=True, null=True)
     is_party = models.BooleanField(default=False, verbose_name="Also create party for a barnch")
@@ -383,10 +383,14 @@ class Branch(models.Model):
         return self.name + ' ' + self.company.name
 
     def save(self, *args, **kwargs):
-        if self.is_party and not self.party:
-            from .signals import branch_creation
-
-            branch_creation.send(sender=None, name=self.name, company=self.company)
+        # assign_company = Company.objects.create(name=self.name)
+        # self.branch_company = assign_company
+        # if self.is_party and not self.party:
+        #     import ipdb
+        #     ipdb.set_trace()
+        #     from .signals import branch_creation
+        #
+        #     branch_creation.send(sender=None, name=self.name, company=assign_company)
         super(Branch, self).save(*args, **kwargs)
 
     class Meta:

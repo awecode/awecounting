@@ -317,7 +317,12 @@ class BranchList(BranchView, ListView):
 
 
 class BranchCreate(BranchView, CreateView):
-    pass
+    def post(self, request, **kwargs):
+        self.object = self.get_object()
+        if request.POST:
+            import ipdb
+            ipdb.set_trace()
+        return super(BranchCreate, self).post(request, **kwargs)
 
 
 class BranchUpdate(BranchView, UpdateView):

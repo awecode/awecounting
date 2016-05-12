@@ -132,7 +132,7 @@ class PinForm(HTML5BootstrapModelForm):
 class BranchForm(HTML5BootstrapModelForm):
     class Meta:
         model = Branch
-        exclude = ('company',)
+        exclude = ('company', 'branch_company', 'party',)
         widgets = {
             'party': forms.Select(
                 attrs={'class': 'selectize', 'data-url': reverse_lazy('party_add')}),
