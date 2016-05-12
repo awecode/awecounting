@@ -30,6 +30,12 @@ web_urls = [
 
     url(r'^set_company_to_party/(?P<company_id>\d+)/$', views.set_company_to_party, name='set_company_to_party'),
     url(r'^party_for_company/(?P<company_id>\d+)/$', views.party_for_company, name='party_for_company'),
+
+    url(r'^branch/$', views.BranchList.as_view(), name='branch_list'),
+    url(r'^branch/add/$', views.BranchCreate.as_view(), name='branch_add'),
+    url(r'^branch/edit/(?P<pk>\d+)/$', views.BranchUpdate.as_view(), name='branch_edit'),
+    url(r'^branch/delete/(?P<pk>\d+)/$', views.BranchDelete.as_view(), name='branch_delete'),
+
 ]
 
 api_urls = [

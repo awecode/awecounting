@@ -6,9 +6,10 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Group
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from django.dispatch import receiver
-from njango.fields import BSDateField, today
 
+from django.dispatch import receiver
+
+from njango.fields import BSDateField, today
 from signals import company_creation
 
 
@@ -367,3 +368,27 @@ class Pin(models.Model):
 
     class Meta:
         unique_together = ("company", "used_by")
+
+
+class Branch(models.Model):
+    from apps.ledger.models import Party
+
+    company = models.ForeignKey(Company, related_name='branches')
+    branch_company = models.ForeignKey(Company)
+    name = models.CharField(max_length=250)
+    party = models.ForeignKey(Party, blank=True, null=True)
+    is_party = models.BooleanField(default=False, verbose_name="Also create party for a barnch")
+
+    def __str__(self):
+        return self.name + ' ' + self.company.name
+
+    def save(self, *args, **kwargs):
+        if self.is_party and not self.party:
+            from .signals import branch_creation
+
+            branch_creation.send(sender=None, name=self.name, company=self.company)
+        super(Branch, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name_plural = "Branches"
+        # def save(self, *args, **kwargs ):

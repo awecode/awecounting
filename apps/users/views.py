@@ -8,8 +8,8 @@ from django.contrib.auth import logout as auth_logout
 
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, group_required, CompanyView, SuperOwnerMixin
 from django.views.generic.list import ListView
-from .forms import UserForm, UserUpdateForm, RoleForm, CompanyForm, PinForm
-from .models import User, Company, Role, Pin
+from .forms import UserForm, UserUpdateForm, RoleForm, CompanyForm, PinForm, BranchForm
+from .models import User, Company, Role, Pin, Branch
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
@@ -302,3 +302,27 @@ def delete_role(request, pk):
         obj.delete()
         messages.success(request, "%s '%s' %s" % (_('Role'), str(obj), _('successfully deleted.')))
     return redirect(reverse('users:roles'))
+
+
+
+
+class BranchView(CompanyView):
+    model = Branch
+    form_class = BranchForm
+    success_url = reverse_lazy('users:branch_list')
+
+
+class BranchList(BranchView, ListView):
+    pass
+
+
+class BranchCreate(BranchView, CreateView):
+    pass
+
+
+class BranchUpdate(BranchView, UpdateView):
+    pass
+
+
+class BranchDelete(BranchView, DeleteView):
+    pass

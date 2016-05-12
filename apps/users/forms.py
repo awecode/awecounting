@@ -1,5 +1,5 @@
 from django import forms
-from .models import User, Role, Company, Pin
+from .models import User, Role, Company, Pin, Branch
 from django.contrib.auth.models import Group
 from awecounting.utils.forms import HTML5BootstrapModelForm
 from django.utils.translation import ugettext_lazy as _
@@ -127,3 +127,15 @@ class PinForm(HTML5BootstrapModelForm):
     class Meta:
         model = Pin
         exclude = ('company', 'used_by', 'date')
+
+
+class BranchForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = Branch
+        exclude = ('company',)
+        widgets = {
+            'party': forms.Select(
+                attrs={'class': 'selectize', 'data-url': reverse_lazy('party_add')}),
+        }
+        company_filters = ('party',)
+

@@ -328,7 +328,7 @@ def _transaction_delete(sender, instance, **kwargs):
     transaction.account.save()
 
 
-from apps.users.signals import company_creation
+from apps.users.signals import company_creation, branch_creation
 
 
 def handle_company_creation(sender, **kwargs):
@@ -539,6 +539,12 @@ class Party(models.Model):
     class Meta:
         verbose_name_plural = 'Parties'
         unique_together = ['company', 'related_company']
+
+@receiver(branch_creation)
+def handle_branch_creation(sender, **kwargs):
+    # Party.objects.create(name=kwargs['name'], company=kwargs['company'])
+    print "Handle branch"
+    pass
 
 
 def get_ledger(company, name):
