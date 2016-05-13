@@ -497,6 +497,11 @@ class Party(models.Model):
 
     def save(self, *args, **kwargs):
         super(Party, self).save(*args, **kwargs)
+        post = kwargs.pop('post', True)
+        if post:
+            self.post_save()
+
+    def post_save(self):
         ledger = Account(name=self.name)
         ledger.company = self.company
         if self.type == 'Customer':
@@ -531,7 +536,7 @@ class Party(models.Model):
                 ledger2.code = 'S-' + str(self.id)
                 ledger2.save()
                 self.supplier_ledger = ledger2
-        super(Party, self).save(*args, **kwargs)
+        self.save(post=False)
 
     def __unicode__(self):
         return self.name
