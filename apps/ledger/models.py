@@ -328,7 +328,7 @@ def _transaction_delete(sender, instance, **kwargs):
     transaction.account.save()
 
 
-from apps.users.signals import company_creation, branch_creation
+from apps.users.signals import company_creation
 
 
 def handle_company_creation(sender, **kwargs):
@@ -497,6 +497,8 @@ class Party(models.Model):
 
     def save(self, *args, **kwargs):
         super(Party, self).save(*args, **kwargs)
+        import ipdb
+        ipdb.set_trace()
         ledger = Account(name=self.name)
         ledger.company = self.company
         if self.type == 'Customer':
@@ -531,7 +533,7 @@ class Party(models.Model):
                 ledger2.code = 'S-' + str(self.id)
                 ledger2.save()
                 self.supplier_ledger = ledger2
-        super(Party, self).save(*args, **kwargs)
+        return super(Party, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.name
@@ -540,11 +542,11 @@ class Party(models.Model):
         verbose_name_plural = 'Parties'
         unique_together = ['company', 'related_company']
 
-@receiver(branch_creation)
-def handle_branch_creation(sender, **kwargs):
+# @receiver(branch_creation)
+# def handle_branch_creation(sender, **kwargs):
     # Party.objects.create(name=kwargs['name'], company=kwargs['company'])
-    print "Handle branch"
-    pass
+    # print "Handle branch"
+    # pass
 
 
 def get_ledger(company, name):

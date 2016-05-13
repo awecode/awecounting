@@ -1,5 +1,3 @@
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import login
@@ -13,7 +11,6 @@ from .models import User, Company, Role, Pin, Branch
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
-from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect, JsonResponse
 from .serializers import CompanySerializer
 from django.views.generic import View
@@ -184,6 +181,7 @@ def web_login(request, **kwargs):
                 request.session.set_expiry(0)
         return login(request, **kwargs)
 
+
 def demo_login(request, **kwargs):
     if request.user.is_authenticated():
         return redirect('/', **kwargs)
@@ -193,9 +191,8 @@ def demo_login(request, **kwargs):
                 request.session.set_expiry(1209600)  # 2 weeks
             else:
                 request.session.set_expiry(0)
-        return login(request, template_name = 'registration/demo_login.html', **kwargs)
+        return login(request, template_name='registration/demo_login.html', **kwargs)
 
-    
 
 def logout(request, next_page=None):
     auth_logout(request)
@@ -304,8 +301,6 @@ def delete_role(request, pk):
     return redirect(reverse('users:roles'))
 
 
-
-
 class BranchView(CompanyView):
     model = Branch
     form_class = BranchForm
@@ -317,12 +312,18 @@ class BranchList(BranchView, ListView):
 
 
 class BranchCreate(BranchView, CreateView):
-    def post(self, request, **kwargs):
-        self.object = self.get_object()
-        if request.POST:
-            import ipdb
-            ipdb.set_trace()
-        return super(BranchCreate, self).post(request, **kwargs)
+    def form_valid(self, form):
+        super(BranchCreate, self).form_valid(form)
+        self.object = form.instance
+        if self.object.is_party and not self.object.party and self.object.branch_company:
+            party = Party.objects.get_or_create(name=self.object.name, company=self.request.company,
+                                                related_company=self.object.branch_company)
+            self.object.party = party
+            Role.objects.create(user=self.request.user, group_id=1, company=self.object.branch_company)
+        self.object.save()
+        return super(BranchCreate, self).form_valid(form)
+
+    pass
 
 
 class BranchUpdate(BranchView, UpdateView):
@@ -331,3 +332,14 @@ class BranchUpdate(BranchView, UpdateView):
 
 class BranchDelete(BranchView, DeleteView):
     pass
+
+    #
+    #
+    # from django.db.models.signals import post_save
+    # from django.dispatch import receiver
+    #
+    # @receiver(post_save, sender=Branch)
+    # def branch_save(sender, instance, **kwargs):
+    #     import ipdb
+    #     ipdb.set_trace()
+    #     pass

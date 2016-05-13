@@ -377,20 +377,15 @@ class Branch(models.Model):
     branch_company = models.ForeignKey(Company, blank=True, null=True)
     name = models.CharField(max_length=250)
     party = models.ForeignKey(Party, blank=True, null=True)
-    is_party = models.BooleanField(default=False, verbose_name="Also create party for a barnch")
+    is_party = models.BooleanField(default=False, verbose_name="Also create party for a branch")
 
     def __str__(self):
         return self.name + ' ' + self.company.name
 
     def save(self, *args, **kwargs):
-        # assign_company = Company.objects.create(name=self.name)
-        # self.branch_company = assign_company
-        # if self.is_party and not self.party:
-        #     import ipdb
-        #     ipdb.set_trace()
-        #     from .signals import branch_creation
-        #
-        #     branch_creation.send(sender=None, name=self.name, company=assign_company)
+        if not self.branch_company:
+            assign_company = Company.objects.create(name=self.name)
+            self.branch_company = assign_company
         super(Branch, self).save(*args, **kwargs)
 
     class Meta:
