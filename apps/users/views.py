@@ -306,14 +306,8 @@ class BranchView(CompanyView):
     form_class = BranchForm
     success_url = reverse_lazy('users:branch_list')
 
-
-class BranchList(BranchView, ListView):
-    pass
-
-
-class BranchCreate(BranchView, CreateView):
     def form_valid(self, form):
-        super(BranchCreate, self).form_valid(form)
+        super(BranchView, self).form_valid(form)
         self.object = form.instance
         if self.object.is_party and not self.object.party and self.object.branch_company:
             party = Party.objects.get_or_create(name=self.object.name, company=self.request.company,
@@ -321,8 +315,14 @@ class BranchCreate(BranchView, CreateView):
             self.object.party = party
             Role.objects.create(user=self.request.user, group_id=1, company=self.object.branch_company)
         self.object.save()
-        return super(BranchCreate, self).form_valid(form)
+        return super(BranchView, self).form_valid(form)
 
+
+class BranchList(BranchView, ListView):
+    pass
+
+
+class BranchCreate(BranchView, CreateView):
     pass
 
 

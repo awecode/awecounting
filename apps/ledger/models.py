@@ -3,12 +3,12 @@ import datetime
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.db import models
-from mptt.models import MPTTModel, TreeForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
 from django.db.models import F
 
+from mptt.models import MPTTModel, TreeForeignKey
 from apps.users.models import Company
 from awecounting.utils.helpers import zero_for_none, none_for_zero
 
@@ -487,18 +487,30 @@ class Party(models.Model):
     company = models.ForeignKey(Company, related_name='parties')
     related_company = models.OneToOneField(Company, blank=True, null=True, related_name='related_party')
 
+    def __init__(self, *args, **kwargs):
+        self.post = True
+        super(Party, self).__init__(*args, **kwargs)
+
     def get_absolute_url(self):
         return reverse_lazy('party_edit', kwargs={'pk': self.pk})
 
     @property
     def balance(self):
-        return zero_for_none(self.customer_ledger.current_dr) - zero_for_none(self.customer_ledger.current_cr) + zero_for_none(
+        return zero_for_none(self.customer_ledger.current_dr) - zero_for_none(
+            self.customer_ledger.current_cr) + zero_for_none(
             self.supplier_ledger.current_cr) - zero_for_none(self.supplier_ledger.current_dr)
 
     def save(self, *args, **kwargs):
         super(Party, self).save(*args, **kwargs)
         import ipdb
+
         ipdb.set_trace()
+        self.post = kwargs.pop('post', True)
+
+        if self.post:
+            self.post_save()
+
+    def post_save(self):
         ledger = Account(name=self.name)
         ledger.company = self.company
         if self.type == 'Customer':
@@ -533,7 +545,7 @@ class Party(models.Model):
                 ledger2.code = 'S-' + str(self.id)
                 ledger2.save()
                 self.supplier_ledger = ledger2
-        return super(Party, self).save(*args, **kwargs)
+        self.save(post=False)
 
     def __unicode__(self):
         return self.name
@@ -542,8 +554,8 @@ class Party(models.Model):
         verbose_name_plural = 'Parties'
         unique_together = ['company', 'related_company']
 
-# @receiver(branch_creation)
-# def handle_branch_creation(sender, **kwargs):
+    # @receiver(branch_creation)
+    # def handle_branch_creation(sender, **kwargs):
     # Party.objects.create(name=kwargs['name'], company=kwargs['company'])
     # print "Handle branch"
     # pass

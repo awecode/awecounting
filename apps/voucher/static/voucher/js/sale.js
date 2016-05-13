@@ -194,9 +194,9 @@ function SaleViewModel(data) {
             return false;
         }
 
-        var check_discount
+        var check_discount;
         self.table_view.rows().forEach(function (i) {
-            discount_as_string = String(i.discount());
+            var discount_as_string = String(i.discount());
             if (discount_as_string.indexOf('%') !== -1) {
                 if (typeof(discount_as_string[ discount_as_string.indexOf('%') + 1]) != 'undefined' ) {
                     bsalert.error("Discount '%' not in correct order");
@@ -228,8 +228,8 @@ function SaleViewModel(data) {
                 else {
                     bsalert.success('Saved!');
                     self.table_view.deleted_rows([]);
-                    $("tbody > tr").each(function (i) {
-                        $($("tbody > tr:not(.total)")[i]).addClass('invalid-row');
+                    $("tbody > tr:not(.total)").each(function (i, el) {
+                        $(el).addClass('invalid-row');
                     });
                     if (msg.tax == 'no'){
                         for (var i in msg.rows) {
