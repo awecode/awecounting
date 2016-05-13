@@ -318,19 +318,19 @@ class BranchView(CompanyView):
         return super(BranchView, self).form_valid(form)
 
 
-class BranchList(BranchView, ListView):
+class BranchList(BranchView, SuperOwnerMixin, ListView):
     pass
 
 
-class BranchCreate(BranchView, CreateView):
+class BranchCreate(BranchView, SuperOwnerMixin, CreateView):
     pass
 
 
-class BranchUpdate(BranchView, UpdateView):
+class BranchUpdate(BranchView, SuperOwnerMixin, UpdateView):
     pass
 
 
-class BranchDelete(BranchView, DeleteView):
+class BranchDelete(BranchView, SuperOwnerMixin, DeleteView):
     pass
 
     #
