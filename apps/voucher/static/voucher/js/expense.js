@@ -17,7 +17,7 @@ function ExpenseViewModel(data) {
         data: "categories=direct_expenses,indirect_expenses",
         async: false,
         success: function (data) {
-            self.expense_accounts = ko.observableArray(data['results']);
+            self.expense_accounts = ko.observableArray(data);
         }
     });
 
@@ -26,7 +26,7 @@ function ExpenseViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.pay_head_accounts = ko.observableArray(data['results']);
+        self.pay_head_accounts = ko.observableArray(data);
         }
     });
 

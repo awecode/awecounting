@@ -52,7 +52,7 @@
                             </td>
                             <td>
                                  <select data-bind="selectize: $root.pay_head_accounts, value: pay_head_id" id="from_account"
-                            data-url="{% url 'account_add' %}"></select>
+                            data-url="{% url 'bank:bankaccount_add' %}"></select>
                             </td>
                             <td data-bind="editableText: amount"></td>
                             <td class="hide-on-print text-center">

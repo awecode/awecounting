@@ -12,7 +12,7 @@ function CashReceiptVM(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.parties = ko.observableArray(data['results']);
+            self.parties = ko.observableArray(data);
         }
     });
 

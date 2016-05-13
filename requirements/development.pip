@@ -1,0 +1,6 @@
+-r requirements.pip
+
+pyinotify
+git-pylint-commit-hook
+django-debug-toolbar
+ipdb

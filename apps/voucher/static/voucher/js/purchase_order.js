@@ -21,7 +21,7 @@ function PurchaseViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.items = ko.observableArray(data['results']);
+            self.items = ko.observableArray(data);
             self.items_of_current_company(self.items()[0].company);
             company_items.push({'id': self.items_of_current_company(), 'items': self.items()})
         }
@@ -32,7 +32,7 @@ function PurchaseViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.parties = ko.observableArray(data['results']);
+            self.parties = ko.observableArray(data);
         }
     });
 
@@ -47,10 +47,10 @@ function PurchaseViewModel(data) {
                     dataType: 'json',
                     async: false,
                     success: function (data) {
-                        if (data['results'].length >= 1) {
-                            self.items(data['results'])
-                            self.items_of_current_company(data['results'][0].company);
-                            company_items.push({'id': data['results'][0].company, 'items': self.items()})
+                        if (data.length >= 1) {
+                            self.items(data)
+                            self.items_of_current_company(data[0].company);
+                            company_items.push({'id': data[0].company, 'items': self.items()})
                         } else {
                             bsalert.error('Requested company has no item');
                         };
@@ -83,7 +83,7 @@ function PurchaseViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.units = ko.observableArray(data['results']);
+            self.units = ko.observableArray(data);
         }
     });
 
