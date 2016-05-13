@@ -310,11 +310,11 @@ class BranchView(CompanyView):
         super(BranchView, self).form_valid(form)
         self.object = form.instance
         if self.object.is_party and not self.object.party and self.object.branch_company:
-            party = Party.objects.get_or_create(name=self.object.name, company=self.request.company,
+            party = Party.objects.create(name=self.object.name, company=self.request.company,
                                                 related_company=self.object.branch_company)
-            self.object.party = party
             Role.objects.create(user=self.request.user, group_id=1, company=self.object.branch_company)
-        self.object.save()
+            self.object.party = party
+            self.object.save()
         return super(BranchView, self).form_valid(form)
 
 

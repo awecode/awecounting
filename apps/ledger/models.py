@@ -487,9 +487,9 @@ class Party(models.Model):
     company = models.ForeignKey(Company, related_name='parties')
     related_company = models.OneToOneField(Company, blank=True, null=True, related_name='related_party')
 
-    def __init__(self, *args, **kwargs):
-        self.post = True
-        super(Party, self).__init__(*args, **kwargs)
+    # def __init__(self, *args, **kwargs):
+    #     self.post = True
+    #     super(Party, self).__init__(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse_lazy('party_edit', kwargs={'pk': self.pk})
@@ -501,11 +501,8 @@ class Party(models.Model):
             self.supplier_ledger.current_cr) - zero_for_none(self.supplier_ledger.current_dr)
 
     def save(self, *args, **kwargs):
-        super(Party, self).save(*args, **kwargs)
-        import ipdb
-
-        ipdb.set_trace()
         self.post = kwargs.pop('post', True)
+        super(Party, self).save(*args, **kwargs)
 
         if self.post:
             self.post_save()
