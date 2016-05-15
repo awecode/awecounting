@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from ..users.models import User
+from ..users.serializers import UserSerializer
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashPayment, CashPaymentRow, CashReceipt, CashReceiptRow, PurchaseVoucherRow, PurchaseVoucher, SaleRow, Sale, JournalVoucherRow, JournalVoucher, \
 PurchaseOrder, PurchaseOrderRow, ExpenseRow, Expense
 
@@ -43,12 +45,12 @@ class PurchaseVoucherRowSerializer(serializers.ModelSerializer):
 class PurchaseVoucherSerializer(serializers.ModelSerializer):
     rows = PurchaseVoucherRowSerializer(many=True)
     date = serializers.DateField(format=None)
-    purchase_agent_id = serializers.ReadOnlyField(source='purchase_agent.id')
+
     party_id = serializers.ReadOnlyField()
 
     class Meta:
         model = PurchaseVoucher
-        exclude = ['party', 'purchase_agent']
+        exclude = ['party']
 
 
 class PurchaseOrderRowSerializer(serializers.ModelSerializer):
@@ -63,11 +65,21 @@ class PurchaseOrderRowSerializer(serializers.ModelSerializer):
 class PurchaseOrderSerializer(serializers.ModelSerializer):
     rows = PurchaseOrderRowSerializer(many=True)
     date = serializers.DateField(format=None)
+    purchase_agent_id = serializers.ReadOnlyField(source='purchase_agent.id')
     party_id = serializers.ReadOnlyField()
+    agents = serializers.SerializerMethodField()
 
     class Meta:
         model = PurchaseOrder
-        exclude = ['party']
+        exclude = ['party', 'purchase_agent']
+
+    def get_agents(self, obj):
+        users = User.objects.filter(groups__name="PurchaseAgent")
+        data = []
+        for user in users:
+            dct = dict(name=user.username, id = user.pk)
+            data.append(dct)
+        return data
 
 
 class SaleRowSerializer(serializers.ModelSerializer):

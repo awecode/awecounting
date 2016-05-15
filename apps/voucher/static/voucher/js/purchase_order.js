@@ -8,7 +8,10 @@ function PurchaseViewModel(data) {
     var self = this;
 
     var company_items = []
-    self.items_of_current_company = ko.observable(); 
+    self.items_of_current_company = ko.observable();
+
+    self.purchase_agent_id = ko.observable();
+    self.agent = ko.observable();
 
     for (var k in data) {
         self[k] = ko.observable(data[k]);

@@ -135,7 +135,7 @@ class PurchaseOrder(models.Model):
     party = models.ForeignKey(Party)
     voucher_no = models.IntegerField(blank=True, null=True)
     date = BSDateField(default=today)
-    purchase_agent = models.ForeignKey(User, related_name="purchase_order")
+    purchase_agent = models.ForeignKey(User, related_name="purchase_order", blank=True, null=True)
     company = models.ForeignKey(Company)
 
     def __init__(self, *args, **kwargs):
