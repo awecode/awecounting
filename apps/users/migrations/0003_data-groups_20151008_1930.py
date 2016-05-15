@@ -11,18 +11,19 @@ def create_groups(apps, schema_editor):
     admin_group = Group.objects.create(name='SuperOwner')
     Group.objects.create(name='Owner')
     Group.objects.create(name='Accountant')
+    Group.objects.create(name='PurchaseAgent')
 
     all_permissions = Permission.objects.all()
     admin_group.permissions = all_permissions
-
 
     try:
         with transaction.atomic():
             admin = User.objects.get(username='admin')
         group_list = Group.objects.all()
-        admin.groups = group_list 
+        admin.groups = group_list
     except User.DoesNotExist:
         pass
+
 
 def add_admin_user_to_admin_group(apps, schema_editor):
     from apps.users.models import User

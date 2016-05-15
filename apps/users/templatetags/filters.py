@@ -9,7 +9,7 @@ from apps.inventory.templatetags.filters import *
 def _setup_macros_dict(parser):
     ## Metadata of each macro are stored in a new attribute
     ## of 'parser' class. That way we can access it later
-    ## in the template when processing 'usemacro' tags.
+    ## in the template when procesifsing 'usemacro' tags.
     try:
         ## Only try to access it to eventually trigger an exception
         parser._macros

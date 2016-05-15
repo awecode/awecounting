@@ -730,7 +730,8 @@ def save_purchase_order(request):
         params['voucher_no'] = None
 
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
-                     'party_id': params.get('party_id'), 'company': request.company}
+                     'party_id': params.get('party_id'), 'purchase_agent_id': params.get('purchase_agent_id'),
+                     'company': request.company}
 
     if params.get('id'):
         obj = PurchaseOrder.objects.get(id=params.get('id'), company=request.company)
