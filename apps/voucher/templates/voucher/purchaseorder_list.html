@@ -55,9 +55,12 @@
 </div>
 
 {% paginate %}
-<h1>{% trans "Purchase Order" %}: {{ request.user }}</h1>
-{% endrole %}
+{% if request.user.purchase_order.all %}
 
+    <h1>{% trans "Purchase Order" %}: {{ request.user }}</h1>
+{% endif %}
+{% endrole %}
+{% if request.user.purchase_order.all %}
 <div class="well">
     {% load pagination_tags %}
     {% load sorting_tags %}
@@ -99,5 +102,5 @@
     </table>
 </div>
 {% paginate %}
-
+{% endif %}
 {% endblock %}
