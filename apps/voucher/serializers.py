@@ -74,7 +74,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
         exclude = ['party', 'purchase_agent']
 
     def get_agents(self, obj):
-        users = User.objects.filter(groups__name="PurchaseAgent")
+        users = User.objects.filter(roles__group__name='PurchaseAgent')
         data = []
         for user in users:
             dct = dict(name=user.username, id = user.pk)
