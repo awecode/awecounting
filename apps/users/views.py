@@ -1,5 +1,3 @@
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import login
@@ -8,12 +6,11 @@ from django.contrib.auth import logout as auth_logout
 
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, group_required, CompanyView, SuperOwnerMixin
 from django.views.generic.list import ListView
-from .forms import UserForm, UserUpdateForm, RoleForm, CompanyForm, PinForm
-from .models import User, Company, Role, Pin
+from .forms import UserForm, UserUpdateForm, RoleForm, CompanyForm, PinForm, BranchForm
+from .models import User, Company, Role, Pin, Branch
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
-from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect, JsonResponse
 from .serializers import CompanySerializer
 from django.views.generic import View
@@ -184,6 +181,7 @@ def web_login(request, **kwargs):
                 request.session.set_expiry(0)
         return login(request, **kwargs)
 
+
 def demo_login(request, **kwargs):
     if request.user.is_authenticated():
         return redirect('/', **kwargs)
@@ -193,9 +191,8 @@ def demo_login(request, **kwargs):
                 request.session.set_expiry(1209600)  # 2 weeks
             else:
                 request.session.set_expiry(0)
-        return login(request, template_name = 'registration/demo_login.html', **kwargs)
+        return login(request, template_name='registration/demo_login.html', **kwargs)
 
-    
 
 def logout(request, next_page=None):
     auth_logout(request)
@@ -302,3 +299,47 @@ def delete_role(request, pk):
         obj.delete()
         messages.success(request, "%s '%s' %s" % (_('Role'), str(obj), _('successfully deleted.')))
     return redirect(reverse('users:roles'))
+
+
+class BranchView(CompanyView):
+    model = Branch
+    form_class = BranchForm
+    success_url = reverse_lazy('users:branch_list')
+
+    def form_valid(self, form):
+        super(BranchView, self).form_valid(form)
+        self.object = form.instance
+        Role.objects.get_or_create(user=self.request.user, group_id=1, company=self.object.branch_company)
+        if self.object.is_party and not self.object.party and self.object.branch_company:
+            party = Party.objects.create(name=self.object.name, company=self.request.company,
+                                         related_company=self.object.branch_company)
+            self.object.party = party
+            self.object.save()
+        return super(BranchView, self).form_valid(form)
+
+
+class BranchList(BranchView, SuperOwnerMixin, ListView):
+    pass
+
+
+class BranchCreate(BranchView, SuperOwnerMixin, CreateView):
+    pass
+
+
+class BranchUpdate(BranchView, SuperOwnerMixin, UpdateView):
+    pass
+
+
+class BranchDelete(BranchView, SuperOwnerMixin, DeleteView):
+    pass
+
+    #
+    #
+    # from django.db.models.signals import post_save
+    # from django.dispatch import receiver
+    #
+    # @receiver(post_save, sender=Branch)
+    # def branch_save(sender, instance, **kwargs):
+    #     import ipdb
+    #     ipdb.set_trace()
+    #     pass

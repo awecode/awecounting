@@ -6,7 +6,7 @@ from django.contrib.admin import ModelAdmin
 from apps.report.admin import ReportSettingStacked
 
 from awecounting.utils.mixins import CompanyAdmin
-from .models import File, User, GroupProxy, Company, Role, Pin, Subscription
+from .models import File, User, GroupProxy, Company, Role, Pin, Subscription, Branch
 
 
 class UserCreationForm(DjangoUserCreationForm):
@@ -132,3 +132,4 @@ admin.site.register(Company, _CompanyAdmin)
 admin.site.register(File)
 admin.site.register(Pin)
 admin.site.register(Subscription)
+admin.site.register(Branch)
