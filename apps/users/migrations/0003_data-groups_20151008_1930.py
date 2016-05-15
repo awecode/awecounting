@@ -11,8 +11,8 @@ def create_groups(apps, schema_editor):
     admin_group = Group.objects.create(name='SuperOwner')
     Group.objects.create(name='Owner')
     Group.objects.create(name='Accountant')
-    Group.objects.create(name='Purchase Agent')
-    
+    Group.objects.create(name='PurchaseAgent')
+
     all_permissions = Permission.objects.all()
     admin_group.permissions = all_permissions
 

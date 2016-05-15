@@ -43,11 +43,12 @@ class PurchaseVoucherRowSerializer(serializers.ModelSerializer):
 class PurchaseVoucherSerializer(serializers.ModelSerializer):
     rows = PurchaseVoucherRowSerializer(many=True)
     date = serializers.DateField(format=None)
+    purchase_agent_id = serializers.ReadOnlyField(source='purchase_agent.id')
     party_id = serializers.ReadOnlyField()
 
     class Meta:
         model = PurchaseVoucher
-        exclude = ['party']
+        exclude = ['party', 'purchase_agent']
 
 
 class PurchaseOrderRowSerializer(serializers.ModelSerializer):

@@ -15,7 +15,7 @@ from django.dispatch import receiver
 
 from ..inventory.models import Item, Unit
 from ..ledger.models import Party, Account, JournalEntry
-from ..users.models import Company
+from ..users.models import Company, User
 from awecounting.utils.helpers import get_next_voucher_no, calculate_tax
 from ..tax.models import TaxScheme
 from awecounting.utils.helpers import get_discount_with_percent
@@ -135,6 +135,7 @@ class PurchaseOrder(models.Model):
     party = models.ForeignKey(Party)
     voucher_no = models.IntegerField(blank=True, null=True)
     date = BSDateField(default=today)
+    purchase_agent = models.ForeignKey(User, related_name="purchase_order")
     company = models.ForeignKey(Company)
 
     def __init__(self, *args, **kwargs):
