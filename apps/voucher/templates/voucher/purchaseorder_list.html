@@ -5,53 +5,99 @@
 {% block page-title %}{% trans 'Purchases Order' %}{% endblock %}
 
 {% block header-buttons %}
-    <a class="btn btn-success btn-raised" href="{% url 'purchase_order_create' %}">{% trans 'New' %} {% trans 'Purchase Order' %}</a>
+    <a class="btn btn-success btn-raised"
+       href="{% url 'purchase_order_create' %}">{% trans 'New' %} {% trans 'Purchase Order' %}</a>
 {% endblock %}
 
 
 {% block content %}
-    <div class="well">
-        {% load pagination_tags %}
-        {% load sorting_tags %}
-        {% load filters %}
-        {% autosort object_list as sorted_objects %}
-        {% autopaginate sorted_objects 25 as paginated_objects %}
+{% ifrole "Staff" %}
 
-        <table class="table table-striped">
-            <thead>
-            <th>{% anchor voucher_no _('Voucher No.') %}</th>
-            <th>{% anchor date _('Date') %}</th>
-            <th>{% anchor party _('Party') %}</th>
+<div class="well">
+    {% load pagination_tags %}
+    {% load sorting_tags %}
+    {% load filters %}
+    {% autosort object_list as sorted_objects %}
+    {% autopaginate sorted_objects 25 as paginated_objects %}
+
+    <table class="table table-striped">
+        <thead>
+        <th>{% anchor voucher_no _('Voucher No.') %}</th>
+        <th>{% anchor date _('Date') %}</th>
+        <th>{% anchor party _('Party') %}</th>
+        {% ifrole "Accountant" %}
+        <th>{% trans "Action" %}</th>
+        {% endrole %}
+        </thead>
+        <tbody>
+        {% for purchase_order in paginated_objects %}
+        <tr>
+            <td class="link">
+                <a href="{% url 'purchase_order_detail' purchase_order.pk %}">{{ purchase_order.voucher_no }}</a>
+            </td>
+            <td>
+                {{ purchase_order.date }}
+            </td>
+            <td>
+                <a href="{{ purchase_order.party.get_absolute_url }}">
+                    {{ purchase_order.party }}
+                </a>
+            </td>
             {% ifrole "Accountant" %}
-                <th>{% trans "Action" %}</th>
+            <td>
+                <a href="{% url 'purchase_order_edit' purchase_order.id %}">{% trans "Edit" %}</a>
+            </td>
             {% endrole %}
-            </thead>
-            <tbody>
-            {% for purchase_order in paginated_objects %}
-                <tr>
-                    <td class="link">
-                        <a href="{% url 'purchase_order_detail' purchase_order.pk %}">{{ purchase_order.voucher_no }}</a>
-                    </td>
-                    <td>
-                        {{ purchase_order.date }}
-                    </td>
-                    <td>
-                        <a href="{{ purchase_order.party.get_absolute_url }}">
-                            {{ purchase_order.party }}
-                        </a>
-                    </td>
-                    {% ifrole "Accountant" %}
-                    <td>
-                        <a href="{% url 'purchase_order_edit' purchase_order.id %}">{% trans "Edit" %}</a>
-                    </td>
-                    {% endrole %}
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
 
-    {% paginate %}
+{% paginate %}
+<h1>{% trans "Purchase Order" %}: {{ request.user }}</h1>
+{% endrole %}
 
+<div class="well">
+    {% load pagination_tags %}
+    {% load sorting_tags %}
+    {% load filters %}
+    {% autosort request.user.purchase_order.all as sorted_objects %}
+    {% autopaginate sorted_objects 25 as paginated_objects %}
+
+    <table class="table table-striped">
+        <thead>
+        <th>{% anchor voucher_no _('Voucher No.') %}</th>
+        <th>{% anchor date _('Date') %}</th>
+        <th>{% anchor party _('Party') %}</th>
+        {% ifrole "Accountant" %}
+        <th>{% trans "Action" %}</th>
+        {% endrole %}
+        </thead>
+        <tbody>
+        {% for agent_purchase_order in paginated_objects %}
+        <tr>
+            <td class="link">
+                <a href="{% url 'purchase_order_detail' agent_purchase_order.pk %}">{{ agent_purchase_order.voucher_no }}</a>
+            </td>
+            <td>
+                {{ agent_purchase_order.date }}
+            </td>
+            <td>
+                <a href="{{ agent_purchase_order.party.get_absolute_url }}">
+                    {{ agent_purchase_order.party }}
+                </a>
+            </td>
+            {% ifrole "Accountant" %}
+            <td>
+                <a href="{% url 'purchase_order_edit' agent_purchase_order.id %}">{% trans "Edit" %}</a>
+            </td>
+            {% endrole %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% paginate %}
 
 {% endblock %}

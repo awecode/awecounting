@@ -22,6 +22,7 @@ USURPERS = {
     'Accountant': ['Accountant', 'Owner', 'SuperOwner'],
     'Owner': ['Owner', 'SuperOwner'],
     'SuperOwner': ['SuperOwner'],
+    'PurchaseAgent': ['PurchaseAgent'],
 }
 
 
