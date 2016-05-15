@@ -161,7 +161,7 @@ class PurchaseOrderRow(models.Model):
     quantity = models.FloatField()
     unit = models.ForeignKey(Unit)
     # unit = models.CharField(max_length=50)
-    rate = models.FloatField()
+    rate = models.FloatField(blank=True, null=True)
     # vattable = models.BooleanField(default=True)
     remarks = models.CharField(max_length=254, blank=True, null=True)
     purchase_order = models.ForeignKey(PurchaseOrder, related_name='rows')
