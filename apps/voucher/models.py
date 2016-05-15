@@ -164,10 +164,13 @@ class PurchaseOrderRow(models.Model):
     rate = models.FloatField(blank=True, null=True)
     # vattable = models.BooleanField(default=True)
     remarks = models.CharField(max_length=254, blank=True, null=True)
+    fulfilled = models.BooleanField(default=False)
     purchase_order = models.ForeignKey(PurchaseOrder, related_name='rows')
 
     def get_total(self):
-        total = float(self.quantity) * float(self.rate)
+        total = 0
+        if self.rate:
+            total = float(self.quantity) * float(self.rate)
         return total
 
 

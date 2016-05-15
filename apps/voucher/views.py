@@ -749,6 +749,7 @@ def save_purchase_order(request):
                 values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'specification': row.get('specification'),
                           'quantity': row.get('quantity'),
                           'rate': row.get('rate'), 'unit_id': row.get('unit')['id'], 'remarks': row.get('remarks'),
+                          'fulfilled': row.get('fulfilled'),
                           'purchase_order': obj}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:

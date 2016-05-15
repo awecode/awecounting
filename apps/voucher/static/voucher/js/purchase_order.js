@@ -202,6 +202,7 @@ function PurchaseRow(row, purchase_vm) {
     self.unit_id = ko.observable();
     self.specification = ko.observable();
     // self.vattable = ko.observable();
+    self.fulfilled = ko.observable();
     self.remarks = ko.observable();
 
     for (var k in row)

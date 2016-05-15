@@ -64,6 +64,7 @@
                         <th rowspan="2" class="span3">{% trans 'Unit' %}</th>
                         {# <th rowspan="2" class="span3 hidden-print">{% trans 'Vattable' %}</th> #}
                         <th colspan="2" class="span2">{% trans 'Price' %}</th>
+                        <th rowspan="2" class="span3">{% trans 'Fulfilled' %}</th>
                         <th rowspan="2" class="span2">{% trans 'Remarks' %}</th>
                         <th rowspan="2" class="hidden-print"></th>
                     </tr>
@@ -97,6 +98,9 @@
                         {# </td> #}
                         <td data-bind="editableText: rate, localize: 2"></td>
                         <td data-bind="text: total_amount(), localize: 2"></td>
+                        <td>
+                            <input type="checkbox" data-bind="checked: fulfilled">
+                        </td>
                         <td class="remarks-cell" data-bind="editableText: remarks"></td>
                         <td class="hidden-print">
                             <a href="#" class="red fa fa-trash-o fa-2x" data-bind="click: $parent.removeRow"></a>
