@@ -6,6 +6,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.db.models import Q
 from django.views.generic import ListView
+from njango.fields import today
 
 from .serializers import ItemSerializer, InventoryAccountRowSerializer
 from ..voucher.models import Sale

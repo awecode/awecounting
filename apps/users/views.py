@@ -11,7 +11,7 @@ from .models import User, Company, Role, Pin, Branch
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from .serializers import CompanySerializer
 from django.views.generic import View
 from django.db import IntegrityError
@@ -162,6 +162,11 @@ class UserCreate(UserView, SuperOwnerMixin, CreateView):
 class UserUpdate(UserView, SuperOwnerMixin, UpdateView):
     form_class = UserUpdateForm
 
+
+def test(request):
+    print today()
+    print request.company.get_fy_start('2016-07-19')
+    return HttpResponse('OK!')
 
 @login_required
 def index(request):
@@ -332,14 +337,3 @@ class BranchUpdate(BranchView, SuperOwnerMixin, UpdateView):
 
 class BranchDelete(BranchView, SuperOwnerMixin, DeleteView):
     pass
-
-    #
-    #
-    # from django.db.models.signals import post_save
-    # from django.dispatch import receiver
-    #
-    # @receiver(post_save, sender=Branch)
-    # def branch_save(sender, instance, **kwargs):
-    #     import ipdb
-    #     ipdb.set_trace()
-    #     pass

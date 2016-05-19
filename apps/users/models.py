@@ -1,3 +1,4 @@
+from datetime import timedelta
 import os
 import random
 
@@ -9,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.dispatch import receiver
 from njango.fields import BSDateField, today
 from njango.middleware import get_calendar
-from njango.nepdate import tuple_from_string, string_from_tuple, bs2ad, bs, ad2bs
+from njango.nepdate import tuple_from_string, string_from_tuple, bs2ad, bs, ad2bs, date_from_tuple, tuple_from_date
 
 from signals import company_creation
 
@@ -102,48 +103,64 @@ class Company(models.Model):
         return self.subscription.enable_reports
 
     def get_fy_from_date(self, date):
-        calendar = get_calendar()
+        # returns bs year for nepali fy system, ad for another
         if type(date) == str or type(date) == unicode:
             date = tuple_from_string(date)
-        if calendar == 'ad':
-            date = ad2bs(date)
-        if type(date) == tuple:
-            date = string_from_tuple(date)
-        month = int(date.split('-')[1])
-        year = int(date.split('-')[0])
+        calendar = get_calendar()
         if self.use_nepali_fy_system:
+            if calendar == 'ad':
+                date = ad2bs(date)
+            if type(date) == tuple:
+                date = string_from_tuple(date)
+            month = int(date.split('-')[1])
+            year = int(date.split('-')[0])
             if month < 4:
                 year -= 1
         else:
-            day = int(date.split('-')[2])
-            if month <= self.voucher_number_start_date.month and day < self.voucher_number_start_date.day:
-                year -= 1
+            if calendar == 'bs':
+                date = date_from_tuple(bs2ad(date))
+            if date.month < self.fy_start_month:
+                return date.year - 1
+            if date.month > self.fy_start_month:
+                return date.year
+            if date.month == self.fy_start_month:
+                if date.day < self.fy_start_day:
+                    return date.year - 1
+                return date.year
         return year
 
     def get_fy_start(self, date=None):
+        calendar = get_calendar()
         year = self.get_fy_from_date(date)
         if self.use_nepali_fy_system:
+            # get fy start in bs
             fiscal_year_start = str(year) + '-04-01'
+            tuple_value = tuple_from_string(fiscal_year_start)
+            if calendar == 'ad':
+                tuple_value = bs2ad(tuple_value)
         else:
-            fiscal_year_start = str(year) + '-' + str(self.voucher_number_start_date.month) + '-' + str(
-                self.voucher_number_start_date.day)
-        tuple_value = tuple_from_string(fiscal_year_start)
-        calendar = get_calendar()
-        if calendar == 'ad':
-            tuple_value = bs2ad(tuple_value)
+            # get fy start in ad
+            fiscal_year_start = str(year) + '-' + str(self.fy_start_month) + '-' + str(self.fy_start_day)
+            tuple_value = tuple_from_string(fiscal_year_start)
+            if calendar == 'bs':
+                tuple_value = ad2bs(tuple_value)
         return tuple_value
 
     def get_fy_end(self, date=None):
-
+        calendar = get_calendar()
         year = self.get_fy_from_date(date)
         if self.use_nepali_fy_system:
+            # get fy end in bs
             fiscal_year_end = str(int(year) + 1) + '-03-' + str(bs[int(year) + 1][2])
+            tuple_value = tuple_from_string(fiscal_year_end)
+            if calendar == 'ad':
+                tuple_value = bs2ad(tuple_value)
         else:
-            fiscal_year_end = str(int(year) + 1) + '-' + str(self.voucher_number_start_date.month) + '-' + str(12)
-        tuple_value = tuple_from_string(fiscal_year_end)
-        calendar = get_calendar()
-        if calendar == 'ad':
-            tuple_value = bs2ad(tuple_value)
+            # get fy end in ad
+            fiscal_year_end = date(int(year) + 1, self.fy_start_month, self.fy_start_day) - timedelta(days=1)
+            tuple_value = tuple_from_date(fiscal_year_end)
+            if calendar == 'bs':
+                tuple_value = ad2bs(tuple_value)
         return tuple_value
 
     def save(self, *args, **kwargs):
