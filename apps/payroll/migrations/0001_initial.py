@@ -7,8 +7,6 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0010_auto_20160124_1529'),
-        ('ledger', '0008_auto_20160106_1434'),
     ]
 
     operations = [
@@ -28,7 +26,6 @@ class Migration(migrations.Migration):
                 ('early_late_multiplier', models.FloatField(default=1, null=True, blank=True)),
                 ('total_ot_hours', models.FloatField(null=True, blank=True)),
                 ('paid', models.BooleanField(default=False)),
-                ('company', models.ForeignKey(to='users.Company')),
             ],
         ),
         migrations.CreateModel(
@@ -46,8 +43,6 @@ class Migration(migrations.Migration):
                 ('address', models.TextField(null=True, blank=True)),
                 ('tax_id', models.CharField(max_length=100, null=True, blank=True)),
                 ('designation', models.CharField(max_length=100, null=True, blank=True)),
-                ('account', models.OneToOneField(null=True, to='ledger.Account')),
-                ('company', models.ForeignKey(to='users.Company')),
             ],
         ),
         migrations.CreateModel(
@@ -57,8 +52,10 @@ class Migration(migrations.Migration):
                 ('entry_no', models.CharField(max_length=10)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
-                ('company', models.ForeignKey(to='users.Company')),
             ],
+            options={
+                'verbose_name_plural': 'Entries',
+            },
         ),
         migrations.CreateModel(
             name='EntryRow',
@@ -71,9 +68,6 @@ class Migration(migrations.Migration):
                 ('remarks', models.TextField(null=True, blank=True)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
-                ('employee', models.ForeignKey(to='ledger.Account')),
-                ('entry', models.ForeignKey(related_name='rows', to='payroll.Entry')),
-                ('pay_heading', models.ForeignKey(related_name='row', to='ledger.Account')),
             ],
         ),
         migrations.CreateModel(
@@ -83,7 +77,6 @@ class Migration(migrations.Migration):
                 ('voucher_no', models.CharField(max_length=50)),
                 ('date', models.DateField()),
                 ('status', models.CharField(default=b'Unapproved', max_length=10, choices=[(b'Approved', b'Approved'), (b'Unapproved', b'Unapproved')])),
-                ('company', models.ForeignKey(to='users.Company')),
             ],
         ),
         migrations.CreateModel(
@@ -94,9 +87,6 @@ class Migration(migrations.Migration):
                 ('rate_hour', models.FloatField(null=True, blank=True)),
                 ('rate_ot_hour', models.FloatField(null=True, blank=True)),
                 ('payroll_tax', models.FloatField(null=True, blank=True)),
-                ('employee', models.ForeignKey(to='payroll.Employee')),
-                ('group_payroll', models.ForeignKey(related_name='rows', to='payroll.GroupPayroll')),
-                ('pay_head', models.ForeignKey(to='ledger.Account')),
             ],
         ),
         migrations.CreateModel(
@@ -116,8 +106,6 @@ class Migration(migrations.Migration):
                 ('hour_rate', models.FloatField(null=True, blank=True)),
                 ('ot_hour_rate', models.FloatField(null=True, blank=True)),
                 ('status', models.CharField(default=b'Unapproved', max_length=10, choices=[(b'Approved', b'Approved'), (b'Unapproved', b'Unapproved')])),
-                ('company', models.ForeignKey(to='users.Company')),
-                ('employee', models.ForeignKey(to='payroll.Employee')),
             ],
         ),
         migrations.CreateModel(
@@ -137,7 +125,6 @@ class Migration(migrations.Migration):
                 ('date', models.DateField()),
                 ('from_date', models.DateField()),
                 ('to_date', models.DateField()),
-                ('company', models.ForeignKey(to='users.Company')),
             ],
         ),
         migrations.CreateModel(
@@ -148,35 +135,5 @@ class Migration(migrations.Migration):
                 ('employee', models.ForeignKey(to='payroll.Employee')),
                 ('work_time_voucher', models.ForeignKey(related_name='rows', to='payroll.WorkTimeVoucher')),
             ],
-        ),
-        migrations.AddField(
-            model_name='workday',
-            name='work_time_voucher_row',
-            field=models.ForeignKey(related_name='work_days', to='payroll.WorkTimeVoucherRow'),
-        ),
-        migrations.AddField(
-            model_name='inclusion',
-            name='individual_payroll',
-            field=models.ForeignKey(related_name='inclusions', to='payroll.IndividualPayroll'),
-        ),
-        migrations.AddField(
-            model_name='inclusion',
-            name='particular',
-            field=models.ForeignKey(to='ledger.Account'),
-        ),
-        migrations.AddField(
-            model_name='deduction',
-            name='individual_payroll',
-            field=models.ForeignKey(related_name='deductions', to='payroll.IndividualPayroll'),
-        ),
-        migrations.AddField(
-            model_name='deduction',
-            name='particular',
-            field=models.ForeignKey(to='ledger.Account'),
-        ),
-        migrations.AddField(
-            model_name='attendancevoucher',
-            name='employee',
-            field=models.ForeignKey(to='payroll.Employee'),
         ),
     ]

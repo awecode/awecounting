@@ -2,14 +2,11 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import mptt.fields
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0003_data-groups_20151008_1930'),
-        ('contenttypes', '0002_remove_content_type_name'),
     ]
 
     operations = [
@@ -36,8 +33,6 @@ class Migration(migrations.Migration):
                 ('rght', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('tree_id', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('level', models.PositiveIntegerField(editable=False, db_index=True)),
-                ('company', models.ForeignKey(to='users.Company')),
-                ('parent', mptt.fields.TreeForeignKey(related_name='children', blank=True, to='ledger.Category', null=True)),
             ],
             options={
                 'verbose_name_plural': 'Categories',
@@ -49,10 +44,26 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('date', models.DateField()),
                 ('object_id', models.PositiveIntegerField()),
-                ('content_type', models.ForeignKey(to='contenttypes.ContentType')),
             ],
             options={
                 'verbose_name_plural': 'Journal Entries',
+            },
+        ),
+        migrations.CreateModel(
+            name='Party',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=254)),
+                ('name_en', models.CharField(max_length=254, null=True)),
+                ('name_ne', models.CharField(max_length=254, null=True)),
+                ('address', models.TextField(null=True, blank=True)),
+                ('phone_no', models.CharField(max_length=100, null=True, blank=True)),
+                ('pan_no', models.CharField(max_length=50, null=True, verbose_name=b'Tax Reg. No.', blank=True)),
+                ('type', models.CharField(default=b'Customer/Supplier', max_length=17, choices=[(b'Customer', b'Customer'), (b'Supplier', b'Supplier'), (b'Customer/Supplier', b'Customer/Supplier')])),
+                ('account', models.ForeignKey(to='ledger.Account', null=True)),
+            ],
+            options={
+                'verbose_name_plural': 'Parties',
             },
         ),
         migrations.CreateModel(
@@ -66,20 +77,5 @@ class Migration(migrations.Migration):
                 ('account', models.ForeignKey(to='ledger.Account')),
                 ('journal_entry', models.ForeignKey(related_name='transactions', to='ledger.JournalEntry')),
             ],
-        ),
-        migrations.AddField(
-            model_name='account',
-            name='category',
-            field=models.ForeignKey(related_name='accounts', blank=True, to='ledger.Category', null=True),
-        ),
-        migrations.AddField(
-            model_name='account',
-            name='company',
-            field=models.ForeignKey(to='users.Company'),
-        ),
-        migrations.AddField(
-            model_name='account',
-            name='parent',
-            field=models.ForeignKey(related_name='children', blank=True, to='ledger.Account', null=True),
         ),
     ]
