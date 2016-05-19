@@ -7,8 +7,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
 from django.db.models import F
-
 from mptt.models import MPTTModel, TreeForeignKey
+
 from apps.users.models import Company
 from awecounting.utils.helpers import zero_for_none, none_for_zero
 
@@ -90,6 +90,7 @@ class Account(models.Model):
     tax_rate = models.FloatField(blank=True, null=True)
     opening_dr = models.FloatField(default=0)
     opening_cr = models.FloatField(default=0)
+    fy = models.PositiveSmallIntegerField(blank=True, null=True)
 
     def get_absolute_url(self):
         # return '/ledger/' + str(self.id)
@@ -551,11 +552,11 @@ class Party(models.Model):
         verbose_name_plural = 'Parties'
         unique_together = ['company', 'related_company']
 
-    # @receiver(branch_creation)
-    # def handle_branch_creation(sender, **kwargs):
-    # Party.objects.create(name=kwargs['name'], company=kwargs['company'])
-    # print "Handle branch"
-    # pass
+        # @receiver(branch_creation)
+        # def handle_branch_creation(sender, **kwargs):
+        # Party.objects.create(name=kwargs['name'], company=kwargs['company'])
+        # print "Handle branch"
+        # pass
 
 
 def get_ledger(company, name):
