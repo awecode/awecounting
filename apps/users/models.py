@@ -6,10 +6,11 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Group
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-
 from django.dispatch import receiver
-
 from njango.fields import BSDateField, today
+from njango.middleware import get_calendar
+from njango.nepdate import tuple_from_string, string_from_tuple, bs2ad, bs, ad2bs
+
 from signals import company_creation
 
 
@@ -61,6 +62,11 @@ class Company(models.Model):
     sells_services = models.BooleanField(default=False)
     purchases_goods = models.BooleanField(default=True)
     purchases_services = models.BooleanField(default=True)
+    use_nepali_fy_system = models.BooleanField(default=True)
+    fy_start_month = models.PositiveIntegerField(default=1)
+    fy_start_day = models.PositiveIntegerField(default=12)
+    enable_bs = models.BooleanField(default=True, verbose_name='Enable BS Calendar')
+    enable_multi_language = models.BooleanField(default=True)
 
     def has_shareholders(self):
         return True if self.organization_type in ['partnership', 'corporation'] else False
@@ -94,6 +100,51 @@ class Company(models.Model):
 
     def show_reports(self):
         return self.subscription.enable_reports
+
+    def get_fy_from_date(self, date):
+        calendar = get_calendar()
+        if type(date) == str or type(date) == unicode:
+            date = tuple_from_string(date)
+        if calendar == 'ad':
+            date = ad2bs(date)
+        if type(date) == tuple:
+            date = string_from_tuple(date)
+        month = int(date.split('-')[1])
+        year = int(date.split('-')[0])
+        if self.use_nepali_fy_system:
+            if month < 4:
+                year -= 1
+        else:
+            day = int(date.split('-')[2])
+            if month <= self.voucher_number_start_date.month and day < self.voucher_number_start_date.day:
+                year -= 1
+        return year
+
+    def get_fy_start(self, date=None):
+        year = self.get_fy_from_date(date)
+        if self.use_nepali_fy_system:
+            fiscal_year_start = str(year) + '-04-01'
+        else:
+            fiscal_year_start = str(year) + '-' + str(self.voucher_number_start_date.month) + '-' + str(
+                self.voucher_number_start_date.day)
+        tuple_value = tuple_from_string(fiscal_year_start)
+        calendar = get_calendar()
+        if calendar == 'ad':
+            tuple_value = bs2ad(tuple_value)
+        return tuple_value
+
+    def get_fy_end(self, date=None):
+
+        year = self.get_fy_from_date(date)
+        if self.use_nepali_fy_system:
+            fiscal_year_end = str(int(year) + 1) + '-03-' + str(bs[int(year) + 1][2])
+        else:
+            fiscal_year_end = str(int(year) + 1) + '-' + str(self.voucher_number_start_date.month) + '-' + str(12)
+        tuple_value = tuple_from_string(fiscal_year_end)
+        calendar = get_calendar()
+        if calendar == 'ad':
+            tuple_value = bs2ad(tuple_value)
+        return tuple_value
 
     def save(self, *args, **kwargs):
         new = False
