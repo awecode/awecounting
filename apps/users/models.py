@@ -102,9 +102,13 @@ class Company(models.Model):
     def show_reports(self):
         return self.subscription.enable_reports
 
-    def get_fy_from_date(self, dt=None):
+    @property
+    def fy(self):
+        return self.get_fy_from_date()
 
+    def get_fy_from_date(self, dt=None):
         # returns bs year for nepali fy system, ad for another
+        dt = dt or today()
         if type(dt) == str or type(dt) == unicode:
             dt = tuple_from_string(dt)
         calendar = get_calendar()
