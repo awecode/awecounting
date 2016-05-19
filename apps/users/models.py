@@ -65,7 +65,7 @@ class Company(models.Model):
     purchases_services = models.BooleanField(default=True)
     use_nepali_fy_system = models.BooleanField(default=True)
     fy_start_month = models.PositiveIntegerField(default=1)
-    fy_start_day = models.PositiveIntegerField(default=12)
+    fy_start_day = models.PositiveIntegerField(default=1)
     enable_bs = models.BooleanField(default=True, verbose_name='Enable BS Calendar')
     enable_multi_language = models.BooleanField(default=True)
 
@@ -109,9 +109,9 @@ class Company(models.Model):
     def get_fy_from_date(self, dt=None):
         # returns bs year for nepali fy system, ad for another
         dt = dt or today()
-        if type(dt) == str or type(dt) == unicode:
-            dt = tuple_from_string(dt)
         calendar = get_calendar()
+        if type(dt) == str or type(dt) == unicode:
+                dt = tuple_from_string(dt)
         if self.use_nepali_fy_system:
             if calendar == 'ad':
                 dt = ad2bs(dt)
@@ -122,6 +122,8 @@ class Company(models.Model):
             if month < 4:
                 year -= 1
         else:
+            if type(dt) == tuple:
+                dt = date_from_tuple(dt)
             if calendar == 'bs':
                 dt = date_from_tuple(bs2ad(dt))
             if dt.month < self.fy_start_month:
