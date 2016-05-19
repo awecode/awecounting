@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, date
 import os
 import random
 
@@ -102,36 +102,37 @@ class Company(models.Model):
     def show_reports(self):
         return self.subscription.enable_reports
 
-    def get_fy_from_date(self, date):
+    def get_fy_from_date(self, dt=None):
+
         # returns bs year for nepali fy system, ad for another
-        if type(date) == str or type(date) == unicode:
-            date = tuple_from_string(date)
+        if type(dt) == str or type(dt) == unicode:
+            dt = tuple_from_string(dt)
         calendar = get_calendar()
         if self.use_nepali_fy_system:
             if calendar == 'ad':
-                date = ad2bs(date)
-            if type(date) == tuple:
-                date = string_from_tuple(date)
-            month = int(date.split('-')[1])
-            year = int(date.split('-')[0])
+                dt = ad2bs(dt)
+            if type(dt) == tuple:
+                dt = string_from_tuple(dt)
+            month = int(dt.split('-')[1])
+            year = int(dt.split('-')[0])
             if month < 4:
                 year -= 1
         else:
             if calendar == 'bs':
-                date = date_from_tuple(bs2ad(date))
-            if date.month < self.fy_start_month:
-                return date.year - 1
-            if date.month > self.fy_start_month:
-                return date.year
-            if date.month == self.fy_start_month:
-                if date.day < self.fy_start_day:
-                    return date.year - 1
-                return date.year
+                dt = date_from_tuple(bs2ad(dt))
+            if dt.month < self.fy_start_month:
+                return dt.year - 1
+            if dt.month > self.fy_start_month:
+                return dt.year
+            if dt.month == self.fy_start_month:
+                if dt.day < self.fy_start_day:
+                    return dt.year - 1
+                return dt.year
         return year
 
-    def get_fy_start(self, date=None):
+    def get_fy_start(self, dt=None):
         calendar = get_calendar()
-        year = self.get_fy_from_date(date)
+        year = self.get_fy_from_date(dt)
         if self.use_nepali_fy_system:
             # get fy start in bs
             fiscal_year_start = str(year) + '-04-01'
@@ -146,9 +147,9 @@ class Company(models.Model):
                 tuple_value = ad2bs(tuple_value)
         return tuple_value
 
-    def get_fy_end(self, date=None):
+    def get_fy_end(self, dt=None):
         calendar = get_calendar()
-        year = self.get_fy_from_date(date)
+        year = self.get_fy_from_date(dt)
         if self.use_nepali_fy_system:
             # get fy end in bs
             fiscal_year_end = str(int(year) + 1) + '-03-' + str(bs[int(year) + 1][2])
