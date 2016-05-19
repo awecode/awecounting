@@ -27,21 +27,21 @@ class FyTest(SessionTestCase):
 
     def test_nepali_bs(self):
         self.company.use_nepali_fy_system = True
-        self.assertEquals(self.company.get_fy_from_date('2071-09-15'), 2071)
-        self.assertEquals(self.company.get_fy_from_date('2072-03-30'), 2071)
-        self.assertEquals(self.company.get_fy_from_date('2072-04-01'), 2072)
-        self.assertEquals(self.company.get_fy_from_date('2072-09-10'), 2072)
-        self.assertEquals(self.company.get_fy_from_date('2073-03-30'), 2072)
+        self.assertEquals(self.company.get_fy('2071-09-15'), 2071)
+        self.assertEquals(self.company.get_fy('2072-03-30'), 2071)
+        self.assertEquals(self.company.get_fy('2072-04-01'), 2072)
+        self.assertEquals(self.company.get_fy('2072-09-10'), 2072)
+        self.assertEquals(self.company.get_fy('2073-03-30'), 2072)
 
     def test_other_ad(self):
         self.company.use_nepali_fy_system = False
-        self.assertEquals(self.company.get_fy_from_date('2015-09-15'), 2015)
+        self.assertEquals(self.company.get_fy('2015-09-15'), 2015)
         self.company.fy_start_month, self.company.fy_start_day = 8, 10
-        self.assertEquals(self.company.get_fy_from_date('2014-09-15'), 2014)
-        self.assertEquals(self.company.get_fy_from_date('2015-08-09'), 2014)
-        self.assertEquals(self.company.get_fy_from_date('2015-08-10'), 2015)
-        self.assertEquals(self.company.get_fy_from_date('2015-08-18'), 2015)
-        self.assertEquals(self.company.get_fy_from_date('2016-07-18'), 2015)
+        self.assertEquals(self.company.get_fy('2014-09-15'), 2014)
+        self.assertEquals(self.company.get_fy('2015-08-09'), 2014)
+        self.assertEquals(self.company.get_fy('2015-08-10'), 2015)
+        self.assertEquals(self.company.get_fy('2015-08-18'), 2015)
+        self.assertEquals(self.company.get_fy('2016-07-18'), 2015)
 
     def test_start_bs(self):
         self.company.use_nepali_fy_system = True

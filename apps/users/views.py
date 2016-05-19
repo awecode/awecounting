@@ -164,8 +164,7 @@ class UserUpdate(UserView, SuperOwnerMixin, UpdateView):
 
 
 def test(request):
-    print today()
-    print request.company.get_fy_start('2016-07-19')
+    pass
     return HttpResponse('OK!')
 
 @login_required

@@ -104,9 +104,9 @@ class Company(models.Model):
 
     @property
     def fy(self):
-        return self.get_fy_from_date()
+        return self.get_fy()
 
-    def get_fy_from_date(self, dt=None):
+    def get_fy(self, dt=None):
         # returns bs year for nepali fy system, ad for another
         dt = dt or today()
         calendar = get_calendar()
@@ -138,7 +138,7 @@ class Company(models.Model):
 
     def get_fy_start(self, dt=None):
         calendar = get_calendar()
-        year = self.get_fy_from_date(dt)
+        year = self.get_fy(dt)
         if self.use_nepali_fy_system:
             # get fy start in bs
             fiscal_year_start = str(year) + '-04-01'
@@ -155,7 +155,7 @@ class Company(models.Model):
 
     def get_fy_end(self, dt=None):
         calendar = get_calendar()
-        year = self.get_fy_from_date(dt)
+        year = self.get_fy(dt)
         if self.use_nepali_fy_system:
             # get fy end in bs
             fiscal_year_end = str(int(year) + 1) + '-03-' + str(bs[int(year) + 1][2])
