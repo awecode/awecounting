@@ -1,0 +1,30 @@
+{% extends '_base.html' %}
+{% load i18n filters %}
+
+{% block title %}{% trans 'Error' %} - {% block error_title %}{% endblock %}{% endblock %}
+
+{% block content %}
+    <div class="error-content well">
+        <h1>{% block error_heading %}{% endblock %}</h1>
+
+        <h3>{% block error_description %}{% endblock %}</h3>
+
+        <div class="error-actions">
+            <a href="{% url 'home' %}" class="btn btn-success btn-lg btn-raised"><span class="glyphicon glyphicon-home"></span>
+                {% trans 'Take Me Home' %} </a>
+            {#            <a href="{% url 'view_page' 'contact-us' %}" class="btn btn-default btn-lg"><span#}
+            {#                    class="glyphicon glyphicon-envelope"></span> {% trans 'Contact' %} </a>#}
+        </div>
+
+        <br/>
+
+        <form class="form" role="form" action="{% url 'home' %}">
+            <div class="form-inline">
+                <input type="text" class="form-control" placeholder="{% trans '' %}"
+                       value="{{ request.path|format_search_string }}">
+                <input type="submit" class="btn btn-raised btn-primary" value="{% trans 'Search' %}">
+            </div>
+        </form>
+
+    </div>
+{% endblock %}

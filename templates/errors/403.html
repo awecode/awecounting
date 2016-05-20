@@ -1,0 +1,6 @@
+{% extends 'errors/error_base.html' %}
+{% load i18n %}
+
+{% block error_title %}{% trans '403 - Not authorized!' %}{% endblock %}
+{% block error_heading %}{% trans '403 - Not authorized!' %}{% endblock %}
+{% block error_description %}{% trans "You shouldn't be here!" %}{% endblock %}

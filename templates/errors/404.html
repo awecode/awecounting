@@ -1,0 +1,6 @@
+{% extends 'errors/error_base.html' %}
+{% load i18n %}
+
+{% block error_title %}{% trans '404 - Page not found!' %}{% endblock %}
+{% block error_heading %}{% trans '404 - Not found!' %}{% endblock %}
+{% block error_description %}{% trans 'The resource you are looking for does not exist!' %}{% endblock %}

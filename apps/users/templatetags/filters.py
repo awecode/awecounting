@@ -145,3 +145,8 @@ def do_usemacro(parser, token):
 
     macro.parser = parser
     return UseMacroNode(macro, fe_args, fe_kwargs)
+
+@register.filter
+def format_search_string(string):
+    string = string.replace('/', '')
+    return string.strip()
