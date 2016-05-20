@@ -437,7 +437,8 @@ def handle_company_creation(sender, **kwargs):
     purchase.save()
     Account(name='Purchase', category=purchase, code='11-0008', company=company).save()
 
-    Category(name='Direct Expenses', parent=expenses, company=company).save()
+    direct_expenses = Category.objects.create(name='Direct Expenses', parent=expenses, company=company)
+    Account.objects.create(name='Wages', category=direct_expenses, code='13-0001', company=company).save()
 
     indirect_expenses = Category(name='Indirect Expenses', parent=expenses, company=company)
     indirect_expenses.save()
@@ -447,13 +448,17 @@ def handle_company_creation(sender, **kwargs):
     Account(name='Bank Charges Expenses', category=indirect_expenses, code='13-0004', company=company).save()
     Account(name='Bank Interest Expenses', category=indirect_expenses, code='13-0005', company=company).save()
     Account(name='Electricity Expenses', category=indirect_expenses, code='13-0006', company=company).save()
-    Account(name='City/Municipal Expenses', category=indirect_expenses, code='13-0007', company=company).save()
+    Account(name='Telecommunication Expenses', category=indirect_expenses, code='13-0007', company=company).save()
+
     Account(name='Travelling and Conveyance Expenses', category=indirect_expenses, code='13-0008',
             company=company).save()
     Account(name='Lunch and Refreshment Expenses', category=indirect_expenses, code='13-0009', company=company).save()
     Account(name='Cleaning Expenses', category=indirect_expenses, code='13-0010', company=company).save()
     Account(name='Discount Expenses', category=indirect_expenses, code='13-0011', company=company).save()
     Account(name='Repairs and Maintenance Expenses', category=indirect_expenses, code='13-0012', company=company).save()
+    Account(name='Drainage/Garbage Collection Expenses', category=indirect_expenses, code='13-0013', company=company).save()
+    Account(name='Water Supply Expenses', category=indirect_expenses, code='13-0014', company=company).save()
+    Account(name='City/Municipal Expenses', category=indirect_expenses, code='13-0015', company=company).save()
 
     pay_head = Category(name='Pay Head', parent=indirect_expenses, company=company)
     pay_head.save()
