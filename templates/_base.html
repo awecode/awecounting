@@ -60,6 +60,15 @@
                 <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
                 {% block breadcrumbs %}
                     <li>{% usekwacro page-title %}</li>{% endblock %}
+                {% block breadcrumbs_right %}
+                    <li class="pull-right">
+                        <a href="javascript: window.print();">{% trans 'Print' %}</a>
+                    </li>
+                    <div class="pull-right">
+                        {% block breadcrumbs_before_print %}
+                        {% endblock %}
+                    </div>
+                {% endblock %}
             {% endblock %}
         </ol>
 
