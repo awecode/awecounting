@@ -10,3 +10,9 @@ Pillow
 sorl-thumbnail
 jsonfield
 -e git+https://github.com/awecode/njango.git@master#egg=njango
+django-filter
+django-haystack
+pyelasticsearch
+django-froala-editor
+-e git+https://github.com/xtranophilist/nepdate.git@master#egg=nepdate
+django-redis

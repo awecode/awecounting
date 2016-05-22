@@ -1,22 +1,2 @@
-# Production Only
+-r requirements.pip
 gunicorn
-
-# Production and Development
-Django
-psycopg2
-django-mptt
--e git+https://github.com/areski/django-pagination.git@fix-xrange-slice#egg=linaro-django-pagination
-django-filter
-webstack-django-sorting
-djangorestframework
-Pillow
-django-haystack
-pyelasticsearch
-django-froala-editor
--e git+https://github.com/helber/django-dbsettings.git@master#egg=django-dbsettings
-django-modeltranslation
--e git+https://github.com/xtranophilist/nepdate.git@master#egg=nepdate
-sorl-thumbnail
-django-redis
-jsonfield
--e git+https://github.com/awecode/njango.git@master#egg=njango
