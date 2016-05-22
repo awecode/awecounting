@@ -36,7 +36,7 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ['awecounting.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['beta.awecounting.com', 'awecounting.com', 'localhost', '127.0.0.1']
 
 TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
 
