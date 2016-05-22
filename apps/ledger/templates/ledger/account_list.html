@@ -36,10 +36,10 @@
             {% for account in paginated_objects %}
                 <tr>
                     <td>
-                        <a href="{% url 'view_account' account.pk %}">{{ account.code |default:''}}</a>
+                        <a href="{% url 'view_ledger' account.pk %}">{{ account.code |default:''}}</a>
                     </td>
                     <td>
-                        <a href="{% url 'view_account' account.pk %}">{{ account.name }}</a>
+                        <a href="{% url 'view_ledger' account.pk %}">{{ account.name }}</a>
                     </td>
                     <td>
                         {{ account.current_dr |default:''}}

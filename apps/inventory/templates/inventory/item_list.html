@@ -37,8 +37,18 @@
                         {% endfor %}
                     </td>
                     <td>
-                        <a href="{% url 'view_account' item.ledger.pk %}">{% trans 'View Ledger' %}</a>,
-                        <a href="{% url 'view_inventory_account' item.account.pk %}">{% trans 'View Inventory Ledger' %}</a>
+                        {% if item.account %}
+                            <a class="btn btn-sm btn-info btn-raised no-margin"
+                               href="{% url 'view_inventory_account' item.account.pk %}">{% trans 'Inventory Ledger' %}</a>
+                        {% endif %}
+                        {% if item.sale_ledger %}
+                            <a class="btn btn-sm btn-info btn-raised no-margin"
+                               href="{% url 'view_ledger' item.sale_ledger.pk %}">{% trans 'Sales Ledger' %}</a>
+                        {% endif %}
+                        {% if item.purchase_ledger %}
+                            <a class="btn btn-sm btn-info btn-raised no-margin"
+                               href="{% url 'view_ledger' item.purchase_ledger.pk %}">{% trans 'Purchase Ledger' %}</a>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}

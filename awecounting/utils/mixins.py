@@ -1,3 +1,5 @@
+from functools import wraps
+
 from django.http import JsonResponse
 from django.views.generic.edit import UpdateView as BaseUpdateView, CreateView as BaseCreateView, DeleteView as BaseDeleteView
 from django.contrib import messages
@@ -5,14 +7,11 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.contrib.admin import ModelAdmin
-
 from modeltranslation.admin import TranslationAdmin
 
 from .helpers import json_from_object
-
-from functools import wraps
 
 
 class DeleteView(BaseDeleteView):
@@ -36,6 +35,9 @@ class CompanyRequiredMixin(LoginRequiredMixin):
     def dispatch(self, request, *args, **kwargs):
         if not request.company:
             raise PermissionDenied()
+        if hasattr(self, 'check'):
+            if not getattr(request.company, self.check)():
+                raise PermissionDenied()
         return super(CompanyRequiredMixin, self).dispatch(request, *args, **kwargs)
 
 
@@ -83,6 +85,30 @@ class AjaxableResponseMixin(object):
 class TableObjectMixin(TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super(TableObjectMixin, self).get_context_data(**kwargs)
+        if self.kwargs:
+            pk = int(self.kwargs.get('pk'))
+            obj = get_object_or_404(self.model, pk=pk, company=self.request.company)
+            scenario = 'Update'
+        else:
+            obj = self.model(company=self.request.company)
+            # if obj.__class__.__name__ == 'PurchaseVoucher':
+            #     tax = self.request.company.settings.purchase_default_tax_application_type
+            #     tax_scheme = self.request.company.settings.purchase_default_tax_scheme
+            #     if tax:
+            #         obj.tax = tax
+            #     if tax_scheme:
+            #         obj.tax_scheme = tax_scheme
+            scenario = 'Create'
+        data = self.serializer_class(obj).data
+        context['data'] = data
+        context['scenario'] = scenario
+        context['obj'] = obj
+        return context
+
+
+class TableObject(object):
+    def get_context_data(self, *args, **kwargs):
+        context = super(TableObject, self).get_context_data(**kwargs)
         if self.kwargs:
             pk = int(self.kwargs.get('pk'))
             obj = get_object_or_404(self.model, pk=pk, company=self.request.company)

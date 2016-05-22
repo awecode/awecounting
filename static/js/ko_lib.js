@@ -38,44 +38,79 @@ ko.bindingHandlers.selectize = {
                 options[attr_name] = passed_options[attr_name];
             }
         }
-        var $select = $(element).selectize(options)[0].selectize;
 
-        if (typeof allBindingsAccessor.get('value') == 'function') {
-            $select.addItem(allBindingsAccessor.get('value')());
-            allBindingsAccessor.get('value').subscribe(function (new_val) {
-                $select.addItem(new_val);
-            })
-        }
+        var $select;
 
-        if (typeof allBindingsAccessor.get('selectedOptions') == 'function') {
-            allBindingsAccessor.get('selectedOptions').subscribe(function (new_val) {
-                // Removing items which are not in new value
-                var values = $select.getValue();
-                var items_to_remove = [];
-                for (var k in values) {
-                    if (new_val.indexOf(values[k]) == -1) {
-                        items_to_remove.push(values[k]);
-                    }
-                }
+        var apply_selectize = function () {
 
-                for (var k in items_to_remove) {
-                    $select.removeItem(items_to_remove[k]);
-                }
+            $select = $(element).selectize(options)[0].selectize;
 
-                for (var k in new_val) {
-                    $select.addItem(new_val[k]);
-                }
-
-            });
-            var selected = allBindingsAccessor.get('selectedOptions')();
-            for (var k in selected) {
-                $select.addItem(selected[k]);
+            if (typeof allBindingsAccessor.get('value') == 'function') {
+                $select.addItem(allBindingsAccessor.get('value')());
+                allBindingsAccessor.get('value').subscribe(function (new_val) {
+                    $select.addItem(new_val);
+                })
             }
-        }
 
-        if (typeof init_selectize == 'function') {
-            init_selectize($select);
-        }
+            if (typeof allBindingsAccessor.get('selectedOptions') == 'function') {
+                allBindingsAccessor.get('selectedOptions').subscribe(function (new_val) {
+                    // Removing items which are not in new value
+                    var values = $select.getValue();
+                    var items_to_remove = [];
+                    for (var k in values) {
+                        if (new_val.indexOf(values[k]) == -1) {
+                            items_to_remove.push(values[k]);
+                        }
+                    }
+
+                    for (var k in items_to_remove) {
+                        $select.removeItem(items_to_remove[k]);
+                    }
+
+                    for (var k in new_val) {
+                        $select.addItem(new_val[k]);
+                    }
+
+                });
+                var selected = allBindingsAccessor.get('selectedOptions')();
+                for (var k in selected) {
+                    $select.addItem(selected[k]);
+                }
+            }
+
+            if (typeof init_selectize == 'function') {
+                init_selectize($select);
+            }
+
+            if (typeof valueAccessor().subscribe == 'function') {
+                valueAccessor().subscribe(function (changes) {
+                    // To avoid having duplicate keys, all delete operations will go first
+                    var addedItems = new Array();
+                    changes.forEach(function (change) {
+                        switch (change.status) {
+                            case 'added':
+                                addedItems.push(change.value);
+                                break;
+                            case 'deleted':
+                                var itemId = change.value[options.valueField];
+                                if (itemId != null) $select.removeOption(itemId);
+                        }
+                    });
+                    addedItems.forEach(function (item) {
+                        $select.addOption(item);
+                    });
+
+                }, null, "arrayChange");
+            }
+
+        };
+
+        apply_selectize();
+
+        $(document).on('reload-selectize', function () {
+            $select.destroy();
+            apply_selectize();
+        });
 
         // Selectize required field form submit focus fix
         // https://github.com/brianreavis/selectize.js/issues/733#issuecomment-145871854
@@ -94,27 +129,6 @@ ko.bindingHandlers.selectize = {
             $select.renderCache = {}
         });
 
-        if (typeof valueAccessor().subscribe == 'function') {
-            valueAccessor().subscribe(function (changes) {
-                // To avoid having duplicate keys, all delete operations will go first
-                var addedItems = new Array();
-                changes.forEach(function (change) {
-                    switch (change.status) {
-                        case 'added':
-                            addedItems.push(change.value);
-                            break;
-                        case 'deleted':
-                            var itemId = change.value[options.valueField];
-                            if (itemId != null) $select.removeOption(itemId);
-                    }
-                });
-                addedItems.forEach(function (item) {
-                    $select.addOption(item);
-                });
-
-            }, null, "arrayChange");
-        }
-
     },
     update: function (element, valueAccessor, allBindingsAccessor) {
 
@@ -130,9 +144,11 @@ ko.bindingHandlers.selectize = {
             var selected_obj = $.grep(value_accessor(), function (i) {
 
                 if (typeof i[optionsValue] == 'function')
-                    var id = i[optionsValue]
+                    var id = i[optionsValue];
                 else
-                    var id = i[optionsValue]
+                    var id = i[optionsValue];
+                if (typeof id == 'function')
+                    id = id();
                 return id == allBindingsAccessor.get('value')();
             })[0];
 
@@ -275,7 +291,34 @@ ko.bindingHandlers.numeric = {
                     // Allow: Ctrl combinations
                 (event.ctrlKey === true) ||
                     //Allow decimal symbol (.)
-                (event.keyCode === 190) ||
+                (event.keyCode === 190 || event.keyCode === 110) ||
+                    // Allow: home, end, left, right
+                (event.keyCode >= 35 && event.keyCode <= 39)) {
+                // let it happen, don't do anything
+                return;
+            }
+            else {
+                // Ensure that it is a number and stop the keypress
+                if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 )) {
+                    event.preventDefault();
+                }
+            }
+        });
+    },
+    update: function (element, valueAccessor) {
+    }
+};
+
+ko.bindingHandlers.percentage_numeric = {
+    init: function (element, valueAccessor) {
+        $(element).on('keydown', function (event) {
+
+            // Allow: backspace, delete, tab, escape, and enter
+            if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                    // Allow: Ctrl combinations
+                (event.ctrlKey === true) ||
+                    //Allow decimal symbol (.)
+                (event.keyCode === 190 || event.keyCode === 110) ||
                     // Allow: home, end, left, right
                 (event.keyCode >= 35 && event.keyCode <= 39) ||
                 event.keyCode == 53) {

@@ -1,53 +1,13 @@
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import render
-from apps.ledger.models import Category
+
+from apps.ledger.models import Category, Node
+from apps.report.forms import ReportSettingForm
 from apps.report.models import ReportSetting
 from awecounting.utils.helpers import save_qs_from_ko
-
-
-class Node(object):
-    def __init__(self, model, parent=None, depth=0):
-        self.children = []
-        self.model = model
-        self.name = self.model.name
-        self.type = self.model.__class__.__name__
-        self.dr = 0
-        self.cr = 0
-        self.url = None
-        self.depth = depth
-        self.parent = parent
-        if self.type == 'Category':
-            for child in self.model.children.all():
-                self.add_child(Node(child, parent=self, depth=self.depth + 1))
-            for account in self.model.accounts.all():
-                self.add_child(Node(account, parent=self, depth=self.depth + 1))
-        if self.type == 'Account':
-            self.dr = self.model.current_dr or 0
-            self.cr = self.model.current_cr or 0
-            self.url = self.model.get_absolute_url()
-        if self.parent:
-            self.parent.dr += self.dr
-            self.parent.cr += self.cr
-
-    def add_child(self, obj):
-        self.children.append(obj.get_data())
-
-    def get_data(self):
-        data = {
-            'name': self.name,
-            'type': self.type,
-            'dr': self.dr,
-            'cr': self.cr,
-            'nodes': self.children,
-            'depth': self.depth,
-            'url': self.url,
-        }
-        return data
-
-    def __str__(self):
-        return self.name
+from awecounting.utils.mixins import group_required, SuperOwnerMixin, UpdateView
 
 
 def get_trial_balance_data(company):
@@ -64,10 +24,12 @@ def get_trial_balance_data(company):
     return root
 
 
+@group_required('Accountant')
 def trial_balance_json(request):
     return JsonResponse(get_trial_balance_data(request.company))
 
 
+@group_required('Accountant')
 def trial_balance(request):
     data = get_trial_balance_data(request.company)
     context = {
@@ -76,6 +38,25 @@ def trial_balance(request):
     return render(request, 'trial_balance.html', context)
 
 
+@group_required('Accountant')
 def save_report_settings(request):
     filter_kwargs = {'company': request.company}
     return JsonResponse(save_qs_from_ko(ReportSetting, filter_kwargs, request.body))
+
+
+
+class ReportSettingUpdateView(SuperOwnerMixin, UpdateView):
+    model = ReportSetting
+    form_class = ReportSettingForm
+    success_url = reverse_lazy('home')
+    template_name = 'report/report_setting.html'
+
+    def get_object(self, queryset=None):
+        return self.model.objects.get(company=self.request.company)
+
+    def get_context_data(self, **kwargs):
+        context = super(ReportSettingUpdateView, self).get_context_data(**kwargs)
+        context['base_template'] = '_base_settings.html'
+        context['setting'] = 'ReportSetting'
+        return context
+

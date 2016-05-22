@@ -341,14 +341,12 @@ def multiply(a, b):
         return a * b
     return ''
 
-
 @register.filter
 def dr_or_cr(val):
     if val < 0:
         return str(val * -1) + ' (Cr)'
     else:
         return str(val) + ' (Dr)'
-
 
 @register.filter
 def get_particulars(entry, account):

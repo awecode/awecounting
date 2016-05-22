@@ -37,7 +37,12 @@
                         {{ party.pan_no }}
                     </td>
                     <td>
-                        <a href="{% url 'view_account' party.account.pk %}">{% trans 'View Ledger' %}</a>
+                        {% if party.customer_ledger %}
+                            <a class="btn btn-sm btn-info btn-raised no-margin" href="{% url 'view_ledger' party.customer_ledger.pk %}">{% trans 'Customer Ledger' %}</a>
+                        {% endif %}
+                        {% if party.supplier_ledger %}
+                            <a class="btn btn-sm btn-info btn-raised no-margin" href="{% url 'view_ledger' party.supplier_ledger.pk %}">{% trans 'Supplier Ledger' %}</a>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}

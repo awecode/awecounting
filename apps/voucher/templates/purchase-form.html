@@ -45,7 +45,7 @@
                 <div class="col-md-6 col-sm-12">
                     <label for="party">{% trans 'Party' %}</label>
                     <select id="party" data-bind="selectize: $root.parties, value: party_id, object: party"
-                            data-url="{% url 'party_add' %}"></select>
+                            data-url="{% url 'party_add' %}?source=purchase"></select>
                 </div>
 
                 <div class="col-md-6 col-sm-12 hidden-print" data-bind="if: party_balance">
@@ -118,7 +118,7 @@
                         <span data-bind="text:  $index()+1, localize: 1"> </span>
                     </td>
                     <td>
-                        <select data-url="{% url 'item_add' %}" data-script="/static/inventory/js/item.js"
+                        <select data-url="{% url 'item_add' %}?source=purchase" data-script="/static/inventory/js/item.js"
                                 data-bind="selectize: $root.items, value: item_id, object: item, selectize_options:{render: {'option': render_option, 'item':render_option}}">
                         </select>
                     </td>
@@ -135,7 +135,7 @@
                     </td>
                     <!-- /ko -->
                     {% if request.company.settings.discount_on_each_purchase_particular %}
-                        <td data-bind="editableText: discount, numeric: true"></td>
+                        <td data-bind="editableText: discount, percentage_numeric: true"></td>
                     {% endif %}
                     <td data-bind="text: total"></td>
                     <td class="hide-on-print text-center">
@@ -168,9 +168,9 @@
                 {% if request.company.settings.single_discount_on_whole_purchase %}
                     <tr class="discount-total total">
                         <td colspan="7">
-                            {% trans 'Discount on voucher' %}
+                            {% trans 'Discount' %}
                         </td>
-                        <td colspan="2" data-bind="editableText: $root.voucher_discount,numeric: true, localize: 1"></td>
+                        <td colspan="2" data-bind="editableText: $root.voucher_discount,percentage_numeric: true, localize: 1"></td>
                     </tr>
                 {% endif %}
               

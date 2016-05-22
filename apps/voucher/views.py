@@ -1,23 +1,25 @@
 import datetime
-from django.contrib.auth.decorators import login_required
+import json
+
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import JsonResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from django.views.generic import ListView
-import json
 from django.views.generic.detail import DetailView
-from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, OwnerMixin, AccountantMixin, StaffMixin, \
-    group_required, TableObjectMixin, UpdateView
-from ..inventory.models import set_transactions
-from ..ledger.models import set_transactions as set_ledger_transactions, Account
-from ..users.models import Pin
-from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
 
-from .forms import CashReceiptForm, JournalVoucherForm, CashPaymentForm, VoucherSettingForm
-from .serializers import FixedAssetSerializer, FixedAssetRowSerializer, AdditionalDetailSerializer, CashReceiptSerializer, \
-    CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer
-from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, JournalVoucherRow, \
-    PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, VoucherSetting
+from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, StaffMixin, \
+    group_required, TableObjectMixin, UpdateView, CompanyRequiredMixin, CreateView, TableObject
+from ..inventory.models import set_transactions
+from ..ledger.models import set_transactions as set_ledger_transactions, get_ledger
+from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
+from .forms import JournalVoucherForm, VoucherSettingForm, CashPaymentForm, CashReceiptForm
+from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
+    CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer, \
+    ExpenseSerializer
+from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, \
+    JournalVoucherRow, \
+    PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, \
+    VoucherSetting, Expense, ExpenseRow
 
 
 class FixedAssetView(CompanyView):
@@ -98,6 +100,7 @@ def save_fixed_asset(request):
 class CashReceiptView(CompanyView):
     model = CashReceipt
     serializer_class = CashReceiptSerializer
+    form_class = CashReceiptForm
 
 
 class CashReceiptList(CashReceiptView, ListView):
@@ -105,20 +108,36 @@ class CashReceiptList(CashReceiptView, ListView):
 
 
 class CashReceiptDetailView(CashReceiptView, DetailView):
-
     def get_context_data(self, **kwargs):
         context = super(CashReceiptDetailView, self).get_context_data(**kwargs)
         context['rows'] = CashReceiptRow.objects.select_related('invoice').filter(cash_receipt=self.object)
         return context
 
 
+class CashReceiptCreate(CashReceiptView, TableObject, CreateView):
+    template_name = 'cash_receipt.html'
+
+
+class CashReceiptUpdate(CashReceiptView, TableObject, UpdateView):
+    template_name = 'cash_receipt.html'
+
+
 class CashPaymentView(CompanyView):
     model = CashPayment
     serializer_class = CashPaymentSerializer
+    form_class = CashPaymentForm
 
 
 class CashPaymentList(CashPaymentView, ListView):
     pass
+
+
+class CashPaymentCreate(CashPaymentView, TableObject, CreateView):
+    template_name = 'cash_payment.html'
+
+
+class CashPaymentUpdate(CashPaymentView, TableObject, UpdateView):
+    template_name = 'cash_payment.html'
 
 
 class CashPaymentDetailView(DetailView):
@@ -128,10 +147,6 @@ class CashPaymentDetailView(DetailView):
         context = super(CashPaymentDetailView, self).get_context_data(**kwargs)
         context['rows'] = CashPaymentRow.objects.select_related('invoice').filter(cash_payment=self.object)
         return context
-
-
-class CashReceiptCreate(CashReceiptView, TableObjectMixin):
-    template_name = 'cash_receipt.html'
 
 
 # @login_required
@@ -146,9 +161,6 @@ class CashReceiptCreate(CashReceiptView, TableObjectMixin):
 #     data = CashReceiptSerializer(voucher).data
 #     return render(request, 'cash_receipt.html', {'form': form, 'scenario': scenario, 'data': data})
 
-
-class CashPaymentCreate(CashPaymentView, TableObjectMixin):
-    template_name = 'cash_payment.html'
 
 
 # @login_required
@@ -180,7 +192,7 @@ def save_cash_payment(request):
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = CashPaymentRow
-        cash_account = Account.objects.get(name='Cash', company=request.company)
+        cash_account = get_ledger(request, 'Cash')
         if params.get('table_vm').get('rows'):
             total = 0
             for index, row in enumerate(params.get('table_vm').get('rows')):
@@ -209,7 +221,7 @@ def save_cash_payment(request):
             obj.amount = params.get('amount')
         set_ledger_transactions(obj, obj.date,
                                 ['cr', cash_account, obj.amount],
-                                ['dr', obj.party.account, obj.amount]
+                                ['dr', obj.party.supplier_ledger, obj.amount]
                                 )
         # obj.status = 'Unapproved'
         obj.save()
@@ -222,14 +234,16 @@ class PurchaseVoucherView(CompanyView):
     model = PurchaseVoucher
     serializer_class = PurchaseVoucherSerializer
     success_url = reverse_lazy("purchase-list")
+    check = 'show_purchases'
+
 
 class SaleView(CompanyView):
     model = Sale
     serializer_class = SaleSerializer
+    check = 'show_sales'
 
 
 class PurchaseVoucherDetailView(PurchaseVoucherView, StaffMixin, DetailView):
-
     def get_context_data(self, **kwargs):
         context = super(PurchaseVoucherDetailView, self).get_context_data(**kwargs)
         context['rows'] = PurchaseVoucherRow.objects.select_related('item', 'unit').filter(purchase=self.object)
@@ -237,7 +251,6 @@ class PurchaseVoucherDetailView(PurchaseVoucherView, StaffMixin, DetailView):
 
 
 class SaleDetailView(SaleView, StaffMixin, DetailView):
-
     def get_context_data(self, **kwargs):
         context = super(SaleDetailView, self).get_context_data(**kwargs)
         context['rows'] = SaleRow.objects.select_related('item', 'unit').filter(sale=self.object)
@@ -246,6 +259,7 @@ class SaleDetailView(SaleView, StaffMixin, DetailView):
 
 class JournalVoucherDetailView(CompanyView, StaffMixin, DetailView):
     model = JournalVoucher
+    check = 'show_journal_vouchers'
 
     def get_context_data(self, **kwargs):
         context = super(JournalVoucherDetailView, self).get_context_data(**kwargs)
@@ -297,7 +311,7 @@ def save_cash_receipt(request):
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = CashReceiptRow
-        cash_account = Account.objects.get(name='Cash', company=request.company)
+        cash_account = get_ledger(request, 'Cash')
         if params.get('table_vm').get('rows'):
             total = 0
             for index, row in enumerate(params.get('table_vm').get('rows')):
@@ -326,7 +340,7 @@ def save_cash_receipt(request):
             obj.amount = params.get('amount')
         set_ledger_transactions(obj, obj.date,
                                 ['dr', cash_account, obj.amount],
-                                ['cr', obj.party.account, obj.amount]
+                                ['cr', obj.party.customer_ledger, obj.amount]
                                 )
         # obj.status = 'Unapproved'
         obj.save()
@@ -335,10 +349,11 @@ def save_cash_receipt(request):
     return JsonResponse(dct)
 
 
+@group_required('Accountant')
 def save_purchase(request):
     if request.is_ajax():
         params = json.loads(request.body)
-    dct = {'rows': {}, 'tax':{} }
+    dct = {'rows': {}, 'tax': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
 
@@ -354,8 +369,10 @@ def save_purchase(request):
     # else:
     #     voucher_discount = params.get('voucher_discount')
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
-                     'party_id': params.get('party_id'), 'due_date': params.get('due_date'), 'discount': params.get('voucher_discount'),
-                     'credit': params.get('credit'), 'tax': tax, 'tax_scheme_id': empty_to_none(tax_scheme_id), 'company': request.company}
+                     'party_id': params.get('party_id'), 'due_date': params.get('due_date'),
+                     'discount': params.get('voucher_discount'),
+                     'credit': params.get('credit'), 'tax': tax, 'tax_scheme_id': empty_to_none(tax_scheme_id),
+                     'company': request.company}
 
     if params.get('id'):
         obj = PurchaseVoucher.objects.get(id=params.get('id'), company=request.company)
@@ -399,14 +416,14 @@ def save_purchase(request):
                                  )
                 if obj.credit:
                     set_ledger_transactions(submodel, obj.date,
-                                            ['cr', obj.party.account, obj.total],
-                                            ['dr', submodel.item.ledger, obj.total],
+                                            ['cr', obj.party.supplier_ledger, obj.total],
+                                            ['dr', submodel.item.purchase_ledger, obj.total],
                                             # ['cr', sales_tax_account, tax_amount],
                                             )
                 else:
                     set_ledger_transactions(submodel, obj.date,
-                                            ['dr', submodel.item.ledger, obj.total],
-                                            ['cr', Account.objects.get(name='Cash', company=request.company),
+                                            ['dr', submodel.item.purchase_ledger, obj.total],
+                                            ['cr', get_ledger(request, 'Cash'),
                                              obj.total],
                                             # ['cr', sales_tax_account, tax_amount],
                                             )
@@ -422,9 +439,23 @@ def save_purchase(request):
     return JsonResponse(dct)
 
 
-
 class SaleCreate(SaleView, TableObjectMixin):
     template_name = 'sale_form.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(SaleCreate, self).get_context_data(**kwargs)
+        if not self.kwargs:
+            obj = context['obj']
+            tax = self.request.company.settings.invoice_default_tax_application_type
+            tax_scheme = self.request.company.settings.invoice_default_tax_scheme
+            if tax:
+                obj.tax = tax
+            if tax_scheme:
+                obj.tax_scheme = tax_scheme
+            data = self.serializer_class(obj).data
+            context['obj'] = obj
+            context['data'] = data
+        return context
 
 
 # def sale(request, id=None):
@@ -437,16 +468,27 @@ class SaleCreate(SaleView, TableObjectMixin):
 #     data = SaleSerializer(obj).data
 #     return render(request, 'sale_form.html', {'data': data, 'scenario': scenario, 'sale': obj})
 
-
+@group_required('Accountant')
 def save_sale(request):
     if request.is_ajax():
         params = json.loads(request.body)
     dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
+
+    if params.get('tax_vm').get('tax'):
+        tax = params.get('tax_vm').get('tax')
+
+    if params.get('tax_vm').get('tax') == 'no':
+        tax_scheme_id = None
+    else:
+        tax_scheme_id = params.get('tax_vm').get('tax_scheme')
+
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
                      'party_id': params.get('party_id'), 'due_date': params.get('due_date'),
-                     'credit': params.get('credit'), 'company': request.company}
+                     'credit': params.get('credit'), 'tax': tax, 'tax_scheme_id': empty_to_none(tax_scheme_id),
+                     'company': request.company}
+
     if params.get('id'):
         obj = Sale.objects.get(id=params.get('id'), company=request.company)
     else:
@@ -454,35 +496,48 @@ def save_sale(request):
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
+        dct['tax'] = obj.tax
+        dct['tax_scheme_id'] = obj.tax_scheme_id
         model = SaleRow
         grand_total = 0
         for ind, row in enumerate(params.get('table_view').get('rows')):
             invalid_check = invalid(row, ['item_id', 'quantity', 'unit_id'])
             if invalid_check:
                 continue
-            values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'quantity': row.get('quantity'),
-                      'rate': row.get('rate'), 'unit_id': row.get('unit')['id'], 'discount': row.get('discount'),
-                      'sale': obj}
-            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
-            if not created:
-                submodel = save_model(submodel, values)
-            grand_total += submodel.get_total()
-            dct['rows'][ind] = submodel.id
-            set_transactions(submodel, obj.date,
-                             ['cr', submodel.item.account, submodel.quantity],
-                             )
-            if obj.credit:
-                set_ledger_transactions(submodel, obj.date,
-                                        ['dr', obj.party.account, obj.total],
-                                        ['cr', submodel.item.ledger, obj.total],
-                                        # ['cr', sales_tax_account, tax_amount],
-                                        )
             else:
-                set_ledger_transactions(submodel, obj.date,
-                                        ['dr', Account.objects.get(name='Cash', company=request.company), obj.total],
-                                        ['cr', submodel.item.ledger, obj.total],
-                                        # ['cr', sales_tax_account, tax_amount],
-                                        )
+                if params.get('tax_vm').get('tax') == 'no':
+                    row_tax_scheme_id = None
+                    row.get('row_tax_vm')['tax'] = 'no'
+                else:
+                    row_tax_scheme_id = row.get('row_tax_vm').get('tax_scheme')
+                if params.get('tax_vm').get('tax_scheme') != '0' and params.get('tax_vm').get('tax_scheme') != '':
+                    row_tax_scheme_id = None
+                    row.get('row_tax_vm')['tax'] = 'no'
+
+                values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'quantity': row.get('quantity'),
+                          'rate': row.get('rate'), 'unit_id': row.get('unit')['id'], 'discount': row.get('discount'),
+                          'tax_scheme_id': row_tax_scheme_id,
+                          'sale': obj}
+                submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+                if not created:
+                    submodel = save_model(submodel, values)
+                grand_total += submodel.get_total()
+                dct['rows'][ind] = submodel.id
+                set_transactions(submodel, obj.date,
+                                 ['cr', submodel.item.account, submodel.quantity],
+                                 )
+                if obj.credit:
+                    set_ledger_transactions(submodel, obj.date,
+                                            ['dr', obj.party.customer_ledger, obj.total],
+                                            ['dr', submodel.item.sale_ledger, obj.total],
+                                            # ['cr', sales_tax_account, tax_amount],
+                                            )
+                else:
+                    set_ledger_transactions(submodel, obj.date,
+                                            ['dr', get_ledger(request, 'Cash'), obj.total],
+                                            ['dr', submodel.item.sale_ledger, obj.total],
+                                            # ['cr', sales_tax_account, tax_amount],
+                                            )
         delete_rows(params.get('table_view').get('deleted_rows'), model)
         obj.total_amount = grand_total
         if obj.credit:
@@ -493,15 +548,15 @@ def save_sale(request):
     return JsonResponse(dct)
 
 
-
 class SaleList(SaleView, ListView):
     pass
+
 
 # def sale_list(request):
 #     objects = Sale.objects.filter(company=request.company).prefetch_related('rows')
 #     return render(request, 'sale_list.html', {'objects': objects})
 
-
+@group_required('Accountant')
 def sale_day(request, voucher_date):
     objects = Sale.objects.filter(date=voucher_date, company=request.company).prefetch_related('rows')
     total_amount = 0
@@ -522,8 +577,10 @@ def sale_day(request, voucher_date):
     return render(request, 'sale_report.html', context)
 
 
+@group_required('Accountant')
 def sale_date_range(request, from_date, to_date):
-    objects = Sale.objects.filter(date__gte=from_date, date__lte=to_date, company=request.company).prefetch_related('rows')
+    objects = Sale.objects.filter(date__gte=from_date, date__lte=to_date, company=request.company).prefetch_related(
+        'rows')
     total_amount = 0
     total_quantity = 0
     total_items = 0
@@ -543,6 +600,7 @@ def sale_date_range(request, from_date, to_date):
     return render(request, 'sale_report.html', context)
 
 
+@group_required('Accountant')
 def sales_report_router(request):
     if request.GET.get('date'):
         return sale_day(request, request.GET.get('date'))
@@ -554,11 +612,13 @@ def sales_report_router(request):
         return redirect(reverse_lazy('home'))
 
 
+@group_required('Accountant')
 def daily_sale_today(request):
     today = datetime.date.today()
     return sale_day(request, today)
 
 
+@group_required('Accountant')
 def daily_sale_yesterday(request):
     yesterday = datetime.date.today() - datetime.timedelta(1)
     return sale_day(request, yesterday)
@@ -569,6 +629,7 @@ class JournalVoucherView(CompanyView):
     success_url = reverse_lazy('journal_voucher_list')
     form_class = JournalVoucherForm
     serializer_class = JournalVoucherSerializer
+    check = 'show_journal_vouchers'
 
 
 class JournalVoucherList(JournalVoucherView, ListView):
@@ -589,7 +650,7 @@ class JournalVoucherCreate(JournalVoucherView, TableObjectMixin):
 #     data = JournalVoucherSerializer(journal_voucher).data
 #     return render(request, 'voucher/journal_voucher_form.html', {'data': data, 'scenario': scenario})
 
-
+@group_required('Accountant')
 def journal_voucher_save(request):
     if request.is_ajax():
         params = json.loads(request.body)
@@ -615,7 +676,8 @@ def journal_voucher_save(request):
                 continue
             else:
                 values = {'type': row.get('type'), 'account_id': row.get('account'),
-                          'description': row.get('description'), 'dr_amount': empty_to_none(float(row.get('dr_amount'))),
+                          'description': row.get('description'),
+                          'dr_amount': empty_to_none(float(row.get('dr_amount'))),
                           'cr_amount': empty_to_none(float(row.get('cr_amount'))),
                           'journal_voucher': obj}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
@@ -632,13 +694,16 @@ class PurchaseOrderView(CompanyView):
     model = PurchaseOrder
     serializer_class = PurchaseOrderSerializer
     success_url = reverse_lazy("purchase_order_list")
+    check = 'show_purchase_orders'
 
 
 class PurchaseOrderList(PurchaseOrderView, ListView):
     pass
 
+
 class PurchaseOrderDelete(PurchaseOrderView, DeleteView):
     pass
+
 
 # def purchase_list(request):
 #     obj = PurchaseOrder.objects.filter(company=request.company)
@@ -650,22 +715,23 @@ class PurchaseOrderCreate(PurchaseOrderView, TableObjectMixin):
 
 
 class PurchaseOrderDetailView(PurchaseOrderView, StaffMixin, DetailView):
-
     def get_context_data(self, **kwargs):
         context = super(PurchaseOrderDetailView, self).get_context_data(**kwargs)
         context['rows'] = PurchaseOrderRow.objects.select_related('item', 'unit').filter(purchase_order=self.object)
         return context
 
 
+@group_required('Accountant')
 def save_purchase_order(request):
     if request.is_ajax():
         params = json.loads(request.body)
-    dct = {'rows': {} }
+    dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
 
     object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
-                     'party_id': params.get('party_id'), 'company': request.company}
+                     'party_id': params.get('party_id'), 'purchase_agent_id': params.get('purchase_agent_id'),
+                     'company': request.company}
 
     if params.get('id'):
         obj = PurchaseOrder.objects.get(id=params.get('id'), company=request.company)
@@ -680,8 +746,10 @@ def save_purchase_order(request):
             if invalid(row, ['item_id', 'quantity', 'unit_id']):
                 continue
             else:
-                values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'specification': row.get('specification'), 'quantity': row.get('quantity'),
+                values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'specification': row.get('specification'),
+                          'quantity': row.get('quantity'),
                           'rate': row.get('rate'), 'unit_id': row.get('unit')['id'], 'remarks': row.get('remarks'),
+                          'fulfilled': row.get('fulfilled'),
                           'purchase_order': obj}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
@@ -709,7 +777,7 @@ def save_purchase_order(request):
 
         # obj.total_amount = grand_total
         # if obj.credit:
-            # obj.pending_amount = grand_total
+        # obj.pending_amount = grand_total
         # obj.save()
     except Exception as e:
         dct = write_error(dct, e)
@@ -725,21 +793,23 @@ class CheckifConnected(object):
             return HttpResponseRedirect(reverse('users:party_for_company', kwargs={'company_id': querying_company.id}))
 
 
-class IncomingPurchaseOrder(ListView):
+class IncomingPurchaseOrder(CompanyRequiredMixin, ListView):
     model = PurchaseOrder
     template_name = "voucher/incoming_purchase_order_list.html"
+    check = 'show_purchase_orders'
 
     def get_queryset(self):
         return self.model.objects.filter(party__related_company=self.request.company)
 
-class IncomingPurchaseOrderDetailView(CheckifConnected, DetailView):
+
+class IncomingPurchaseOrderDetailView(CompanyRequiredMixin, CheckifConnected, DetailView):
     model = PurchaseOrder
+    check = 'show_purchase_orders'
 
     def get_context_data(self, **kwargs):
         context = super(IncomingPurchaseOrderDetailView, self).get_context_data(**kwargs)
         context['rows'] = PurchaseOrderRow.objects.select_related('item', 'unit').filter(purchase_order=self.object)
         return context
-
 
 
 class VoucherSettingUpdateView(SuperOwnerMixin, UpdateView):
@@ -756,3 +826,64 @@ class VoucherSettingUpdateView(SuperOwnerMixin, UpdateView):
         context['base_template'] = '_base_settings.html'
         context['setting'] = 'VoucherSetting'
         return context
+
+
+class ExpenseView(CompanyView):
+    model = Expense
+    success_url = reverse_lazy('expense_list')
+    serializer_class = ExpenseSerializer
+
+
+class ExpenseList(ExpenseView, ListView):
+    pass
+
+
+class ExpenseDelete(ExpenseView, DeleteView):
+    pass
+
+
+class ExpenseDetailView(DetailView):
+    model = Expense
+
+    def get_context_data(self, **kwargs):
+        context = super(ExpenseDetailView, self).get_context_data(**kwargs)
+        context['rows'] = ExpenseRow.objects.select_related('expense', 'pay_head').filter(expense_row=self.object)
+        return context
+
+
+class ExpenseCreate(ExpenseView, TableObjectMixin):
+    template_name = 'expense_form.html'
+
+
+def save_expense(request):
+    if request.is_ajax():
+        # params = json.loads(request.body)
+        params = json.loads(request.POST.get('expense'))
+    company = request.company
+    if params.get('voucher_no') == '':
+        params['voucher_no'] = None
+    dct = {'rows': {}}
+    object_values = {'voucher_no': int(params.get('voucher_no')), 'date': params.get('date'),
+                     'company': company}
+    if params.get('id'):
+        obj = Expense.objects.get(id=params.get('id'), company=request.company)
+    else:
+        obj = Expense(company=request.company)
+    try:
+        obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = ExpenseRow
+        for ind, row in enumerate(params.get('table_view').get('rows')):
+            if invalid(row, ['amount']):
+                continue
+            values = {'expense_id': row.get('expense_id'),
+                      'pay_head_id': row.get('pay_head_id'), 'amount': row.get('amount'),
+                      'expense_row': obj}
+            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+            if not created:
+                submodel = save_model(submodel, values)
+            dct['rows'][ind] = submodel.id
+        delete_rows(params.get('table_view').get('deleted_rows'), model)
+    except Exception as e:
+        dct = write_error(dct, e)
+    return JsonResponse(dct)

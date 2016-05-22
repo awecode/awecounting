@@ -1,8 +1,10 @@
-from rest_framework import viewsets
-from rest_framework import generics, pagination
-from .serializers import UserSerializer, GroupSerializer, CompanySerializer
-from .models import User, Pin, Company
 from django.contrib.auth.models import Group
+
+from rest_framework import viewsets
+from rest_framework import generics
+from .serializers import UserSerializer, GroupSerializer, CompanySerializer
+from .models import User, Pin
+
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
@@ -21,8 +23,20 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 
 class AccessibleCompanyAPI(generics.ListAPIView):
-	serializer_class = CompanySerializer
-	# pagination_class = SetPagination
+    serializer_class = CompanySerializer
+    # pagination_class = SetPagination
 
-	def get_queryset(self):
-		return Pin.accessible_companies(self.request.company)
+    def get_queryset(self):
+        return Pin.accessible_companies(self.request.company)
+
+
+
+class UserListAPI(generics.ListAPIView):
+    serializer_class = UserSerializer
+    # pagination_class = SetPagination
+
+    def get_queryset(self):
+        queryset = User.objects.all()
+        if 'group' in self.request.GET:
+            queryset = queryset.filter(groups__name=self.request.GET.get('group'))
+        return queryset

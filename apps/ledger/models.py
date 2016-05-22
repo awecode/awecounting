@@ -1,17 +1,59 @@
 import datetime
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse_lazy
 
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.db import models
-from mptt.models import MPTTModel, TreeForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
 from django.db.models import F
 
+from mptt.models import MPTTModel, TreeForeignKey
 from apps.users.models import Company
 from awecounting.utils.helpers import zero_for_none, none_for_zero
+
+
+class Node(object):
+    def __init__(self, model, parent=None, depth=0):
+        self.children = []
+        self.model = model
+        self.name = self.model.name
+        self.type = self.model.__class__.__name__
+        self.dr = 0
+        self.cr = 0
+        self.url = None
+        self.depth = depth
+        self.parent = parent
+        if self.type == 'Category':
+            for child in self.model.children.all():
+                self.add_child(Node(child, parent=self, depth=self.depth + 1))
+            for account in self.model.accounts.all():
+                self.add_child(Node(account, parent=self, depth=self.depth + 1))
+        if self.type == 'Account':
+            self.dr = self.model.current, 'company_dr or 0'
+            self.cr = self.model.current_cr or 0
+            self.url = self.model.get_absolute_url()
+        if self.parent:
+            self.parent.dr += self.dr
+            self.parent.cr += self.cr
+
+    def add_child(self, obj):
+        self.children.append(obj.get_data())
+
+    def get_data(self):
+        data = {
+            'name': self.name,
+            'type': self.type,
+            'dr': self.dr,
+            'cr': self.cr,
+            'nodes': self.children,
+            'depth': self.depth,
+            'url': self.url,
+        }
+        return data
+
+    def __str__(self):
+        return self.name
 
 
 class Category(MPTTModel):
@@ -22,6 +64,16 @@ class Category(MPTTModel):
 
     def __unicode__(self):
         return self.name
+
+    def get_data(self):
+        node = Node(self)
+        return node.get_data()
+
+    def get_descendant_ledgers(self):
+        ledgers = self.accounts.all()
+        for descendant in self.get_descendants():
+            ledgers = ledgers | descendant.accounts.all()
+        return ledgers
 
     class Meta:
         verbose_name_plural = u'Categories'
@@ -41,7 +93,7 @@ class Account(models.Model):
 
     def get_absolute_url(self):
         # return '/ledger/' + str(self.id)
-        return reverse_lazy('view_account', kwargs={'pk': self.pk})
+        return reverse('view_ledger', kwargs={'pk': self.pk})
 
     # def get_last_day_last_transaction(self):
     #     transactions = Transaction.objects.filter(account=self, date__lt=date.today()).order_by('-id', '-date')[:1]
@@ -184,8 +236,6 @@ def set_transactions(submodel, date, *args):
         })
     for arg in args:
         # transaction = Transaction(account=arg[1], dr_amount=arg[2])
-        if arg[1] == 'cash':
-            arg[1] = Account.objects.get(name='Cash')
         matches = journal_entry.transactions.filter(account=arg[1])
         if not matches:
             transaction = Transaction()
@@ -426,23 +476,73 @@ company_creation.connect(handle_company_creation)
 
 class Party(models.Model):
     name = models.CharField(max_length=254)
-    address = models.CharField(max_length=254, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
     phone_no = models.CharField(max_length=100, blank=True, null=True)
-    pan_no = models.CharField(max_length=50, blank=True, null=True)
+    pan_no = models.CharField(max_length=50, blank=True, null=True, verbose_name='Tax Reg. No.')
     account = models.ForeignKey(Account, null=True)
+    TYPES = [('Customer', 'Customer'), ('Supplier', 'Supplier'), ('Customer/Supplier', 'Customer/Supplier')]
+    type = models.CharField(choices=TYPES, max_length=17, default='Customer/Supplier')
+    supplier_ledger = models.OneToOneField(Account, null=True, related_name='supplier_detail')
+    customer_ledger = models.OneToOneField(Account, null=True, related_name='customer_detail')
     company = models.ForeignKey(Company, related_name='parties')
     related_company = models.OneToOneField(Company, blank=True, null=True, related_name='related_party')
+
+    # def __init__(self, *args, **kwargs):
+    #     self.post = True
+    #     super(Party, self).__init__(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse_lazy('party_edit', kwargs={'pk': self.pk})
 
-    def save(self, *args, **kwargs):
-        if not self.account_id:
-            account = Account(name=self.name, company=self.company)
-            account.save()
-            self.account = account
+    @property
+    def balance(self):
+        return zero_for_none(self.customer_ledger.current_dr) - zero_for_none(
+            self.customer_ledger.current_cr) + zero_for_none(
+            self.supplier_ledger.current_cr) - zero_for_none(self.supplier_ledger.current_dr)
 
+    def save(self, *args, **kwargs):
+        self.post = kwargs.pop('post', True)
         super(Party, self).save(*args, **kwargs)
+
+        if self.post:
+            self.post_save()
+
+    def post_save(self):
+        ledger = Account(name=self.name)
+        ledger.company = self.company
+        if self.type == 'Customer':
+            if not self.customer_ledger:
+                ledger.category = Category.objects.get(name='Customers', company=self.company)
+                ledger.code = 'C-' + str(self.id)
+                ledger.save()
+                self.customer_ledger = ledger
+            if self.supplier_ledger:
+                self.supplier_ledger.delete()
+                self.supplier_ledger = None
+        elif self.type == 'Supplier':
+            if not self.supplier_ledger:
+                ledger.category = Category.objects.get(name='Suppliers', company=self.company)
+                ledger.code = 'S-' + str(self.id)
+                ledger.save()
+                self.supplier_ledger = ledger
+            if self.customer_ledger:
+                self.customer_ledger.delete()
+                self.customer_ledger = None
+        else:
+            if not self.customer_ledger:
+                ledger.name += ' (Receivable)'
+                ledger.category = Category.objects.get(name='Customers', company=self.company)
+                ledger.code = 'C-' + str(self.id)
+                ledger.save()
+                self.customer_ledger = ledger
+            if not self.supplier_ledger:
+                ledger2 = Account(name=self.name + ' (Payable)')
+                ledger2.company = self.company
+                ledger2.category = Category.objects.get(name='Suppliers', company=self.company)
+                ledger2.code = 'S-' + str(self.id)
+                ledger2.save()
+                self.supplier_ledger = ledger2
+        self.save(post=False)
 
     def __unicode__(self):
         return self.name
@@ -450,3 +550,18 @@ class Party(models.Model):
     class Meta:
         verbose_name_plural = 'Parties'
         unique_together = ['company', 'related_company']
+
+    # @receiver(branch_creation)
+    # def handle_branch_creation(sender, **kwargs):
+    # Party.objects.create(name=kwargs['name'], company=kwargs['company'])
+    # print "Handle branch"
+    # pass
+
+
+def get_ledger(company, name):
+    if not company.__class__.__name__ == 'Company':
+        company = company.company
+    if name in ['Purchase', 'Purchases']:
+        return Account.objects.get(name='Purchase', category__name='Purchase', company=company)
+    if name in ['Cash', 'Cash Account']:
+        return Account.objects.get(name='Cash', category__name='Cash Account', company=company)

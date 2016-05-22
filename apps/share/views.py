@@ -1,5 +1,6 @@
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
+
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView
 from .models import ShareHolder, Collection, Investment
 from .forms import ShareHolderForm, CollectionForm, InvestmentForm
@@ -9,6 +10,7 @@ class ShareHolderView(CompanyView):
     model = ShareHolder
     success_url = reverse_lazy('share:shareholder_list')
     form_class = ShareHolderForm
+    check = 'show_shares'
 
 
 class ShareHolderList(ShareHolderView, ListView):
@@ -31,6 +33,7 @@ class CollectionView(CompanyView):
     model = Collection
     success_url = reverse_lazy('share:collection_list')
     form_class = CollectionForm
+    check = 'show_shares'
 
 
 class CollectionList(CollectionView, ListView):
@@ -53,6 +56,7 @@ class InvestmentView(CompanyView):
     model = Investment
     success_url = reverse_lazy('share:investment_list')
     form_class = InvestmentForm
+    check = 'show_shares'
 
 
 class InvestmentList(InvestmentView, ListView):

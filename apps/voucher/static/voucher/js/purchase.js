@@ -83,7 +83,7 @@ function PurchaseViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.tax_schemes = ko.observableArray(data['results']);
+            self.tax_schemes = ko.observableArray(data);
         }
     });
 
@@ -96,7 +96,7 @@ function PurchaseViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.items = ko.observableArray(data['results']);
+            self.items = ko.observableArray(data);
         }
     });
 
@@ -105,7 +105,7 @@ function PurchaseViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.parties = ko.observableArray(data['results']);
+            self.parties = ko.observableArray(data);
         }
     });
 
@@ -114,7 +114,7 @@ function PurchaseViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.units = ko.observableArray(data['results']);
+            self.units = ko.observableArray(data);
         }
     });
 
@@ -257,7 +257,7 @@ function PurchaseViewModel(data) {
                     if (msg.tax_scheme_id != "" && msg.tax_scheme_id != null){
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].row_tax_vm.tax_scheme(0);
-                    }
+                        }
                     }
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];

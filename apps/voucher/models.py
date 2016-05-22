@@ -1,19 +1,24 @@
 from __future__ import unicode_literals
 
+from datetime import date
+from django.contrib.contenttypes.fields import GenericRelation
+
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse_lazy
 from njango.fields import BSDateField, today
-
 from django.db import models
-from ..inventory.models import Item, Unit
-from ..ledger.models import Party, Account
-from ..users.models import Company
-from awecounting.utils.helpers import get_next_voucher_no, calculate_tax
+from njango.middleware import get_calendar
+from njango.nepdate import tuple_from_string, string_from_tuple, bs2ad, bs, ad2bs
 from django.utils.translation import ugettext_lazy as _
-from datetime import date
-from ..tax.models import TaxScheme
-from awecounting.utils.helpers import empty_to_zero, get_discount_with_percent
+
 from django.dispatch import receiver
+
+from ..inventory.models import Item, Unit
+from ..ledger.models import Party, Account, JournalEntry
+from ..users.models import Company, User
+from awecounting.utils.helpers import get_next_voucher_no, calculate_tax
+from ..tax.models import TaxScheme
+from awecounting.utils.helpers import get_discount_with_percent
 from ..users.signals import company_creation
 
 
@@ -108,6 +113,7 @@ class PurchaseVoucherRow(models.Model):
     tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True)
     unit = models.ForeignKey(Unit)
     purchase = models.ForeignKey(PurchaseVoucher, related_name='rows')
+    journal_entry = GenericRelation(JournalEntry)
 
     def get_total(self):
         total = float(self.quantity) * float(self.rate)
@@ -129,6 +135,7 @@ class PurchaseOrder(models.Model):
     party = models.ForeignKey(Party)
     voucher_no = models.IntegerField(blank=True, null=True)
     date = BSDateField(default=today)
+    purchase_agent = models.ForeignKey(User, related_name="purchase_order", blank=True, null=True)
     company = models.ForeignKey(Company)
 
     def __init__(self, *args, **kwargs):
@@ -147,7 +154,6 @@ class PurchaseOrder(models.Model):
         return total
 
 
-
 class PurchaseOrderRow(models.Model):
     sn = models.PositiveIntegerField()
     item = models.ForeignKey(Item)
@@ -155,13 +161,16 @@ class PurchaseOrderRow(models.Model):
     quantity = models.FloatField()
     unit = models.ForeignKey(Unit)
     # unit = models.CharField(max_length=50)
-    rate = models.FloatField()
+    rate = models.FloatField(blank=True, null=True)
     # vattable = models.BooleanField(default=True)
     remarks = models.CharField(max_length=254, blank=True, null=True)
+    fulfilled = models.BooleanField(default=False)
     purchase_order = models.ForeignKey(PurchaseOrder, related_name='rows')
 
     def get_total(self):
-        total = float(self.quantity) * float(self.rate)
+        total = 0
+        if self.rate:
+            total = float(self.quantity) * float(self.rate)
         return total
 
 
@@ -175,6 +184,10 @@ class Sale(models.Model):
     total_amount = models.FloatField(null=True, blank=True)
     company = models.ForeignKey(Company)
     description = models.TextField(null=True, blank=True)
+    tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'), ]
+    tax = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True, blank=True)
+    tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True)
+    discount = models.CharField(max_length=50, blank=True, null=True)
 
     def __init__(self, *args, **kwargs):
         super(Sale, self).__init__(*args, **kwargs)
@@ -206,12 +219,36 @@ class Sale(models.Model):
         return _('Sale')
 
     @property
-    def total(self):
+    def sub_total(self):
         grand_total = 0
         for obj in self.rows.all():
-            total = obj.quantity * obj.rate - obj.discount
-            grand_total += total
+            total = obj.quantity * obj.rate
+            discount = get_discount_with_percent(total, obj.discount)
+            grand_total += total - discount
         return grand_total
+
+    @property
+    def tax_amount(self):
+        _sum = 0
+        if self.tax_scheme:
+            _sum = calculate_tax(self.tax, self.sub_total, self.tax_scheme.percent)
+        else:
+            for obj in self.rows.all():
+                if obj.tax_scheme:
+                    total = obj.quantity * obj.rate - float(obj.discount)
+                    amount = calculate_tax(self.tax, total, obj.tax_scheme.percent)
+                    _sum += amount
+        return _sum
+
+    @property
+    def total(self):
+        amount = self.sub_total
+        if self.tax == "exclusive":
+            amount = self.sub_total + self.tax_amount
+        if self.discount:
+            discount = get_discount_with_percent(amount, self.discount)
+            amount = amount - discount
+        return amount
 
 
 class SaleRow(models.Model):
@@ -222,6 +259,8 @@ class SaleRow(models.Model):
     discount = models.FloatField(default=0)
     unit = models.ForeignKey(Unit)
     sale = models.ForeignKey(Sale, related_name='rows')
+    tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True)
+    journal_entry = GenericRelation(JournalEntry)
 
     def get_total(self):
         return float(self.quantity) * float(self.rate) - float(self.discount)
@@ -381,7 +420,7 @@ class CashPaymentRow(models.Model):
             overdue_days = date.today() - self.invoice.due_date
             return overdue_days.days
         return ''
-        
+
     class Meta:
         unique_together = ('invoice', 'cash_payment')
 
@@ -438,15 +477,19 @@ class VoucherSetting(models.Model):
     use_nepali_fy_system = models.BooleanField(default=True)
     single_discount_on_whole_invoice = models.BooleanField(default=True)
     discount_on_each_invoice_particular = models.BooleanField(default=False)
-    invoice_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True,
+    invoice_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='exclusive',
+                                                            null=True,
                                                             blank=True)
-    invoice_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True, related_name="default_invoice_tax_scheme")
+    invoice_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True,
+                                                   related_name="default_invoice_tax_scheme")
 
     single_discount_on_whole_purchase = models.BooleanField(default=True)
     discount_on_each_purchase_particular = models.BooleanField(default=False)
-    purchase_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True,
+    purchase_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='exclusive',
+                                                             null=True,
                                                              blank=True)
-    purchase_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True, related_name="default_purchase_tax_scheme")
+    purchase_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True,
+                                                    related_name="default_purchase_tax_scheme")
     voucher_number_start_date = BSDateField(default=today)
     # voucher_number_restart_years = models.IntegerField(default=1)
     # voucher_number_restart_months = models.IntegerField(default=0)
@@ -495,8 +538,6 @@ class VoucherSetting(models.Model):
         if self.use_nepali_fy_system:
             fiscal_year_end = str(int(year) + 1) + '-03-' + str(bs[int(year) + 1][2])
         else:
-            # import ipdb
-            # ipdb.set_trace()
             fiscal_year_end = str(int(year) + 1) + '-' + str(self.voucher_number_start_date.month) + '-' + str(12)
         tuple_value = tuple_from_string(fiscal_year_end)
         calendar = get_calendar()
@@ -507,7 +548,35 @@ class VoucherSetting(models.Model):
     def __unicode__(self):
         return self.company.name
 
+
 @receiver(company_creation)
 def handle_company_creation(sender, **kwargs):
     company = kwargs.get('company')
     VoucherSetting.objects.create(company=company)
+
+
+class Expense(models.Model):
+    voucher_no = models.IntegerField(blank=True, null=True)
+    date = BSDateField(default=today)
+    company = models.ForeignKey(Company)
+
+    def __init__(self, *args, **kwargs):
+        super(Expense, self).__init__(*args, **kwargs)
+        if not self.pk and not self.voucher_no:
+            self.voucher_no = get_next_voucher_no(Expense, self.company_id)
+
+    @property
+    def total(self):
+        grand_total = 0
+        for obj in self.rows.all():
+            total = obj.amount
+            grand_total += total
+        return grand_total
+
+
+class ExpenseRow(models.Model):
+    expense = models.ForeignKey(Account, related_name="expense")
+    pay_head = models.ForeignKey(Account, related_name="cash_and_bank")
+    amount = models.IntegerField()
+    expense_row = models.ForeignKey(Expense, related_name="rows")
+

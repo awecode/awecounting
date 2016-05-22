@@ -1,0 +1,47 @@
+{% extends '_base.html' %}
+{% load i18n filters %}
+
+{% block page-title %}{% trans 'Branch' %}{% endblock %}
+
+{% block header-buttons %}
+    <a href="{% url 'users:branch_add' %}" class="btn btn-success btn-raised">{% trans 'Add' %} {% trans 'Branch' %}</a>
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+
+            {% load pagination_tags %}
+            {% load sorting_tags %}
+
+            {% autosort object_list as sorted_objects %}
+            {% autopaginate sorted_objects 25 as paginated_objects %}
+            <div class="well">
+
+            <table class="table table-striped">
+                <thead>
+                <th>{% anchor party.name _('Name') %}</th>
+                <th>{% trans _('Party') %}</th>
+                </thead>
+                <tbody>
+                {% for object in sorted_objects %}
+                    <tr>
+                        <td class="link">
+                            <a href="{% url 'users:branch_edit' object.pk %}">{{ object.name }}</a>
+                        </td>
+                        <td>
+                            <a href="{% if object.party %}{% url 'party_edit' object.party.pk %}{% endif %}">{{ object.party |default:'' }}</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            {% paginate %}
+
+        </div>
+    </div>
+
+
+{% endblock %}

@@ -1,6 +1,9 @@
 from rest_framework import serializers
+from ..users.models import User
+from ..users.serializers import UserSerializer
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashPayment, CashPaymentRow, CashReceipt, CashReceiptRow, PurchaseVoucherRow, PurchaseVoucher, SaleRow, Sale, JournalVoucherRow, JournalVoucher, \
-PurchaseOrder, PurchaseOrderRow
+PurchaseOrder, PurchaseOrderRow, ExpenseRow, Expense
+
 
 class CashReceiptRowSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,6 +45,7 @@ class PurchaseVoucherRowSerializer(serializers.ModelSerializer):
 class PurchaseVoucherSerializer(serializers.ModelSerializer):
     rows = PurchaseVoucherRowSerializer(many=True)
     date = serializers.DateField(format=None)
+
     party_id = serializers.ReadOnlyField()
 
     class Meta:
@@ -61,11 +65,21 @@ class PurchaseOrderRowSerializer(serializers.ModelSerializer):
 class PurchaseOrderSerializer(serializers.ModelSerializer):
     rows = PurchaseOrderRowSerializer(many=True)
     date = serializers.DateField(format=None)
+    purchase_agent_id = serializers.ReadOnlyField(source='purchase_agent.id')
     party_id = serializers.ReadOnlyField()
+    agents = serializers.SerializerMethodField()
 
     class Meta:
         model = PurchaseOrder
-        exclude = ['party']
+        exclude = ['party', 'purchase_agent']
+
+    def get_agents(self, obj):
+        users = User.objects.filter(roles__group__name='PurchaseAgent')
+        data = []
+        for user in users:
+            dct = dict(name=user.username, id = user.pk)
+            data.append(dct)
+        return data
 
 
 class SaleRowSerializer(serializers.ModelSerializer):
@@ -115,3 +129,19 @@ class FixedAssetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FixedAsset
+
+
+class ExpenseRowSerializer(serializers.ModelSerializer):
+    expense_id = serializers.ReadOnlyField(source='expense.id')
+    pay_head_id = serializers.ReadOnlyField(source='pay_head.id')
+
+    class Meta:
+        model = ExpenseRow
+        exclude = ('expense', 'pay_head')
+
+
+class ExpenseSerializer(serializers.ModelSerializer):
+    rows = ExpenseRowSerializer(many=True)
+
+    class Meta:
+        model = Expense

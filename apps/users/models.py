@@ -1,16 +1,16 @@
-from django.core.urlresolvers import reverse_lazy
+import os
+import random
+
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Group
-from django.core.exceptions import PermissionDenied
-from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from njango.fields import BSDateField, today, get_calendar
-from .signals import company_creation
-from njango.nepdate import ad2bs, string_from_tuple, tuple_from_string, bs2ad, bs
-import os
-import random
+
+from django.dispatch import receiver
+
+from njango.fields import BSDateField, today
+from signals import company_creation
 
 
 class UserManager(BaseUserManager):
@@ -52,8 +52,48 @@ class UserManager(BaseUserManager):
 class Company(models.Model):
     name = models.CharField(max_length=254)
     location = models.TextField()
-    type_of_business = models.CharField(max_length=254)
+    ORGANIZATION_TYPES = (
+        ('sole_proprietorship', 'Sole Proprietorship'), ('partnership', 'Partnership'), ('corporation', 'Corporation'),
+        ('non_profit', 'Non-profit'))
+    organization_type = models.CharField(max_length=254, choices=ORGANIZATION_TYPES, default='sole_proprietorship')
     tax_registration_number = models.IntegerField(blank=True, null=True)
+    sells_goods = models.BooleanField(default=True)
+    sells_services = models.BooleanField(default=False)
+    purchases_goods = models.BooleanField(default=True)
+    purchases_services = models.BooleanField(default=True)
+
+    def has_shareholders(self):
+        return True if self.organization_type in ['partnership', 'corporation'] else False
+
+    def show_purchases(self):
+        return (self.purchases_goods or self.purchases_services) and self.subscription.enable_purchase
+
+    def show_purchase_orders(self):
+        return (self.purchases_goods or self.purchases_services) and self.subscription.enable_purchase_order
+
+    def show_sales(self):
+        return (self.sells_goods or self.sells_services) and self.subscription.enable_sales
+
+    def show_cash_vouchers(self):
+        return self.subscription.enable_cash_vouchers
+
+    def show_journal_vouchers(self):
+        return self.subscription.enable_journal_voucher
+
+    def show_fixed_assets_vouchers(self):
+        return self.subscription.enable_fixed_assets_voucher
+
+    def show_bank_vouchers(self):
+        return self.subscription.enable_bank_vouchers
+
+    def show_shares(self):
+        return self.has_shareholders() and self.subscription.enable_share_management
+
+    def show_payroll(self):
+        return self.subscription.enable_payroll
+
+    def show_reports(self):
+        return self.subscription.enable_reports
 
     def save(self, *args, **kwargs):
         new = False
@@ -71,6 +111,29 @@ class Company(models.Model):
 
     class Meta:
         verbose_name_plural = _('Companies')
+
+
+class Subscription(models.Model):
+    company = models.OneToOneField(Company, related_name='subscription')
+    enable_purchase = models.BooleanField(default=True)
+    enable_purchase_order = models.BooleanField(default=True)
+    enable_sales = models.BooleanField(default=True)
+    enable_cash_vouchers = models.BooleanField(default=True)
+    enable_journal_voucher = models.BooleanField(default=True)
+    enable_fixed_assets_voucher = models.BooleanField(default=True)
+    enable_bank_vouchers = models.BooleanField(default=True)
+    enable_share_management = models.BooleanField(default=True)
+    enable_payroll = models.BooleanField(default=True)
+    enable_reports = models.BooleanField(default=True)
+
+    def __str__(self):
+        return 'Subscription for ' + str(self.company)
+
+
+@receiver(company_creation)
+def handle_company_creation(sender, **kwargs):
+    company = kwargs.get('company')
+    Subscription.objects.create(company=company)
 
 
 class User(AbstractBaseUser):
@@ -299,10 +362,32 @@ class Pin(models.Model):
     def accessible_companies(accessible_by):
         return map(Pin.companies_list, accessible_by.used_pin.all().values_list('company__id', flat=True))
 
-
     @staticmethod
     def connected_companies(company):
         return map(Pin.companies_list, company.pin.filter(used_by__isnull=False).values_list('used_by__id', flat=True))
 
     class Meta:
         unique_together = ("company", "used_by")
+
+
+class Branch(models.Model):
+    from apps.ledger.models import Party
+
+    company = models.ForeignKey(Company, related_name='branches')
+    branch_company = models.ForeignKey(Company, blank=True, null=True)
+    name = models.CharField(max_length=250)
+    party = models.ForeignKey(Party, blank=True, null=True)
+    is_party = models.BooleanField(default=False, verbose_name="Also create party for a branch")
+
+    def __str__(self):
+        return self.name + ' ' + self.company.name
+
+    def save(self, *args, **kwargs):
+        if not self.branch_company:
+            assign_company = Company.objects.create(name=self.name)
+            self.branch_company = assign_company
+        super(Branch, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name_plural = "Branches"
+        # def save(self, *args, **kwargs ):

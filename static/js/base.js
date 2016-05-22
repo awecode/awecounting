@@ -57,6 +57,41 @@ modal.create = function () {
     return el;
 }
 
+apply_select2 = function (form) {
+    if (typeof form != 'undefined') {
+        var selection = $(form).find('.select2')
+    }
+    else {
+        var selection = $('.select2');
+    }
+    selection.each(function () {
+        var element = this;
+        var len = $('.select-drop-klass').length;
+        var drop_class = 'select-drop-klass unique-drop' + len;
+        $(element).attr('data-counter', len);
+        var options_dict = {'dropdownCssClass': drop_class, 'dropdownAutoWidth': true, 'width': 'resolve'}
+        if ($(element).hasClass('placehold'))
+            options_dict['placeholderOption'] = 'first';
+        $(element).select2(options_dict);
+        if ($(element).data('url')) {
+            if (!$('#appended-link' + $(element).data('counter')).length) {
+                if ($(element).data('name'))
+                    var field_name = $(element).data('name');
+                else
+                    var field_name = $(element).attr('name').replace(/_/g, ' ').toTitleCase();
+                jQuery('<a/>', {
+                    class: 'appended-link',
+                    id: 'appended-link' + $(element).data('counter'),
+                    href: $(element).data('url'),
+                    title: 'Add New ' + field_name,
+                    text: 'Add New ' + field_name,
+                    'data-toggle': 'modal'
+                }).appendTo($('.unique-drop' + len)).on('click', [element], appended_link_clicked);
+            }
+        }
+    });
+}
+
 appended_link_clicked = function (e) {
 
     var old_forms = $('form');
@@ -81,9 +116,9 @@ appended_link_clicked = function (e) {
             var new_forms = $('form').not(old_forms).get();
             $(new_forms).submit({url: url}, override_form);
 //                $(new_forms[0]).find('input:text:visible:first').focus();
-//            $(new_forms).each(function (form) {
-//                apply_select2(new_forms[form]);
-//            });
+            $(new_forms).each(function (form) {
+                apply_select2(new_forms[form]);
+            });
             $.getScript(script);
         });
     }

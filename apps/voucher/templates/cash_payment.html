@@ -23,7 +23,6 @@
         {% csrf_token %}
 
         <div class="well">
-
             <div classs="row">
                 {{ form.voucher_no.label_tag }}
                 {{ form.voucher_no }}
@@ -91,7 +90,7 @@
 
                 <a href="#" class="btn btn-raised btn-default"
                    data-bind="click: $parent.load_related_invoices, visible: !rows()">
-                    {% trans 'Load Invoices' %}</a>
+                    {% trans 'Load Purchase Vouchers' %}</a>
 
                 <table class="table table-striped" id="voucher_table"
                        data-bind="visible: $parent.table_vm().rows()">

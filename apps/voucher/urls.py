@@ -42,13 +42,13 @@ web_urls = [
 
     url(r'^cash_receipt/list/$', views.CashReceiptList.as_view(), name='cash_receipt_list'),
     url(r'^cash_receipt/create/$', views.CashReceiptCreate.as_view(), name='cash_receipt_add'),
-    url(r'^cash_receipt/(?P<pk>[0-9]+)/$', views.CashReceiptCreate.as_view(), name='cash_receipt_edit'),
+    url(r'^cash_receipt/(?P<pk>[0-9]+)/$', views.CashReceiptUpdate.as_view(), name='cash_receipt_edit'),
     url(r'^cash-receipt/save/$', views.save_cash_receipt, name='cash_receipt_save'),
     url(r'^cash_receipt/detail/(?P<pk>[0-9]+)/$', views.CashReceiptDetailView.as_view(), name='cash_receipt_detail'),
 
     url(r'^cash_payment/list/$', views.CashPaymentList.as_view(), name='cash_payment_list'),
     url(r'^cash_payment/create/$', views.CashPaymentCreate.as_view(), name='cash_payment_add'),
-    url(r'^cash_payment/(?P<pk>[0-9]+)/$', views.CashPaymentCreate.as_view(), name='cash_payment_edit'),
+    url(r'^cash_payment/(?P<pk>[0-9]+)/$', views.CashPaymentUpdate.as_view(), name='cash_payment_edit'),
     url(r'^cash_payment/save/$', views.save_cash_payment, name='cash_payment_save'),
     url(r'^cash_payment/detail/(?P<pk>[0-9]+)/$', views.CashPaymentDetailView.as_view(), name='cash_payment_detail'),
 
@@ -58,6 +58,13 @@ web_urls = [
     url(r'^fixed_asset/save/$', views.save_fixed_asset, name='fixed_asset_save'),
     url(r'^fixed_asset/delete/(?P<pk>[0-9]+)$', views.FixedAssetDelete.as_view(), name='fixed_asset_delete'),
     url(r'^fixed_asset/detail/(?P<pk>[0-9]+)/$', views.FixedAssetDetailView.as_view(), name='fixed_asset_detail'),
+
+    url(r'^expense/$', views.ExpenseList.as_view(), name='expense_list'),
+    url(r'^expense/add/$', views.ExpenseCreate.as_view(), name='expense_add'),
+    url(r'^expense/(?P<pk>[0-9]+)/$', views.ExpenseCreate.as_view(), name='expense_edit'),
+    url(r'^expense/save/$', views.save_expense, name='expense_save'),
+    url(r'^expense/delete/(?P<pk>[0-9]+)$', views.ExpenseDelete.as_view(), name='expense_delete'),
+    url(r'^expense/detail/(?P<pk>[0-9]+)/$', views.ExpenseDetailView.as_view(), name='expense_detail'),
 
     url(r'^voucher_setting/$', views.VoucherSettingUpdateView.as_view(), name='voucher_setting'),
 
@@ -72,6 +79,7 @@ api_urls = [
     url(r'^api/cash_receipt/(?P<pk>[0-9]+)/', api.CashReceiptDetailAPI.as_view()),
     url(r'^api/fixed_assets/', api.FixedAssetListAPI.as_view()),
     url(r'^api/fixed_asset/(?P<pk>[0-9]+)/', api.FixedAssetDetailAPI.as_view()),
+    url(r'^api/incoming_purchase_order/', api.IncomingPurchaseOrderListAPI.as_view()),
 ]
 
 api_urls = format_suffix_patterns(api_urls)

@@ -1,0 +1,53 @@
+{% extends base_template %}
+{% load i18n %}
+
+{% block title %}{{ scenario }} {{ form.instance }}{% endblock %}
+
+{% block breadcrumbs %}
+    <li>{% trans 'Settings' %}</li>
+{% endblock %}
+
+
+{% block settings_form %}
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ form.show_root_categories_only }} {{ form.show_root_categories_only.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ form.show_zero_balance_ledgers }} {{ form.show_zero_balance_ledgers.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ form.show_zero_balance_categories }} {{ form.show_zero_balance_categories.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ form.show_ledgers_only }} {{ form.show_ledgers_only.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+
+        <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
+    </form>
+
+
+
+{% endblock %}

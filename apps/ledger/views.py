@@ -1,7 +1,7 @@
-from django.shortcuts import render, get_object_or_404
-
+from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
+
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView
 from .models import Party, Category, Account, JournalEntry
 from .forms import PartyForm, AccountForm, CategoryForm
@@ -9,7 +9,7 @@ from .forms import PartyForm, AccountForm, CategoryForm
 
 class ViewAccount(ListView):
     model = Account
-    template_name = 'view_account.html'
+    template_name = 'view_ledger.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super(ViewAccount, self).get_context_data(**kwargs)
@@ -64,7 +64,14 @@ class PartyList(PartyView, ListView):
 
 
 class PartyCreate(AjaxableResponseMixin, PartyView, CreateView):
-    pass
+    def get_initial(self):
+        dct = {}
+        if self.request.GET and 'source' in self.request.GET:
+            if self.request.GET['source'] == 'purchase':
+                dct['type'] = 'Supplier'
+            elif self.request.GET['source'] == 'sale':
+                dct['type'] = 'Customer'
+        return dct
 
 
 class PartyUpdate(PartyView, UpdateView):

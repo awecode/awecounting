@@ -17,6 +17,7 @@ from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete
 class EntryView(CompanyView):
     model = Entry
     serializer_class = EntrySerializer
+    check = 'show_payroll'
 
 
 class EntryList(EntryView, ListView):
@@ -39,6 +40,7 @@ class EntryDelete(EntryView, DeleteView):
     pass
 
 
+@group_required('Accountant')
 def save_entry(request):
     if request.is_ajax():
         params = json.loads(request.POST.get('entry'))
@@ -82,6 +84,7 @@ class EmployeeView(CompanyView):
     model = Employee
     success_url = reverse_lazy('employee_list')
     form_class = EmployeeForm
+    check = 'show_payroll'
 
 
 class EmployeeList(EmployeeView, StaffMixin, ListView):

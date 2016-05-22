@@ -1,5 +1,8 @@
 from django.db import models
+from django.dispatch import receiver
+
 from apps.users.models import Company
+from apps.users.signals import company_creation
 
 
 class ReportSetting(models.Model):
@@ -12,3 +15,9 @@ class ReportSetting(models.Model):
 
     def __str__(self):
         return 'Report Settings for ' + str(self.company)
+
+
+@receiver(company_creation)
+def handle_company_creation(sender, **kwargs):
+    company = kwargs.get('company')
+    ReportSetting.objects.create(company=company)

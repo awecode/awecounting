@@ -12,7 +12,7 @@ function CashPaymentVM(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.parties = data;
+            self.parties = ko.observableArray(data);
         }
     });
 
@@ -27,6 +27,7 @@ function CashPaymentVM(data) {
     self.current_balance = ko.observable();
     self.amount = ko.observable();
     self.voucher_no = ko.observable();
+    self.rows = ko.observableArray();
     self.table_vm = ko.observable({
         'rows': function () {
         }, 'get_total': function () {
@@ -199,7 +200,7 @@ function CashPaymentVM(data) {
     //         return true;
     // }
 
-    if (self.rows().length) {
+    if (typeof self.rows=='function' && self.rows().length) {
         setTimeout(self.load_related_invoices, 500);
     }
 }

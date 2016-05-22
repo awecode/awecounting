@@ -8,7 +8,7 @@ from awecounting.utils.forms import HTML5BootstrapModelForm, KOModelForm
 
 
 class ItemForm(HTML5BootstrapModelForm, KOModelForm, TranslationModelForm):
-    account_no = forms.Field(widget=forms.TextInput(), label=_('Inventory Account No.'))
+    account_no = forms.Field(widget=forms.TextInput(), label=_('Inventory Account No.'), required=False)
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
@@ -17,7 +17,7 @@ class ItemForm(HTML5BootstrapModelForm, KOModelForm, TranslationModelForm):
         if self.instance.account:
             self.fields['account_no'].initial = self.instance.account.account_no
         else:
-            self.fields['account_no'].initial = InventoryAccount.get_next_account_no()
+            self.fields['account_no'].initial = InventoryAccount.get_next_account_no(company=self.request.company)
         if self.instance.id:
             self.fields['account_no'].widget = forms.HiddenInput()
         self.fields['unit'].queryset = Unit.objects.filter(company=self.request.company)
@@ -37,7 +37,7 @@ class ItemForm(HTML5BootstrapModelForm, KOModelForm, TranslationModelForm):
     class Meta:
         model = Item
         fields = '__all__'
-        exclude = ['other_properties', 'account', 'ledger', 'company']
+        exclude = ['other_properties', 'account', 'ledger', 'company', 'sale_ledger', 'purchase_ledger']
         widgets = {
             'unit': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('unit_add')}),
         }

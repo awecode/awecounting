@@ -88,7 +88,7 @@
                             {% for transaction in entry.transactions.all|remove_account:account %}{% if not forloop.first %}
                                 ,
                             {% endif %}
-                                <a href="{{ transaction.account.get_absolute_url }}/#{{ entry.id }}">{{ transaction.account.name }}</a>
+                                <a href="{{ transaction.account.get_absolute_url }}#{{ entry.id }}">{{ transaction.account.name }}</a>
                             {% endfor %}
                         {% endif %}
                     </td>

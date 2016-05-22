@@ -16,8 +16,8 @@
     </script>
     <script>
         {% if base_template == "_modal.html" %}
-            $(function() {
-                 $('.selectize').selectize(options);
+            $(function () {
+                $('.selectize').selectize(options);
             });
         {% endif %}
     </script>
@@ -48,16 +48,24 @@
 
                 <div class="col-lg-6 col-sm-12">
 
+                {% if request.GET.source == 'sale' and not request.company.sells_goods %}
+                    {% else %}
                     <div>
                         {{ form.size.label_tag }}
                         {{ form.size }}
                         {{ form.size.errors }}
                     </div>
-                    <div>
-                        {{ form.selling_rate.label_tag }}
-                        {{ form.selling_rate }}
-                        {{ form.selling_rate.errors }}
-                    </div>
+                {% endif %}
+
+                    {% if request.GET.source == 'purchase' and not request.company.sells_goods %}
+                    {% else %}
+                        <div>
+                            {{ form.selling_rate.label_tag }}
+                            {{ form.selling_rate }}
+                            {{ form.selling_rate.errors }}
+                        </div>
+                    {% endif %}
+
                     <div>
                         {{ form.image.label_tag }}
                         {{ form.image }}
@@ -82,7 +90,7 @@
                     {{ form.unit.errors }}
                 </div>
 
-                <div class="col-lg-6 col-sm-12">
+                <div class="col-lg-6 col-sm-12" style="display: none">
                     {{ form.account_no.label_tag }}
                     {{ form.account_no }}
                     {{ form.account_no.errors }}
