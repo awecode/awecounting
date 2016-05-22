@@ -30,7 +30,7 @@ class Node(object):
             for account in self.model.accounts.all():
                 self.add_child(Node(account, parent=self, depth=self.depth + 1))
         if self.type == 'Account':
-            self.dr = self.model.current, 'company_dr or 0'
+            self.dr = self.model.current_dr or 0
             self.cr = self.model.current_cr or 0
             self.url = self.model.get_absolute_url()
         if self.parent:
