@@ -6,6 +6,8 @@ register = template.Library()
 
 from apps.inventory.templatetags.filters import *
 
+
+
 def _setup_macros_dict(parser):
     ## Metadata of each macro are stored in a new attribute
     ## of 'parser' class. That way we can access it later
