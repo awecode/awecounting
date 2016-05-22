@@ -66,6 +66,9 @@
                     </li>
                     <div class="pull-right">
                         {% block breadcrumbs_before_print %}
+                            {% if request.company %}
+                                {% trans 'FY' %}: {{ request.company.fy|fy }}
+                            {% endif %}
                         {% endblock %}
                     </div>
                 {% endblock %}

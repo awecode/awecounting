@@ -152,3 +152,7 @@ def do_usemacro(parser, token):
 def format_search_string(string):
     string = string.replace('/', '')
     return string.strip()
+
+@register.filter
+def fy(year):
+    return str(year)+'-'+str(year+1)[-2:]
