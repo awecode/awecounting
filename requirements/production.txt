@@ -1,2 +1,2 @@
--r requirements.pip
+-r requirements.txt
 gunicorn
