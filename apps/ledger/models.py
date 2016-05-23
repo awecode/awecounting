@@ -116,7 +116,7 @@ class Account(models.Model):
             code = account.code.strip(cat_code + '-')
             if code.isdigit() and int(code) > max:
                 max = int(code)
-        self.code = cat_code + '-' + str(max)
+        self.code = cat_code + '-' + str(max+1)
 
     @property
     def balance(self):
