@@ -335,150 +335,169 @@ from apps.users.signals import company_creation
 def handle_company_creation(sender, **kwargs):
     company = kwargs.get('company')
 
-    # EQUITY
+    # CREATE DEFAULT CATEGORIES AND LEDGERS FOR EQUITY
 
-    equity = Category(name='Equity', company=company)
-    equity.save()
-    Account(name='Paid in Capital', category=equity, code='1-0001', company=company).save()
-    Account(name='Retained Earnings', category=equity, code='1-0002', company=company).save()
-    Account(name='Profit and Loss Account', category=equity, code='1-0003', company=company).save()
+    equity = Category.objects.create(name='Equity', company=company)
+    Account.objects.create(name='Paid in Capital', category=equity, code='1-0001', company=company)
+    Account.objects.create(name='Retained Earnings', category=equity, code='1-0002', company=company)
+    Account.objects.create(name='Profit and Loss Account', category=equity, code='1-0003', company=company)
 
-    # ASSETS
+    # CREATE DEFAULT CATEGORIES AND LEDGERS FOR ASSETS
 
-    assets = Category(name='Assets', company=company)
-    assets.save()
-    Category(name='Other Receivables', parent=assets, company=company).save()
-    Category(name='Deferred Assets', parent=assets, company=company).save()
-    Category(name='Fixed Assets', parent=assets, company=company).save()
-    Category(name='Loads and Advances Given', parent=assets, company=company).save()
-    Category(name='Deposits Made', parent=assets, company=company).save()
-    Category(name='Employee', parent=assets, company=company).save()
+    assets = Category.objects.create(name='Assets', company=company)
+    Category.objects.create(name='Other Receivables', parent=assets, company=company)
+    Category.objects.create(name='Deferred Assets', parent=assets, company=company)
+    Category.objects.create(name='Fixed Assets', parent=assets, company=company)
+    Category.objects.create(name='Loads and Advances Given', parent=assets, company=company)
+    Category.objects.create(name='Deposits Made', parent=assets, company=company)
+    Category.objects.create(name='Employee', parent=assets, company=company)
 
-    cash_account = Category(name='Cash Account', parent=assets, company=company)
-    cash_account.save()
+    cash_account = Category.objects.create(name='Cash Account', parent=assets, company=company)
     Account.objects.create(company=company, name='Cash', category=cash_account, code='2-0001')
+    Account.objects.create(name='Merchandise', category=assets, code='2-0002', company=company)
+    cash_equivalent_account = Category.objects.create(name='Cash Equivalent Account', parent=assets, company=company)
+    Account.objects.create(name='Cheque Account', category=cash_equivalent_account, code='2-0003', company=company)
 
-    Account(name='Merchandise', category=assets, code='2-0002', company=company).save()
-
-    cash_equivalent_account = Category(name='Cash Equivalent Account', parent=assets, company=company)
-    cash_equivalent_account.save()
-    Account(name='Cheque Account', category=cash_equivalent_account, code='2-0003', company=company).save()
-
-    bank_account = Category(name='Bank Account', parent=assets, company=company)
-    bank_account.save()
+    bank_account = Category.objects.create(name='Bank Account', parent=assets, company=company)
     # Account(name='ATM Account', category=bank_account, code='2-0005', company=company).save()
     # Account(name='Bank Account', category=bank_account, code='2-0001', company=company).save()
     # Account(name='Card Account', category=bank_account, code='2-0002', company=company).save()
 
-    account_receivables = Category(name='Account Receivables', parent=assets, company=company)
-    account_receivables.save()
-    Category(name='Customers', parent=account_receivables, company=company).save()
+    account_receivables = Category.objects.create(name='Account Receivables', parent=assets, company=company)
+    Category.objects.create(name='Customers', parent=account_receivables, company=company)
 
-    employee_deductions = Category(name='Employee Deductions', parent=assets, company=company)
-    employee_deductions.save()
-    Account(name='Advances', category=employee_deductions, code='2-0010', company=company).save()
-    Account(name='Loans', category=employee_deductions, code='2-0011', company=company).save()
-    Account(name='Payroll Taxes', category=employee_deductions, code='2-0012', company=company).save()
-    Account(name='Employees\' Contribution to Retirement Fund', category=employee_deductions, code='2-0013',
-            company=company).save()
-    Account(name='Compulsory Deductions', category=employee_deductions, code='2-0014', company=company).save()
+    employee_deductions = Category.objects.create(name='Employee Deductions', parent=assets, company=company)
+    Account.objects.create(name='Advances', category=employee_deductions, code='2-0010', company=company)
+    Account.objects.create(name='Loans', category=employee_deductions, code='2-0011', company=company)
+    Account.objects.create(name='Payroll Taxes', category=employee_deductions, code='2-0012', company=company)
+    Account.objects.create(name='Employees\' Contribution to Retirement Fund', category=employee_deductions, code='2-0013',
+                           company=company)
+    Account.objects.create(name='Compulsory Deductions', category=employee_deductions, code='2-0014', company=company)
 
-    # LIABILITIES
+    # CREATE DEFAULT CATEGORIES AND LEDGERS FOR LIABILITIES
 
-    liabilities = Category(name='Liabilities', company=company)
-    liabilities.save()
-    account_payables = Category(name='Account Payables', parent=liabilities, company=company)
-    account_payables.save()
-    Category(name='Suppliers', parent=account_payables, company=company).save()
-    other_payables = Category(name='Other Payables', parent=liabilities, company=company)
-    other_payables.save()
-    Account(name='Utility Bills Account', category=other_payables, code='3-0002', company=company).save()
-    Category(name='Provisions', parent=liabilities, company=company).save()
-    secured_loans = Category(name='Secured Loans', parent=liabilities, company=company)
-    secured_loans.save()
-    Account(name='Bank OD', category=secured_loans, code='3-0005', company=company).save()
-    Account(name='Bank Loans', category=secured_loans, code='3-0006', company=company).save()
-    Category(name='Unsecured Loans', parent=liabilities, company=company).save()
-    Category(name='Deposits Taken', parent=liabilities, company=company).save()
-    Category(name='Loans & Advances Taken', parent=liabilities, company=company).save()
-    duties_and_taxes = Category(name='Duties & Taxes', parent=liabilities, company=company)
-    duties_and_taxes.save()
-    Account(name='Sales Tax', category=duties_and_taxes, code='3-0010', company=company).save()
-    Account(name='Payroll Tax', category=duties_and_taxes, code='3-0011', company=company).save()
-    Account(name='Income Tax', category=duties_and_taxes, code='3-0012', company=company).save()
+    liabilities = Category.objects.create(name='Liabilities', company=company)
+    account_payables = Category.objects.create(name='Account Payables', parent=liabilities, company=company)
+    Category.objects.create(name='Suppliers', parent=account_payables, company=company)
+    other_payables = Category.objects.create(name='Other Payables', parent=liabilities, company=company)
+    Account.objects.create(name='Utility Bills Account', category=other_payables, code='3-0002', company=company)
+    Category.objects.create(name='Provisions', parent=liabilities, company=company)
+    secured_loans = Category.objects.create(name='Secured Loans', parent=liabilities, company=company)
+    Account.objects.create(name='Bank OD', category=secured_loans, code='3-0005', company=company)
+    Account.objects.create(name='Bank Loans', category=secured_loans, code='3-0006', company=company)
+    Category.objects.create(name='Unsecured Loans', parent=liabilities, company=company)
+    Category.objects.create(name='Deposits Taken', parent=liabilities, company=company)
+    Category.objects.create(name='Loans & Advances Taken', parent=liabilities, company=company)
+    duties_and_taxes = Category.objects.create(name='Duties & Taxes', parent=liabilities, company=company)
+    Account.objects.create(name='Sales Tax', category=duties_and_taxes, code='3-0010', company=company)
+    Account.objects.create(name='Payroll Tax', category=duties_and_taxes, code='3-0011', company=company)
+    Account.objects.create(name='Income Tax', category=duties_and_taxes, code='3-0012', company=company)
     # Account(name='VAT', category=duties_and_taxes, code='3-0020', company=company).save()
 
-    # INCOME
+    # CREATE DEFAULT CATEGORIES FOR INCOME
 
-    income = Category(name='Income', company=company)
-    income.save()
-    Account(name='Discount Income', category=income, code='4-0012', company=company).save()
-    sales = Category(name='Sales', parent=income, company=company)
-    sales.save()
-
-    Account(name='Non Tax Sales', category=sales, code='4-0006', company=company).save()
-    Account(name='Sales', category=sales, tax_rate=8.25, code='4-0008', company=company).save()
-
-    direct_income = Category(name='Direct Income', parent=income, company=company)
-    direct_income.save()
-    transfer_remittance = Category(name='Transfer and Remittance', parent=direct_income, company=company)
-    transfer_remittance.save()
-    Account(name='Bill Payments', category=transfer_remittance, code='4-0011', company=company).save()
-
-    indirect_income = Category(name='Indirect Income', parent=income, company=company)
-    indirect_income.save()
-    Account(name='Commission In', category=indirect_income, code='6-0001', company=company).save()
+    income = Category.objects.create(name='Income', company=company)
+    Category.objects.create(name='Sales', parent=income, company=company)
+    direct_income = Category.objects.create(name='Direct Income', parent=income, company=company)
+    Category.objects.create(name='Transfer and Remittance', parent=direct_income, company=company)
+    Category.objects.create(name='Indirect Income', parent=income, company=company)
 
     # EXPENSES
 
-    expenses = Category(name='Expenses', company=company)
-    expenses.save()
-    purchase = Category(name='Purchase', parent=expenses, company=company)
-    purchase.save()
-    Account(name='Purchase', category=purchase, code='11-0008', company=company).save()
+    expenses = Category.objects.create(name='Expenses', company=company)
+    purchase = Category.objects.create(name='Purchase', parent=expenses, company=company)
+    Account.objects.create(name='Purchase', category=purchase, code='11-0008', company=company)
 
     direct_expenses = Category.objects.create(name='Direct Expenses', parent=expenses, company=company)
-    Account.objects.create(name='Wages', category=direct_expenses, code='13-0001', company=company).save()
+    Account.objects.create(name='Wages', category=direct_expenses, code='13-0001', company=company)
 
-    indirect_expenses = Category(name='Indirect Expenses', parent=expenses, company=company)
-    indirect_expenses.save()
-    Account(name='Payroll Expenses', category=indirect_expenses, code='13-0001', company=company).save()
-    Account(name='Rent Expenses', category=indirect_expenses, code='13-0002', company=company).save()
-    Account(name='Commission Out', category=indirect_expenses, code='13-0003', company=company).save()
-    Account(name='Bank Charges Expenses', category=indirect_expenses, code='13-0004', company=company).save()
-    Account(name='Bank Interest Expenses', category=indirect_expenses, code='13-0005', company=company).save()
-    Account(name='Electricity Expenses', category=indirect_expenses, code='13-0006', company=company).save()
-    Account(name='Telecommunication Expenses', category=indirect_expenses, code='13-0007', company=company).save()
+    indirect_expenses = Category.objects.create(name='Indirect Expenses', parent=expenses, company=company)
+    Account.objects.create(name='Payroll Expenses', category=indirect_expenses, code='13-0001', company=company)
+    Account.objects.create(name='Rent Expenses', category=indirect_expenses, code='13-0002', company=company).save()
+    Account.objects.create(name='Commission Out', category=indirect_expenses, code='13-0003', company=company).save()
+    Account.objects.create(name='Bank Charges Expenses', category=indirect_expenses, code='13-0004', company=company).save()
+    Account.objects.create(name='Bank Interest Expenses', category=indirect_expenses, code='13-0005', company=company).save()
+    Account.objects.create(name='Electricity Expenses', category=indirect_expenses, code='13-0006', company=company).save()
+    Account.objects.create(name='Telecommunication Expenses', category=indirect_expenses, code='13-0007', company=company).save()
 
-    Account(name='Travelling and Conveyance Expenses', category=indirect_expenses, code='13-0008',
+    Account.objects.create(name='Travelling and Conveyance Expenses', category=indirect_expenses, code='13-0008',
             company=company).save()
-    Account(name='Lunch and Refreshment Expenses', category=indirect_expenses, code='13-0009', company=company).save()
-    Account(name='Cleaning Expenses', category=indirect_expenses, code='13-0010', company=company).save()
-    Account(name='Discount Expenses', category=indirect_expenses, code='13-0011', company=company).save()
-    Account(name='Repairs and Maintenance Expenses', category=indirect_expenses, code='13-0012', company=company).save()
-    Account(name='Drainage/Garbage Collection Expenses', category=indirect_expenses, code='13-0013', company=company).save()
-    Account(name='Water Supply Expenses', category=indirect_expenses, code='13-0014', company=company).save()
-    Account(name='City/Municipal Expenses', category=indirect_expenses, code='13-0015', company=company).save()
+    Account.objects.create(name='Lunch and Refreshment Expenses', category=indirect_expenses, code='13-0009', company=company).save()
+    Account.objects.create(name='Cleaning Expenses', category=indirect_expenses, code='13-0010', company=company)
+    Account.objects.create(name='Discount Expenses', category=indirect_expenses, code='13-0011', company=company)
+    Account.objects.create(name='Repairs and Maintenance Expenses', category=indirect_expenses, code='13-0012', company=company)
+    Account.objects.create(name='Drainage/Garbage Collection Expenses', category=indirect_expenses, code='13-0013', company=company)
+    Account.objects.create(name='Water Supply Expenses', category=indirect_expenses, code='13-0014', company=company)
+    Account.objects.create(name='City/Municipal Expenses', category=indirect_expenses, code='13-0015', company=company)
 
-    pay_head = Category(name='Pay Head', parent=indirect_expenses, company=company)
-    pay_head.save()
-    Account(name='Salary', category=pay_head, code='13-0013', company=company).save()
-    Account(name='Allowances', category=pay_head, code='13-0014', company=company).save()
-    Account(name='Benefits', category=pay_head, code='13-0015', company=company).save()
-    Account(name='Employees\' Insurance', category=pay_head, code='13-0016', company=company).save()
-    Account(name='Travelling Allowance', category=pay_head, code='13-0017', company=company).save()
-    Account(name='Daily Allowance', category=pay_head, code='13-0018', company=company).save()
+    pay_head = Category.objects.create(name='Pay Head', parent=indirect_expenses, company=company)
+    Account.objects.create(name='Salary', category=pay_head, code='13-0013', company=company)
+    Account.objects.create(name='Allowances', category=pay_head, code='13-0014', company=company)
+    Account.objects.create(name='Benefits', category=pay_head, code='13-0015', company=company)
+    Account.objects.create(name='Employees\' Insurance', category=pay_head, code='13-0016', company=company)
+    Account.objects.create(name='Travelling Allowance', category=pay_head, code='13-0017', company=company)
+    Account.objects.create(name='Daily Allowance', category=pay_head, code='13-0018', company=company)
 
     # Opening Balance Difference
 
-    opening_balance_difference = Category(name='Opening Balance Difference', company=company)
-    opening_balance_difference.save()
-    Account(name='Opening Balance Difference', category=opening_balance_difference, company=company,
-            code='0-0001').save()
+    opening_balance_difference = Category.objects.create(name='Opening Balance Difference', company=company)
+    Account.objects.create(name='Opening Balance Difference', category=opening_balance_difference, company=company,
+            code='0-0001')
 
+
+def handle_fy_creation(sender, **kwargs):
+    company = kwargs.get('company')
+    fy = kwargs.get('fy')
+    
+    # CREATE DEFAULT LEDGERS FOR INCOME FOR THE FY
+
+    income = Category.objects.get(name='Income', company=company)
+    sales = Category.objects.get(name='Sales', parent=income, company=company)
+    Account.objects.create(name='Discount Income', category=income, code='4-0012', company=company, fy=fy)
+    Account.objects.create(name='Non-tax Sales', category=sales, code='4-0006', company=company, fy=fy)
+    Account.objects.create(name='Sales', category=sales, tax_rate=8.25, code='4-0008', company=company, fy=fy)
+    direct_income = Category.objects.get(name='Direct Income', parent=income, company=company)
+    transfer_remittance = Category.objects.get(name='Transfer and Remittance', parent=direct_income, company=company)
+    Account.objects.create(name='Bill Payments', category=transfer_remittance, code='4-0011', company=company, fy=fy)
+    indirect_income = Category.objects.get(name='Indirect Income', parent=income, company=company)
+    Account.objects.create(name='Commission In', category=indirect_income, code='6-0001', company=company, fy=fy)
+
+    # CREATE DEFAULT LEDGERS FOR INCOME FOR THE FY
+
+    expenses = Category.objects.get(name='Expenses', company=company)
+    purchase = Category.objects.get(name='Purchase', parent=expenses, company=company)
+    Account.objects.create(name='Purchases', category=purchase, code='11-0008', company=company, fy=fy)
+
+    direct_expenses = Category.objects.get(name='Direct Expenses', parent=expenses, company=company)
+    Account.objects.create(name='Wages', category=direct_expenses, code='13-0001', company=company, fy=fy)
+
+    indirect_expenses = Category.objects.get(name='Indirect Expenses', parent=expenses, company=company)
+    Account.objects.create(name='Payroll Expenses', category=indirect_expenses, code='13-0001', company=company, fy=fy)
+    Account.objects.create(name='Rent Expenses', category=indirect_expenses, code='13-0002', company=company, fy=fy)
+    Account.objects.create(name='Commission Out', category=indirect_expenses, code='13-0003', company=company, fy=fy)
+    Account.objects.create(name='Bank Charges Expenses', category=indirect_expenses, code='13-0004', company=company, fy=fy)
+    Account.objects.create(name='Bank Interest Expenses', category=indirect_expenses, code='13-0005', company=company, fy=fy)
+    Account.objects.create(name='Electricity Expenses', category=indirect_expenses, code='13-0006', company=company, fy=fy)
+    Account.objects.create(name='Telecommunication Expenses', category=indirect_expenses, code='13-0007', company=company, fy=fy)
+    Account.objects.create(name='Travelling and Conveyance Expenses', category=indirect_expenses, code='13-0008',
+            company=company, fy=fy)
+    Account.objects.create(name='Lunch and Refreshment Expenses', category=indirect_expenses, code='13-0009', company=company, fy=fy)
+    Account.objects.create(name='Cleaning Expenses', category=indirect_expenses, code='13-0010', company=company, fy=fy)
+    Account.objects.create(name='Discount Expenses', category=indirect_expenses, code='13-0011', company=company, fy=fy)
+    Account.objects.create(name='Repairs and Maintenance Expenses', category=indirect_expenses, code='13-0012', company=company, fy=fy)
+    Account.objects.create(name='Drainage/Garbage Collection Expenses', category=indirect_expenses, code='13-0013', company=company, fy=fy)
+    Account.objects.create(name='Water Supply Expenses', category=indirect_expenses, code='13-0014', company=company, fy=fy)
+    Account.objects.create(name='City/Municipal Expenses', category=indirect_expenses, code='13-0015', company=company, fy=fy)
+
+    pay_head = Category.objects.get(name='Pay Head', parent=indirect_expenses, company=company)
+    Account.objects.create(name='Salary', category=pay_head, code='13-0013', company=company, fy=fy)
+    Account.objects.create(name='Allowances', category=pay_head, code='13-0014', company=company, fy=fy)
+    Account.objects.create(name='Benefits', category=pay_head, code='13-0015', company=company, fy=fy)
+    Account.objects.create(name='Employees\' Insurance', category=pay_head, code='13-0016', company=company, fy=fy)
+    Account.objects.create(name='Travelling Allowance', category=pay_head, code='13-0017', company=company, fy=fy)
+    Account.objects.create(name='Daily Allowance', category=pay_head, code='13-0018', company=company, fy=fy)
 
 company_creation.connect(handle_company_creation)
-
 
 class Party(models.Model):
     name = models.CharField(max_length=254)
