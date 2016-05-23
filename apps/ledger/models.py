@@ -110,13 +110,14 @@ class Account(models.Model):
     #
 
     def suggest_code(self):
-        cat_code = self.category.code
-        max = 0
-        for account in self.category.accounts.all():
-            code = account.code.strip(cat_code + '-')
-            if code.isdigit() and int(code) > max:
-                max = int(code)
-        self.code = cat_code + '-' + str(max+1)
+        if self.category:
+            cat_code = self.category.code
+            max = 0
+            for account in self.category.accounts.all():
+                code = account.code.strip(cat_code + '-')
+                if code.isdigit() and int(code) > max:
+                    max = int(code)
+            self.code = cat_code + '-' + str(max+1)
 
     @property
     def balance(self):
@@ -358,6 +359,7 @@ def handle_company_creation(sender, **kwargs):
 
     assets = Category.objects.create(name='Assets', code='A', company=company)
     Category.objects.create(name='Other Receivables', code='A-OR', parent=assets, company=company)
+    Category.objects.create(name='Tax Receivables', code='A-TR', parent=assets, company=company)
     Category.objects.create(name='Deferred Assets', code='A-DA', parent=assets, company=company)
     Category.objects.create(name='Fixed Assets', code='A-FA', parent=assets, company=company)
     Category.objects.create(name='Loads and Advances Given', code='A-L', parent=assets, company=company)
