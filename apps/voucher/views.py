@@ -221,7 +221,7 @@ def save_cash_payment(request):
             obj.amount = params.get('amount')
         set_ledger_transactions(obj, obj.date,
                                 ['cr', cash_account, obj.amount],
-                                ['dr', obj.party.supplier_ledger, obj.amount]
+                                ['dr', obj.party.supplier_account, obj.amount]
                                 )
         # obj.status = 'Unapproved'
         obj.save()
@@ -340,7 +340,7 @@ def save_cash_receipt(request):
             obj.amount = params.get('amount')
         set_ledger_transactions(obj, obj.date,
                                 ['dr', cash_account, obj.amount],
-                                ['cr', obj.party.customer_ledger, obj.amount]
+                                ['cr', obj.party.customer_account, obj.amount]
                                 )
         # obj.status = 'Unapproved'
         obj.save()
@@ -416,7 +416,7 @@ def save_purchase(request):
                                  )
                 if obj.credit:
                     set_ledger_transactions(submodel, obj.date,
-                                            ['cr', obj.party.supplier_ledger, obj.total],
+                                            ['cr', obj.party.supplier_account, obj.total],
                                             ['dr', submodel.item.purchase_ledger, obj.total],
                                             # ['cr', sales_tax_account, tax_amount],
                                             )
@@ -528,7 +528,7 @@ def save_sale(request):
                                  )
                 if obj.credit:
                     set_ledger_transactions(submodel, obj.date,
-                                            ['dr', obj.party.customer_ledger, obj.total],
+                                            ['dr', obj.party.customer_account, obj.total],
                                             ['dr', submodel.item.sale_ledger, obj.total],
                                             # ['cr', sales_tax_account, tax_amount],
                                             )

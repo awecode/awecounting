@@ -205,7 +205,7 @@ def group_required(group_name):
     def _check_group(view_func):
         @wraps(view_func)
         def wrapper(request, *args, **kwargs):
-            if request.user.is_authenticated():
+            if request.user.is_authenticated() and request.role:
                 if request.role.group.name in USURPERS.get(group_name, []):
                     return view_func(request, *args, **kwargs)
             raise PermissionDenied()

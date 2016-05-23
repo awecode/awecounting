@@ -108,6 +108,16 @@ class Account(models.Model):
     #     if len(transactions) > 0:
     #         return transactions[0]
     #
+
+    def suggest_code(self):
+        cat_code = self.category.code
+        max = 0
+        for account in self.category.accounts.all():
+            code = account.code.strip(cat_code + '-')
+            if code.isdigit() and int(code) > max:
+                max = int(code)
+        self.code = cat_code + '-' + str(max)
+
     @property
     def balance(self):
         return self.get_balance()
@@ -462,7 +472,8 @@ def handle_fy_creation(sender, **kwargs):
                            company=company, fy=fy)
     Account.objects.create(name='Cleaning Expenses', category=indirect_expenses, code='E-IE-C', company=company, fy=fy)
     Account.objects.create(name='Discount Expenses', category=indirect_expenses, code='E-IE-D', company=company, fy=fy)
-    Account.objects.create(name='Repairs and Maintenance Expenses', category=indirect_expenses, code='E-IE-R&M', company=company, fy=fy)
+    Account.objects.create(name='Repairs and Maintenance Expenses', category=indirect_expenses, code='E-IE-R&M', company=company,
+                           fy=fy)
     Account.objects.create(name='Drainage/Garbage Collection Expenses', category=indirect_expenses, code='E-IE-D&G',
                            company=company, fy=fy)
     Account.objects.create(name='Water Supply Expenses', category=indirect_expenses, code='E-IE-W', company=company, fy=fy)
@@ -488,8 +499,8 @@ class Party(models.Model):
     account = models.ForeignKey(Account, null=True)
     TYPES = [('Customer', 'Customer'), ('Supplier', 'Supplier'), ('Customer/Supplier', 'Customer/Supplier')]
     type = models.CharField(choices=TYPES, max_length=17, default='Customer/Supplier')
-    supplier_ledger = models.OneToOneField(Account, null=True, related_name='supplier_detail')
-    customer_ledger = models.OneToOneField(Account, null=True, related_name='customer_detail')
+    supplier_account = models.OneToOneField(Account, null=True, related_name='supplier_detail')
+    customer_account = models.OneToOneField(Account, null=True, related_name='customer_detail')
     company = models.ForeignKey(Company, related_name='parties')
     related_company = models.OneToOneField(Company, blank=True, null=True, related_name='related_party')
 
@@ -498,9 +509,9 @@ class Party(models.Model):
 
     @property
     def balance(self):
-        return zero_for_none(self.customer_ledger.current_dr) - zero_for_none(
-            self.customer_ledger.current_cr) + zero_for_none(
-            self.supplier_ledger.current_cr) - zero_for_none(self.supplier_ledger.current_dr)
+        return zero_for_none(self.customer_account.current_dr) - zero_for_none(
+            self.customer_account.current_cr) + zero_for_none(
+            self.supplier_account.current_cr) - zero_for_none(self.supplier_account.current_dr)
 
     def save(self, *args, **kwargs):
         self.post = kwargs.pop('post', True)
@@ -510,40 +521,40 @@ class Party(models.Model):
             self.post_save()
 
     def post_save(self):
-        ledger = Account(name=self.name)
-        ledger.company = self.company
+        account = Account(name=self.name)
+        account.company = self.company
         if self.type == 'Customer':
-            if not self.customer_ledger:
-                ledger.category = Category.objects.get(name='Customers', company=self.company)
-                ledger.code = 'C-' + str(self.id)
-                ledger.save()
-                self.customer_ledger = ledger
-            if self.supplier_ledger:
-                self.supplier_ledger.delete()
-                self.supplier_ledger = None
+            if not self.customer_account:
+                account.category = Category.objects.get(name='Customers', company=self.company)
+                account.code = 'C-' + str(self.id)
+                account.save()
+                self.customer_account = account
+            if self.supplier_account:
+                self.supplier_account.delete()
+                self.supplier_account = None
         elif self.type == 'Supplier':
-            if not self.supplier_ledger:
-                ledger.category = Category.objects.get(name='Suppliers', company=self.company)
-                ledger.code = 'S-' + str(self.id)
-                ledger.save()
-                self.supplier_ledger = ledger
-            if self.customer_ledger:
-                self.customer_ledger.delete()
-                self.customer_ledger = None
+            if not self.supplier_account:
+                account.category = Category.objects.get(name='Suppliers', company=self.company)
+                account.code = 'S-' + str(self.id)
+                account.save()
+                self.supplier_account = account
+            if self.customer_account:
+                self.customer_account.delete()
+                self.customer_account = None
         else:
-            if not self.customer_ledger:
-                ledger.name += ' (Receivable)'
-                ledger.category = Category.objects.get(name='Customers', company=self.company)
-                ledger.code = 'C-' + str(self.id)
-                ledger.save()
-                self.customer_ledger = ledger
-            if not self.supplier_ledger:
-                ledger2 = Account(name=self.name + ' (Payable)')
-                ledger2.company = self.company
-                ledger2.category = Category.objects.get(name='Suppliers', company=self.company)
-                ledger2.code = 'S-' + str(self.id)
-                ledger2.save()
-                self.supplier_ledger = ledger2
+            if not self.customer_account:
+                account.name += ' (Receivable)'
+                account.category = Category.objects.get(name='Customers', company=self.company)
+                account.suggest_code()
+                account.save()
+                self.customer_account = account
+            if not self.supplier_account:
+                account2 = Account(name=self.name + ' (Payable)')
+                account2.company = self.company
+                account2.category = Category.objects.get(name='Suppliers', company=self.company)
+                account2.suggest_code()
+                account2.save()
+                self.supplier_account = account2
         self.save(post=False)
 
     def __unicode__(self):
