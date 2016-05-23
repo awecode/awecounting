@@ -573,9 +573,11 @@ class Party(models.Model):
         # pass
 
 
-def get_ledger(company, name):
-    if not company.__class__.__name__ == 'Company':
-        company = company.company
+def get_account(request_or_company, name):
+    if not request_or_company.__class__.__name__ == 'Company':
+        company = request_or_company.company
+    else:
+        company = request_or_company
     if name in ['Purchase', 'Purchases']:
         return Account.objects.get(name='Purchase', category__name='Purchase', company=company)
     if name in ['Cash', 'Cash Account']:

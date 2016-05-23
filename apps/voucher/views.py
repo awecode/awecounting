@@ -10,7 +10,7 @@ from django.views.generic.detail import DetailView
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, StaffMixin, \
     group_required, TableObjectMixin, UpdateView, CompanyRequiredMixin, CreateView, TableObject
 from ..inventory.models import set_transactions
-from ..ledger.models import set_transactions as set_ledger_transactions, get_ledger
+from ..ledger.models import set_transactions as set_ledger_transactions, get_account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
 from .forms import JournalVoucherForm, VoucherSettingForm, CashPaymentForm, CashReceiptForm
 from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
@@ -192,7 +192,7 @@ def save_cash_payment(request):
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = CashPaymentRow
-        cash_account = get_ledger(request, 'Cash')
+        cash_account = get_account(request, 'Cash')
         if params.get('table_vm').get('rows'):
             total = 0
             for index, row in enumerate(params.get('table_vm').get('rows')):
@@ -311,7 +311,7 @@ def save_cash_receipt(request):
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = CashReceiptRow
-        cash_account = get_ledger(request, 'Cash')
+        cash_account = get_account(request, 'Cash')
         if params.get('table_vm').get('rows'):
             total = 0
             for index, row in enumerate(params.get('table_vm').get('rows')):
@@ -385,6 +385,8 @@ def save_purchase(request):
         dct['tax_scheme_id'] = obj.tax_scheme_id
         model = PurchaseVoucherRow
         grand_total = 0
+        if not obj.credit:
+            cash_account = get_account(request, 'Cash')
         for ind, row in enumerate(params.get('table_view').get('rows')):
             if invalid(row, ['item_id', 'quantity', 'unit_id']):
                 continue
@@ -423,8 +425,7 @@ def save_purchase(request):
                 else:
                     set_ledger_transactions(submodel, obj.date,
                                             ['dr', submodel.item.purchase_ledger, obj.total],
-                                            ['cr', get_ledger(request, 'Cash'),
-                                             obj.total],
+                                            ['cr', cash_account, obj.total],
                                             # ['cr', sales_tax_account, tax_amount],
                                             )
 
@@ -500,6 +501,8 @@ def save_sale(request):
         dct['tax_scheme_id'] = obj.tax_scheme_id
         model = SaleRow
         grand_total = 0
+        if not obj.credit:
+            cash_account = get_account(request, 'Cash')
         for ind, row in enumerate(params.get('table_view').get('rows')):
             invalid_check = invalid(row, ['item_id', 'quantity', 'unit_id'])
             if invalid_check:
@@ -534,7 +537,7 @@ def save_sale(request):
                                             )
                 else:
                     set_ledger_transactions(submodel, obj.date,
-                                            ['dr', get_ledger(request, 'Cash'), obj.total],
+                                            ['dr', cash_account, obj.total],
                                             ['dr', submodel.item.sale_ledger, obj.total],
                                             # ['cr', sales_tax_account, tax_amount],
                                             )
