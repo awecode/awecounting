@@ -151,7 +151,7 @@ function PurchaseViewModel(data) {
         return round2(sum);
     }
 
-    self.discount = function () {
+    self.total_discount = function () {
         var sum = 0;
         self.table_view.rows().forEach(function (i) {
             if (String(i.discount()).indexOf('%') !== -1) {
@@ -165,14 +165,30 @@ function PurchaseViewModel(data) {
         return r2z(round2(sum));
     }
 
+    self.taxable_amount = ko.computed(function () {
+        var amt = 0;
+        ko.utils.arrayForEach(self.table_view.rows(), function (row) {
+            amt += row.total_without_tax();
+        });
+        if (self.voucher_discount()) {
+            amt -= parseFloat(self.voucher_discount());
+        }
+        return r2z(amt);
+    });
+
 
     self.tax_amount = function () {
+        if (self.tax() == 'no') {
+            return 0;
+        }
+        if (self.tax_scheme()) {
+            return r2z(self.sub_total() * self.tax_scheme().percent / 100);
+        }
         var total = 0;
         ko.utils.arrayForEach(self.table_view.rows(), function (row) {
             total += row.tax_amount();
         });
-        return total;
-
+        return r2z(total);
     }
 
     self.total_amount = 0;
@@ -302,27 +318,35 @@ function PurchaseRow(row, purchase_vm) {
 
     });
 
-    self.tax_amount = ko.computed(function () {
-        if (purchase_vm.tax() == 'no') {
-            return 0;
+    
+
+    self.total = ko.computed(function () {
+        if (purchase_vm.tax() == 'no' || purchase_vm.tax_scheme()) {
+            return r2z(parseFloat(self.quantity()) * parseFloat(self.rate()) - parseFloat(self.discount()));
         }
         else if (purchase_vm.tax() == 'exclusive') {
-            return r2z(parseFloat(self.quantity()) * parseFloat(self.rate()) * self.tax_percent() / 100);
+            return r2z(parseFloat((self.quantity()) * parseFloat(self.rate()) - parseFloat(self.discount())) * (1 + self.tax_percent() / 100));
         }
         else if (purchase_vm.tax() == 'inclusive') {
-            return r2z(parseFloat(self.quantity()) * parseFloat(self.rate()) * self.tax_percent() / (100 + self.tax_percent()));
+            return r2z(parseFloat(self.quantity()) * parseFloat(self.rate()) - parseFloat(self.discount()));
         }
     });
 
-    self.total = ko.computed(function () {
-        if (purchase_vm.tax() == 'no') {
-            return r2z(parseFloat(self.quantity()) * parseFloat(self.rate()));
-        }
-        else if (purchase_vm.tax() == 'exclusive') {
-            return r2z(parseFloat(self.quantity()) * parseFloat(self.rate()) * (1 + self.tax_percent() / 100));
+    self.total_without_tax = ko.computed(function () {
+        if (purchase_vm.tax() == 'no' || purchase_vm.tax() == 'exclusive') {
+            return r2z(parseFloat(self.quantity()) * parseFloat(self.rate()) - parseFloat(self.discount()));
         }
         else if (purchase_vm.tax() == 'inclusive') {
-            return r2z(parseFloat(self.quantity()) * parseFloat(self.rate()));
+            return r2z((100 / (100 + self.tax_percent())) * (parseFloat(self.quantity()) * parseFloat(self.rate()) - parseFloat(self.discount())));
+        }
+    });
+    
+    self.tax_amount = ko.computed(function () {
+        if (purchase_vm.tax() == 'no' || purchase_vm.tax_scheme()) {
+            return 0;
+        }
+        else{
+            return self.tax_percent() * self.total_without_tax() /100;
         }
     });
 
