@@ -385,6 +385,10 @@ def save_purchase(request):
         dct['tax_scheme_id'] = obj.tax_scheme_id
         model = PurchaseVoucherRow
         grand_total = 0
+        
+        # if params.get('tax_vm').get('tax') == 'no':
+        #     common_tax = True
+        #     tax_scheme = None
         if not obj.credit:
             cash_account = get_account(request, 'Cash')
         for ind, row in enumerate(params.get('table_view').get('rows')):

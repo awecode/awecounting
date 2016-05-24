@@ -34,28 +34,29 @@ class CashPaymentSerializer(serializers.ModelSerializer):
 
 
 class PurchaseVoucherRowSerializer(serializers.ModelSerializer):
-    item_id = serializers.ReadOnlyField(source='item.id')
-    unit_id = serializers.ReadOnlyField(source='unit.id')
+    item_id = serializers.ReadOnlyField()
+    unit_id = serializers.ReadOnlyField()
+    tax_scheme_id = serializers.ReadOnlyField()
 
     class Meta:
         model = PurchaseVoucherRow
-        exclude = ['item', 'unit']
+        exclude = ['item', 'unit', 'tax_scheme']
 
 
 class PurchaseVoucherSerializer(serializers.ModelSerializer):
     rows = PurchaseVoucherRowSerializer(many=True)
     date = serializers.DateField(format=None)
-
+    tax_scheme_id = serializers.ReadOnlyField()
     party_id = serializers.ReadOnlyField()
 
     class Meta:
         model = PurchaseVoucher
-        exclude = ['party']
+        exclude = ['party', 'tax_scheme']
 
 
 class PurchaseOrderRowSerializer(serializers.ModelSerializer):
-    item_id = serializers.ReadOnlyField(source='item.id')
-    unit_id = serializers.ReadOnlyField(source='unit.id')
+    item_id = serializers.ReadOnlyField()
+    unit_id = serializers.ReadOnlyField()
 
     class Meta:
         model = PurchaseOrderRow
@@ -65,7 +66,7 @@ class PurchaseOrderRowSerializer(serializers.ModelSerializer):
 class PurchaseOrderSerializer(serializers.ModelSerializer):
     rows = PurchaseOrderRowSerializer(many=True)
     date = serializers.DateField(format=None)
-    purchase_agent_id = serializers.ReadOnlyField(source='purchase_agent.id')
+    purchase_agent_id = serializers.ReadOnlyField()
     party_id = serializers.ReadOnlyField()
     agents = serializers.SerializerMethodField()
 
