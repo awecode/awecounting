@@ -581,4 +581,4 @@ def get_account(request_or_company, name):
     if name in ['Purchase', 'Purchases']:
         return Account.objects.get(name='Purchase', category__name='Purchase', company=company)
     if name in ['Cash', 'Cash Account']:
-        return Account.objects.get(name='Cash', category__name='Cash Account', company=company)
+        return Account.objects.get(name='Cash', category__name='Cash Accounts', company=company)

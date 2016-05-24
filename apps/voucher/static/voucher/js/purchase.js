@@ -203,26 +203,23 @@ function PurchaseViewModel(data) {
             return false;
         }
 
-        var check_discount
+        var check_discount;
         self.table_view.rows().forEach(function (i) {
-            discount_as_string = String(i.discount());
+            var discount_as_string = String(i.discount());
             if (discount_as_string.indexOf('%') !== -1) {
                 if (typeof(discount_as_string[discount_as_string.indexOf('%') + 1]) != 'undefined') {
-                    bsalert.error("Discount '%' not in correct order");
+                    bsalert.error("Invalid format for discount %");
                     check_discount = true;
-                }
-                ;
-            }
-            ;
+                };
+            };
         });
 
         if (check_discount) {
             return false;
-        }
-        ;
+        };
 
         if (String(self.voucher_discount()).indexOf('%') !== -1) {
-            bsalert.error("Discount '%' not in correct order");
+            bsalert.error("Invalid format for discount %");
             return false;
         }
         ;
@@ -244,16 +241,6 @@ function PurchaseViewModel(data) {
                     $("tbody > tr").each(function (i) {
                         $($("tbody > tr:not(.total)")[i]).addClass('invalid-row');
                     });
-                    if (msg.tax == 'no') {
-                        for (var i in msg.rows) {
-                            self.table_view.rows()[i].row_tax_vm.tax_scheme(0);
-                        }
-                    }
-                    if (msg.tax_scheme_id != "" && msg.tax_scheme_id != null) {
-                        for (var i in msg.rows) {
-                            self.table_view.rows()[i].row_tax_vm.tax_scheme(0);
-                        }
-                    }
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];
                         $($("tbody > tr")[i]).removeClass('invalid-row');

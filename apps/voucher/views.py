@@ -354,24 +354,16 @@ def save_purchase(request):
     if request.is_ajax():
         params = json.loads(request.body)
     dct = {'rows': {}, 'tax': {}}
-    if params.get('voucher_no') == '':
-        params['voucher_no'] = None
 
-    if params.get('tax_vm').get('tax'):
-        tax = params.get('tax_vm').get('tax')
-
-    if params.get('tax_vm').get('tax') == 'no':
-        tax_scheme_id = None
-    else:
-        tax_scheme_id = params.get('tax_vm').get('tax_scheme')
     # if not request.company.settings.discount_on_voucher:
     #     voucher_discount = None
     # else:
     #     voucher_discount = params.get('voucher_discount')
-    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
+    object_values = {'voucher_no': empty_to_none(params.get('voucher_no')), 'date': params.get('date'),
                      'party_id': params.get('party_id'), 'due_date': params.get('due_date'),
                      'discount': params.get('voucher_discount'),
-                     'credit': params.get('credit'), 'tax': tax, 'tax_scheme_id': empty_to_none(tax_scheme_id),
+                     'credit': params.get('credit'), 'tax': params.get('tax'),
+                     'tax_scheme_id': empty_to_none(params.get('tax_scheme_id')),
                      'company': request.company}
 
     if params.get('id'):
@@ -381,11 +373,9 @@ def save_purchase(request):
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
-        dct['tax'] = obj.tax
-        dct['tax_scheme_id'] = obj.tax_scheme_id
         model = PurchaseVoucherRow
         grand_total = 0
-        
+
         # if params.get('tax_vm').get('tax') == 'no':
         #     common_tax = True
         #     tax_scheme = None
@@ -395,15 +385,10 @@ def save_purchase(request):
             if invalid(row, ['item_id', 'quantity', 'unit_id']):
                 continue
             else:
-                if params.get('tax_vm').get('tax') == 'no':
+                if params.get('tax') == 'no' or params.get('tax_scheme_id'):
                     row_tax_scheme_id = None
-                    row.get('row_tax_vm')['tax'] = 'no'
                 else:
-                    row_tax_scheme_id = row.get('row_tax_vm').get('tax_scheme')
-                if params.get('tax_vm').get('tax_scheme') != '0' and params.get('tax_vm').get('tax_scheme') != '':
-                    row_tax_scheme_id = None
-                    row.get('row_tax_vm')['tax'] = 'no'
-
+                    row_tax_scheme_id = row.get('tax_scheme_id')
                 # if request.company.settings.discount_on_voucher:
                 #     discount = None
                 # else:
@@ -437,6 +422,7 @@ def save_purchase(request):
 
         obj.total_amount = grand_total
         if obj.credit:
+            # TODO when pending amount exists
             obj.pending_amount = grand_total
         obj.save()
     except Exception as e:

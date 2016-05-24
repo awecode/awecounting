@@ -44,8 +44,8 @@ class PurchaseVoucher(models.Model):
     def clean(self):
         if self.company.settings.unique_voucher_number:
             if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).filter(
-                    date__gte=self.company.settings.get_fy_start(self.date),
-                    date__lte=self.company.settings.get_fy_end(self.date)).exclude(pk=self.pk):
+                    date__gte=self.company.get_fy_start(self.date),
+                    date__lte=self.company.get_fy_end(self.date)).exclude(pk=self.pk):
                 raise ValidationError(_('Voucher no. already exists for the fiscal year!'))
 
     def __init__(self, *args, **kwargs):
