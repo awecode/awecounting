@@ -194,7 +194,7 @@ function PurchaseViewModel(data) {
     self.total_amount = 0;
 
     self.grand_total = function () {
-        return 0;
+        return r2z(self.taxable_amount() + self.tax_amount());
     }
 
     self.save = function (item, event) {
@@ -318,7 +318,6 @@ function PurchaseRow(row, purchase_vm) {
 
     });
 
-    
 
     self.total = ko.computed(function () {
         if (purchase_vm.tax() == 'no' || purchase_vm.tax_scheme()) {
@@ -340,13 +339,13 @@ function PurchaseRow(row, purchase_vm) {
             return r2z((100 / (100 + self.tax_percent())) * (parseFloat(self.quantity()) * parseFloat(self.rate()) - parseFloat(self.discount())));
         }
     });
-    
+
     self.tax_amount = ko.computed(function () {
         if (purchase_vm.tax() == 'no' || purchase_vm.tax_scheme()) {
             return 0;
         }
-        else{
-            return self.tax_percent() * self.total_without_tax() /100;
+        else {
+            return self.tax_percent() * self.total_without_tax() / 100;
         }
     });
 
