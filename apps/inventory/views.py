@@ -1,18 +1,18 @@
 import datetime
-from django.contrib.auth.decorators import login_required
 
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.db.models import Q
 from django.views.generic import ListView
-from njango.fields import today
+from django.views.generic.detail import DetailView
 
 from .serializers import ItemSerializer, InventoryAccountRowSerializer
 from ..voucher.models import Sale
 from .models import Item, UnitConversion, Unit, JournalEntry, InventoryAccount
 from .forms import ItemForm, UnitForm, UnitConversionForm
-from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView, StaffMixin
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView
 
 
 @login_required
@@ -46,7 +46,6 @@ def item_search(request):
         return redirect(url)
     else:
         return render(request, 'item_search.html', {'objects': obj})
-
 
 
 def item(request, pk=None):
@@ -95,7 +94,8 @@ class ItemView(CompanyView):
     form_class = ItemForm
     success_url = reverse_lazy('item_list')
 
-#     def form_valid(self, form):
+
+# def form_valid(self, form):
 #         self.object = form.save(commit=False)
 #         property_name = self.request.POST.getlist('property_name')
 #         item_property = self.request.POST.getlist('property')
@@ -181,52 +181,120 @@ class UnitDelete(UnitView, DeleteView):
     pass
 
 
-def list_inventory_accounts(request):
-    objects = InventoryAccount.objects.filter(company=request.company).order_by('-item')
-    return render(request, 'list_inventory_accounts.html', {'objects': objects})
+class InventoryAccountView(CompanyView):
+    model = InventoryAccount
+    template_name = 'list_inventory_accounts.html'
 
 
-def view_inventory_account(request, pk):
-    obj = get_object_or_404(InventoryAccount, pk=pk, company=request.company)
-    if hasattr(obj, 'item'):
-        if request.POST:
-            unit = Unit.objects.get(pk=request.POST.get('unit_id'), company=request.company)
+class InventoryAccountList(InventoryAccountView, ListView):
+    def get_queryset(self):
+        return self.model.objects.order_by('-item')
+
+
+# def list_inventory_accounts(request):
+#     objects = InventoryAccount.objects.filter(company=request.company).order_by('-item')
+#     return render(request, 'list_inventory_accounts.html', {'objects': objects})
+
+class InventoryAccountDetail(InventoryAccountView, DetailView):
+    template_name = 'inventory_account_detail.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(InventoryAccountDetail, self).get_context_data(*args, **kwargs)
+        self.object = self.get_object()
+        if hasattr(self.object, 'item'):
+            if self.request.POST:
+                unit = Unit.objects.get(pk=self.request.POST.get('unit_id'), company=self.request.company)
+            else:
+                unit = self.object.item.unit
         else:
-            unit = obj.item.unit
-    else:
-        unit = None
-    journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
-        .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
-    conversions = UnitConversion.objects.filter(Q(base_unit=unit) | Q(unit_to_convert=unit)).select_related('base_unit',
-                                                                                                            'unit_to_convert')
-    multiple = 1
-    if hasattr(obj, 'item'):
-        if not unit == obj.item.unit:
-            if conversions.filter(base_unit=unit).first():
-                multiple = 1 / conversions.filter(base_unit=unit).first().multiple
-            elif conversions.filter(unit_to_convert=unit).first():
-                multiple = conversions.filter(unit_to_convert=unit).first().multiple
-    return render(request, 'inventory_account_detail.html',
-                  {'obj': obj, 'entries': journal_entries, 'unit_conversions': conversions, 'unit': unit,
-                   'multiple': multiple})
+            unit = None
+        journal_entries = JournalEntry.objects.filter(transactions__account_id=self.object.id).order_by('id', 'date') \
+            .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
+        conversions = UnitConversion.objects.filter(Q(base_unit=unit) | Q(unit_to_convert=unit)).select_related(
+            'base_unit',
+            'unit_to_convert')
+        multiple = 1
+        if hasattr(self.object, 'item'):
+            if not unit == self.object.item.unit:
+                if conversions.filter(base_unit=unit).first():
+                    multiple = 1 / conversions.filter(base_unit=unit).first().multiple
+                elif conversions.filter(unit_to_convert=unit).first():
+                    multiple = conversions.filter(unit_to_convert=unit).first().multiple
+        context['entries'] = journal_entries
+        context['unit_conversions'] = conversions
+        context['unit'] = unit
+        context['multiple'] = multiple
+        return context
 
 
-def view_inventory_account_with_rate(request, pk):
-    obj = get_object_or_404(InventoryAccount, pk=pk, company=request.company)
-    if hasattr(obj, 'item'):
-        if request.POST:
-            unit = Unit.objects.get(pk=request.POST.get('unit_id'), company=request.company)
+# def view_inventory_account(request, pk):
+#     obj = get_object_or_404(InventoryAccount, pk=pk, company=request.company)
+#     if hasattr(obj, 'item'):
+#         if request.POST:
+#             unit = Unit.objects.get(pk=request.POST.get('unit_id'), company=request.company)
+#         else:
+#             unit = obj.item.unit
+#     else:
+#         unit = None
+#     journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
+#         .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
+#     conversions = UnitConversion.objects.filter(Q(base_unit=unit) | Q(unit_to_convert=unit)).select_related('base_unit',
+#                                                                                                             'unit_to_convert')
+#     multiple = 1
+#     if hasattr(obj, 'item'):
+#         if not unit == obj.item.unit:
+#             if conversions.filter(base_unit=unit).first():
+#                 multiple = 1 / conversions.filter(base_unit=unit).first().multiple
+#             elif conversions.filter(unit_to_convert=unit).first():
+#                 multiple = conversions.filter(unit_to_convert=unit).first().multiple
+#     return render(request, 'inventory_account_detail.html',
+#                   {'obj': obj, 'entries': journal_entries, 'unit_conversions': conversions, 'unit': unit,
+#                    'multiple': multiple})
+
+class InventoryAccountWithRate(InventoryAccountView, DetailView):
+    template_name = 'inventory_account_detail_with_rate.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(InventoryAccountWithRate, self).get_context_data(*args, **kwargs)
+        self.object = self.get_object()
+        if hasattr(self.object, 'item'):
+            if self.request.POST:
+                unit = Unit.objects.get(pk=self.request.POST.get('unit_id'), company=self.request.company)
+            else:
+                unit = self.object.item.unit
         else:
-            unit = obj.item.unit
-    else:
-        unit = None
-    conversions = UnitConversion.objects.filter(Q(base_unit=unit) | Q(unit_to_convert=unit)).select_related('base_unit',
-                                                                                                            'unit_to_convert')
-    multiple = 1
-    journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
-        .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
-    data = InventoryAccountRowSerializer(journal_entries, many=True, context={'default_unit': obj.item.unit.name}).data
+            unit = None
+        conversions = UnitConversion.objects.filter(Q(base_unit=unit) | Q(unit_to_convert=unit)).select_related(
+            'base_unit',
+            'unit_to_convert')
+        multiple = 1
+        journal_entries = JournalEntry.objects.filter(transactions__account_id=self.object.id).order_by('id', 'date') \
+            .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
+        data = InventoryAccountRowSerializer(journal_entries, many=True,
+                                             context={'default_unit': self.object.item.unit.name}).data
+        context['entries'] = journal_entries
+        context['data'] = data
+        context['unit_conversions'] = conversions
+        context['unit'] = unit
+        context['multiple'] = multiple
+        return context
 
-    return render(request, 'inventory_account_detail_with_rate.html',
-                  {'obj': obj, 'entries': journal_entries, 'data': data, 'unit_conversions': conversions, 'unit': unit,
-                   'multiple': multiple})
+# def view_inventory_account_with_rate(request, pk):
+#     obj= get_object_or_404(InventoryAccount, pk=pk, company=request.company)
+#     if hasattr(obj, 'item'):
+#         if request.POST:
+#             unit = Unit.objects.get(pk=request.POST.get('unit_id'), company=request.company)
+#         else:
+#             unit = obj.item.unit
+#     else:
+#         unit = None
+#     conversions = UnitConversion.objects.filter(Q(base_unit=unit) | Q(unit_to_convert=unit)).select_related('base_unit',
+#                                                                                                             'unit_to_convert')
+#     multiple = 1
+#     journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
+#         .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
+#     data = InventoryAccountRowSerializer(journal_entries, many=True, context={'default_unit': obj.item.unit.name}).data
+#
+#     return render(request, 'inventory_account_detail_with_rate.html',
+#                   {'obj': obj, 'entries': journal_entries, 'data': data, 'unit_conversions': conversions, 'unit': unit,
+#                    'multiple': multiple})

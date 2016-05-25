@@ -24,9 +24,9 @@ web_urls = [
     url(r'^unit_conversion/edit/(?P<pk>\d+)/$', views.UnitConversionUpdate.as_view(), name='unit_conversion_edit'),
     url(r'^unit_conversion/delete/(?P<pk>\d+)/$', views.UnitConversionDelete.as_view(), name='unit_conversion_delete'),
 
-    url(r'^accounts/$', views.list_inventory_accounts, name='list_inventory_accounts'),
-    url(r'^accounts/(?P<pk>[0-9]+)/$', views.view_inventory_account, name='view_inventory_account'),
-    url(r'^accounts/(?P<pk>[0-9]+)/rate/$', views.view_inventory_account_with_rate,
+    url(r'^accounts/$', views.InventoryAccountList.as_view(), name='list_inventory_accounts'),
+    url(r'^accounts/(?P<pk>[0-9]+)/$', views.InventoryAccountDetail.as_view(), name='view_inventory_account'),
+    url(r'^accounts/(?P<pk>[0-9]+)/rate/$', views.InventoryAccountWithRate.as_view(),
         name='view_inventory_account_with_rate'),
 ]
 

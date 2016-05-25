@@ -1,11 +1,11 @@
 {% extends "_base.html" %}
 {% load i18n staticfiles filters %}
 
-{% block page-title %}{{ obj.name }}{% endblock %}
+{% block page-title %}{{ object.name }}{% endblock %}
 
 {% block breadcrumbs %}
     <li><a href="{% url 'list_inventory_accounts' %}">{% trans 'Inventory Accounts' %}</a></li>
-    <li>{{ obj.name }}</li>
+    <li>{{ object.name }}</li>
 {% endblock %}
 
 {% block content %}
@@ -104,9 +104,9 @@
 
     {% paginate %}
 
-    {% if obj.item %}
+    {% if object.item %}
         <a class="btn btn-info btn-raised"
-           href="{% url 'view_inventory_account_with_rate' obj.id %}">{% trans 'View' %} {% trans 'with' %} {% trans 'Rate' %}</a>
+           href="{% url 'view_inventory_account_with_rate' object.id %}">{% trans 'View' %} {% trans 'with' %} {% trans 'Rate' %}</a>
     {% endif %}
 
 {% endblock %}

@@ -1,11 +1,11 @@
 {% extends "_base.html" %}
 {% load i18n staticfiles filters %}
 
-{% block page-title %}{{ obj.name }}{% endblock %}
+{% block page-title %}{{ object.name }}{% endblock %}
 
 {% block breadcrumbs %}
     <li><a href="{% url 'list_inventory_accounts' %}">{% trans 'Inventory Accounts with Rate' %}</a></li>
-    <li>{{ obj.name }}</li>
+    <li>{{ object.name }}</li>
 {% endblock %}
 
 {% block extrahead %}
