@@ -405,18 +405,17 @@ def save_purchase(request):
                 set_transactions(submodel, obj.date,
                                  ['dr', submodel.item.account, submodel.quantity],
                                  )
+
                 if obj.credit:
-                    set_ledger_transactions(submodel, obj.date,
-                                            ['cr', obj.party.supplier_account, obj.total],
-                                            ['dr', submodel.item.purchase_ledger, obj.total],
-                                            # ['cr', sales_tax_account, tax_amount],
-                                            )
+                    cr_acc = obj.party.supplier_account
                 else:
-                    set_ledger_transactions(submodel, obj.date,
-                                            ['dr', submodel.item.purchase_ledger, obj.total],
-                                            ['cr', cash_account, obj.total],
-                                            # ['cr', sales_tax_account, tax_amount],
-                                            )
+                    cr_acc = cash_account
+
+                set_ledger_transactions(submodel, obj.date,
+                                        ['dr', submodel.item.purchase_ledger, obj.total],
+                                        ['cr', cr_acc, obj.total],
+                                        # ['cr', sales_tax_account, tax_amount],
+                                        )
 
         delete_rows(params.get('table_view').get('deleted_rows'), model)
 
