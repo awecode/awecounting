@@ -26,7 +26,7 @@ class ItemForm(HTML5BootstrapModelForm, KOModelForm, TranslationModelForm):
         if not self.cleaned_data['account_no'].isdigit():
             raise forms.ValidationError("The account no. must be a number.")
         try:
-            existing = InventoryAccount.objects.get(account_no=self.cleaned_data['account_no'])
+            existing = InventoryAccount.objects.get(account_no=self.cleaned_data['account_no'], company=self.request.company)
             if self.instance.account_id is not existing.id:
                 raise forms.ValidationError("The account no. " + str(
                     self.cleaned_data['account_no']) + " is already in use.")
