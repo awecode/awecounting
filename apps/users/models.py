@@ -6,12 +6,14 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Group
 from django.utils import timezone
+
 from django.utils.translation import ugettext_lazy as _
+
 from django.dispatch import receiver
+
 from njango.fields import BSDateField, today
 from njango.middleware import get_calendar
 from njango.nepdate import tuple_from_string, string_from_tuple, bs2ad, bs, ad2bs, date_from_tuple, tuple_from_date
-
 from signals import company_creation
 
 
@@ -111,7 +113,7 @@ class Company(models.Model):
         dt = dt or today()
         calendar = get_calendar()
         if type(dt) == str or type(dt) == unicode:
-                dt = tuple_from_string(dt)
+            dt = tuple_from_string(dt)
         if self.use_nepali_fy_system:
             if calendar == 'ad':
                 dt = ad2bs(dt)
@@ -418,6 +420,11 @@ class Pin(models.Model):
             number_range = range(range_start, range_end)
             code = random.choice(number_range)
             return code
+
+    @classmethod
+    def connect_company(cls, first_company, second_company):
+        code = str(first_company.id) + '-' + str(random.choice(range(10000, 99999))
+        cls.objects.create(code=code, company=first_company, used_by=second_company)
 
     @staticmethod
     def validate_pin(pin):
