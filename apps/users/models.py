@@ -200,6 +200,7 @@ class Subscription(models.Model):
     enable_share_management = models.BooleanField(default=True)
     enable_payroll = models.BooleanField(default=True)
     enable_reports = models.BooleanField(default=True)
+    interconnection_among_branches = models.BooleanField(default=True)
 
     def __str__(self):
         return 'Subscription for ' + str(self.company)
