@@ -423,7 +423,7 @@ class Pin(models.Model):
 
     @classmethod
     def connect_company(cls, first_company, second_company):
-        code = str(first_company.id) + '-' + str(random.choice(range(10000, 99999))
+        code = str(first_company.id) + '-' + str(random.choice(range(10000, 99999)))
         cls.objects.create(code=code, company=first_company, used_by=second_company)
 
     @staticmethod

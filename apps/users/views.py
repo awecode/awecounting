@@ -321,8 +321,8 @@ class BranchView(CompanyView):
                                          related_company=self.object.branch_company)
             self.object.party = party
             self.object.save()
+        Pin.connect_company(self.request.company, self.object.branch_company)
         if self.request.company.subscription.interconnection_among_branches:
-            Pin.connect_company(self.request.company, self.object.branch_company)
             for branch in self.request.company.branches.all():
                 if branch != self.object and not Pin.objects.filter(company=branch.branch_company, used_by=self.object.branch_company).exists():
                     Pin.connect_company(branch.branch_company, self.object.branch_company)
