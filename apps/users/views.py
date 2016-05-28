@@ -320,8 +320,6 @@ class BranchView(CompanyView):
         if self.object.is_party and not self.object.party and self.object.branch_company:
             party = Party.objects.create(name=self.object.name, company=self.request.company,
                                          related_company=self.object.branch_company)
-            import ipdb
-            # ipdb.set_trace()
             Party.objects.create(name=self.request.company.name, company=self.object.branch_company,
                                  related_company=self.request.company)
             self.object.party = party
