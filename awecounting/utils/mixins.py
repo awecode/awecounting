@@ -1,7 +1,8 @@
 from functools import wraps
 
 from django.http import JsonResponse
-from django.views.generic.edit import UpdateView as BaseUpdateView, CreateView as BaseCreateView, DeleteView as BaseDeleteView
+from django.views.generic.edit import UpdateView as BaseUpdateView, CreateView as BaseCreateView, \
+    DeleteView as BaseDeleteView
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
@@ -9,8 +10,8 @@ from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
 from django.contrib.admin import ModelAdmin
-from modeltranslation.admin import TranslationAdmin
 
+from modeltranslation.admin import TranslationAdmin
 from .helpers import json_from_object
 
 
@@ -20,7 +21,8 @@ class DeleteView(BaseDeleteView):
 
     def post(self, request, *args, **kwargs):
         response = super(DeleteView, self).post(request, *args, **kwargs)
-        messages.success(request, ('%s %s' % (self.object.__class__._meta.verbose_name.title(), _('successfully deleted!'))))
+        messages.success(request,
+                         ('%s %s' % (self.object.__class__._meta.verbose_name.title(), _('successfully deleted!'))))
         return response
 
 
@@ -149,6 +151,8 @@ class CompanyView(CompanyRequiredMixin):
 
 USURPERS = {
     'Staff': ['Staff', 'Accountant', 'Owner', 'SuperOwner'],
+    'Stockist': ['Stockist', 'Accountant', 'Owner', 'SuperOwner'],
+    'Cashier': ['Cashier', 'Accountant', 'Owner', 'SuperOwner'],
     'Accountant': ['Accountant', 'Owner', 'SuperOwner'],
     'Owner': ['Owner', 'SuperOwner'],
     'SuperOwner': ['SuperOwner'],
@@ -160,6 +164,22 @@ class StaffMixin(object):
         if request.user.is_authenticated():
             if request.role.group.name in USURPERS['Staff']:
                 return super(StaffMixin, self).dispatch(request, *args, **kwargs)
+        raise PermissionDenied()
+
+
+class CashierMixin(object):
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            if request.role.group.name in USURPERS['Cashier']:
+                return super(CashierMixin, self).dispatch(request, *args, **kwargs)
+        raise PermissionDenied()
+
+
+class StockistMixin(object):
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            if request.role.group.name in USURPERS['Stockist']:
+                return super(StockistMixin, self).dispatch(request, *args, **kwargs)
         raise PermissionDenied()
 
 
