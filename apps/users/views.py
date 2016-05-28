@@ -316,19 +316,25 @@ class BranchView(CompanyView):
         super(BranchView, self).form_valid(form)
         self.object = form.instance
         Role.objects.get_or_create(user=self.request.user, group_id=1, company=self.object.branch_company)
+        Pin.connect_company(self.request.company, self.object.branch_company)
         if self.object.is_party and not self.object.party and self.object.branch_company:
             party = Party.objects.create(name=self.object.name, company=self.request.company,
                                          related_company=self.object.branch_company)
+            import ipdb
+            # ipdb.set_trace()
+            Party.objects.create(name=self.request.company.name, company=self.object.branch_company,
+                                 related_company=self.request.company)
             self.object.party = party
             self.object.save()
-        Pin.connect_company(self.request.company, self.object.branch_company)
         if self.request.company.subscription.interconnection_among_branches:
             for branch in self.request.company.branches.all():
-                if branch != self.object and not Pin.objects.filter(company=branch.branch_company, used_by=self.object.branch_company).exists():
+                if branch != self.object and not Pin.objects.filter(company=branch.branch_company,
+                                                                    used_by=self.object.branch_company).exists():
                     Pin.connect_company(branch.branch_company, self.object.branch_company)
-        # import ipdb
-        #
-        # ipdb.set_trace()
+                    Party.objects.create(name=self.object.branch_company.name, company=branch.branch_company,
+                                         related_company=self.object.branch_company)
+                    Party.objects.create(name=branch.branch_company.name, company=self.object.branch_company,
+                                         related_company=branch.branch_company)
         return super(BranchView, self).form_valid(form)
 
 

@@ -4,7 +4,8 @@
 {% block title %}{% trans "Branch" %}{% endblock %}
 
 {% block breadcrumbs %}
-    <li>{% trans 'Branch' %}</li>
+    <li><a href="{% url 'users:branch_list' %}">{% trans 'Branch' %}</a></li>
+    <li>{% trans 'Create Branch' %}</li>
 {% endblock %}
 
 {% block page-header %}{% trans "Branch" %}{% endblock %}
