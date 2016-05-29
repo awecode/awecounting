@@ -8,6 +8,7 @@ from django.db.models import Q
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
+from ..users.models import Pin
 from .serializers import ItemSerializer, InventoryAccountRowSerializer
 from ..voucher.models import Sale
 from .models import Item, UnitConversion, Unit, JournalEntry, InventoryAccount
@@ -36,12 +37,13 @@ def index(request):
 
 def item_search(request):
     code = request.POST.get('search-code')
-    obj = Item.objects.filter(code=code, company=request.company)
+    company_to_search = Pin.accessible_companies(request.company) + Pin.connected_companies(request.company) + [request.company]
+    obj = Item.objects.filter(name=code, company__in=company_to_search)
     if not obj:
-        obj = Item.objects.filter(name=code, company=request.company)
+        obj = Item.objects.filter(code=code, company__in=company_to_search)
     if len(obj) == 1:
         itm = obj[0]
-        inventory_account = InventoryAccount.objects.get(item__name=itm.name, company=request.company)
+        inventory_account = InventoryAccount.objects.get(item__name=itm.name, company__in=company_to_search)
         url = reverse('view_inventory_account', kwargs={'pk': inventory_account.id})
         return redirect(url)
     else:

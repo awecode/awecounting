@@ -504,7 +504,7 @@ class Party(models.Model):
     supplier_account = models.OneToOneField(Account, null=True, related_name='supplier_detail')
     customer_account = models.OneToOneField(Account, null=True, related_name='customer_detail')
     company = models.ForeignKey(Company, related_name='parties')
-    related_company = models.OneToOneField(Company, blank=True, null=True, related_name='related_party')
+    related_company = models.ForeignKey(Company, blank=True, null=True, related_name='related_party')
 
     def get_absolute_url(self):
         return reverse_lazy('party_edit', kwargs={'pk': self.pk})
@@ -564,7 +564,7 @@ class Party(models.Model):
 
     class Meta:
         verbose_name_plural = 'Parties'
-        unique_together = ['company', 'related_company']
+        unique_together = ('company', 'related_company')
 
         # @receiver(branch_creation)
         # def handle_branch_creation(sender, **kwargs):

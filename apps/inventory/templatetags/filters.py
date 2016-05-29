@@ -19,6 +19,8 @@ register = Library()
 
 USURPERS = {
     'Staff': ['Staff', 'Accountant', 'Owner', 'SuperOwner'],
+    'Stockist': ['Stockist', 'Accountant', 'Owner', 'SuperOwner'],
+    'Cashier': ['Cashier', 'Accountant', 'Owner', 'SuperOwner'],
     'Accountant': ['Accountant', 'Owner', 'SuperOwner'],
     'Owner': ['Owner', 'SuperOwner'],
     'SuperOwner': ['SuperOwner'],
