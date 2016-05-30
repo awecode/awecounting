@@ -21,6 +21,8 @@ from awecounting.utils.helpers import get_discount_with_percent
 from ..users.signals import company_creation
 
 
+
+
 class PurchaseVoucher(models.Model):
     tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'), ]
     party = models.ForeignKey(Party)
@@ -103,6 +105,26 @@ class PurchaseVoucher(models.Model):
         return reverse_lazy('purchase-edit', kwargs={'pk': self.pk})
 
 
+class LotItemDetail(models.Model):
+    item = models.ForeignKey(Item)
+    qty = models.PositiveIntegerField()
+    # po_receive_lot = models.ForeignKey(PoReceiveLot)
+
+    def __unicode__(self):
+        return '%s-QTY#%d' % (self.item, self.qty)
+
+
+class PoReceiveLot(models.Model):
+    lot_number = models.CharField(max_length=150, unique=True)
+    lot_item_details = models.ManyToManyField(
+        LotItemDetail,
+        through='PurchaseVoucherRow'
+    )
+
+    def __unicode__(self):
+        return self.lot_number
+
+
 class PurchaseVoucherRow(models.Model):
     sn = models.PositiveIntegerField()
     item = models.ForeignKey(Item)
@@ -113,6 +135,8 @@ class PurchaseVoucherRow(models.Model):
     unit = models.ForeignKey(Unit)
     purchase = models.ForeignKey(PurchaseVoucher, related_name='rows')
     journal_entry = GenericRelation(JournalEntry)
+    po_receive_lot = models.ForeignKey(PoReceiveLot, null=True, blank=True)
+    lot_item_detail = models.ForeignKey(LotItemDetail, null=True, blank=True)
 
     def get_total(self):
         total = float(self.quantity) * float(self.rate)
@@ -532,4 +556,5 @@ class ExpenseRow(models.Model):
     pay_head = models.ForeignKey(Account, related_name="cash_and_bank")
     amount = models.IntegerField()
     expense_row = models.ForeignKey(Expense, related_name="rows")
+
 

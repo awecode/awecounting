@@ -107,6 +107,7 @@
                         <th>{% trans 'Discount' %}</th>
                     {% endif %}
                     <th data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">{% trans "Tax Scheme" %}</th>
+                    <th>{% trans 'Lot#' %}</th>
                     <th>{% trans 'Total' %}</th>
                     <th></th>
                 </tr>
@@ -136,6 +137,7 @@
                         <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme_id, object: tax_scheme"
                                 data-url="{% url 'tax_scheme_add' %}"></select>
                     </td>
+                    <td class="lot-cell" data-bind="editableText: lot_number"></td>
                     <td data-bind="text: total"></td>
                     <td class="hide-on-print text-center">
                         <a href="#" class="red fa fa-trash-o fa-2x" data-bind="click: $parent.removeRow"></a>

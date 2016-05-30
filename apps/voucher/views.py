@@ -19,7 +19,7 @@ from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, \
     JournalVoucherRow, \
     PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, \
-    VoucherSetting, Expense, ExpenseRow
+    VoucherSetting, Expense, ExpenseRow, PoReceiveLot, LotItemDetail
 
 
 class FixedAssetView(CompanyView):
@@ -393,10 +393,26 @@ def save_purchase(request):
                 #     discount = None
                 # else:
                 #     discount = row.get('discount')
-                values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'quantity': row.get('quantity'),
-                          'rate': row.get('rate'), 'unit_id': row.get('unit')['id'], 'discount': row.get('discount'),
+
+                lot_number = row.get('lot_number')
+                po_receive_lot, created = PoReceiveLot.objects.get_or_create(lot_number=lot_number)
+                lot_item_detail = LotItemDetail.objects.create(
+                    item_id=row.get('item')['id'],
+                    qty=int(row.get('quantity'))
+                )
+
+                values = {
+                          'sn': ind + 1,
+                          'item_id': row.get('item')['id'],
+                          'quantity': row.get('quantity'),
+                          'rate': row.get('rate'),
+                          'unit_id': row.get('unit')['id'],
+                          'discount': row.get('discount'),
                           'tax_scheme_id': row_tax_scheme_id,
-                          'purchase': obj}
+                          'purchase': obj,
+                          'po_receive_lot': po_receive_lot,
+                          'lot_item_detail': lot_item_detail
+                        }
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
