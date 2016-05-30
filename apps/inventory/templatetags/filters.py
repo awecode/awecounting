@@ -3,6 +3,7 @@
 import json
 from datetime import date, timedelta
 import importlib
+
 from django.core import serializers
 from django.db.models.query import QuerySet
 from django.template import Library
@@ -86,8 +87,8 @@ class RoleInGroup(template.Node):
 def handler(obj):
     if hasattr(obj, 'isoformat'):
         return obj.isoformat()
-    # elif isinstance(obj, ...):
-    # return ...
+    elif obj.__class__.__name__ == 'Company':
+        return obj.id
     else:
         raise TypeError, 'Object of type %s with value of %s is not JSON serializable' % (type(obj), repr(obj))
 
@@ -99,7 +100,7 @@ def jsonify(object):
     if isinstance(object, Model):
         model_dict = object.__dict__
         del model_dict['_state']
-        return mark_safe(json.dumps(model_dict))
+        return mark_safe(json.dumps(model_dict, default=handler))
     return mark_safe(json.dumps(object, default=handler))
 
 
@@ -343,12 +344,14 @@ def multiply(a, b):
         return a * b
     return ''
 
+
 @register.filter
 def dr_or_cr(val):
     if val < 0:
         return str(val * -1) + ' (Cr)'
     else:
         return str(val) + ' (Dr)'
+
 
 @register.filter
 def get_particulars(entry, account):

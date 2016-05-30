@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    vm = new PurchaseViewModel(ko_data);
+    vm = new PurchaseViewModel(ko_data, voucher_settings);
     ko.applyBindings(vm);
     $('.change-on-ready').trigger('change');
 });
@@ -37,7 +37,7 @@ $(document).ready(function () {
 //}
 
 
-function PurchaseViewModel(data) {
+function PurchaseViewModel(data, settings) {
     var self = this;
 
     self.tax_types = [
@@ -189,12 +189,18 @@ function PurchaseViewModel(data) {
             total += row.tax_amount();
         });
         return r2z(total);
-    }
+    };
 
     self.total_amount = 0;
 
     self.grand_total = function () {
         return r2z(self.taxable_amount() + self.tax_amount());
+    };
+
+    if (settings.purchase_suggest_by_party_item) {
+        self.party.subscribe(function () {
+            console.log('hey');
+        })
     }
 
     self.save = function (item, event) {
@@ -210,13 +216,16 @@ function PurchaseViewModel(data) {
                 if (typeof(discount_as_string[discount_as_string.indexOf('%') + 1]) != 'undefined') {
                     bsalert.error("Invalid format for discount %");
                     check_discount = true;
-                };
-            };
+                }
+                ;
+            }
+            ;
         });
 
         if (check_discount) {
             return false;
-        };
+        }
+        ;
 
         if (String(self.voucher_discount()).indexOf('%') !== -1) {
             bsalert.error("Invalid format for discount %");
@@ -276,7 +285,7 @@ function PurchaseRow(row, purchase_vm) {
         var unit = get_by_id(purchase_vm.units(), item.unit.id);
         if (unit && !self.unit_id())
             self.unit_id(unit.id);
-        if (item.last_purchase_price && !self.rate()){
+        if (item.last_purchase_price && !self.rate()) {
             self.rate(item.last_purchase_price);
         }
     });

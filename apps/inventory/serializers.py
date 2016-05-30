@@ -22,10 +22,12 @@ class ItemSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         super(ItemSerializer, self).__init__(*args, **kwargs)
-        if self.context.get('request').company.settings.purchase_suggest_by_item and kwargs.get('context').get(
+        if self.context.get('request').company.settings.purchase_suggest_by_item and not self.context.get(
+                'request').company.settings.purchase_suggest_by_party_item and kwargs.get('context').get(
                 'voucher') == 'purchase':
             self.fields['last_purchase_price'] = serializers.SerializerMethodField()
-        if self.context.get('request').company.settings.sale_suggest_by_item and kwargs.get('context').get('voucher') == 'sale':
+        if self.context.get('request').company.settings.sale_suggest_by_item and not self.context.get(
+                'request').company.settings.sale_suggest_by_party_item and kwargs.get('context').get('voucher') == 'sale':
             self.fields['last_sale_price'] = serializers.SerializerMethodField()
 
     def get_full_name(self, obj):

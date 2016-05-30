@@ -1,8 +1,10 @@
 from rest_framework import serializers
+
+from ..inventory.models import Item
 from ..users.models import User
-from ..users.serializers import UserSerializer
-from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashPayment, CashPaymentRow, CashReceipt, CashReceiptRow, PurchaseVoucherRow, PurchaseVoucher, SaleRow, Sale, JournalVoucherRow, JournalVoucher, \
-PurchaseOrder, PurchaseOrderRow, ExpenseRow, Expense
+from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashPayment, CashPaymentRow, CashReceipt, CashReceiptRow, \
+    PurchaseVoucherRow, PurchaseVoucher, SaleRow, Sale, JournalVoucherRow, JournalVoucher, \
+    PurchaseOrder, PurchaseOrderRow, ExpenseRow, Expense
 
 
 class CashReceiptRowSerializer(serializers.ModelSerializer):
@@ -78,7 +80,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
         users = User.objects.filter(roles__group__name='PurchaseAgent')
         data = []
         for user in users:
-            dct = dict(name=user.username, id = user.pk)
+            dct = dict(name=user.username, id=user.pk)
             data.append(dct)
         return data
 
@@ -146,3 +148,28 @@ class ExpenseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Expense
+
+
+class PartyRateSerializer(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        super(PartyRateSerializer, self).__init__(*args, **kwargs)
+        if kwargs.get('context').get('voucher') == 'purchase':
+            self.fields['last_purchase_price'] = serializers.SerializerMethodField()
+        if kwargs.get('context').get('voucher') == 'sale':
+            self.fields['last_sale_price'] = serializers.SerializerMethodField()
+
+    def get_last_purchase_price(self, obj):
+        last_purchase = PurchaseVoucherRow.objects.filter(item=obj, purchase__party_id=self.context.get('party_pk'),
+                                                          purchase__company=self.context.get('request').company).order_by(
+            'purchase__date').last()
+        return last_purchase.rate if last_purchase else 0
+
+    def get_last_sale_price(self, obj):
+        last_sale = SaleRow.objects.filter(item=obj, sale__party_id=self.context.get('party_pk'),
+                                           sale__company=self.context.get('request').company).order_by(
+            'sale__date').last()
+        return last_sale.rate if last_sale else 0
+
+    class Meta:
+        model = Item
+        fields = ('id',)
