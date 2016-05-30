@@ -1,5 +1,5 @@
 {% extends "_base.html" %}
-{% load staticfiles i18n njango_filters %}
+{% load staticfiles i18n njango_filters filters %}
 
 {% block title %}
     {% trans 'Awecounting' %}
@@ -39,10 +39,12 @@
                             <a href="{% url 'purchase-create' %}">{% trans 'New Purchase Voucher' %}</a>
                             <a href="{% url 'purchase-list' %}">{% trans 'List Purchase Vouchers' %}</a>
                         {% endif %}
-                        {% if request.company.show_purchase_orders %}
-                            <a href="{% url 'purchase_order_create' %}">{% trans 'New Purchase Order' %}</a>
-                            <a href="{% url 'purchase_order_list' %}">{% trans 'List Purchase Orders' %}</a>
-                        {% endif %}
+                        {% ifrole "Stockist" %}
+                            {% if request.company.show_purchase_orders %}
+                                <a href="{% url 'purchase_order_create' %}">{% trans 'New Purchase Order' %}</a>
+                                <a href="{% url 'purchase_order_list' %}">{% trans 'List Purchase Orders' %}</a>
+                            {% endif %}
+                        {% endrole %}
                     </div>
                 </div>
             {% endif %}
@@ -64,25 +66,29 @@
 
                 <div class="flip-body">
                     <h2>{% trans 'Inventory' %}</h2>
-                    <a href="{% url 'list_inventory_accounts' %}">{% trans 'Accounts' %}</a>
+                    {% ifrole "Stockist" %}
+                        <a href="{% url 'list_inventory_accounts' %}">{% trans 'Accounts' %}</a>
+                    {% endrole %}
                     <a href="{% url 'item_list' %}">{% trans 'Items' %}</a>
                     <a href="{% url 'unit_list' %}">{% trans 'Units' %}</a>
                     <a href="{% url 'unit_conversion_list' %}">{% trans 'Unit Conversions' %}</a>
                 </div>
             </div>
 
-            <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
-                <i class="fa fa-money"></i>
+            {% ifrole "Cashier" %}
+                <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
+                    <i class="fa fa-money"></i>
 
-                <div class="flip-body">
-                    <h2>{% trans 'Cash' %}</h2>
-                    <a href="{% url 'cash_receipt_list' %}">{% trans 'Cash Receipts' %}</a>
-                    <a href="{% url 'cash_receipt_add' %}">{% trans 'New Cash Receipt' %}</a>
-                    <a href="{% url 'cash_payment_list' %}">{% trans 'Cash Payments' %}</a>
-                    <a href="{% url 'cash_payment_add' %}">{% trans 'New Cash Payment' %}</a>
+                    <div class="flip-body">
+                        <h2>{% trans 'Cash' %}</h2>
+                        <a href="{% url 'cash_receipt_list' %}">{% trans 'Cash Receipts' %}</a>
+                        <a href="{% url 'cash_receipt_add' %}">{% trans 'New Cash Receipt' %}</a>
+                        <a href="{% url 'cash_payment_list' %}">{% trans 'Cash Payments' %}</a>
+                        <a href="{% url 'cash_payment_add' %}">{% trans 'New Cash Payment' %}</a>
+                    </div>
                 </div>
-            </div>
-
+            {% endrole %}
+        
             <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
                 <i class="fa fa-file-text-o"></i>
 
@@ -95,17 +101,19 @@
                 </div>
             </div>
 
-            <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
-                <i class="fa fa-bank"></i>
+            {% ifrole "Cashier" %}
+                <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
+                    <i class="fa fa-bank"></i>
 
-                <div class="flip-body">
-                    <h2>{% trans 'Bank' %}</h2>
-                    <a href="{% url 'bank:bankaccount_list' %}">{% trans 'Bank Accounts' %}</a>
-                    <a href="{% url 'bank:cash_deposit_list' %}">{% trans 'Cash Desposits' %}</a>
-                    <a href="{% url 'bank:cheque_deposit_list' %}">{% trans 'Cheque Desposits' %}</a>
-                    <a href="{% url 'bank:cheque_payment_list' %}">{% trans 'Cheque Payments' %}</a>
+                    <div class="flip-body">
+                        <h2>{% trans 'Bank' %}</h2>
+                        <a href="{% url 'bank:bankaccount_list' %}">{% trans 'Bank Accounts' %}</a>
+                        <a href="{% url 'bank:cash_deposit_list' %}">{% trans 'Cash Desposits' %}</a>
+                        <a href="{% url 'bank:cheque_deposit_list' %}">{% trans 'Cheque Desposits' %}</a>
+                        <a href="{% url 'bank:cheque_payment_list' %}">{% trans 'Cheque Payments' %}</a>
+                    </div>
                 </div>
-            </div>
+            {% endrole %}
 
             <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
                 <i class="fa fa-user-secret"></i>
@@ -127,7 +135,9 @@
 
                 <div class="flip-body">
                     <h2>{% trans 'Ledger' %}</h2>
-                    <a href="{% url 'list_account' %}">{% trans 'Ledgers' %}</a>
+                    {% ifrole "Stockist" %}
+                        <a href="{% url 'list_account' %}">{% trans 'Ledgers' %}</a>
+                    {% endrole %}
                     <a href="{% url 'category_list' %}">{% trans 'Ledger Categories' %}</a>
                     <a href="{% url 'party_list' %}">{% trans 'Parties' %}</a>
                     <a href="{% url 'tax_scheme_list' %}">{% trans 'Tax Schemes' %}</a>
