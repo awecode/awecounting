@@ -41,7 +41,7 @@ def item_search(request):
     obj = Item.objects.filter(name=code, company__in=company_to_search)
     if not obj:
         obj = Item.objects.filter(code=code, company__in=company_to_search)
-    if len(obj) == 1:
+    if len(obj) == 1 and obj.first().company == request.company:
         itm = obj[0]
         inventory_account = InventoryAccount.objects.get(item__name=itm.name, company__in=company_to_search)
         url = reverse('view_inventory_account', kwargs={'pk': inventory_account.id})
