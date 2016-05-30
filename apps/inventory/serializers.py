@@ -16,7 +16,6 @@ class UnitSerializer(serializers.ModelSerializer):
 
 class ItemSerializer(serializers.ModelSerializer):
     unit = UnitSerializer()
-    name = serializers.ReadOnlyField(source='__unicode__')
     full_name = serializers.SerializerMethodField()
     current_balance = serializers.SerializerMethodField()
 
