@@ -114,7 +114,7 @@ class LotItemDetail(models.Model):
         return '%s-QTY#%d' % (self.item, self.qty)
 
 
-class PoReceiveLot(models.Model):
+class Lot(models.Model):
     lot_number = models.CharField(max_length=150, unique=True)
     lot_item_details = models.ManyToManyField(
         LotItemDetail,
@@ -135,7 +135,7 @@ class PurchaseVoucherRow(models.Model):
     unit = models.ForeignKey(Unit)
     purchase = models.ForeignKey(PurchaseVoucher, related_name='rows')
     journal_entry = GenericRelation(JournalEntry)
-    po_receive_lot = models.ForeignKey(PoReceiveLot, null=True, blank=True)
+    lot = models.ForeignKey(Lot, null=True, blank=True)
     lot_item_detail = models.ForeignKey(LotItemDetail, null=True, blank=True)
 
     def get_total(self):

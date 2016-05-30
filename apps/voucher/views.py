@@ -19,7 +19,7 @@ from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, \
     JournalVoucherRow, \
     PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, \
-    VoucherSetting, Expense, ExpenseRow, PoReceiveLot, LotItemDetail
+    VoucherSetting, Expense, ExpenseRow, Lot, LotItemDetail
 
 
 class FixedAssetView(CompanyView):
@@ -395,7 +395,7 @@ def save_purchase(request):
                 #     discount = row.get('discount')
 
                 lot_number = row.get('lot_number')
-                po_receive_lot, created = PoReceiveLot.objects.get_or_create(lot_number=lot_number)
+                po_receive_lot, created = Lot.objects.get_or_create(lot_number=lot_number)
                 lot_item_detail = LotItemDetail.objects.create(
                     item_id=row.get('item')['id'],
                     qty=int(row.get('quantity'))
