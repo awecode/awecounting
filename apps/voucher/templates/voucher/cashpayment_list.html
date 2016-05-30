@@ -24,7 +24,7 @@
                 <th>{% anchor date _('Date') %}</th>
                 <th>{% anchor party _('Party') %}</th>
                 <th>{% anchor amount _('Amount') %}</th>
-                {% ifrole "Accountant" %}
+                {% ifrole "Cashier" %}
                     <th>{% trans "Action" %}</th>
                 {% endrole %}
                 </thead>
@@ -43,7 +43,7 @@
                         <td>
                            {{ object.amount |default:'' }}
                         </td>   
-                        {% ifrole "Accountant" %}
+                        {% ifrole "Cashier" %}
                         <td>
                             <a href="{% url 'cash_payment_edit' object.pk %}">{% trans "Edit" %}</a>
                         </td>

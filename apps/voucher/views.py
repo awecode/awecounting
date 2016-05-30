@@ -8,7 +8,8 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, StaffMixin, \
-    group_required, TableObjectMixin, UpdateView, CompanyRequiredMixin, CreateView, TableObject
+    group_required, TableObjectMixin, UpdateView, CompanyRequiredMixin, CreateView, TableObject, CashierMixin, \
+    StockistMixin
 from ..inventory.models import set_transactions
 from ..ledger.models import set_transactions as set_ledger_transactions, get_account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
@@ -103,22 +104,22 @@ class CashReceiptView(CompanyView):
     form_class = CashReceiptForm
 
 
-class CashReceiptList(CashReceiptView, ListView):
+class CashReceiptList(CashReceiptView, CashierMixin, ListView):
     pass
 
 
-class CashReceiptDetailView(CashReceiptView, DetailView):
+class CashReceiptDetailView(CashReceiptView, CashierMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(CashReceiptDetailView, self).get_context_data(**kwargs)
         context['rows'] = CashReceiptRow.objects.select_related('invoice').filter(cash_receipt=self.object)
         return context
 
 
-class CashReceiptCreate(CashReceiptView, TableObject, CreateView):
+class CashReceiptCreate(CashReceiptView, TableObject, CashierMixin, CreateView):
     template_name = 'cash_receipt.html'
 
 
-class CashReceiptUpdate(CashReceiptView, TableObject, UpdateView):
+class CashReceiptUpdate(CashReceiptView, TableObject, CashierMixin, UpdateView):
     template_name = 'cash_receipt.html'
 
 
@@ -128,19 +129,19 @@ class CashPaymentView(CompanyView):
     form_class = CashPaymentForm
 
 
-class CashPaymentList(CashPaymentView, ListView):
+class CashPaymentList(CashPaymentView, CashierMixin, ListView):
     pass
 
 
-class CashPaymentCreate(CashPaymentView, TableObject, CreateView):
+class CashPaymentCreate(CashPaymentView, TableObject, CashierMixin, CreateView):
     template_name = 'cash_payment.html'
 
 
-class CashPaymentUpdate(CashPaymentView, TableObject, UpdateView):
+class CashPaymentUpdate(CashPaymentView, TableObject, CashierMixin, UpdateView):
     template_name = 'cash_payment.html'
 
 
-class CashPaymentDetailView(DetailView):
+class CashPaymentDetailView(CashierMixin, DetailView):
     model = CashPayment
 
     def get_context_data(self, **kwargs):
@@ -689,11 +690,11 @@ class PurchaseOrderView(CompanyView):
     check = 'show_purchase_orders'
 
 
-class PurchaseOrderList(PurchaseOrderView, ListView):
+class PurchaseOrderList(PurchaseOrderView, StockistMixin, ListView):
     pass
 
 
-class PurchaseOrderDelete(PurchaseOrderView, DeleteView):
+class PurchaseOrderDelete(PurchaseOrderView, StockistMixin, DeleteView):
     pass
 
 
@@ -702,11 +703,11 @@ class PurchaseOrderDelete(PurchaseOrderView, DeleteView):
 #     return render(request, 'purchase_list.html', {'objects': obj})
 
 
-class PurchaseOrderCreate(PurchaseOrderView, TableObjectMixin):
+class PurchaseOrderCreate(PurchaseOrderView, StockistMixin, TableObjectMixin):
     template_name = 'voucher/purchase_order_form.html'
 
 
-class PurchaseOrderDetailView(PurchaseOrderView, StaffMixin, DetailView):
+class PurchaseOrderDetailView(PurchaseOrderView, StockistMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(PurchaseOrderDetailView, self).get_context_data(**kwargs)
         context['rows'] = PurchaseOrderRow.objects.select_related('item', 'unit').filter(purchase_order=self.object)
@@ -785,7 +786,7 @@ class CheckifConnected(object):
             return HttpResponseRedirect(reverse('users:party_for_company', kwargs={'company_id': querying_company.id}))
 
 
-class IncomingPurchaseOrder(CompanyRequiredMixin, ListView):
+class IncomingPurchaseOrder(CompanyRequiredMixin, StockistMixin, ListView):
     model = PurchaseOrder
     template_name = "voucher/incoming_purchase_order_list.html"
     check = 'show_purchase_orders'
@@ -794,7 +795,7 @@ class IncomingPurchaseOrder(CompanyRequiredMixin, ListView):
         return self.model.objects.filter(party__related_company=self.request.company)
 
 
-class IncomingPurchaseOrderDetailView(CompanyRequiredMixin, CheckifConnected, DetailView):
+class IncomingPurchaseOrderDetailView(CompanyRequiredMixin, CheckifConnected, StockistMixin, DetailView):
     model = PurchaseOrder
     check = 'show_purchase_orders'
 

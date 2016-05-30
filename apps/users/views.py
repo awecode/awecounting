@@ -307,6 +307,12 @@ def delete_role(request, pk):
     return redirect(reverse('users:roles'))
 
 
+def copy_attribute(old, new, *args):
+    for field in old._meta.get_fields():
+        if field.name not in args[0]:
+            setattr(new, field.name, getattr(old, field.name))
+    new.save()
+
 class BranchView(CompanyView):
     model = Branch
     form_class = BranchForm
@@ -324,6 +330,11 @@ class BranchView(CompanyView):
                                  related_company=self.request.company)
             self.object.party = party
             self.object.save()
+
+        copy_attribute(self.request.company.report_settings, self.object.branch_company.report_settings, ['id', 'company'])
+        copy_attribute(self.request.company.subscription, self.object.branch_company.subscription, ['id', 'company'])
+        copy_attribute(self.request.company.settings, self.object.branch_company.settings, ['id', 'company'])
+
         if self.request.company.subscription.interconnection_among_branches:
             for branch in self.request.company.branches.all():
                 if branch != self.object and not Pin.objects.filter(company=branch.branch_company,

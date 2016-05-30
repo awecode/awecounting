@@ -2,7 +2,8 @@ from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
 
-from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView, \
+    StockistMixin
 from .models import Party, Category, Account, JournalEntry
 from .forms import PartyForm, AccountForm, CategoryForm
 
@@ -88,17 +89,17 @@ class AccountView(CompanyView):
     form_class = AccountForm
 
 
-class AccountList(AccountView, ListView):
+class AccountList(AccountView, StockistMixin, ListView):
     pass
 
 
-class AccountCreate(AjaxableResponseMixin, AccountView, CreateView):
+class AccountCreate(AjaxableResponseMixin, AccountView, StockistMixin, CreateView):
     pass
 
 
-class AccountUpdate(AccountView, UpdateView):
+class AccountUpdate(AccountView, StockistMixin, UpdateView):
     pass
 
 
-class AccountDelete(AccountView, DeleteView):
+class AccountDelete(AccountView, StockistMixin, DeleteView):
     pass
