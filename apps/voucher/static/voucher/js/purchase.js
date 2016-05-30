@@ -276,6 +276,9 @@ function PurchaseRow(row, purchase_vm) {
         var unit = get_by_id(purchase_vm.units(), item.unit.id);
         if (unit && !self.unit_id())
             self.unit_id(unit.id);
+        if (item.last_purchase_price && !self.rate()){
+            self.rate(item.last_purchase_price);
+        }
     });
 
     self.tax_rate = ko.computed(function () {
