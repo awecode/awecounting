@@ -28,7 +28,7 @@
                 <th>{% anchor voucher_no _('Voucher No') %}</th>
                 <th>{% anchor date _('Date') %}</th>
                 <th>{% anchor narration _('Narration') %}</th>
-                {% ifrole "Accountant" %}
+                {% ifrole "Cashier" %}
                     <th>{% trans "Action" %}</th>
                 {% endrole %}
                 </thead>
@@ -43,7 +43,7 @@
                         </td>   <td>
                             {{ object.narration | default:''}}
                         </td>   
-                        {% ifrole "Accountant" %}
+                        {% ifrole "Cashier" %}
                         <td>
                             <a href="{% url 'bank:cheque_deposit_edit' object.pk %}">{% trans "Edit" %}</a>
                         </td>

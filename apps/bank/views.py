@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.views.generic.detail import DetailView
 
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView, AjaxableResponseMixin, TableObjectMixin, \
-    AccountantMixin, StaffMixin, \
+    CashierMixin, \
     group_required
 from .models import BankAccount, BankCashDeposit, ChequeDeposit, ChequeDepositRow, ChequePayment
 from apps.users.models import File as AttachFile
@@ -25,21 +25,21 @@ class BankAccountView(CompanyView):
     check = 'show_bank_vouchers'
 
 
-class BankAccountList(BankAccountView, StaffMixin, ListView):
+class BankAccountList(BankAccountView, CashierMixin, ListView):
     pass
 
 
-class BankAccountCreate(AjaxableResponseMixin, AccountantMixin, BankAccountView, CreateView):
+class BankAccountCreate(AjaxableResponseMixin, CashierMixin, BankAccountView, CreateView):
     def form_valid(self, form):
         form.instance.company = self.request.company
         return super(BankAccountCreate, self).form_valid(form)
 
 
-class BankAccountUpdate(BankAccountView, AccountantMixin, UpdateView):
+class BankAccountUpdate(BankAccountView, CashierMixin, UpdateView):
     pass
 
 
-class BankAccountDelete(BankAccountView, AccountantMixin, DeleteView):
+class BankAccountDelete(BankAccountView, CashierMixin, DeleteView):
     pass
 
 
@@ -50,15 +50,15 @@ class CashDepositView(CompanyView):
     check = 'show_bank_vouchers'
 
 
-class CashDepositDelete(CashDepositView, AccountantMixin, DeleteView):
+class CashDepositDelete(CashDepositView, CashierMixin, DeleteView):
     pass
 
 
-class CashDepositList(CashDepositView, StaffMixin, ListView):
+class CashDepositList(CashDepositView, CashierMixin, ListView):
     pass
 
 
-class CashDepositCreate(CashDepositView, AccountantMixin, CreateView):
+class CashDepositCreate(CashDepositView, CashierMixin, CreateView):
     # def form_valid(self, form):
     # set_transactions(receipt, receipt.date,
     #              ['dr', receipt.bank_account, receipt.amount],
@@ -68,7 +68,7 @@ class CashDepositCreate(CashDepositView, AccountantMixin, CreateView):
     pass
 
 
-class CashDepositUpdate(CashDepositView, AccountantMixin, UpdateView):
+class CashDepositUpdate(CashDepositView, CashierMixin, UpdateView):
     pass
 
 
@@ -79,19 +79,19 @@ class ChequeDepositView(CompanyView):
     check = 'show_bank_vouchers'
 
 
-class ChequeDepositList(ChequeDepositView, StaffMixin, ListView):
+class ChequeDepositList(ChequeDepositView, CashierMixin, ListView):
     pass
 
 
-class ChequeDepositDetailView(ChequeDepositView, StaffMixin, DetailView):
+class ChequeDepositDetailView(ChequeDepositView, CashierMixin, DetailView):
     pass
 
 
-class ChequeDepositDelete(ChequeDepositView, AccountantMixin, DeleteView):
+class ChequeDepositDelete(ChequeDepositView, CashierMixin, DeleteView):
     pass
 
 
-class ChequeDepositCreate(ChequeDepositView, AccountantMixin, TableObjectMixin):
+class ChequeDepositCreate(ChequeDepositView, CashierMixin, TableObjectMixin):
     template_name = 'bank/cheque_deposit_form.html'
 
 
@@ -164,17 +164,17 @@ class ChequePaymentView(CompanyView):
     check = 'show_bank_vouchers'
 
 
-class ChequePaymentList(ChequePaymentView, StaffMixin, ListView):
+class ChequePaymentList(ChequePaymentView, CashierMixin, ListView):
     pass
 
 
-class ChequePaymentCreate(ChequePaymentView, AccountantMixin, CreateView):
+class ChequePaymentCreate(ChequePaymentView, CashierMixin, CreateView):
     pass
 
 
-class ChequePaymentDelete(ChequePaymentView, AccountantMixin, DeleteView):
+class ChequePaymentDelete(ChequePaymentView, CashierMixin, DeleteView):
     pass
 
 
-class ChequePaymentUpdate(ChequePaymentView, AccountantMixin, UpdateView):
+class ChequePaymentUpdate(ChequePaymentView, CashierMixin, UpdateView):
     pass
