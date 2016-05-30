@@ -198,8 +198,20 @@ function PurchaseViewModel(data, settings) {
     };
 
     if (settings.purchase_suggest_by_party_item) {
-        self.party.subscribe(function () {
-            console.log('hey');
+        self.party.subscribe(function (party) {
+            $.ajax({
+                url: '/voucher/api/purchase/party/' + party.id + '/rates.json',
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    ko.utils.arrayForEach(data, function (rate_item) {
+                        var item = ko.utils.arrayFirst(self.items(), function (itm) {
+                            return itm.id == rate_item.id;
+                        });
+                        item.last_purchase_price = rate_item.last_purchase_price;
+                    });
+                }
+            });
         })
     }
 
