@@ -27,7 +27,7 @@
             <th>{% anchor opening_dr _('Opening Dr.') %}</th>
             <th>{% anchor opening_cr _('Opening Cr.') %}</th>
             <th>{% anchor category _('Category') %}</th>
-            {% ifrole "Accountant" %}
+            {% ifrole "Stockist" %}
                 <th>{% trans "Action" %}</th>
             {% endrole %}
 
@@ -59,7 +59,7 @@
                     <td>
                         {{ account.category| default:'-' }}
                     </td>
-                    {% ifrole "Accountant" %}
+                    {% ifrole "Stockist" %}
                     <td>
                         <a href="{% url 'account_edit' account.pk %}">{% trans "Edit" %}</a>
                     </td>
