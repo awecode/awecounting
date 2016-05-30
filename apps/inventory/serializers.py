@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from .models import Item, Unit, JournalEntry, UnitConversion
+from models import Item, Unit, JournalEntry, UnitConversion
+from ..voucher.models import PurchaseVoucherRow, SaleRow
 
 
 class UnitSerializer(serializers.ModelSerializer):
@@ -19,15 +20,32 @@ class ItemSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
     current_balance = serializers.SerializerMethodField()
 
+    def __init__(self, *args, **kwargs):
+        super(ItemSerializer, self).__init__(*args, **kwargs)
+        if kwargs.get('context').get('voucher') == 'purchase':
+            self.fields['last_purchase_price'] = serializers.SerializerMethodField()
+        if kwargs.get('context').get('voucher') == 'sale':
+            self.fields['last_sale_price'] = serializers.SerializerMethodField()
+
     def get_full_name(self, obj):
         return obj.name
 
-    def get_current_balance(self,obj):
+    def get_current_balance(self, obj):
         if obj.account and obj.account.account_transaction.filter(account=obj.account):
             return obj.account.account_transaction.filter(account=obj.account).last().current_balance
         else:
             return 0
 
+    def get_last_purchase_price(self, obj):
+        last_purchase = PurchaseVoucherRow.objects.filter(item=obj,
+                                                          purchase__company=self.context.get('request').company).order_by(
+            'purchase__date').last()
+        return last_purchase.rate if last_purchase else 0
+
+    def get_last_sale_price(self, obj):
+        last_sale = SaleRow.objects.filter(item=obj, sale__company=self.context.get('request').company).order_by(
+            'sale__date').last()
+        return last_sale.rate if last_sale else 0
 
     class Meta:
         model = Item

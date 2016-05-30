@@ -79,7 +79,7 @@ function PurchaseViewModel(data) {
     });
 
     $.ajax({
-        url: '/inventory/api/items.json',
+        url: '/inventory/api/purchase/items.json',
         dataType: 'json',
         async: false,
         success: function (data) {

@@ -436,8 +436,8 @@ class SaleCreate(SaleView, TableObjectMixin):
         context = super(SaleCreate, self).get_context_data(**kwargs)
         if not self.kwargs:
             obj = context['obj']
-            tax = self.request.company.settings.invoice_default_tax_application_type
-            tax_scheme = self.request.company.settings.invoice_default_tax_scheme
+            tax = self.request.company.settings.sale_default_tax_application_type
+            tax_scheme = self.request.company.settings.sale_default_tax_scheme
             if tax:
                 obj.tax = tax
             if tax_scheme:

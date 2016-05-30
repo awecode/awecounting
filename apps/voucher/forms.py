@@ -36,10 +36,10 @@ class VoucherSettingForm(HTML5BootstrapModelForm):
         model = VoucherSetting
         exclude = ('company', 'voucher_number_start_date')
         widgets = {
-            'invoice_default_tax_application_type': forms.Select(attrs={'class': 'selectize'}),
+            'sale_default_tax_application_type': forms.Select(attrs={'class': 'selectize'}),
             'purchase_default_tax_application_type': forms.Select(attrs={'class': 'selectize'}),
             'invoice_default_tax_scheme': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('tax_scheme_add')}),
             'purchase_default_tax_scheme': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('tax_scheme_add')}),
         }
-        company_filters = ('invoice_default_tax_scheme', 'purchase_default_tax_scheme')
+        company_filters = ('sale_default_tax_scheme', 'purchase_default_tax_scheme')
 
