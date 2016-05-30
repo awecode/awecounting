@@ -162,13 +162,13 @@ class PartyRateSerializer(serializers.ModelSerializer):
         last_purchase = PurchaseVoucherRow.objects.filter(item=obj, purchase__party_id=self.context.get('party_pk'),
                                                           purchase__company=self.context.get('request').company).order_by(
             'purchase__date').last()
-        return last_purchase.rate if last_purchase else 0
+        return last_purchase.rate if last_purchase else None
 
     def get_last_sale_price(self, obj):
         last_sale = SaleRow.objects.filter(item=obj, sale__party_id=self.context.get('party_pk'),
                                            sale__company=self.context.get('request').company).order_by(
             'sale__date').last()
-        return last_sale.rate if last_sale else 0
+        return last_sale.rate if last_sale else None
 
     class Meta:
         model = Item

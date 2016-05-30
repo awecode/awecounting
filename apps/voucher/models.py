@@ -103,7 +103,7 @@ class PurchaseVoucher(models.Model):
 
 class PurchaseVoucherRow(models.Model):
     sn = models.PositiveIntegerField()
-    item = models.ForeignKey(Item)
+    item = models.ForeignKey(Item, related_name='purchases')
     quantity = models.FloatField()
     rate = models.FloatField()
     discount = models.CharField(max_length=50, blank=True, null=True)
@@ -251,7 +251,7 @@ class Sale(models.Model):
 
 class SaleRow(models.Model):
     sn = models.PositiveIntegerField()
-    item = models.ForeignKey(Item)
+    item = models.ForeignKey(Item, related_name='sales')
     quantity = models.FloatField()
     rate = models.FloatField()
     discount = models.FloatField(default=0)

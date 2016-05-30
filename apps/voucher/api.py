@@ -80,4 +80,8 @@ class PartyRateListAPI(CompanyAPI, generics.ListAPIView):
         return context
 
     def get_queryset(self):
-        return self.serializer_class.Meta.model.objects.filter()
+        if self.kwargs.get('voucher') == 'purchase':
+            return self.serializer_class.Meta.model.objects.filter(purchases__purchase__party_id=self.kwargs.get('party_pk')).select_related()
+        elif self.kwargs.get('voucher') == 'sale':
+            return self.serializer_class.Meta.model.objects.filter(sales__sale__party_id=self.kwargs.get('party_pk')).select_related()
+    
