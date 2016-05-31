@@ -117,8 +117,7 @@ class LotItemDetail(models.Model):
 class Lot(models.Model):
     lot_number = models.CharField(max_length=150, unique=True)
     lot_item_details = models.ManyToManyField(
-        LotItemDetail,
-        through='PurchaseVoucherRow'
+        LotItemDetail
     )
 
     def __unicode__(self):
@@ -136,7 +135,6 @@ class PurchaseVoucherRow(models.Model):
     purchase = models.ForeignKey(PurchaseVoucher, related_name='rows')
     journal_entry = GenericRelation(JournalEntry)
     lot = models.ForeignKey(Lot, null=True, blank=True)
-    lot_item_detail = models.ForeignKey(LotItemDetail, null=True, blank=True)
 
     def get_total(self):
         total = float(self.quantity) * float(self.rate)
