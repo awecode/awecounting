@@ -115,7 +115,37 @@ function SaleViewModel(data, settings) {
         if (selected_party) {
             if (selected_party.tax_preference != null) {
                 self.tax_vm.tax_scheme(selected_party.tax_preference.tax_scheme)
-                if (selected_party.tax_preference.default_tax_application_type != 'no-peference' && selected_party.tax_preference.default_tax_application_type != null) {
+                if (selected_paunction TaxViewModel(tax, tax_scheme){
+//    var self = this;
+//
+//
+//    self.tax = ko.observable(tax);
+//    self.tax_scheme = ko.observable();
+//    self.tax_choices = ko.observableArray(choices);
+//
+//    if (tax_scheme) {
+//        self.tax_scheme(tax_scheme);
+//    };
+//
+//    if (self.tax() == 'no') {
+//        self.tax_scheme_visibility(false);
+//    };
+//
+//    self.get_scheme = function() {
+//        var bool;
+//        if (self.tax_scheme() == '' ) {
+//            bool = true;
+//        };
+//        $( "tr.total td:first-child" ).each(function() {
+//            if (self.tax_scheme_visibility() && bool) {
+//              $( this ).attr( "colspan", colspan + 1 );
+//            } else {
+//              $( this ).attr( "colspan", colspan );
+//            }
+//        });
+//        return self.tax_scheme_visibility() && bool;
+//    };
+//}rty.tax_preference.default_tax_application_type != 'no-peference' && selected_party.tax_preference.default_tax_application_type != null) {
                     self.tax_vm.tax(selected_party.tax_preference.default_tax_application_type)
                 }
                 ;
