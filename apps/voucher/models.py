@@ -487,10 +487,10 @@ class VoucherSetting(models.Model):
                                                              blank=True)
     purchase_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True,
                                                     related_name="default_purchase_tax_scheme")
-    purchase_suggest_by_item = models.BooleanField(default=True, verbose_name='Suggest rate by item')
-    purchase_suggest_by_party_item = models.BooleanField(default=True, verbose_name='Suggest rate by item by party')
-    sale_suggest_by_item = models.BooleanField(default=True, verbose_name='Suggest rate by item')
-    sale_suggest_by_party_item = models.BooleanField(default=True, verbose_name='Suggest rate by item by party')
+    purchase_suggest_by_item = models.BooleanField(default=True, verbose_name='Suggest rate by item in purchase voucher')
+    purchase_suggest_by_party_item = models.BooleanField(default=True, verbose_name='Suggest rate by item by party purchase voucher')
+    sale_suggest_by_item = models.BooleanField(default=True, verbose_name='Suggest rate by item sale voucher')
+    sale_suggest_by_party_item = models.BooleanField(default=True, verbose_name='Suggest rate by item by party sale voucher')
 
     def __unicode__(self):
         return self.company.name
