@@ -407,19 +407,19 @@ def save_purchase(request):
                 item_id = row.get('item')['id']
                 lot_number = row.get('lot_number')
                 po_receive_lot, created = Lot.objects.get_or_create(lot_number=lot_number)
-                if not created:
-                    item_exists = False
-                    for item in po_receive_lot.lot_item_details.all():
-                        if item.item_id == item_id:
-                            item_exists = True
-                            item.qty += int(row.get('quantity'))
-                            item.save()
-                    if not item_exists:
-                        lot_item_detail = LotItemDetail.objects.create(
-                            item_id=item_id,
-                            qty=int(row.get('quantity'))
-                        )
-                        po_receive_lot.lot_item_details.add(lot_item_detail)
+
+                item_exists = False
+                for item in po_receive_lot.lot_item_details.all():
+                    if item.item_id == item_id:
+                        item_exists = True
+                        item.qty += int(row.get('quantity'))
+                        item.save()
+                if not item_exists:
+                    lot_item_detail = LotItemDetail.objects.create(
+                        item_id=item_id,
+                        qty=int(row.get('quantity'))
+                    )
+                    po_receive_lot.lot_item_details.add(lot_item_detail)
 
 
                 values = {
