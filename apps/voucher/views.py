@@ -368,6 +368,17 @@ def save_purchase(request):
 
     if params.get('id'):
         obj = PurchaseVoucher.objects.get(id=params.get('id'), company=request.company)
+        for row in obj.rows.all():
+            lot = row.po_receive_lot
+            for item in lot.lot_item_details.all():
+                if item.item == row.item:
+                    if item.qty == row.quantity:
+                        lot.lot_item_details.remove(item)
+                        item.delete()
+                    else:
+                        item.qty -= row.quantity
+                        item.save()
+
     else:
         obj = PurchaseVoucher(company=request.company)
     try:
@@ -393,13 +404,23 @@ def save_purchase(request):
                 #     discount = None
                 # else:
                 #     discount = row.get('discount')
-
+                item_id = row.get('item')['id']
                 lot_number = row.get('lot_number')
                 po_receive_lot, created = Lot.objects.get_or_create(lot_number=lot_number)
-                lot_item_detail = LotItemDetail.objects.create(
-                    item_id=row.get('item')['id'],
-                    qty=int(row.get('quantity'))
-                )
+                if not created:
+                    item_exists = False
+                    for item in po_receive_lot.lot_item_details.all():
+                        if item.item_id == item_id:
+                            item_exists = True
+                            item.qty += int(row.get('quantity'))
+                            item.save()
+                    if not item_exists:
+                        lot_item_detail = LotItemDetail.objects.create(
+                            item_id=item_id,
+                            qty=int(row.get('quantity'))
+                        )
+                        po_receive_lot.lot_item_details.add(lot_item_detail)
+
 
                 values = {
                           'sn': ind + 1,
@@ -411,7 +432,7 @@ def save_purchase(request):
                           'tax_scheme_id': row_tax_scheme_id,
                           'purchase': obj,
                           'po_receive_lot': po_receive_lot,
-                          'lot_item_detail': lot_item_detail
+                          # 'lot_item_detail': lot_item_detail
                         }
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
