@@ -56,7 +56,7 @@ function SaleViewModel(data, settings) {
     
     self.tax = ko.observable();
     self.tax_scheme = ko.observable();
-    //self.tax_scheme_id = ko.observable();
+    self.tax_scheme_id = ko.observable();
 
     self.voucher_discount = ko.observable(0);
 
