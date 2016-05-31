@@ -369,7 +369,7 @@ def save_purchase(request):
     if params.get('id'):
         obj = PurchaseVoucher.objects.get(id=params.get('id'), company=request.company)
         for row in obj.rows.all():
-            lot = row.po_receive_lot
+            lot = row.lot
             for item in lot.lot_item_details.all():
                 if item.item == row.item:
                     if item.qty == row.quantity:
@@ -409,6 +409,7 @@ def save_purchase(request):
                 po_receive_lot, created = Lot.objects.get_or_create(lot_number=lot_number)
 
                 item_exists = False
+
                 for item in po_receive_lot.lot_item_details.all():
                     if item.item_id == item_id:
                         item_exists = True
@@ -431,7 +432,7 @@ def save_purchase(request):
                           'discount': row.get('discount'),
                           'tax_scheme_id': row_tax_scheme_id,
                           'purchase': obj,
-                          'po_receive_lot': po_receive_lot,
+                          'lot': po_receive_lot,
                           # 'lot_item_detail': lot_item_detail
                         }
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
