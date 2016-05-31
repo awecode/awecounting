@@ -20,17 +20,40 @@
                 </div>
                 {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
             </div>            
-            <br>
             <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        {{ form.use_nepali_fy_system }} {{ form.use_nepali_fy_system.label }}
+                        {{ form.purchase_suggest_by_item }} {{ form.purchase_suggest_by_item.label }}
                     </label>
                 </div>
                 {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-            </div>            
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        {{ form.purchase_suggest_by_party_item }} {{ form.purchase_suggest_by_party_item.label }}
+                    </label>
+                </div>
+                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        {{ form.sale_suggest_by_item }} {{ form.sale_suggest_by_item.label }}
+                    </label>
+                </div>
+                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        {{ form.sale_suggest_by_party_item }} {{ form.sale_suggest_by_party_item.label }}
+                    </label>
+                </div>
+                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+            </div>
             
-        
+
 
         <h1> {% trans "Invoice Settings" %}</h1>
         
@@ -51,12 +74,12 @@
                 {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
             </div>            
             <p>
-            <label>{{ form.invoice_default_tax_application_type.label }}</label>
-                {{ form.invoice_default_tax_application_type }}
+            <label>{{ form.sale_default_tax_application_type.label }}</label>
+                {{ form.sale_default_tax_application_type }}
             </p>
             <p>
-                <label>{{ form.invoice_default_tax_scheme.label }}</label>
-                {{ form.invoice_default_tax_scheme }}
+                <label>{{ form.sale_default_tax_scheme.label }}</label>
+                {{ form.sale_default_tax_scheme }}
             </p>
         
 

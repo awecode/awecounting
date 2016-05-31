@@ -3,8 +3,10 @@
 import json
 from datetime import date, timedelta
 import importlib
+
 from django.core import serializers
 from django.db.models.query import QuerySet
+from django.forms import model_to_dict
 from django.template import Library
 from django.utils.safestring import mark_safe
 from django.db.models import Model
@@ -86,21 +88,24 @@ class RoleInGroup(template.Node):
 def handler(obj):
     if hasattr(obj, 'isoformat'):
         return obj.isoformat()
-    # elif isinstance(obj, ...):
-    # return ...
+    elif obj.__class__.__name__ == 'Company':
+        return obj.id
+    elif isinstance(obj, Model):
+        model_dict = model_to_dict(obj)
+        return model_dict
     else:
         raise TypeError, 'Object of type %s with value of %s is not JSON serializable' % (type(obj), repr(obj))
 
 
 @register.filter
-def jsonify(object):
-    if isinstance(object, QuerySet):
-        return serializers.serialize('json', object)
-    if isinstance(object, Model):
-        model_dict = object.__dict__
+def jsonify(obj):
+    if isinstance(obj, QuerySet):
+        return serializers.serialize('json', obj)
+    if isinstance(obj, Model):
+        model_dict = obj.__dict__
         del model_dict['_state']
-        return mark_safe(json.dumps(model_dict))
-    return mark_safe(json.dumps(object, default=handler))
+        return mark_safe(json.dumps(model_dict, default=handler))
+    return mark_safe(json.dumps(obj, default=handler))
 
 
 @register.filter
@@ -343,12 +348,14 @@ def multiply(a, b):
         return a * b
     return ''
 
+
 @register.filter
 def dr_or_cr(val):
     if val < 0:
         return str(val * -1) + ' (Cr)'
     else:
         return str(val) + ' (Dr)'
+
 
 @register.filter
 def get_particulars(entry, account):

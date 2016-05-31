@@ -31,6 +31,9 @@
                     </td>
                     <td>
                         {{ item.name }}
+                        {% if item.company != request.company %}
+                            (<b>{{ item.company }}</b>)
+                        {% endif %}
                     </td>
                     <td>
                         {{ item.other_properties |default:'' }}

@@ -25,7 +25,7 @@
         <th>{% anchor voucher_no _('Voucher No.') %}</th>
         <th>{% anchor date _('Date') %}</th>
         <th>{% anchor party _('Party') %}</th>
-        {% ifrole "Accountant" %}
+        {% ifrole "Stokist" %}
         <th>{% trans "Action" %}</th>
         {% endrole %}
         </thead>
@@ -43,7 +43,7 @@
                     {{ purchase_order.party }}
                 </a>
             </td>
-            {% ifrole "Accountant" %}
+            {% ifrole "Stokist" %}
             <td>
                 <a href="{% url 'purchase_order_edit' purchase_order.id %}">{% trans "Edit" %}</a>
             </td>
@@ -73,7 +73,7 @@
         <th>{% anchor voucher_no _('Voucher No.') %}</th>
         <th>{% anchor date _('Date') %}</th>
         <th>{% anchor party _('Party') %}</th>
-        {% ifrole "Accountant" %}
+        {% ifrole "Stokist" %}
         <th>{% trans "Action" %}</th>
         {% endrole %}
         </thead>
@@ -91,7 +91,7 @@
                     {{ agent_purchase_order.party }}
                 </a>
             </td>
-            {% ifrole "Accountant" %}
+            {% ifrole "Stokist" %}
             <td>
                 <a href="{% url 'purchase_order_edit' agent_purchase_order.id %}">{% trans "Edit" %}</a>
             </td>

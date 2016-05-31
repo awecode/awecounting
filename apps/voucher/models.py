@@ -1,15 +1,13 @@
 from __future__ import unicode_literals
 
 from datetime import date
-from django.contrib.contenttypes.fields import GenericRelation
 
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse_lazy
 from njango.fields import BSDateField, today
 from django.db import models
-
 from django.utils.translation import ugettext_lazy as _
-
 from django.dispatch import receiver
 
 from ..inventory.models import Item, Unit
@@ -126,7 +124,7 @@ class Lot(models.Model):
 
 class PurchaseVoucherRow(models.Model):
     sn = models.PositiveIntegerField()
-    item = models.ForeignKey(Item)
+    item = models.ForeignKey(Item, related_name='purchases')
     quantity = models.FloatField()
     rate = models.FloatField()
     discount = models.CharField(max_length=50, blank=True, null=True)
@@ -218,10 +216,11 @@ class Sale(models.Model):
 
     def clean(self):
         if self.company.settings.unique_voucher_number:
-            if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).filter(
-                    date__gte=self.company.settings.get_fy_start(self.date),
-                    date__lte=self.company.settings.get_fy_end(self.date)).exclude(pk=self.pk):
-                raise ValidationError(_('Voucher no. already exists for the fiscal year!'))
+            pass
+            # if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).filter(
+            #       date__gte=self.company.settings.get_fy_start(self.date),
+            #       date__lte=self.company.settings.get_fy_end(self.date)).exclude(pk=self.pk):
+            #   raise ValidationError(_('Voucher no. already exists for the fiscal year!'))
 
     def get_absolute_url(self):
         return reverse_lazy('sale-edit', kwargs={'pk': self.pk})
@@ -274,7 +273,7 @@ class Sale(models.Model):
 
 class SaleRow(models.Model):
     sn = models.PositiveIntegerField()
-    item = models.ForeignKey(Item)
+    item = models.ForeignKey(Item, related_name='sales')
     quantity = models.FloatField()
     rate = models.FloatField()
     discount = models.FloatField(default=0)
@@ -497,11 +496,11 @@ class VoucherSetting(models.Model):
     unique_voucher_number = models.BooleanField(default=True)
     single_discount_on_whole_invoice = models.BooleanField(default=True)
     discount_on_each_invoice_particular = models.BooleanField(default=False)
-    invoice_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='exclusive',
-                                                            null=True,
-                                                            blank=True)
-    invoice_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True,
-                                                   related_name="default_invoice_tax_scheme")
+    sale_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='exclusive',
+                                                         null=True,
+                                                         blank=True)
+    sale_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True,
+                                                related_name="default_invoice_tax_scheme")
 
     single_discount_on_whole_purchase = models.BooleanField(default=True)
     discount_on_each_purchase_particular = models.BooleanField(default=False)
@@ -510,15 +509,10 @@ class VoucherSetting(models.Model):
                                                              blank=True)
     purchase_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True,
                                                     related_name="default_purchase_tax_scheme")
-    voucher_number_start_date = BSDateField(default=today)
-    # voucher_number_restart_years = models.IntegerField(default=1)
-    # voucher_number_restart_months = models.IntegerField(default=0)
-    # voucher_number_restart_days = models.IntegerField(default=0)
-
-    def save(self, *args, **kwargs):
-        # if self.use_nepali_fy_system:
-        ret = super(VoucherSetting, self).save(*args, **kwargs)
-        return ret
+    purchase_suggest_by_item = models.BooleanField(default=True, verbose_name='Suggest rate by item in purchase voucher')
+    purchase_suggest_by_party_item = models.BooleanField(default=True, verbose_name='Suggest rate by item by party purchase voucher')
+    sale_suggest_by_item = models.BooleanField(default=True, verbose_name='Suggest rate by item sale voucher')
+    sale_suggest_by_party_item = models.BooleanField(default=True, verbose_name='Suggest rate by item by party sale voucher')
 
     def __unicode__(self):
         return self.company.name
@@ -554,5 +548,3 @@ class ExpenseRow(models.Model):
     pay_head = models.ForeignKey(Account, related_name="cash_and_bank")
     amount = models.IntegerField()
     expense_row = models.ForeignKey(Expense, related_name="rows")
-
-

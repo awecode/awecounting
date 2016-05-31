@@ -15,6 +15,7 @@
     <script src="{% static 'voucher/js/sale.js' %}"></script>
     <script>
         ko_data = {{data|jsonify}};
+        voucher_settings = {{ request.company.settings|jsonify }};
     </script>
     <script>
         {% if not request.company.settings.invoice_default_tax_scheme and request.company.settings.discount_on_each_invoice_particular or request.company.settings.invoice_default_tax_scheme and request.company.settings.discount_on_each_invoice_particular %}
@@ -117,7 +118,7 @@
                     </td>
                     <td>
                         <select data-url="{% url 'item_add' %}?source=sale" data-script="/static/inventory/js/item.js"
-                                data-bind="selectize: $root.items, value: item_id, object:item, selectize_options:{render: {'option': render_option, 'item':render_option}}">
+                                data-bind="selectize: $root.items, value: item_id, object:item">
                         </select>
                     </td>
                     <td data-bind="editableText: quantity, numeric: true"></td>

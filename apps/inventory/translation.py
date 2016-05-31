@@ -4,5 +4,5 @@ from .models import Unit, Item
 from awecounting.utils.translation import NameDescriptionTranslationOptions, NameTranslationOptions
 
 translator.register(Unit, NameTranslationOptions)
-translator.register(Item, NameDescriptionTranslationOptions)
+# translator.register(Item, NameDescriptionTranslationOptions)
 

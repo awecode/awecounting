@@ -13,7 +13,8 @@ from .serializers import ItemSerializer, InventoryAccountRowSerializer
 from ..voucher.models import Sale
 from .models import Item, UnitConversion, Unit, JournalEntry, InventoryAccount
 from .forms import ItemForm, UnitForm, UnitConversionForm
-from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView, \
+    StockistMixin
 
 
 @login_required
@@ -37,11 +38,12 @@ def index(request):
 
 def item_search(request):
     code = request.POST.get('search-code')
-    company_to_search = Pin.accessible_companies(request.company) + Pin.connected_companies(request.company) + [request.company]
+    company_to_search = Pin.accessible_companies(request.company) + Pin.connected_companies(request.company) + [
+        request.company]
     obj = Item.objects.filter(name=code, company__in=company_to_search)
     if not obj:
         obj = Item.objects.filter(code=code, company__in=company_to_search)
-    if len(obj) == 1:
+    if len(obj) == 1 and obj.first().company == request.company:
         itm = obj[0]
         inventory_account = InventoryAccount.objects.get(item__name=itm.name, company__in=company_to_search)
         url = reverse('view_inventory_account', kwargs={'pk': inventory_account.id})
@@ -188,7 +190,7 @@ class InventoryAccountView(CompanyView):
     template_name = 'list_inventory_accounts.html'
 
 
-class InventoryAccountList(InventoryAccountView, ListView):
+class InventoryAccountList(InventoryAccountView, StockistMixin, ListView):
     def get_queryset(self):
         return self.model.objects.order_by('-item')
 
@@ -197,7 +199,7 @@ class InventoryAccountList(InventoryAccountView, ListView):
 #     objects = InventoryAccount.objects.filter(company=request.company).order_by('-item')
 #     return render(request, 'list_inventory_accounts.html', {'objects': objects})
 
-class InventoryAccountDetail(InventoryAccountView, DetailView):
+class InventoryAccountDetail(InventoryAccountView, StockistMixin, DetailView):
     template_name = 'inventory_account_detail.html'
 
     def get_context_data(self, *args, **kwargs):
@@ -253,7 +255,7 @@ class InventoryAccountDetail(InventoryAccountView, DetailView):
 #                   {'obj': obj, 'entries': journal_entries, 'unit_conversions': conversions, 'unit': unit,
 #                    'multiple': multiple})
 
-class InventoryAccountWithRate(InventoryAccountView, DetailView):
+class InventoryAccountWithRate(InventoryAccountView, StockistMixin, DetailView):
     template_name = 'inventory_account_detail_with_rate.html'
 
     def get_context_data(self, *args, **kwargs):

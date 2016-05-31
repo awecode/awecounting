@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    vm = new SaleViewModel(ko_data);
+    vm = new SaleViewModel(ko_data, voucher_settings);
     ko.applyBindings(vm);
 });
 
@@ -60,7 +60,7 @@ function TaxViewModel(tax, tax_scheme){
 }
 
 
-function SaleViewModel(data) {
+function SaleViewModel(data, settings) {
     var self = this;
 
     
@@ -92,7 +92,7 @@ function SaleViewModel(data) {
     self.status = ko.observable();
 
     $.ajax({
-        url: '/inventory/api/items.json',
+        url: '/inventory/api/sale/items.json',
         dataType: 'json',
         async: false,
         success: function (data) {
@@ -249,6 +249,24 @@ function SaleViewModel(data) {
             }
         });
     }
+    
+    if (settings.sale_suggest_by_party_item) {
+        self.party.subscribe(function (party) {
+            $.ajax({
+                url: '/voucher/api/sale/party/' + party.id + '/rates.json',
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    ko.utils.arrayForEach(data, function (rate_item) {
+                        var item = ko.utils.arrayFirst(self.items(), function (itm) {
+                            return itm.id == rate_item.id;
+                        });
+                        item.last_sale_price = rate_item.last_sale_price;
+                    });
+                }
+            });
+        })
+    }
 
     self.id.subscribe(function (id) {
         update_url_with_id(id);
@@ -283,6 +301,9 @@ function SaleRow(row, sale_vm) {
         self[k] = ko.observable(row[k]);
 
     self.item.subscribe(function (item) {
+        if (item.last_sale_price && !self.rate()) {
+            self.rate(item.last_sale_price);
+        }
         if (item.unit) {
             var unit = get_by_id(sale_vm.units(), item.unit.id);
             if (!self.unit_id())
