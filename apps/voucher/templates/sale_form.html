@@ -1,14 +1,13 @@
 {% extends "_base.html" %}
-{% load staticfiles i18n njango_filters %}
-{% load filters %}
+{% load staticfiles i18n filters njango_filters %}
 
 {% block page-title %}
-    {{ scenario }} {% trans 'Sales' %}
+    {{ scenario }} {% trans 'Sale Voucher' %}
 {% endblock %}
 
 {% block breadcrumbs %}
-    <li><a href="{% url 'sale-list' %}">{% trans 'Sales' %}</a></li>
-    <li>{{ scenario }} {% trans 'Sales' %}</li>
+    <li><a href="{% url 'sale-list' %}">{% trans 'Sale Vouchers' %}</a></li>
+    <li>{{ scenario }} {% trans 'Sale Voucher' %}</li>
 {% endblock %}
 
 {% block extrahead %}
@@ -28,13 +27,14 @@
 {% endblock %}
 
 {% block content %}
+
     <form method="post" data-bind="submit: save">
         {% csrf_token %}
         <div class="well">
             <div class="row">
                 <div class="col-md-6 col-sm-12">
-                    <label for="voucher_no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
-                    <input type="text" data-bind="value: voucher_no" class="form-control" id="voucher_no">
+                    <label for="voucher-no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
+                    <input type="text" data-bind="value: voucher_no" class="form-control" id="voucher-no">
                 </div>
                 <div class="col-md-6 col-sm-12">
                     <label for="date">{% trans 'Date' %}</label>
@@ -45,8 +45,8 @@
             <div class="row">
                 <div class="col-md-6 col-sm-12">
                     <label for="party">{% trans 'Party' %}</label>
-                    <select data-bind="selectize: $root.parties, value: party_id, object: party"
-                            data-url="{% url 'party_add' %}?source=sale" id="party"></select>
+                    <select id="party" data-bind="selectize: $root.parties, value: party_id, object: party"
+                            data-url="{% url 'party_add' %}?source=sale"></select>
                 </div>
 
                 <div class="col-md-6 col-sm-12 hidden-print" data-bind="if: party_balance">
@@ -54,18 +54,20 @@
 
                     <div data-bind="text: party_balance"></div>
                 </div>
+
             </div>
 
             <div class="row">
 
                 <div class="col-md-6 col-sm-12">
+
                     <div class="form-group">
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" data-bind="checked: credit"> {% trans 'Credit' %}
                             </label>
                         </div>
-                        <p class="help-block">{% trans 'Check if this is a credit purchase.' %}</p>
+                        <p class="help-block">{% trans 'Check if this is a credit sale.' %}</p>
                     </div>
                 </div>
 
@@ -74,23 +76,23 @@
                     <input type="text" data-bind="value: due_date, enable: credit" class="form-control {% calendar_class %}"
                            id="due_date">
                 </div>
-
             </div>
-            <div class="row" data-bind="with: tax_vm">
+            <div class="row">
                 <div class="col-md-6 col-sm-12">
                     <label for="party">{% trans 'Tax' %}</label>
                     <select name="tax" class="form-control" id="tax"
-                            data-bind="selectize: tax_choices, optionsText: 'value', value: tax"></select>
+                            data-bind="selectize: tax_types, optionsText: 'value', value: tax"></select>
                 </div>
-                <div data-bind="visible: tax_scheme_visibility">
-                    <div class="col-md-6 col-sm-12">
+                <div>
+                    <div class="col-md-6 col-sm-12" data-bind="visible: tax()!='no'">
                         <label for="due_date">{% trans 'Tax Scheme' %}</label>
-                        <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme"
+                        <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme_id, object: tax_scheme"
                                 data-url="{% url 'tax_scheme_add' %}"></select>
                     </div>
                 </div>
             </div>
         </div>
+
 
         <div data-bind="with: table_view" class="well">
 
@@ -102,11 +104,12 @@
                     <th>{% trans "Quantity" %}</th>
                     <th>{% trans "Rate" %}</th>
                     <th>{% trans "Unit" %}</th>
-                    <th data-bind="visible: $root.tax_vm.get_scheme()">{% trans "Tax Scheme" %}</th>
-                    {% if request.company.settings.discount_on_each_purchase_particular %}
+                    {% if request.company.settings.discount_on_each_invoice_particular %}
                         <th>{% trans 'Discount' %}</th>
                     {% endif %}
+                    <th data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">{% trans "Tax Scheme" %}</th>
                     <th>{% trans 'Total' %}</th>
+                    <th></th>
                 </tr>
                 </thead>
 
@@ -118,24 +121,22 @@
                     </td>
                     <td>
                         <select data-url="{% url 'item_add' %}?source=sale" data-script="/static/inventory/js/item.js"
-                                data-bind="selectize: $root.items, value: item_id, object:item">
+                                data-bind="selectize: $root.items, value: item_id, object: item, selectize_options:{render: {'option': render_option, 'item':render_option}}">
                         </select>
                     </td>
                     <td data-bind="editableText: quantity, numeric: true"></td>
                     <td data-bind="editableText: rate, numeric: true"></td>
-                    <td>
+                    <td class="unit-cell">
                         <select data-bind="selectize: $root.units, value: unit_id, object:unit, selectize_options:{render: {'option': render_unit_options}}"
-                                data-url="{% url 'unit_add' %}?"></select>
+                                data-url="{% url 'unit_add' %}"></select>
                     </td>
-                    <!-- ko with: row_tax_vm -->
-                    <td data-bind="visible: $root.tax_vm.get_scheme()">
-                        <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme"
-                                data-url="{% url 'tax_scheme_add' %}"></select>
-                    </td>
-                    <!-- /ko -->
-                    {% if request.company.settings.discount_on_each_purchase_particular %}
+                    {% if request.company.settings.discount_on_each_invoice_particular %}
                         <td data-bind="editableText: discount, percentage_numeric: true"></td>
                     {% endif %}
+                    <td data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">
+                        <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme_id, object: tax_scheme"
+                                data-url="{% url 'tax_scheme_add' %}"></select>
+                    </td>
                     <td data-bind="text: total"></td>
                     <td class="hide-on-print text-center">
                         <a href="#" class="red fa fa-trash-o fa-2x" data-bind="click: $parent.removeRow"></a>
@@ -143,44 +144,51 @@
                 </tr>
 
                 <!-- /ko -->
-                <tr class="sub-total total" data-bind="visible: $root.tax_vm.tax_scheme_visibility">
+                <tr class="sub-total total">
                     <td colspan="7">
                         {% trans 'Sub Total' %}
                     </td>
-                    <td colspan="2" data-bind="text: $root.sub_total(), localize: 1"></td>
+                    <td colspan="2" data-bind="text: $root.sub_total(), localize: 2"></td>
 
+                </tr>
+                {% if request.company.settings.discount_on_each_invoice_particular %}
+                    <tr class="discount-total total">
+                        <td colspan="7">
+                            {% trans 'Discounted Amount' %}
+                        </td>
+                        <td colspan="2" data-bind="text: $root.total_discount(), localize: 2"></td>
+                    </tr>
+                {% endif %}
+                {% if request.company.settings.single_discount_on_whole_invoice %}
+                    <tr class="discount-total total">
+                        <td colspan="7">
+                            {% trans 'Discount' %}
+                        </td>
+                        <td colspan="2"
+                            data-bind="editableText: $root.voucher_discount, percentage_numeric: true, localize: 2"></td>
+                    </tr>
+                {% endif %}
+                <!-- ko if: $root.tax()!='no' -->
+                <tr class="taxable-amount total">
+                    <td colspan="7">
+                        {% trans 'Taxable Amount' %}
+                    </td>
+                    <td colspan="2" data-bind="text: $root.taxable_amount(), localize: 2"></td>
                 </tr>
                 <tr class="tax-total total">
                     <td colspan="7">
                         {% trans 'Tax Amount' %}
                     </td>
-                    <td colspan="2" data-bind="text: $root.tax_amount(), localize: 1"></td>
+                    <td colspan="2" data-bind="text: $root.tax_amount(), localize: 2"></td>
                 </tr>
-                {% if request.company.settings.discount_on_each_purchase_particular %}
-                    <tr class="discount-total total">
-                        <td colspan="7">
-                            {% trans 'Discount Amount' %}
-                        </td>
-                        <td colspan="2" data-bind="text: $root.discount(), localize: 1"></td>
-                    </tr>
-                {% endif %}
-                {% if request.company.settings.single_discount_on_whole_purchase %}
-                    <tr class="discount-total total">
-                        <td colspan="7">
-                            {% trans 'Discount' %}
-                        </td>
-                        <td colspan="2" data-bind="editableText: $root.voucher_discount,percentage_numeric: true, localize: 1"></td>
-                    </tr>
-                {% endif %}
-
+                <!-- /ko -->
                 <tr class="grand-total total">
                     <td colspan="7">
-                        {% trans 'Grand Amount' %}
+                        {% trans 'Grand Total' %}
                     </td>
-                    <td colspan="2" data-bind="text: $root.grand_total(), localize: 1"></td>
+                    <td colspan="2" data-bind="text: $root.grand_total(), localize: 2"></td>
 
                 </tr>
-
                 </tbody>
 
             </table>
@@ -188,6 +196,11 @@
                 {% trans 'Add New Row' %}
             </a>
         </div>
-        <input type="submit" class="btn btn-info btn-raised" value="{% trans 'Save' %}">
+        <input type="submit" class="btn btn-raised btn-info" value="{% trans 'Save' %}">
+        {% if scenario == 'Update' %}
+            <a class="btn btn-danger btn-raised" href="{% url 'sale_delete' obj.id %}">{% trans 'Delete!' %}</a>
+        {% endif %}
     </form>
+
+
 {% endblock %}

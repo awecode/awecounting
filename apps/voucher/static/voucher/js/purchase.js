@@ -84,7 +84,7 @@ function PurchaseViewModel(data, settings) {
         async: false,
         success: function (data) {
             self.items = ko.observableArray(data);
-        }
+    }
     });
 
     $.ajax({
