@@ -111,7 +111,7 @@ class Account(models.Model):
 
     def suggest_code(self):
         if self.category:
-            cat_code = self.category.code
+            cat_code = self.category.code or ''
             max = 0
             for account in self.category.accounts.all():
                 code = account.code.strip(cat_code + '-')
