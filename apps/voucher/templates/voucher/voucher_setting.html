@@ -20,18 +20,21 @@
                 </div>
                 {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
             </div>            
+
+        <h1> {% trans "Invoice Settings" %}</h1>
+        
             <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        {{ form.purchase_suggest_by_item }} {{ form.purchase_suggest_by_item.label }}
+                        {{ form.single_discount_on_whole_invoice }} {{ form.single_discount_on_whole_invoice.label }}
                     </label>
                 </div>
                 {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-            </div>
+            </div>            
             <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        {{ form.purchase_suggest_by_party_item }} {{ form.purchase_suggest_by_party_item.label }}
+                        {{ form.discount_on_each_invoice_particular }} {{ form.discount_on_each_invoice_particular.label }}
                     </label>
                 </div>
                 {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
@@ -52,27 +55,7 @@
                 </div>
                 {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
             </div>
-            
 
-
-        <h1> {% trans "Invoice Settings" %}</h1>
-        
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        {{ form.single_discount_on_whole_invoice }} {{ form.single_discount_on_whole_invoice.label }}
-                    </label>
-                </div>
-                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-            </div>            
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        {{ form.discount_on_each_invoice_particular }} {{ form.discount_on_each_invoice_particular.label }}
-                    </label>
-                </div>
-                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-            </div>            
             <p>
             <label>{{ form.sale_default_tax_application_type.label }}</label>
                 {{ form.sale_default_tax_application_type }}
@@ -100,7 +83,24 @@
                     </label>
                 </div>
                 {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-            </div>            
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        {{ form.purchase_suggest_by_item }} {{ form.purchase_suggest_by_item.label }}
+                    </label>
+                </div>
+                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        {{ form.purchase_suggest_by_party_item }} {{ form.purchase_suggest_by_party_item.label }}
+                    </label>
+                </div>
+                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+            </div>
+
             <p>
             <label>{{ form.purchase_default_tax_application_type.label }}</label>
                 {{ form.purchase_default_tax_application_type }}
