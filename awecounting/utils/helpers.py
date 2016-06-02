@@ -156,3 +156,7 @@ def save_qs_from_ko(model, filter_kwargs, request_body):
         return {}
     except Exception as e:
         return {'error': str(e)}
+
+
+def get_dict(lst, key, val):
+    return next((item for item in lst if item[key] == val), None)

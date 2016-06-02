@@ -1,8 +1,10 @@
 from django.contrib import admin
+
 from awecounting.utils.mixins import CompanyAdmin
-from .models import FixedAsset, FixedAssetRow, AdditionalDetail, PurchaseVoucherRow, SaleRow, PurchaseVoucher, Sale, JournalVoucher, \
+from .models import FixedAsset, FixedAssetRow, AdditionalDetail, PurchaseVoucherRow, SaleRow, PurchaseVoucher, Sale, \
+    JournalVoucher, \
     JournalVoucherRow, CashReceipt, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, VoucherSetting, \
-    ExpenseRow, Expense, TradeExpense
+    ExpenseRow, Expense, TradeExpense, Lot, LotItemDetail
 
 
 class PurchaseVoucherRowInline(admin.TabularInline):
@@ -13,6 +15,7 @@ class PurchaseVoucherAdmin(CompanyAdmin):
     inlines = [
         PurchaseVoucherRowInline,
     ]
+
 
 class ExpenseRowInline(admin.TabularInline):
     model = ExpenseRow
@@ -55,7 +58,7 @@ class PurchaseOrderRowInline(admin.TabularInline):
 
 class PurchaseOrderRowAdmin(admin.ModelAdmin):
     list_display = ('item', 'quantity', 'unit',
-                    'rate', 
+                    'rate',
                     # 'vattable',
                     'remarks')
     search_fields = ('item',)
@@ -85,8 +88,6 @@ admin.site.register(VoucherSetting, CompanyAdmin)
 admin.site.register(Expense, ExpenseAdmin)
 admin.site.register(ExpenseRow)
 admin.site.register(TradeExpense)
-
-
 
 
 class JournalVoucherRowInline(admin.TabularInline):
@@ -125,3 +126,5 @@ admin.site.register(CashReceipt, CashReceiptAdmin)
 admin.site.register(CashReceiptRow)
 admin.site.register(CashPayment, CashPaymentAdmin)
 admin.site.register(CashPaymentRow)
+admin.site.register(Lot)
+admin.site.register(LotItemDetail)

@@ -669,3 +669,8 @@ ul.mega-dropdown-menu li {
 }
 
 /* EO Trial Balance */
+
+
+.row.ul div{
+ text-decoration: underline;   
+}

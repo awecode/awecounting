@@ -48,10 +48,11 @@ class PurchaseVoucherRowSerializer(serializers.ModelSerializer):
     item_id = serializers.ReadOnlyField()
     unit_id = serializers.ReadOnlyField()
     tax_scheme_id = serializers.ReadOnlyField()
+    lot_number = serializers.CharField(source='lot.lot_number')
 
     class Meta:
         model = PurchaseVoucherRow
-        exclude = ['item', 'unit', 'tax_scheme']
+        exclude = ['item', 'unit', 'tax_scheme', 'lot']
 
 
 class PurchaseVoucherSerializer(serializers.ModelSerializer):
