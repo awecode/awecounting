@@ -54,6 +54,15 @@ class PurchaseVoucherRowSerializer(serializers.ModelSerializer):
         exclude = ['item', 'unit', 'tax_scheme']
 
 
+class ExportPurchaseVoucherRowSerializer(serializers.ModelSerializer):
+    item_id = serializers.ReadOnlyField()
+    unit_id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = PurchaseVoucherRow
+        fields = ['item_id', 'unit_id', 'quantity', 'rate']
+
+
 class PurchaseVoucherSerializer(serializers.ModelSerializer):
     rows = PurchaseVoucherRowSerializer(many=True)
     date = serializers.DateField(format=None)

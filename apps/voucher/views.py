@@ -16,11 +16,12 @@ from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete
 from .forms import JournalVoucherForm, VoucherSettingForm, CashPaymentForm, CashReceiptForm
 from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
     CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer, \
-    ExpenseSerializer
+    ExpenseSerializer, ExportPurchaseVoucherRowSerializer
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, \
     JournalVoucherRow, \
     PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, \
     VoucherSetting, Expense, ExpenseRow, TradeExpense
+from django.views.generic import TemplateView
 
 
 class FixedAssetView(CompanyView):
@@ -294,6 +295,35 @@ class PurchaseVoucherCreate(PurchaseVoucherView, TableObjectMixin):
             context['data'] = data
         return context
 
+class ExportPurchaseVoucher(TemplateView):
+    model = PurchaseVoucher
+    serializer_class = PurchaseVoucherSerializer
+    template_name = 'purchase-form.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ExportPurchaseVoucher, self).get_context_data(*args, **kwargs)
+        purchase_order = PurchaseOrder.objects.get(pk=self.kwargs.get('purchase_order_pk'))
+
+        if purchase_order.purchase_voucher.all().exists():
+            obj = purchase_order.purchase_voucher.all()[0]
+        else:
+            obj = self.model(company=self.request.company)
+            obj.party = purchase_order.party
+            obj.date = purchase_order.date
+            tax = self.request.company.settings.purchase_default_tax_application_type
+            tax_scheme = self.request.company.settings.purchase_default_tax_scheme
+            if tax:
+                obj.tax = tax
+            if tax_scheme:
+                obj.tax_scheme = tax_scheme
+            rows = purchase_order.rows.filter(fulfilled=True)
+            row_data = ExportPurchaseVoucherRowSerializer(rows, many=True).data
+        context['data'] = self.serializer_class(obj).data
+        if row_data:
+            context['data']['rows'] = row_data
+        context['data']['purchase_order_id'] = purchase_order.id
+        context['obj'] = obj
+        return context
 
 @group_required('Accountant')
 def save_cash_receipt(request):
@@ -365,6 +395,7 @@ def save_purchase(request):
                      'discount': params.get('voucher_discount'),
                      'credit': params.get('credit'), 'tax': params.get('tax'),
                      'tax_scheme_id': empty_to_none(params.get('tax_scheme_id')),
+                     'purchase_order_id': empty_to_none(params.get('purchase_order_id')),
                      'company': request.company}
 
     if params.get('id'):

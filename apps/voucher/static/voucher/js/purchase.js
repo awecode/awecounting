@@ -56,9 +56,10 @@ function PurchaseViewModel(data, settings) {
     ]
     self.tax = ko.observable();
     self.tax_scheme = ko.observable();
-
+    self.purchase_order_id = ko.observable();
     self.voucher_discount = ko.observable(0);
 
+    self.items_of_current_company = ko.observable();
     for (var k in data) {
         if (k == 'discount') {
             self.voucher_discount(data[k])
@@ -251,6 +252,7 @@ function PurchaseViewModel(data, settings) {
                         var item = ko.utils.arrayFirst(self.items(), function (itm) {
                             return itm.id == rate_item.id;
                         });
+                        debugger;
                         item.last_purchase_price = rate_item.last_purchase_price;
                     });
                 }

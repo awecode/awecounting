@@ -68,6 +68,8 @@ web_urls = [
 
     url(r'^voucher_setting/$', views.VoucherSettingUpdateView.as_view(), name='voucher_setting'),
 
+    url(r'^export_purchase_voucher/(?P<purchase_order_pk>\d+)$', views.ExportPurchaseVoucher.as_view(), name='export_purchase_voucher'),
+
 ]
 
 api_urls = [
