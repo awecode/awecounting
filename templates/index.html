@@ -161,12 +161,26 @@
     <div class="tile flip-container">
         <i class="fa fa-area-chart"></i>
 
+
         <div class="flip-body">
             <h2>{% trans 'Reports' %}</h2>
             <a href="{% url 'report:trial_balance' %}">{% trans 'Trial Balance' %}</a>
             <a href="{% url 'report:trading_account' %}">{% trans 'Trading Account' %}</a>
             <a href="{% url 'report:profit_loss' %}">{% trans 'Profit & Loss A/C' %}</a>
             <a href="{% url 'report:balance_sheet' %}">{% trans 'Balance Sheet' %}</a>
+
+
+        </div>
+
+    </div>
+
+    <div class="tile flip-container">
+        <i class="fa fa-building-o"></i>
+
+        <div class="flip-body">
+            <h2>{% trans 'Branch' %}</h2>
+            <a href="{% url 'users:branch_list' %}">{% trans 'List Branches' %}</a>
+            <a href="{% url 'users:branch_add' %}">{% trans 'New Branch' %}</a>
         </div>
 
     </div>

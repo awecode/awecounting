@@ -463,21 +463,12 @@ class SaleCreate(SaleView, TableObjectMixin):
 def save_sale(request):
     if request.is_ajax():
         params = json.loads(request.body)
-    dct = {'rows': {}}
-    if params.get('voucher_no') == '':
-        params['voucher_no'] = None
-
-    if params.get('tax_vm').get('tax'):
-        tax = params.get('tax_vm').get('tax')
-
-    if params.get('tax_vm').get('tax') == 'no':
-        tax_scheme_id = None
-    else:
-        tax_scheme_id = params.get('tax_vm').get('tax_scheme')
-
-    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
+    dct = {'rows': {}, 'tax': {}}
+    object_values = {'voucher_no': empty_to_none(params.get('voucher_no')), 'date': params.get('date'),
                      'party_id': params.get('party_id'), 'due_date': params.get('due_date'),
-                     'credit': params.get('credit'), 'tax': tax, 'tax_scheme_id': empty_to_none(tax_scheme_id),
+                     'discount': params.get('voucher_discount'),
+                     'credit': params.get('credit'), 'tax': params.get('tax'),
+                     'tax_scheme_id': empty_to_none(params.get('tax_scheme_id')),
                      'company': request.company}
 
     if params.get('id'):
@@ -487,26 +478,18 @@ def save_sale(request):
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
-        dct['tax'] = obj.tax
-        dct['tax_scheme_id'] = obj.tax_scheme_id
         model = SaleRow
         grand_total = 0
         if not obj.credit:
             cash_account = get_account(request, 'Cash')
         for ind, row in enumerate(params.get('table_view').get('rows')):
-            invalid_check = invalid(row, ['item_id', 'quantity', 'unit_id'])
-            if invalid_check:
+            if invalid(row, ['item_id', 'quantity', 'unit_id']):
                 continue
             else:
-                if params.get('tax_vm').get('tax') == 'no':
+                if params.get('tax') == 'no' or params.get('tax_scheme_id'):
                     row_tax_scheme_id = None
-                    row.get('row_tax_vm')['tax'] = 'no'
                 else:
-                    row_tax_scheme_id = row.get('row_tax_vm').get('tax_scheme')
-                if params.get('tax_vm').get('tax_scheme') != '0' and params.get('tax_vm').get('tax_scheme') != '':
-                    row_tax_scheme_id = None
-                    row.get('row_tax_vm')['tax'] = 'no'
-
+                    row_tax_scheme_id = row.get('tax_scheme_id')
                 values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'quantity': row.get('quantity'),
                           'rate': row.get('rate'), 'unit_id': row.get('unit')['id'], 'discount': row.get('discount'),
                           'tax_scheme_id': row_tax_scheme_id,
@@ -516,24 +499,27 @@ def save_sale(request):
                     submodel = save_model(submodel, values)
                 grand_total += submodel.get_total()
                 dct['rows'][ind] = submodel.id
-                set_transactions(submodel, obj.date,
-                                 ['cr', submodel.item.account, submodel.quantity],
-                                 )
+                # TODO dr or cr in sale
+                # set_transactions(submodel, obj.date,
+                #                  ['dr', submodel.item.account, submodel.quantity],
+                #                  )
+
                 if obj.credit:
-                    set_ledger_transactions(submodel, obj.date,
-                                            ['dr', obj.party.customer_account, obj.total],
-                                            ['dr', submodel.item.sale_ledger, obj.total],
-                                            # ['cr', sales_tax_account, tax_amount],
-                                            )
+                    cr_acc = obj.party.supplier_account
                 else:
-                    set_ledger_transactions(submodel, obj.date,
-                                            ['dr', cash_account, obj.total],
-                                            ['dr', submodel.item.sale_ledger, obj.total],
-                                            # ['cr', sales_tax_account, tax_amount],
-                                            )
+                    cr_acc = cash_account
+
+                # set_ledger_transactions(submodel, obj.date,
+                #                         ['dr', submodel.item.purchase_ledger, obj.total],
+                #                         ['cr', cr_acc, obj.total],
+                #                         # ['cr', sales_tax_account, tax_amount],
+                #                         )
+
         delete_rows(params.get('table_view').get('deleted_rows'), model)
+
         obj.total_amount = grand_total
         if obj.credit:
+            # TODO when pending amount exists
             obj.pending_amount = grand_total
         obj.save()
     except Exception as e:
