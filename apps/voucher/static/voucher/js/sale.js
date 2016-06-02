@@ -129,6 +129,15 @@ function SaleViewModel(data, settings) {
             return -1 * self.party().balance;
     });
 
+    self.render_party_options = function (data) {
+        var obj = get_by_id(vm.parties(), data.id);
+        var klass = '';
+        if (obj.related_company != null) {
+            klass = 'green'
+        }
+        return '<div class="' + klass + '">' + obj.name + '</div>';
+    }
+
     self.table_view = new TableViewModel({rows: data.rows, argument: self}, SaleRow);
 
     self.id.subscribe(function (id) {

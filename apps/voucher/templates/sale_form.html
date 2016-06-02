@@ -45,7 +45,7 @@
             <div class="row">
                 <div class="col-md-6 col-sm-12">
                     <label for="party">{% trans 'Party' %}</label>
-                    <select id="party" data-bind="selectize: $root.parties, value: party_id, object: party"
+                    <select id="party" data-bind="selectize: $root.parties, value: party_id, object: party, selectize_options:{render: {'option': render_party_options}}"
                             data-url="{% url 'party_add' %}?source=sale"></select>
                 </div>
 
