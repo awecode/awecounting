@@ -491,6 +491,9 @@ class VoucherSetting(models.Model):
     purchase_suggest_by_party_item = models.BooleanField(default=True, verbose_name='Suggest rate by item by party')
     sale_suggest_by_item = models.BooleanField(default=True, verbose_name='Suggest rate by item')
     sale_suggest_by_party_item = models.BooleanField(default=True, verbose_name='Suggest rate by item by party')
+    enable_expense_in_purchase = models.BooleanField(default=True, verbose_name='Enable Expense')
+    add_expense_cost_to_purchase = models.BooleanField(default=True, verbose_name='Add expense cost')
+
 
     def __unicode__(self):
         return self.company.name
