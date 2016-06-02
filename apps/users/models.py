@@ -6,14 +6,12 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Group
 from django.utils import timezone
-
 from django.utils.translation import ugettext_lazy as _
-
 from django.dispatch import receiver
-
 from njango.fields import BSDateField, today
 from njango.middleware import get_calendar
 from njango.nepdate import tuple_from_string, string_from_tuple, bs2ad, bs, ad2bs, date_from_tuple, tuple_from_date
+
 from signals import company_creation
 
 
@@ -103,6 +101,9 @@ class Company(models.Model):
 
     def show_reports(self):
         return self.subscription.enable_reports
+
+    def can_manage_branches(self):
+        return self.subscription.enable_branches
 
     @property
     def fy(self):
@@ -202,6 +203,7 @@ class Subscription(models.Model):
     enable_share_management = models.BooleanField(default=True)
     enable_payroll = models.BooleanField(default=True)
     enable_reports = models.BooleanField(default=True)
+    enable_branches = models.BooleanField(default=False)
     interconnection_among_branches = models.BooleanField(default=True)
 
     def __str__(self):

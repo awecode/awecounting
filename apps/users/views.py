@@ -313,10 +313,12 @@ def copy_attribute(old, new, *args):
             setattr(new, field.name, getattr(old, field.name))
     new.save()
 
+
 class BranchView(CompanyView):
     model = Branch
     form_class = BranchForm
     success_url = reverse_lazy('users:branch_list')
+    check = 'can_manage_branches'
 
     def form_valid(self, form):
         super(BranchView, self).form_valid(form)
@@ -334,6 +336,10 @@ class BranchView(CompanyView):
         copy_attribute(self.request.company.report_settings, self.object.branch_company.report_settings, ['id', 'company'])
         copy_attribute(self.request.company.subscription, self.object.branch_company.subscription, ['id', 'company'])
         copy_attribute(self.request.company.settings, self.object.branch_company.settings, ['id', 'company'])
+
+        # Do not allow branch management for branches
+        self.object.branch_company.subscription.enable_branches = False
+        self.object.branch_company.subscription.save()
 
         if self.request.company.subscription.interconnection_among_branches:
             for branch in self.request.company.branches.all():

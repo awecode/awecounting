@@ -174,16 +174,18 @@
 
     </div>
 
-    <div class="tile flip-container">
-        <i class="fa fa-building-o"></i>
+    {% if request.company.can_manage_branches %}
+        <div class="tile flip-container">
+            <i class="fa fa-building-o"></i>
 
-        <div class="flip-body">
-            <h2>{% trans 'Branch' %}</h2>
-            <a href="{% url 'users:branch_list' %}">{% trans 'List Branches' %}</a>
-            <a href="{% url 'users:branch_add' %}">{% trans 'New Branch' %}</a>
+            <div class="flip-body">
+                <h2>{% trans 'Branch' %}</h2>
+                <a href="{% url 'users:branch_list' %}">{% trans 'List Branches' %}</a>
+                <a href="{% url 'users:branch_add' %}">{% trans 'New Branch' %}</a>
+            </div>
+
         </div>
-
-    </div>
+    {% endif %}
 
 </div>
 <div class="sales-report row">
