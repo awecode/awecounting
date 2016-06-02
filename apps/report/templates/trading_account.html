@@ -1,0 +1,44 @@
+{% extends "_base.html" %}
+{% load i18n staticfiles filters %}
+
+{% block page-title %}{% trans 'Trading Account' %}{% endblock %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block header-buttons %}
+{#    <ul class="nav navbar-right">#}
+{#        <li class="dropdown mega-dropdown ">#}
+{#            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">#}
+{#                <i class="fa fa-cog"></i> {% trans 'Settings' %}<span class="fa fa-chevron-down pull-right"></span>#}
+{#            </a>#}
+{##}
+{#            <ul class="dropdown-menu mega-dropdown-menu">#}
+{#                <div data-bind="foreachprop: settings">#}
+{#                    <li>#}
+{#                        <input type="checkbox" data-bind="checked: value, attr:{'id': key}">#}
+{#                        <label data-bind="text: name, attr:{'for': key}"></label>#}
+{#                    </li>#}
+{#                </div>#}
+{#                <li>#}
+{#                    <button data-bind="click: save_settings" class="btn btn-raised btn-info">{% trans 'Save Settings' %}</button>#}
+{#                </li>#}
+{#            </ul>#}
+{#        </li>#}
+{#    </ul>#}
+{% endblock %}
+
+{% block content %}
+
+    <div class="well">
+    {% for row in rows %}
+        <div class="row {{ row.2|default:'' }}">
+        <div class="col-sm-6">{{ row.0 }}</div>
+        <div class="col-sm-6">{{ row.1 }}</div>
+        </div>
+    {% endfor %}
+    </div>
+    
+    
+
+{% endblock %}
