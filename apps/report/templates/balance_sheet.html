@@ -1,0 +1,118 @@
+{% extends "_base.html" %}
+{% load i18n staticfiles filters %}
+
+{% block page-title %}{% trans 'Balance Sheet' %}{% endblock %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block header-buttons %}
+    {#    <ul class="nav navbar-right">#}
+    {#        <li class="dropdown mega-dropdown ">#}
+    {#            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">#}
+    {#                <i class="fa fa-cog"></i> {% trans 'Settings' %}<span class="fa fa-chevron-down pull-right"></span>#}
+    {#            </a>#}
+    {##}
+    {#            <ul class="dropdown-menu mega-dropdown-menu">#}
+    {#                <div data-bind="foreachprop: settings">#}
+    {#                    <li>#}
+    {#                        <input type="checkbox" data-bind="checked: value, attr:{'id': key}">#}
+    {#                        <label data-bind="text: name, attr:{'for': key}"></label>#}
+    {#                    </li>#}
+    {#                </div>#}
+    {#                <li>#}
+    {#                    <button data-bind="click: save_settings" class="btn btn-raised btn-info">{% trans 'Save Settings' %}</button>#}
+    {#                </li>#}
+    {#            </ul>#}
+    {#        </li>#}
+    {#    </ul>#}
+{% endblock %}
+
+{% block content %}
+
+    <div class="well">
+        {#    <table class="table table-responsive table-striped">#}
+        {#        <thead>#}
+        {#        <tr>#}
+        {#            <th>{% trans 'Liabilities & Equity' %}</th>#}
+        {#            <th>{% trans 'Assets' %}</th>#}
+        {#        </tr>#}
+        {#        </thead>#}
+        {#        <tbody>#}
+        {#        {% for row in liabilities %}#}
+        {#            <tr>#}
+        {#            <div class="row">#}
+        {#                <div class="col-sm-6"></div>#}
+        {#                <div class="col-sm-6"></div>#}
+        {#            </div>#}
+        {#            </tr>#}
+        {#        {% endfor %}#}
+        {#        </tbody>#}
+        {#    </table>#}
+        <div class="row">
+            <div class="col-sm-6"><strong>{% trans 'Liabilities & Equity' %}</strong></div>
+            <div class="col-sm-6"><strong>{% trans 'Assets' %}</strong></div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                {% for row in equities %}
+                    <div class="tb-row row">
+                        <div class="col-sm-6">{{ row.0 }}</div>
+                        <div class="col-sm-6">{{ row.1 }}</div>
+                    </div>
+                {% endfor %}
+                <div class="tb-row row">
+                    <div class="col-sm-12">
+                        <u>{% trans 'Liabilities' %}</u>
+                    </div>
+                </div>
+                {% for row in liabilities %}
+                    <div class="tb-row row">
+                        <div class="col-sm-6">{{ row.0 }}</div>
+                        <div class="col-sm-6">{{ row.1 }}</div>
+                    </div>
+                {% endfor %}
+                <div class="tb-row row">
+                    <div class="col-sm-6">
+                    </div>
+                    <div class="col-sm-6">
+                        _________________
+                    </div>
+                </div>
+                <div class="tb-row row">
+                    <div class="col-sm-6">
+                    </div>
+                    <div class="col-sm-6">
+                        {{ liabilities_total }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                {% for row in assets %}
+                    <div class="tb-row row">
+                        <div class="col-sm-6">{{ row.0 }}</div>
+                        <div class="col-sm-6">{{ row.1 }}</div>
+                    </div>
+                {% endfor %}
+                <div class="tb-row row">
+                    <div class="col-sm-6">
+                    </div>
+                    <div class="col-sm-6">
+                        _________________
+                    </div>
+                </div>
+                <div class="tb-row row">
+                    <div class="col-sm-6">
+                    </div>
+                    <div class="col-sm-6">
+                        {{ assets_total }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}
