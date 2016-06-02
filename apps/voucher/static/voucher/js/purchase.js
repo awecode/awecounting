@@ -252,8 +252,9 @@ function PurchaseViewModel(data, settings) {
                         var item = ko.utils.arrayFirst(self.items(), function (itm) {
                             return itm.id == rate_item.id;
                         });
-                        debugger;
-                        item.last_purchase_price = rate_item.last_purchase_price;
+                        if (item) {
+                            item.last_purchase_price = rate_item.last_purchase_price;
+                        }
                     });
                 }
             });
