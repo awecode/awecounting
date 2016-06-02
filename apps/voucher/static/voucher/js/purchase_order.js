@@ -108,7 +108,7 @@ function PurchaseViewModel(data) {
         }
     });
 
-    self.expense_view = new TableViewModel({rows: []}, ExpenseRow)
+    self.expense_view = new TableViewModel({rows: data.trade_expense}, ExpenseRow)
 
     self.id.subscribe(function (id) {
         update_url_with_id(id);
@@ -175,8 +175,11 @@ function PurchaseViewModel(data) {
                     self.table_view.deleted_rows([]);
                     if (msg.id)
                         self.id(msg.id);
-                    $("tbody > tr").each(function (i) {
-                        $($("tbody > tr:not(.total)")[i]).addClass('invalid-row');
+                    $("#tbody > tr").each(function (i) {
+                        $($("#tbody > tr:not(.total)")[i]).addClass('invalid-row');
+                    });
+                    $("#tbody-expense > tr").each(function (i) {
+                        $($("#tbody-expense > tr:not(.total)")[i]).addClass('invalid-row');
                     });
                     if (msg.tax == 'no'){
                         for (var i in msg.rows) {
@@ -190,7 +193,11 @@ function PurchaseViewModel(data) {
                     }
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];
-                        $($("tbody > tr")[i]).removeClass('invalid-row');
+                        $($("#tbody > tr")[i]).removeClass('invalid-row');
+                    }
+                    for (var i in msg.expense) {
+                        self.expense_view.rows()[i].id = msg.expense[i];
+                        $($("#tbody-expense > tr")[i]).removeClass('invalid-row');
                     }
                 }
             }
@@ -203,9 +210,12 @@ function PurchaseViewModel(data) {
 function ExpenseRow(row) {
     var self = this;
 
+    self.id = ko.observable();
     self.amount = ko.observable();
     self.expense_id = ko.observable();
 
+    for (var k in row)
+        self[k] = ko.observable(row[k]);
 }
 function PurchaseRow(row, purchase_vm) {
     var self = this;
@@ -219,7 +229,7 @@ function PurchaseRow(row, purchase_vm) {
     self.unit_id = ko.observable();
     self.specification = ko.observable();
     // self.vattable = ko.observable();
-    self.fulfilled = ko.observable();
+    self.fulfilled = ko.observable(false);
     self.remarks = ko.observable();
 
     for (var k in row)

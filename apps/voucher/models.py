@@ -3,13 +3,15 @@ from __future__ import unicode_literals
 from datetime import date
 
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse_lazy
-from njango.fields import BSDateField, today
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.dispatch import receiver
+from django.contrib.contenttypes.fields import GenericForeignKey
 
+from njango.fields import BSDateField, today
 from ..inventory.models import Item, Unit
 from ..ledger.models import Party, Account, JournalEntry
 from ..users.models import Company, User
@@ -128,11 +130,23 @@ class PurchaseVoucherRow(models.Model):
         return _('PurchaseVoucher')
 
 
+class TradeExpense(models.Model):
+    expense = models.ForeignKey(Account)
+    amount = models.IntegerField()
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    def __str__(self):
+        return str(self.expense) + str(self.amount)
+
+
 class PurchaseOrder(models.Model):
     party = models.ForeignKey(Party)
     voucher_no = models.IntegerField(blank=True, null=True)
     date = BSDateField(default=today)
     purchase_agent = models.ForeignKey(User, related_name="purchase_order", blank=True, null=True)
+    trade_expense = GenericRelation(TradeExpense)
     company = models.ForeignKey(Company)
 
     def __init__(self, *args, **kwargs):
@@ -493,7 +507,6 @@ class VoucherSetting(models.Model):
     sale_suggest_by_party_item = models.BooleanField(default=True, verbose_name='Suggest rate by item by party')
     enable_expense_in_purchase = models.BooleanField(default=True, verbose_name='Enable Expense')
     add_expense_cost_to_purchase = models.BooleanField(default=True, verbose_name='Add expense cost')
-
 
     def __unicode__(self):
         return self.company.name

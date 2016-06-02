@@ -20,7 +20,7 @@ from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, \
     JournalVoucherRow, \
     PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, \
-    VoucherSetting, Expense, ExpenseRow
+    VoucherSetting, Expense, ExpenseRow, TradeExpense
 
 
 class FixedAssetView(CompanyView):
@@ -704,7 +704,7 @@ class PurchaseOrderDetailView(PurchaseOrderView, StockistMixin, DetailView):
 def save_purchase_order(request):
     if request.is_ajax():
         params = json.loads(request.body)
-    dct = {'rows': {}}
+    dct = {'rows': {}, 'expense':{}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
 
@@ -751,8 +751,18 @@ def save_purchase_order(request):
                 #                              obj.total],
                 #                             # ['cr', sales_tax_account, tax_amount],
                 #                             )
+        for ind, row in enumerate(params.get('expense_view').get('rows')):
+            if invalid(row, ['expense_id', 'amount']):
+                continue
+            else:
+                values = {'expense_id': row.get('expense_id'), 'amount': row.get('amount'),
+                          'content_object': obj}
+                submodel, created = TradeExpense.objects.get_or_create(id=row.get('id'), defaults=values)
+                if not created:
+                    submodel = save_model(submodel, values)
+                dct['expense'][ind] = submodel.id
 
-        delete_rows(params.get('table_view').get('deleted_rows'), model)
+        delete_rows(params.get('expense_view').get('deleted_rows'), TradeExpense)
 
         # obj.total_amount = grand_total
         # if obj.credit:

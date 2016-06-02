@@ -2,9 +2,18 @@ from rest_framework import serializers
 
 from ..inventory.models import Item
 from ..users.models import User
-from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashPayment, CashPaymentRow, CashReceipt, CashReceiptRow, \
+from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashPayment, CashPaymentRow, CashReceipt, \
+    CashReceiptRow, \
     PurchaseVoucherRow, PurchaseVoucher, SaleRow, Sale, JournalVoucherRow, JournalVoucher, \
-    PurchaseOrder, PurchaseOrderRow, ExpenseRow, Expense
+    PurchaseOrder, PurchaseOrderRow, ExpenseRow, Expense, TradeExpense
+
+
+class TradeExpenseSerializer(serializers.ModelSerializer):
+    expense_id = serializers.ReadOnlyField(source='expense.id')
+
+    class Meta:
+        model = TradeExpense
+        exclude = ('expense',)
 
 
 class CashReceiptRowSerializer(serializers.ModelSerializer):
@@ -67,6 +76,7 @@ class PurchaseOrderRowSerializer(serializers.ModelSerializer):
 
 class PurchaseOrderSerializer(serializers.ModelSerializer):
     rows = PurchaseOrderRowSerializer(many=True)
+    trade_expense = TradeExpenseSerializer(many=True)
     date = serializers.DateField(format=None)
     purchase_agent_id = serializers.ReadOnlyField()
     party_id = serializers.ReadOnlyField()
@@ -160,7 +170,8 @@ class PartyRateSerializer(serializers.ModelSerializer):
 
     def get_last_purchase_price(self, obj):
         last_purchase = PurchaseVoucherRow.objects.filter(item=obj, purchase__party_id=self.context.get('party_pk'),
-                                                          purchase__company=self.context.get('request').company).order_by(
+                                                          purchase__company=self.context.get(
+                                                              'request').company).order_by(
             'purchase__date').last()
         return last_purchase.rate if last_purchase else None
 
