@@ -118,7 +118,6 @@ function PurchaseViewModel(data, settings) {
                         };
                     }
                 });
-                console.log(company_items)
             } else if (party.related_company == null && party.company != self.items_of_current_company()) {
                 company_item = get_by_id(company_items, party.company);
                 self.items(company_item.items);
