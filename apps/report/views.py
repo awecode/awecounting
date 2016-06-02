@@ -63,6 +63,7 @@ class ReportSettingUpdateView(SuperOwnerMixin, UpdateView):
 def get_subnode(node, name):
     return get_dict(node['nodes'], 'name', name)
 
+
 def trading_account(request):
     rows = []
     data = get_trial_balance_data(request.company)
@@ -74,7 +75,7 @@ def trading_account(request):
     rows.append(('(Purchases)', purchases['dr']))
     direct_expenses = get_subnode(expenses, 'Direct Expenses')
     rows.append(('(Direct Expenses)', direct_expenses['dr']))
-    rows.append(('Gross Profit', float(sales['cr']) - float(purchases['dr'])-float(direct_expenses['dr']), 'ul'))
+    rows.append(('Gross Profit', float(sales['cr']) - float(purchases['dr']) - float(direct_expenses['dr']), 'ul'))
     return render(request, 'trading_account.html', {'data': data, 'rows': rows})
 
 
@@ -84,10 +85,19 @@ def profit_loss(request):
     income = get_subnode(data, 'Income')
     sales = get_subnode(income, 'Sales')
     rows.append(('Sales', sales['cr']))
+    direct_income = get_subnode(income, 'Direct Income')
+    rows.append(('Other Direct Income', direct_income['cr']))
     expenses = get_subnode(data, 'Expenses')
     purchases = get_subnode(expenses, 'Purchase')
     rows.append(('(Purchases)', purchases['dr']))
     direct_expenses = get_subnode(expenses, 'Direct Expenses')
     rows.append(('(Direct Expenses)', direct_expenses['dr']))
-    rows.append(('Gross Profit', float(sales['cr']) - float(purchases['dr'])-float(direct_expenses['dr']), 'ul'))
+    gross_profit = float(sales['cr']) + float(direct_income['cr']) - float(purchases['dr']) - float(direct_expenses['dr'])
+    rows.append(('Gross Profit', gross_profit, 'ul'))
+    indirect_income = get_subnode(income, 'Indirect Income')
+    rows.append(('Indirect Income', indirect_income['cr']))
+    indirect_expenses = get_subnode(expenses, 'Indirect Expenses')
+    rows.append(('(Indirect Expenses)', indirect_expenses['dr']))
+    net_profit = gross_profit + float(indirect_income['cr']) - float(indirect_expenses['dr'])
+    rows.append(('Net Profit', net_profit, 'ul'))
     return render(request, 'profit_loss.html', {'data': data, 'rows': rows})
