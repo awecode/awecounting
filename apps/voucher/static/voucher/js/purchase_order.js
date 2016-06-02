@@ -98,6 +98,18 @@ function PurchaseViewModel(data) {
 
     self.table_view = new TableViewModel({rows: data.rows, argument: self}, PurchaseRow);
 
+    $.ajax({
+        url: '/ledger/api/account.json',
+        dataType: 'json',
+        data: "categories=direct_expenses,indirect_expenses",
+        async: false,
+        success: function (data) {
+            self.expense_accounts = ko.observableArray(data);
+        }
+    });
+
+    self.expense_view = new TableViewModel({rows: []}, ExpenseRow)
+
     self.id.subscribe(function (id) {
         update_url_with_id(id);
     });
@@ -188,7 +200,13 @@ function PurchaseViewModel(data) {
 
 }
 
+function ExpenseRow(row) {
+    var self = this;
 
+    self.amount = ko.observable();
+    self.expense_id = ko.observable();
+
+}
 function PurchaseRow(row, purchase_vm) {
     var self = this;
 

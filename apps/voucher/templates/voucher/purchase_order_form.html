@@ -51,83 +51,131 @@
             </div>
         </div>
 
+        {% if request.company.settings.enable_expense_in_purchase %}
+            <ul class="nav nav-pills">
+                <li class="active"><a href="#item" data-toggle="tab"><h3>{% trans "Items" %}</h3></a></li>
+                <li><a href="#expense" data-toggle="tab"><h3>{% trans "Expenses" %}</h3></a></li>
+            </ul>
+        {% endif %}
+
         <div class="well">
-            <div data-bind="with:table_view">
+            <div class="tab-content">
+                <div class="content tab-pane active" id="item">
+                    <div data-bind="with:table_view">
 
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th rowspan="2" class="span1">{% trans 'SN' %}</th>
-                        <th rowspan="2" class="span2">{% trans 'Item' %}</th>
-                        <th rowspan="2" class="span2">{% trans 'Specification' %}</th>
-                        <th rowspan="2" class="span3">{% trans 'Quantity' %}</th>
-                        <th rowspan="2" class="span3">{% trans 'Unit' %}</th>
-                        {# <th rowspan="2" class="span3 hidden-print">{% trans 'Vattable' %}</th> #}
-                        <th colspan="2" class="span2">{% trans 'Price' %}</th>
-                        <th rowspan="2" class="span3">{% trans 'Fulfilled' %}</th>
-                        <th rowspan="2" class="span2">{% trans 'Remarks' %}</th>
-                        <th rowspan="2" class="hidden-print"></th>
-                    </tr>
-                    <tr>
-                        <th>{% trans 'Rate' %}</th>
-                        <th>{% trans 'Total Amount' %}</th>
-                    </tr>
-                    </thead>
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th rowspan="2" class="span1">{% trans 'SN' %}</th>
+                                <th rowspan="2" class="span2">{% trans 'Item' %}</th>
+                                <th rowspan="2" class="span2">{% trans 'Specification' %}</th>
+                                <th rowspan="2" class="span3">{% trans 'Quantity' %}</th>
+                                <th rowspan="2" class="span3">{% trans 'Unit' %}</th>
+                                {# <th rowspan="2" class="span3 hidden-print">{% trans 'Vattable' %}</th> #}
+                                <th colspan="2" class="span2">{% trans 'Price' %}</th>
+                                <th rowspan="2" class="span3">{% trans 'Fulfilled' %}</th>
+                                <th rowspan="2" class="span2">{% trans 'Remarks' %}</th>
+                                <th rowspan="2" class="hidden-print"></th>
+                            </tr>
+                            <tr>
+                                <th>{% trans 'Rate' %}</th>
+                                <th>{% trans 'Total Amount' %}</th>
+                            </tr>
+                            </thead>
 
-                    <tbody id="tbody">
-                    <!-- ko foreach: rows -->
-                    <tr>
-                        <td>
-                            <span data-bind="text:  $index()+1, localize: true"> </span>
-                        </td>
-                        <td>
-                            <select data-url="{% url 'item_add' %}" data-script="/static/inventory/js/item.js"
-                                    data-bind="selectize: $root.items, value: item_id, object: item, selectize_options:{render: {'option': render_option, 'item':render_option}}">
-                            </select>
-                            {# <select data-bind="selectize: $root.items, value: item_id, event: {change: $root.item_changed}" #}
-                            {# data-url="{% url 'create_inventory_item' %}" data-script="/static/js/inventory/item.js"></select> #}
-                        </td>
-                        <td data-bind="editableText: specification"></td>
-                        <td data-bind="editableText: quantity, localize: true"></td>
-                        <td>
-                            <select data-bind="selectize: $root.units, value: unit_id, object:unit, selectize_options:{render: {'option': render_unit_options}}"
-                                    data-url="{% url 'unit_add' %}"></select>
-                        </td>
-                        {# <td class="hidden-print"> #}
-                        {# <input type="checkbox" data-bind="checked: vattable"> #}
-                        {# </td> #}
-                        <td data-bind="editableText: rate, localize: 2"></td>
-                        <td data-bind="text: total_amount(), localize: 2"></td>
-                        <td>
-                            <input type="checkbox" data-bind="checked: fulfilled">
-                        </td>
-                        <td class="remarks-cell" data-bind="editableText: remarks"></td>
-                        <td class="hidden-print">
-                            <a href="#" class="red fa fa-trash-o fa-2x" data-bind="click: $parent.removeRow"></a>
-                        </td>
-                    </tr>
-                    <!-- /ko -->
-                    {# <tr class="dont-validate"> #}
-                    {# <td colspan="7" class="text-right"><span>{% trans 'Total' %}</span></td> #}
-                    {# <td colspan="3" data-bind="text: $root.sub_total(), localize: 2"></td> #}
-                    {# </tr> #}
-                    {# <tr class="dont-validate"> #}
-                    {# <td colspan="7" class="text-right"><span>{% trans '1' %}{% trans '3' %}% {% trans 'VAT' %}</span></td> #}
-                    {# <td colspan="3" data-bind="text: $root.vat_amount(), localize: 2"></td> #}
-                    {# </tr> #}
-                    <tr class="dont-validate">
-                        <td colspan="6" class="text-right"><span>{% trans 'Grand Total' %}</span></td>
-                        <td colspan="3" data-bind="text: $root.grand_total(), localize: 2"></td>
-                    </tr>
+                            <tbody id="tbody">
+                            <!-- ko foreach: rows -->
+                            <tr>
+                                <td>
+                                    <span data-bind="text:  $index()+1, localize: true"> </span>
+                                </td>
+                                <td>
+                                    <select data-url="{% url 'item_add' %}" data-script="/static/inventory/js/item.js"
+                                            data-bind="selectize: $root.items, value: item_id, object: item, selectize_options:{render: {'option': render_option, 'item':render_option}}">
+                                    </select>
+                                    {# <select data-bind="selectize: $root.items, value: item_id, event: {change: $root.item_changed}" #}
+                                    {# data-url="{% url 'create_inventory_item' %}" data-script="/static/js/inventory/item.js"></select> #}
+                                </td>
+                                <td data-bind="editableText: specification"></td>
+                                <td data-bind="editableText: quantity, localize: true"></td>
+                                <td>
+                                    <select data-bind="selectize: $root.units, value: unit_id, object:unit, selectize_options:{render: {'option': render_unit_options}}"
+                                            data-url="{% url 'unit_add' %}"></select>
+                                </td>
+                                {# <td class="hidden-print"> #}
+                                {# <input type="checkbox" data-bind="checked: vattable"> #}
+                                {# </td> #}
+                                <td data-bind="editableText: rate, localize: 2"></td>
+                                <td data-bind="text: total_amount(), localize: 2"></td>
+                                <td>
+                                    <input type="checkbox" data-bind="checked: fulfilled">
+                                </td>
+                                <td class="remarks-cell" data-bind="editableText: remarks"></td>
+                                <td class="hidden-print">
+                                    <a href="#" class="red fa fa-trash-o fa-2x"
+                                       data-bind="click: $parent.removeRow"></a>
+                                </td>
+                            </tr>
+                            <!-- /ko -->
+                            {# <tr class="dont-validate"> #}
+                            {# <td colspan="7" class="text-right"><span>{% trans 'Total' %}</span></td> #}
+                            {# <td colspan="3" data-bind="text: $root.sub_total(), localize: 2"></td> #}
+                            {# </tr> #}
+                            {# <tr class="dont-validate"> #}
+                            {# <td colspan="7" class="text-right"><span>{% trans '1' %}{% trans '3' %}% {% trans 'VAT' %}</span></td> #}
+                            {# <td colspan="3" data-bind="text: $root.vat_amount(), localize: 2"></td> #}
+                            {# </tr> #}
+                            <tr class="dont-validate">
+                                <td colspan="6" class="text-right"><span>{% trans 'Grand Total' %}</span></td>
+                                <td colspan="3" data-bind="text: $root.grand_total(), localize: 2"></td>
+                            </tr>
 
-                    </tbody>
-                </table>
-                <a class="btn btn-default btn-raised" data-bind="click: addRow">
-                    {% trans 'Add New Row' %}
-                </a>
+                            </tbody>
+                        </table>
+                        <a class="btn btn-default btn-raised" data-bind="click: addRow">
+                            {% trans 'Add New Row' %}
+                        </a>
+                    </div>
+                </div>
+                <div class="content tab-pane" id="expense">
+                    <div data-bind="with:$root.expense_view">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>{% trans 'SN' %}</th>
+                                <th>{% trans 'Expense' %}</th>
+                                <th>{% trans 'Amount' %}</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+
+                            <tbody id="tbody">
+                            <!-- ko foreach: rows -->
+                            <tr>
+                                <td>
+                                    <span data-bind="text:  $index()+1, localize: true"> </span>
+                                </td>
+                                <td>
+                                    <select data-bind="selectize: $root.expense_accounts, value: expense_id"
+                                            id="from_account"
+                                            data-url="{% url 'account_add' %}"></select>
+                                </td>
+                                <td data-bind="editableText: amount"></td>
+                                <td class="hidden-print">
+                                    <a href="#" class="red fa fa-trash-o fa-2x"
+                                       data-bind="click: $parent.removeRow"></a>
+                                </td>
+                            </tr>
+                            <!-- /ko -->
+                            </tbody>
+                        </table>
+                        <a class="btn btn-default btn-raised" data-bind="click: addRow">
+                            {% trans 'Add New Row' %}
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
-
         <input type="submit" class="btn btn-info btn-raised btn-lg" value="{% trans 'Save' %}">
 
         {% if scenario == 'Update' %}
