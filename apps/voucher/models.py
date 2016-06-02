@@ -21,6 +21,61 @@ from awecounting.utils.helpers import get_discount_with_percent
 from ..users.signals import company_creation
 
 
+class TradeExpense(models.Model):
+    expense = models.ForeignKey(Account)
+    amount = models.IntegerField()
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    def __str__(self):
+        return str(self.expense) + str(self.amount)
+
+
+class PurchaseOrder(models.Model):
+    party = models.ForeignKey(Party)
+    voucher_no = models.IntegerField(blank=True, null=True)
+    date = BSDateField(default=today)
+    purchase_agent = models.ForeignKey(User, related_name="purchase_order", blank=True, null=True)
+    trade_expense = GenericRelation(TradeExpense)
+    company = models.ForeignKey(Company)
+
+    def __init__(self, *args, **kwargs):
+        super(PurchaseOrder, self).__init__(*args, **kwargs)
+        if not self.pk and not self.voucher_no:
+            self.voucher_no = get_next_voucher_no(PurchaseOrder, self.company_id)
+
+    def __unicode__(self):
+        return _('Purchase Order') + ' (' + str(self.voucher_no) + ')'
+
+    @property
+    def total(self):
+        total = 0
+        for obj in self.rows.all():
+            total += obj.quantity * obj.rate
+        return total
+
+
+class PurchaseOrderRow(models.Model):
+    sn = models.PositiveIntegerField()
+    item = models.ForeignKey(Item)
+    specification = models.CharField(max_length=254, blank=True, null=True)
+    quantity = models.FloatField()
+    unit = models.ForeignKey(Unit)
+    # unit = models.CharField(max_length=50)
+    rate = models.FloatField(blank=True, null=True)
+    # vattable = models.BooleanField(default=True)
+    remarks = models.CharField(max_length=254, blank=True, null=True)
+    fulfilled = models.BooleanField(default=False)
+    purchase_order = models.ForeignKey(PurchaseOrder, related_name='rows')
+
+    def get_total(self):
+        total = 0
+        if self.rate:
+            total = float(self.quantity) * float(self.rate)
+        return total
+
+
 class PurchaseVoucher(models.Model):
     tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'), ]
     party = models.ForeignKey(Party)
@@ -34,6 +89,7 @@ class PurchaseVoucher(models.Model):
     total_amount = models.FloatField(null=True, blank=True)
     company = models.ForeignKey(Company)
     discount = models.CharField(max_length=50, blank=True, null=True)
+    purchase_order = models.ForeignKey(PurchaseOrder, blank=True, null=True, related_name='purchase_voucher')
 
     def type(self):
         if self.credit:
@@ -128,61 +184,6 @@ class PurchaseVoucherRow(models.Model):
     @property
     def voucher_type(self):
         return _('PurchaseVoucher')
-
-
-class TradeExpense(models.Model):
-    expense = models.ForeignKey(Account)
-    amount = models.IntegerField()
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('content_type', 'object_id')
-
-    def __str__(self):
-        return str(self.expense) + str(self.amount)
-
-
-class PurchaseOrder(models.Model):
-    party = models.ForeignKey(Party)
-    voucher_no = models.IntegerField(blank=True, null=True)
-    date = BSDateField(default=today)
-    purchase_agent = models.ForeignKey(User, related_name="purchase_order", blank=True, null=True)
-    trade_expense = GenericRelation(TradeExpense)
-    company = models.ForeignKey(Company)
-
-    def __init__(self, *args, **kwargs):
-        super(PurchaseOrder, self).__init__(*args, **kwargs)
-        if not self.pk and not self.voucher_no:
-            self.voucher_no = get_next_voucher_no(PurchaseOrder, self.company_id)
-
-    def __unicode__(self):
-        return _('Purchase Order') + ' (' + str(self.voucher_no) + ')'
-
-    @property
-    def total(self):
-        total = 0
-        for obj in self.rows.all():
-            total += obj.quantity * obj.rate
-        return total
-
-
-class PurchaseOrderRow(models.Model):
-    sn = models.PositiveIntegerField()
-    item = models.ForeignKey(Item)
-    specification = models.CharField(max_length=254, blank=True, null=True)
-    quantity = models.FloatField()
-    unit = models.ForeignKey(Unit)
-    # unit = models.CharField(max_length=50)
-    rate = models.FloatField(blank=True, null=True)
-    # vattable = models.BooleanField(default=True)
-    remarks = models.CharField(max_length=254, blank=True, null=True)
-    fulfilled = models.BooleanField(default=False)
-    purchase_order = models.ForeignKey(PurchaseOrder, related_name='rows')
-
-    def get_total(self):
-        total = 0
-        if self.rate:
-            total = float(self.quantity) * float(self.rate)
-        return total
 
 
 class Sale(models.Model):
