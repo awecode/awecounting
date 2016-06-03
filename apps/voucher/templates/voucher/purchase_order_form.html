@@ -66,20 +66,22 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th rowspan="2" class="span1">{% trans 'SN' %}</th>
-                                <th rowspan="2" class="span2">{% trans 'Item' %}</th>
-                                <th rowspan="2" class="span2">{% trans 'Specification' %}</th>
-                                <th rowspan="2" class="span3">{% trans 'Quantity' %}</th>
-                                <th rowspan="2" class="span3">{% trans 'Unit' %}</th>
-                                {# <th rowspan="2" class="span3 hidden-print">{% trans 'Vattable' %}</th> #}
-                                <th colspan="2" class="span2">{% trans 'Price' %}</th>
-                                <th rowspan="2" class="span3">{% trans 'Fulfilled' %}</th>
-                                <th rowspan="2" class="span2">{% trans 'Remarks' %}</th>
-                                <th rowspan="2" class="hidden-print"></th>
+                                <th>{% trans 'SN' %}</th>
+                                <th>{% trans 'Item' %}</th>
+                                <th>{% trans 'Specification' %}</th>
+                                <th>{% trans 'Quantity' %}</th>
+                                <th>{% trans 'Unit' %}</th>
+                                <th>{% trans 'Rate' %}</th>
+                                <th>{% trans 'Amount' %}</th>
+                                {% if request.company.settings.add_expense_to_purchase %}
+                                    <th>{% trans 'Incl. Expenses' %}</th>
+                                {% endif %}
+                                <th>{% trans 'Fulfilled' %}</th>
+                                <th>{% trans 'Remarks' %}</th>
+                                <th class="hidden-print"></th>
                             </tr>
                             <tr>
-                                <th>{% trans 'Rate' %}</th>
-                                <th>{% trans 'Total Amount' %}</th>
+
                             </tr>
                             </thead>
 
@@ -107,9 +109,13 @@
                                 {# </td> #}
                                 <td data-bind="editableText: rate, localize: 2"></td>
                                 <td data-bind="text: total_amount(), localize: 2"></td>
+                                {% if request.company.settings.add_expense_to_purchase %}
+                                    <td data-bind="text: including_expenses"></td>
+                                {% endif %}
                                 <td>
                                     <input type="checkbox" data-bind="checked: fulfilled">
                                 </td>
+
                                 <td class="remarks-cell" data-bind="editableText: remarks"></td>
                                 <td class="hidden-print">
                                     <a href="#" class="red fa fa-trash-o fa-2x"
@@ -117,17 +123,15 @@
                                 </td>
                             </tr>
                             <!-- /ko -->
-                            {# <tr class="dont-validate"> #}
-                            {# <td colspan="7" class="text-right"><span>{% trans 'Total' %}</span></td> #}
-                            {# <td colspan="3" data-bind="text: $root.sub_total(), localize: 2"></td> #}
-                            {# </tr> #}
-                            {# <tr class="dont-validate"> #}
-                            {# <td colspan="7" class="text-right"><span>{% trans '1' %}{% trans '3' %}% {% trans 'VAT' %}</span></td> #}
-                            {# <td colspan="3" data-bind="text: $root.vat_amount(), localize: 2"></td> #}
-                            {# </tr> #}
-                            <tr class="dont-validate">
+                            <tr class="total">
                                 <td colspan="6" class="text-right"><span>{% trans 'Grand Total' %}</span></td>
-                                <td colspan="3" data-bind="text: $root.grand_total(), localize: 2"></td>
+                                <td data-bind="text: $root.grand_total(), localize: 2"></td>
+                                {% if request.company.settings.add_expense_to_purchase %}
+                                    <td data-bind="text: $root.grand_total_including_expenses(), localize: 2"></td>
+                                {% endif %}
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             </tr>
 
                             </tbody>
@@ -167,6 +171,10 @@
                                 </td>
                             </tr>
                             <!-- /ko -->
+                            <tr class="total">
+                                <th colspan="2">{% trans 'Total' %}</th>
+                                <td data-bind="text: get_total('amount')"></td>
+                            </tr>
                             </tbody>
                         </table>
                         <a class="btn btn-default btn-raised" data-bind="click: addRow">
@@ -186,8 +194,8 @@
         {% endif %}
 
         {% if not obj.purchase_voucher.all.exists %}
-        <a class="btn btn-success btn-raised btn-lg"
-           data-bind="visible: $root.id(), attr: {'href': '/voucher/export_purchase_voucher/'+$root.id()}">{% trans 'Create Purchase Voucher for purchase order' %}</a>
+            <a class="btn btn-success btn-raised btn-lg"
+               data-bind="visible: $root.id(), attr: {'href': '/voucher/export_purchase_voucher/'+$root.id()}">{% trans 'Create Purchase' %}</a>
         {% endif %}
 
 {% endblock %}

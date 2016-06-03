@@ -18,6 +18,8 @@ function PurchaseViewModel(data) {
     }
 
     self.status = ko.observable();
+    
+    self.grand_total_obs = ko.observable(0);
 
     $.ajax({
         url: '/inventory/api/items.json',
@@ -63,7 +65,9 @@ function PurchaseViewModel(data) {
                 });
             } else if (party.related_company == null && party.company != self.items_of_current_company()) {
                 var company_item = get_by_id(company_items, party.company);
-                self.items(company_item.items);
+                if (company_item) {
+                    self.items(company_item.items);
+                }
                 self.items_of_current_company(party.company);
             } else if (party.related_company != null && typeof(company) != 'undefined') {
                 company_item = get_by_id(company_items, party.related_company);
@@ -98,6 +102,8 @@ function PurchaseViewModel(data) {
             return -1 * self.party().balance;
     });
 
+    self.expense_view = new TableViewModel({rows: data.trade_expense}, ExpenseRow);
+
     self.table_view = new TableViewModel({rows: data.rows, argument: self}, PurchaseRow);
 
     $.ajax({
@@ -110,52 +116,33 @@ function PurchaseViewModel(data) {
         }
     });
 
-    self.expense_view = new TableViewModel({rows: data.trade_expense}, ExpenseRow);
 
     self.id.subscribe(function (id) {
         update_url_with_id(id);
     });
 
+    self.total_amount = 0;
 
-    // self.vat_amount = function () {
-    //     var sum = 0;
-    //     self.table_view.rows().forEach(function (i) {
-    //         if (i.vattable())
-    //             sum += 0.13 * i.total_amount();
-    //     });
-    //     return round2(sum);
-    // }
-
-    self.sub_total = function () {
+    self.grand_total = function () {
         var sum = 0;
         self.table_view.rows().forEach(function (i) {
             if (i.total_amount()) {
                 sum += parseFloat(i.total_amount());
             }
         });
-        return round2(sum);
-    }
-
-    // self.discount = function () {
-    //     var sum = 0;
-    //     self.table_view.rows().forEach(function (i) {
-    //         if (String(i.discount()).indexOf('%') !== -1 ) {
-    //             var total = i.rate() * i.quantity();
-    //             var amount = ( parseFloat(i.discount()) / 100 ) * total
-    //             sum += parseFloat(amount);
-    //         } else if (i.discount()) {
-    //             sum += parseFloat(i.discount());
-    //         }
-    //     });
-    //     return r2z(round2(sum));
-    // }
-
-    self.total_amount = 0;
-
-    self.grand_total = function () {
-        self.total_amount = rnum(self.sub_total());
-        return r2z(self.total_amount);
-    }
+        self.grand_total_obs(sum);
+        return r2z(sum);
+    };
+    
+    self.grand_total_including_expenses = function () {
+        var sum = 0;
+        self.table_view.rows().forEach(function (i) {
+            if (i.including_expenses()) {
+                sum += parseFloat(i.including_expenses());
+            }
+        });
+        return r2z(sum);
+    };
 
     self.save = function (item, event) {
         if (!self.party()) {
@@ -219,6 +206,7 @@ function ExpenseRow(row) {
     for (var k in row)
         self[k] = ko.observable(row[k]);
 }
+
 function PurchaseRow(row, purchase_vm) {
     var self = this;
 
@@ -273,6 +261,12 @@ function PurchaseRow(row, purchase_vm) {
     self.total_amount = function () {
         return round2(self.rate() * self.quantity());
     }
+
+    self.including_expenses = ko.computed(function () {
+        var total_expenses = purchase_vm.expense_view.get_total('amount');
+        var grand_total = purchase_vm.grand_total_obs();
+        return r2z((self.total_amount() / grand_total) * (grand_total + total_expenses));
+    });
 
 
     self.render_unit_options = function (data) {

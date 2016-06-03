@@ -92,10 +92,6 @@ td .select2-container {
     text-align: center;
 }
 
-.dont-validate td {
-    background: transparent !important;
-}
-
 .clear {
     clear: both;
 }

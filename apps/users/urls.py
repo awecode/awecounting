@@ -39,7 +39,7 @@ web_urls = [
 ]
 
 api_urls = [
-    url(r'^api/asseccible_company/$', api.AccessibleCompanyAPI.as_view()),
+    url(r'^api/accessible_company/$', api.AccessibleCompanyAPI.as_view()),
     url(r'^api/users/$', api.UserListAPI.as_view()),
 ]
 

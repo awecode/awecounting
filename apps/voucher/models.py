@@ -10,8 +10,8 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.dispatch import receiver
 from django.contrib.contenttypes.fields import GenericForeignKey
-
 from njango.fields import BSDateField, today
+
 from ..inventory.models import Item, Unit
 from ..ledger.models import Party, Account, JournalEntry
 from ..users.models import Company, User
@@ -528,6 +528,9 @@ class VoucherSetting(models.Model):
     sale_suggest_by_party_item = models.BooleanField(default=True, verbose_name='Suggest rate by item by party')
     enable_expense_in_purchase = models.BooleanField(default=True, verbose_name='Enable Expense')
     add_expense_cost_to_purchase = models.BooleanField(default=True, verbose_name='Add expense cost')
+
+    def add_expense_to_purchase(self):
+        return self.enable_expense_in_purchase and self.add_expense_cost_to_purchase
 
     def __unicode__(self):
         return self.company.name
