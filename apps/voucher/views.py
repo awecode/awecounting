@@ -303,7 +303,7 @@ class ExportPurchaseVoucher(TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super(ExportPurchaseVoucher, self).get_context_data(*args, **kwargs)
         purchase_order = PurchaseOrder.objects.get(pk=self.kwargs.get('purchase_order_pk'))
-
+        row_data = []
         if purchase_order.purchase_voucher.all().exists():
             obj = purchase_order.purchase_voucher.all()[0]
         else:
