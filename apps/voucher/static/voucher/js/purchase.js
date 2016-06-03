@@ -327,6 +327,7 @@ function PurchaseRow(row, purchase_vm) {
     self.tax = ko.observable();
     self.tax_scheme_id = ko.observable();
     self.tax_scheme = ko.observable();
+    self.lot_number = ko.observable();
 
     for (var k in row)
         self[k] = ko.observable(row[k]);
