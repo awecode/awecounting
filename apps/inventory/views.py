@@ -79,7 +79,7 @@ def item(request, pk=None):
             if other_properties: item_obj.other_properties = other_properties
             item_obj.save(account_no=form.cleaned_data['account_no'])
             if request.is_ajax():
-                return JsonResponse(ItemSerializer(item_obj).data)
+                return JsonResponse(ItemSerializer(item_obj, context={'request': request}).data)
             return redirect(reverse('item_list'))
     else:
         form = ItemForm(instance=item_obj, request=request)

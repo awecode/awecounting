@@ -86,8 +86,10 @@ function PurchaseViewModel(data, settings) {
         async: false,
         success: function (data) {
             self.items = ko.observableArray(data);
-            self.items_of_current_company(self.items()[0].company);
-            company_items.push({'id': self.items_of_current_company(), 'items': self.items()})
+            if (self.items().length > 0) {
+                self.items_of_current_company(self.items()[0].company);
+                company_items.push({'id': self.items_of_current_company(), 'items': self.items()})
+            }
         }
     });
 
@@ -102,8 +104,8 @@ function PurchaseViewModel(data, settings) {
 
     self.party_id.subscribe(function(party_id) {
         if (party_id) {
-            party = get_by_id(vm.parties, party_id);
-            company = get_by_id(company_items, party.related_company);
+            var party = get_by_id(vm.parties, party_id);
+            var company = get_by_id(company_items, party.related_company);
             if (party.related_company != null && typeof(company) == 'undefined' ) {
                 $.ajax({
                     url: '/inventory/api/items/' + party.related_company + '/?format=json',
@@ -113,22 +115,22 @@ function PurchaseViewModel(data, settings) {
                         if (data.length >= 1) {
                             self.items(data)
                             self.items_of_current_company(data[0].company);
-                            company_items.push({'id': data[0].company, 'items': self.items()})
+                            company_items.push({'id': data[0].company, 'items': self.items()});
                         } else {
                             bsalert.error('Requested company has no item');
                         };
                     }
                 });
             } else if (party.related_company == null && party.company != self.items_of_current_company()) {
-                company_item = get_by_id(company_items, party.company);
+                var company_item = get_by_id(company_items, party.company);
                 self.items(company_item.items);
-                self.items_of_current_company(party.company)
+                self.items_of_current_company(party.company);
             } else if (party.related_company != null && typeof(company) != 'undefined' ){
                 company_item = get_by_id(company_items, party.related_company);
                 self.items(company_item.items);
-                self.items_of_current_company(party.related_company)
-            };
-        };
+                self.items_of_current_company(party.related_company);
+            }
+        }
     });
 
     self.render_party_options = function (data) {
