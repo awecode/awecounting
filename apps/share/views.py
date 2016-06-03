@@ -10,7 +10,7 @@ class ShareHolderView(CompanyView):
     model = ShareHolder
     success_url = reverse_lazy('share:shareholder_list')
     form_class = ShareHolderForm
-    check = 'show_shares'
+    check = 'can_manage_shares'
 
 
 class ShareHolderList(ShareHolderView, ListView):
@@ -33,7 +33,7 @@ class CollectionView(CompanyView):
     model = Collection
     success_url = reverse_lazy('share:collection_list')
     form_class = CollectionForm
-    check = 'show_shares'
+    check = 'can_manage_shares'
 
 
 class CollectionList(CollectionView, ListView):
@@ -56,7 +56,7 @@ class InvestmentView(CompanyView):
     model = Investment
     success_url = reverse_lazy('share:investment_list')
     form_class = InvestmentForm
-    check = 'show_shares'
+    check = 'can_manage_shares'
 
 
 class InvestmentList(InvestmentView, ListView):

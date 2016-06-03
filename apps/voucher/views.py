@@ -236,13 +236,13 @@ class PurchaseVoucherView(CompanyView):
     model = PurchaseVoucher
     serializer_class = PurchaseVoucherSerializer
     success_url = reverse_lazy("purchase-list")
-    check = 'show_purchases'
+    check = 'can_manage_purchases'
 
 
 class SaleView(CompanyView):
     model = Sale
     serializer_class = SaleSerializer
-    check = 'show_sales'
+    check = 'can_manage_sales'
 
 
 class PurchaseVoucherDetailView(PurchaseVoucherView, StaffMixin, DetailView):
@@ -261,7 +261,7 @@ class SaleDetailView(SaleView, StaffMixin, DetailView):
 
 class JournalVoucherDetailView(CompanyView, StaffMixin, DetailView):
     model = JournalVoucher
-    check = 'show_journal_vouchers'
+    check = 'can_manage_journal_vouchers'
 
     def get_context_data(self, **kwargs):
         context = super(JournalVoucherDetailView, self).get_context_data(**kwargs)
@@ -677,7 +677,7 @@ class JournalVoucherView(CompanyView):
     success_url = reverse_lazy('journal_voucher_list')
     form_class = JournalVoucherForm
     serializer_class = JournalVoucherSerializer
-    check = 'show_journal_vouchers'
+    check = 'can_manage_journal_vouchers'
 
 
 class JournalVoucherList(JournalVoucherView, ListView):
@@ -742,7 +742,7 @@ class PurchaseOrderView(CompanyView):
     model = PurchaseOrder
     serializer_class = PurchaseOrderSerializer
     success_url = reverse_lazy("purchase_order_list")
-    check = 'show_purchase_orders'
+    check = 'can_manage_purchase_orders'
 
 
 class PurchaseOrderList(PurchaseOrderView, StockistMixin, ListView):
@@ -854,7 +854,7 @@ class CheckifConnected(object):
 class IncomingPurchaseOrder(CompanyRequiredMixin, StockistMixin, ListView):
     model = PurchaseOrder
     template_name = "voucher/incoming_purchase_order_list.html"
-    check = 'show_purchase_orders'
+    check = 'can_manage_purchase_orders'
 
     def get_queryset(self):
         return self.model.objects.filter(party__related_company=self.request.company)
@@ -862,7 +862,7 @@ class IncomingPurchaseOrder(CompanyRequiredMixin, StockistMixin, ListView):
 
 class IncomingPurchaseOrderDetailView(CompanyRequiredMixin, CheckifConnected, StockistMixin, DetailView):
     model = PurchaseOrder
-    check = 'show_purchase_orders'
+    check = 'can_manage_purchase_orders'
 
     def get_context_data(self, **kwargs):
         context = super(IncomingPurchaseOrderDetailView, self).get_context_data(**kwargs)

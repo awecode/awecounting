@@ -28,19 +28,19 @@
 
 <div id="dashboard-icons" class="row">
 
-    {% if request.company.show_purchases or request.company.show_purchase_orders %}
+    {% if request.company.can_manage_purchases or request.company.can_manage_purchase_orders %}
     <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
         <i class="fa fa-arrow-down"></i>
 
         <div class="flip-body">
             <h2>{% trans 'Purchases' %}</h2>
 
-            {% if request.company.show_purchases %}
+            {% if request.company.can_manage_purchases %}
                 <a href="{% url 'purchase-create' %}">{% trans 'New Purchase Voucher' %}</a>
                 <a href="{% url 'purchase-list' %}">{% trans 'List Purchase Vouchers' %}</a>
             {% endif %}
             {% ifrole "Stockist" %}
-            {% if request.company.show_purchase_orders %}
+            {% if request.company.can_manage_purchase_orders %}
                 <a href="{% url 'purchase_order_create' %}">{% trans 'New Purchase Order' %}</a>
                 <a href="{% url 'purchase_order_list' %}">{% trans 'List Purchase Orders' %}</a>
             {% endif %}

@@ -17,7 +17,7 @@ from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete
 class EntryView(CompanyView):
     model = Entry
     serializer_class = EntrySerializer
-    check = 'show_payroll'
+    check = 'can_manage_payroll'
 
 
 class EntryList(EntryView, ListView):
@@ -84,7 +84,7 @@ class EmployeeView(CompanyView):
     model = Employee
     success_url = reverse_lazy('employee_list')
     form_class = EmployeeForm
-    check = 'show_payroll'
+    check = 'can_manage_payroll'
 
 
 class EmployeeList(EmployeeView, StaffMixin, ListView):
