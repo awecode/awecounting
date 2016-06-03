@@ -182,11 +182,12 @@
             {% if obj.purchase_voucher.all.exists %}
                 <a class="btn btn-info btn-raised btn-lg"
                    href="{% url 'purchase-edit' obj.purchase_voucher.all.first.id %}">{% trans 'Purchase Voucher for purchase order' %}</a>
-            {% else %}
-                <a class="btn btn-success btn-raised btn-lg"
-                   href="{% url 'export_purchase_voucher' obj.id %}">{% trans 'Purchase Voucher for purchase order' %}</a>
             {% endif %}
         {% endif %}
 
+        {% if not obj.purchase_voucher.all.exists %}
+        <a class="btn btn-success btn-raised btn-lg"
+           data-bind="visible: $root.id(), attr: {'href': '/voucher/export_purchase_voucher/'+$root.id()}">{% trans 'Create Purchase Voucher for purchase order' %}</a>
+        {% endif %}
 
 {% endblock %}

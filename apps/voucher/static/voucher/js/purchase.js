@@ -175,7 +175,11 @@ function PurchaseViewModel(data, settings) {
     self.table_view = new TableViewModel({rows: data.rows, argument: self}, PurchaseRow);
 
     self.id.subscribe(function (id) {
-        update_url_with_id(id);
+        if (self.purchase_order_id()) {
+            window.history.pushState(id, id, window.location.href.replace('export_purchase_voucher', 'purchase').replace(/\/[0-9]+/g, '/' + self.id()));
+        } else {
+            update_url_with_id(id);
+        }
     });
 
     //self.has_common_tax = function () {
