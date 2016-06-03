@@ -20,15 +20,15 @@ class EntryView(CompanyView):
     check = 'can_manage_payroll'
 
 
-class EntryList(EntryView, ListView):
+class EntryList(EntryView, AccountantMixin, ListView):
     pass
 
 
-class EntryCreate(EntryView, TableObjectMixin):
+class EntryCreate(EntryView, AccountantMixin, TableObjectMixin):
     template_name = 'payroll/entry_form.html'
 
 
-class EntryDetailView(EntryView, DetailView):
+class EntryDetailView(EntryView, AccountantMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(EntryDetailView, self).get_context_data(**kwargs)
         # TODO Roshan - Why not obj.rows.all in template ?
@@ -36,7 +36,7 @@ class EntryDetailView(EntryView, DetailView):
         return context
 
 
-class EntryDelete(EntryView, DeleteView):
+class EntryDelete(EntryView, AccountantMixin, DeleteView):
     pass
 
 

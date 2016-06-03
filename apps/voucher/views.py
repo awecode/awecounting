@@ -892,15 +892,15 @@ class ExpenseView(CompanyView):
     serializer_class = ExpenseSerializer
 
 
-class ExpenseList(ExpenseView, ListView):
+class ExpenseList(ExpenseView, AccountantMixin, ListView):
     pass
 
 
-class ExpenseDelete(ExpenseView, DeleteView):
+class ExpenseDelete(ExpenseView, AccountantMixin, DeleteView):
     pass
 
 
-class ExpenseDetailView(DetailView):
+class ExpenseDetailView(AccountantMixin, DetailView):
     model = Expense
 
     def get_context_data(self, **kwargs):
@@ -909,7 +909,7 @@ class ExpenseDetailView(DetailView):
         return context
 
 
-class ExpenseCreate(ExpenseView, TableObjectMixin):
+class ExpenseCreate(ExpenseView, AccountantMixin, TableObjectMixin):
     template_name = 'expense_form.html'
 
 
