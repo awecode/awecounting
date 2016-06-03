@@ -364,7 +364,7 @@ def get_extra_data(request, user, sociallogin=None, **kwargs):
 from django.conf import settings
 
 if 'rest_framework.authtoken' in settings.INSTALLED_APPS:
-    from django.db.models.signals import post_save
+    from django.db.models.signals import post_save, post_delete
     from django.dispatch import receiver
     from rest_framework.authtoken.models import Token
 
@@ -474,3 +474,9 @@ class Branch(models.Model):
     class Meta:
         verbose_name_plural = "Branches"
         # def save(self, *args, **kwargs ):
+
+
+def branch_delete(sender, instance, **kwargs):
+    instance.branch_company.delete()
+
+post_delete.connect(branch_delete, sender=Branch)
