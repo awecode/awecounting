@@ -1,7 +1,8 @@
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
 
-from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView, \
+    AccountantMixin
 from .models import ShareHolder, Collection, Investment
 from .forms import ShareHolderForm, CollectionForm, InvestmentForm
 
@@ -10,22 +11,22 @@ class ShareHolderView(CompanyView):
     model = ShareHolder
     success_url = reverse_lazy('share:shareholder_list')
     form_class = ShareHolderForm
-    check = 'show_shares'
+    check = 'can_manage_shares'
 
 
-class ShareHolderList(ShareHolderView, ListView):
+class ShareHolderList(ShareHolderView, AccountantMixin, ListView):
     pass
 
 
-class ShareHolderCreate(AjaxableResponseMixin, ShareHolderView, CreateView):
+class ShareHolderCreate(AjaxableResponseMixin, ShareHolderView, AccountantMixin, CreateView):
     pass
 
 
-class ShareHolderUpdate(ShareHolderView, UpdateView):
+class ShareHolderUpdate(ShareHolderView, AccountantMixin, UpdateView):
     pass
 
 
-class ShareHolderDelete(ShareHolderView, DeleteView):
+class ShareHolderDelete(ShareHolderView, AccountantMixin, DeleteView):
     pass
 
 
@@ -33,22 +34,22 @@ class CollectionView(CompanyView):
     model = Collection
     success_url = reverse_lazy('share:collection_list')
     form_class = CollectionForm
-    check = 'show_shares'
+    check = 'can_manage_shares'
 
 
-class CollectionList(CollectionView, ListView):
+class CollectionList(CollectionView, AccountantMixin, ListView):
     pass
 
 
-class CollectionCreate(AjaxableResponseMixin, CollectionView, CreateView):
+class CollectionCreate(AjaxableResponseMixin, CollectionView, AccountantMixin, CreateView):
     pass
 
 
-class CollectionUpdate(CollectionView, UpdateView):
+class CollectionUpdate(CollectionView, AccountantMixin, UpdateView):
     pass
 
 
-class CollectionDelete(CollectionView, DeleteView):
+class CollectionDelete(CollectionView, AccountantMixin, DeleteView):
     pass
 
 
@@ -56,20 +57,20 @@ class InvestmentView(CompanyView):
     model = Investment
     success_url = reverse_lazy('share:investment_list')
     form_class = InvestmentForm
-    check = 'show_shares'
+    check = 'can_manage_shares'
 
 
-class InvestmentList(InvestmentView, ListView):
+class InvestmentList(InvestmentView, AccountantMixin, ListView):
     pass
 
 
-class InvestmentCreate(InvestmentView, CreateView):
+class InvestmentCreate(InvestmentView, AccountantMixin, CreateView):
     pass
 
 
-class InvestmentUpdate(InvestmentView, UpdateView):
+class InvestmentUpdate(InvestmentView, AccountantMixin, UpdateView):
     pass
 
 
-class InvestmentDelete(InvestmentView, DeleteView):
+class InvestmentDelete(InvestmentView, AccountantMixin, DeleteView):
     pass

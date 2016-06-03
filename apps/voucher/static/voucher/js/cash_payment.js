@@ -60,7 +60,6 @@ function CashPaymentVM(data) {
                 }
             });
             return round2(sum);
-            
         };
     }
 
@@ -87,7 +86,6 @@ function CashPaymentVM(data) {
         if (self.party()) {
             var payment_id = self.id() || 0;
             $.ajax({
-
                 url: '/voucher/api/purchase/' + self.party_id() + '/' + payment_id + '.json',
                 dataType: 'json',
                 async: false,
@@ -131,7 +129,7 @@ function CashPaymentVM(data) {
 
     self.validate = function () {
         if (!self.party()) {
-            bsalert.error('"Party" field is required!')
+            bsalert.error('"Party" field is required!');
             self.state('error');
             return false;
         }
@@ -216,14 +214,14 @@ function CashPaymentRowVM(row) {
         self[k] = ko.observable(row[k]);
     }
 
-    self.actual_pending_amount = self.pending_amount()
+    self.actual_pending_amount = self.pending_amount();
 
     self.payment.subscribe( function() {
         if (typeof(self.payment()) == 'undefined' || self.payment() == '') {
             self.pending_amount(self.actual_pending_amount);
         } else {
-            self.pending_amount(self.actual_pending_amount - self.payment())
-        };
+            self.pending_amount(self.actual_pending_amount - self.payment());
+        }
     });
 
   

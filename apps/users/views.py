@@ -5,7 +5,8 @@ from django.contrib.auth import logout as auth_logout
 # from allauth.account.forms import LoginForm, SignupForm
 from django.template import RequestContext
 
-from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, group_required, CompanyView, SuperOwnerMixin
+from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, group_required, CompanyView, SuperOwnerMixin, \
+    AccountantMixin
 from django.views.generic.list import ListView
 from .forms import UserForm, UserUpdateForm, RoleForm, CompanyForm, PinForm, BranchForm
 from .models import User, Company, Role, Pin, Branch
@@ -42,7 +43,7 @@ def set_company_to_party(request, company_id):
     return HttpResponseRedirect(reverse('home'))
 
 
-class AccessibleCompanies(ListView):
+class AccessibleCompanies(AccountantMixin, ListView):
     model = Pin
     template_name = 'users/accessible_companies.html'
 
@@ -50,7 +51,7 @@ class AccessibleCompanies(ListView):
         return Pin.accessible_companies(self.request.company)
 
 
-class ConnectedCompanies(ListView):
+class ConnectedCompanies(AccountantMixin, ListView):
     model = Pin
     template_name = 'users/connected_companies.html'
 
@@ -58,7 +59,7 @@ class ConnectedCompanies(ListView):
         return Pin.connected_companies(self.request.company)
 
 
-class CompanyPin(ListView):
+class CompanyPin(AccountantMixin, ListView):
     model = Company
     template_name = 'company_pin.html'
 
@@ -140,7 +141,7 @@ class RoleView(object):
     form_class = RoleForm
 
 
-class RoleUpdate(RoleView, UpdateView):
+class RoleUpdate(RoleView, AccountantMixin, UpdateView):
     pass
 
 

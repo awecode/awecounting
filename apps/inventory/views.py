@@ -14,7 +14,7 @@ from ..voucher.models import Sale
 from .models import Item, UnitConversion, Unit, JournalEntry, InventoryAccount
 from .forms import ItemForm, UnitForm, UnitConversionForm
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView, \
-    StockistMixin
+    StockistMixin, AccountantMixin
 
 
 @login_required
@@ -79,7 +79,7 @@ def item(request, pk=None):
             if other_properties: item_obj.other_properties = other_properties
             item_obj.save(account_no=form.cleaned_data['account_no'])
             if request.is_ajax():
-                return JsonResponse(ItemSerializer(item_obj).data)
+                return JsonResponse(ItemSerializer(item_obj, context={'request': request}).data)
             return redirect(reverse('item_list'))
     else:
         form = ItemForm(instance=item_obj, request=request)
@@ -132,11 +132,11 @@ class ItemView(CompanyView):
 #         return data
 
 
-class ItemList(ItemView, ListView):
+class ItemList(ItemView, AccountantMixin, ListView):
     pass
 
 
-class ItemDelete(ItemView, DeleteView):
+class ItemDelete(ItemView, AccountantMixin, DeleteView):
     pass
 
 
@@ -146,19 +146,19 @@ class UnitConversionView(CompanyView):
     success_url = reverse_lazy('unit_conversion_list')
 
 
-class UnitConversionList(UnitConversionView, ListView):
+class UnitConversionList(UnitConversionView, AccountantMixin, ListView):
     pass
 
 
-class UnitConversionCreate(UnitConversionView, CreateView):
+class UnitConversionCreate(UnitConversionView, AccountantMixin, CreateView):
     pass
 
 
-class UnitConversionUpdate(UnitConversionView, UpdateView):
+class UnitConversionUpdate(UnitConversionView, AccountantMixin, UpdateView):
     pass
 
 
-class UnitConversionDelete(UnitConversionView, DeleteView):
+class UnitConversionDelete(UnitConversionView, AccountantMixin, DeleteView):
     pass
 
 
@@ -169,19 +169,19 @@ class UnitView(CompanyView):
     form_class = UnitForm
 
 
-class UnitList(UnitView, ListView):
+class UnitList(UnitView, AccountantMixin, ListView):
     pass
 
 
-class UnitCreate(AjaxableResponseMixin, UnitView, CreateView):
+class UnitCreate(AjaxableResponseMixin, UnitView, AccountantMixin, CreateView):
     pass
 
 
-class UnitUpdate(UnitView, UpdateView):
+class UnitUpdate(UnitView, AccountantMixin, UpdateView):
     pass
 
 
-class UnitDelete(UnitView, DeleteView):
+class UnitDelete(UnitView, AccountantMixin, DeleteView):
     pass
 
 

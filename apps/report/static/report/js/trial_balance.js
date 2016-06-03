@@ -11,7 +11,6 @@ var NodeModel = function (data, settings) {
     self.mapOptions = {
         nodes: {
             create: function (args) {
-
                 return new NodeModel(args.data, settings);
             }
         }
@@ -70,7 +69,6 @@ var NodeModel = function (data, settings) {
         }
         return true;
     }
-
 };
 
 var TreeModel = function () {
@@ -83,7 +81,7 @@ var TreeModel = function () {
 
     self.load_data = function (data) {
         self.settings = ko.mapping.fromJS(data.settings);
-        self.settings_save_url = data.settings_save_url
+        self.settings_save_url = data.settings_save_url;
         self.tree_data(new NodeModel(data, self.settings));
         self.total_dr(data.total_dr);
         self.total_cr(data.total_cr);
@@ -104,5 +102,4 @@ $(function () {
     $('.dropdown-menu.mega-dropdown-menu').click(function (e) {
         e.stopPropagation();
     });
-
 });

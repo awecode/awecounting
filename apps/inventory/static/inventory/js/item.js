@@ -8,7 +8,7 @@ $(document).ready(function () {
     ko.applyBindings(item, item_form);
     $('.change-on-ready').trigger('change');
     $("table tr #item_instance_properties").each(function (i) {
-        value = $(this).text().slice(1, -1);
+        var value = $(this).text().slice(1, -1);
         $(this).html(value);
     });
 });
@@ -19,12 +19,12 @@ function ItemVM(data) {
 
     if (data != null) {
         for (var item_property in data) {
-            var property_name = item_property
-            var property = data[item_property]
-            self.other_properties.push(new OtherPropertiesVM().property_name(property_name).property(property))
+            var property_name = item_property;
+            var property = data[item_property];
+            self.other_properties.push(new OtherPropertiesVM().property_name(property_name).property(property));
         }
     } else {
-        self.other_properties.push(new OtherPropertiesVM())
+        self.other_properties.push(new OtherPropertiesVM());
     }
 
     self.addOtherProperty = function () {

@@ -77,7 +77,6 @@ function CashReceiptVM(data) {
                 }
             });
         }
-
     }
 
 
@@ -100,7 +99,6 @@ function CashReceiptVM(data) {
             return round2(sum);
 
         }
-        ;
     }
 
     self.row_pending_amount = function () {
@@ -114,12 +112,11 @@ function CashReceiptVM(data) {
             return round2(sum);
 
         }
-        ;
     }
 
     self.validate = function () {
         if (!self.party()) {
-            bsalert.error('"Party" field is required!')
+            bsalert.error('"Party" field is required!');
             self.state('error');
             return false;
         }
