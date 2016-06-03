@@ -409,7 +409,6 @@ def handle_company_creation(sender, **kwargs):
     Account.objects.create(name='Sales Tax', category=duties_and_taxes, code='L-T-S', company=company)
     Account.objects.create(name='Payroll Tax', category=duties_and_taxes, code='L-T-P', company=company)
     Account.objects.create(name='Income Tax', category=duties_and_taxes, code='L-T-I', company=company)
-    # Account(name='VAT', category=duties_and_taxes, code='3-0020', company=company).save()
 
     # CREATE DEFAULT CATEGORIES FOR INCOME
 
@@ -424,7 +423,8 @@ def handle_company_creation(sender, **kwargs):
     expenses = Category.objects.create(name='Expenses', code='E', company=company)
     Category.objects.create(name='Purchase', code='E-P', parent=expenses, company=company)
 
-    Category.objects.create(name='Direct Expenses', code='E-DE', parent=expenses, company=company)
+    direct_expenses = Category.objects.create(name='Direct Expenses', code='E-DE', parent=expenses, company=company)
+    Category.objects.create(name='Purchase Expenses', code='E-DE-PE', parent=direct_expenses, company=company)
     indirect_expenses = Category.objects.create(name='Indirect Expenses', code='E-IE', parent=expenses, company=company)
     Category.objects.create(name='Pay Head', code='E-IE-P', parent=indirect_expenses, company=company)
 
@@ -483,6 +483,10 @@ def handle_fy_creation(sender, **kwargs):
                            company=company, fy=fy)
     Account.objects.create(name='Water Supply Expenses', category=indirect_expenses, code='E-IE-W', company=company, fy=fy)
     Account.objects.create(name='City/Municipal Expenses', category=indirect_expenses, code='E-IE-C&M', company=company, fy=fy)
+
+    purchase_expenses = Category.objects.get(name='Purchase Expenses', parent__name='Direct Expenses', company=company)
+    Account.objects.create(name='Carriage Inwards', category=purchase_expenses, code='E-DE-PE-CI', company=company, fy=fy)
+    Account.objects.create(name='Customs Duty', category=purchase_expenses, code='E-DE-PE-CD', company=company, fy=fy)
 
     pay_head = Category.objects.get(name='Pay Head', parent=indirect_expenses, company=company)
     Account.objects.create(name='Salary', category=pay_head, code='E-IE-P-S', company=company, fy=fy)
