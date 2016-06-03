@@ -62,9 +62,8 @@ function PurchaseViewModel(data, settings) {
     self.items_of_current_company = ko.observable();
     for (var k in data) {
         if (k == 'discount') {
-            self.voucher_discount(data[k])
+            self.voucher_discount(data[k]);
         }
-        ;
         self[k] = ko.observable(data[k]);
     }
 
@@ -113,7 +112,7 @@ function PurchaseViewModel(data, settings) {
                     async: false,
                     success: function (data) {
                         if (data.length >= 1) {
-                            self.items(data)
+                            self.items(data);
                             self.items_of_current_company(data[0].company);
                             company_items.push({'id': data[0].company, 'items': self.items()});
                         } else {
@@ -137,7 +136,7 @@ function PurchaseViewModel(data, settings) {
         var obj = get_by_id(vm.parties(), data.id);
         var klass = '';
         if (obj.related_company != null) {
-            klass = 'green'
+            klass = 'green';
         }
         return '<div class="' + klass + '">' + obj.name + '</div>';
     }
@@ -159,14 +158,12 @@ function PurchaseViewModel(data, settings) {
         });
         if (selected_party) {
             if (selected_party.tax_preference != null) {
-                self.tax_vm.tax_scheme(selected_party.tax_preference.tax_scheme)
+                self.tax_vm.tax_scheme(selected_party.tax_preference.tax_scheme);
                 if (selected_party.tax_preference.default_tax_application_type != 'no-peference' && selected_party.tax_preference.default_tax_application_type != null) {
-                    self.tax_vm.tax(selected_party.tax_preference.default_tax_application_type)
+                    self.tax_vm.tax(selected_party.tax_preference.default_tax_application_type);
                 }
-                ;
             }
         }
-        ;
     });
 
     self.party_balance = ko.computed(function () {
@@ -202,7 +199,7 @@ function PurchaseViewModel(data, settings) {
         self.table_view.rows().forEach(function (i) {
             if (String(i.discount()).indexOf('%') !== -1) {
                 var total = i.rate() * i.quantity();
-                var amount = ( parseFloat(i.discount()) / 100 ) * total
+                var amount = ( parseFloat(i.discount()) / 100 ) * total;
                 sum += parseFloat(amount);
             } else if (i.discount()) {
                 sum += parseFloat(i.discount());
@@ -277,21 +274,17 @@ function PurchaseViewModel(data, settings) {
                     bsalert.error("Invalid format for discount %");
                     check_discount = true;
                 }
-                ;
             }
-            ;
         });
 
         if (check_discount) {
             return false;
         }
-        ;
 
         if (String(self.voucher_discount()).indexOf('%') !== -1) {
             bsalert.error("Invalid format for discount %");
             return false;
         }
-        ;
 
         $.ajax({
             type: "POST",
@@ -318,8 +311,6 @@ function PurchaseViewModel(data, settings) {
             }
         });
     }
-
-
 }
 
 

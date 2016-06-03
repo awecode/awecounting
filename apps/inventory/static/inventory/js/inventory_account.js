@@ -7,14 +7,13 @@ $(document).ready(function () {
 function InventoryAccountVM(data) {
 
     var self = this;
-    arr = []
+    arr = [];
 
     for (d in data) {
         var value = data[d].income_quantity;
         for (var i = 0; i < value; i++) {
-            arr.push(data[d].income_rate)
+            arr.push(data[d].income_rate);
         }
-
     }
 
     self.table_vm = new TableViewModel({rows: data, auto_add_first: false}, InventoryAccountRow);
@@ -42,7 +41,7 @@ function InventoryAccountVM(data) {
 
 function InventoryAccountRow(data) {
     var self = this;
-    self.expense_rate = ko.observable()
+    self.expense_rate = ko.observable();
 
     // counts = {}
     // for (var i = 0; i < arr.length; i++) {
@@ -61,9 +60,9 @@ function InventoryAccountRow(data) {
 
     self.income_total = ko.computed(function () {
         if (self.income_quantity()) {
-            return self.income_quantity() * self.income_rate()
+            return self.income_quantity() * self.income_rate();
         } else {
-            return ''
+            return '';
         }
     });
 
@@ -72,12 +71,12 @@ function InventoryAccountRow(data) {
         var count = 0;
         for (var i = 0; i < self.expense_quantity(); i++) {
             if (arry[0] != arry[1]) {
-                expense_second_value = 0;
+                var expense_second_value = 0;
                 if ((count + 1) != self.expense_quantity()) {
                     var diff = self.expense_quantity() - (count + 1);
                     self.e1(count + 1);
                     self.r1(arry[0]);
-                    expense_first_value = count + 1;
+                    var expense_first_value = count + 1;
                     for (var i = 0; i < diff; i++) {
                         self.r2(arry.shift());
                         self.e2(diff);
@@ -87,19 +86,18 @@ function InventoryAccountRow(data) {
                         }
                     }
                     if (expense_first_value + expense_second_value == self.expense_quantity()) {
-                        arry.shift()
-                        self.expense_flag(true)
-                        count = 0
+                        arry.shift();
+                        self.expense_flag(true);
+                        count = 0;
                         break;
                     }
-                    ;
                 }
             }
             if (typeof(expense_first_value) != 'undefined' && typeof(expense_second_value) != 'undefined') {
-                delete expense_first_value
-                delete expense_second_value
+                delete expense_first_value;
+                delete expense_second_value;
             }
-            self.expense_rate(arry.shift())
+            self.expense_rate(arry.shift());
             count++;
         }
     }
@@ -107,14 +105,12 @@ function InventoryAccountRow(data) {
     self.expense_total = ko.computed(function () {
         if (self.expense_quantity()) {
             if (self.expense_flag()) {
-                return (self.e1() * self.r1()) + (self.e2() * self.r2())
+                return (self.e1() * self.r1()) + (self.e2() * self.r2());
             } else {
-                return self.expense_quantity() * self.expense_rate()
+                return self.expense_quantity() * self.expense_rate();
             }
-            ;
         } else {
-            return ''
+            return '';
         }
     });
-
 }
