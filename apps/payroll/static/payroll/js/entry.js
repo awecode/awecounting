@@ -84,13 +84,12 @@ function EntryViewModel(data) {
                             self.file.push(new FileViewModel(msg.attachment[i]));
                         }
                         ;
-                        self.upload.files([new File()])
+                        self.upload.files([new File()]);
                     }
                 }
             }
         });
     }
-
 }
 
 

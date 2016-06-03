@@ -53,7 +53,7 @@ function SaleViewModel(data, settings) {
             'value': 'No Tax',
         },
     ]
-    
+
     self.tax = ko.observable();
     self.tax_scheme = ko.observable();
     self.tax_scheme_id = ko.observable();
@@ -62,9 +62,8 @@ function SaleViewModel(data, settings) {
 
     for (var k in data) {
         if (k == 'discount') {
-            self.voucher_discount(data[k])
+            self.voucher_discount(data[k]);
         }
-        ;
         self[k] = ko.observable(data[k]);
     }
 
@@ -114,14 +113,12 @@ function SaleViewModel(data, settings) {
         });
         if (selected_party) {
             if (selected_party.tax_preference != null) {
-                self.tax_vm.tax_scheme(selected_party.tax_preference.tax_scheme)
+                self.tax_vm.tax_scheme(selected_party.tax_preference.tax_scheme);
                 if (selected_party.tax_preference.default_tax_application_type != 'no-peference' && selected_party.tax_preference.default_tax_application_type != null) {
-                    self.tax_vm.tax(selected_party.tax_preference.default_tax_application_type)
+                    self.tax_vm.tax(selected_party.tax_preference.default_tax_application_type);
                 }
-                ;
             }
         }
-        ;
     });
 
     self.party_balance = ko.computed(function () {
@@ -133,7 +130,7 @@ function SaleViewModel(data, settings) {
         var obj = get_by_id(vm.parties(), data.id);
         var klass = '';
         if (obj.related_company != null) {
-            klass = 'green'
+            klass = 'green';
         }
         return '<div class="' + klass + '">' + obj.name + '</div>';
     }
@@ -166,7 +163,7 @@ function SaleViewModel(data, settings) {
         self.table_view.rows().forEach(function (i) {
             if (String(i.discount()).indexOf('%') !== -1) {
                 var total = i.rate() * i.quantity();
-                var amount = ( parseFloat(i.discount()) / 100 ) * total
+                var amount = ( parseFloat(i.discount()) / 100 ) * total;
                 sum += parseFloat(amount);
             } else if (i.discount()) {
                 sum += parseFloat(i.discount());
@@ -220,19 +217,18 @@ function SaleViewModel(data, settings) {
                 if (typeof(discount_as_string[discount_as_string.indexOf('%') + 1]) != 'undefined') {
                     bsalert.error("Invalid format for discount %");
                     check_discount = true;
-                };
-            };
+                }
+            }
         });
 
         if (check_discount) {
             return false;
-        };
+        }
 
         if (String(self.voucher_discount()).indexOf('%') !== -1) {
             bsalert.error("Invalid format for discount %");
             return false;
         }
-        ;
 
         $.ajax({
             type: "POST",
@@ -249,7 +245,6 @@ function SaleViewModel(data, settings) {
                     if (msg.id)
                         self.id(msg.id);
                     $("tbody > tr").each(function (i) {
-
                         $($("tbody > tr:not(.total)")[i]).addClass('invalid-row');
                     });
                     for (var i in msg.rows) {
@@ -260,7 +255,7 @@ function SaleViewModel(data, settings) {
             }
         });
     }
-    
+
     if (settings.sale_suggest_by_party_item) {
         self.party.subscribe(function (party) {
             $.ajax({
@@ -278,8 +273,6 @@ function SaleViewModel(data, settings) {
             });
         })
     }
-
-
 }
 
 
@@ -396,7 +389,7 @@ function SaleRow(row, sale_vm) {
 
 
     self.render_option = function (data) {
-        sale_vm
+        //sale_vm
         var obj = get_by_id(sale_vm.items(), data.id);
         return '<div>' + obj.full_name + '</div>';
     }

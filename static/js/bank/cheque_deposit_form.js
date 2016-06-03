@@ -22,8 +22,8 @@ function ChequeDepositViewModel(data) {
 
 
     self.remove_file = function (file) {
-        self.file.remove(file)
-        self.deleted_files.push(file)
+        self.file.remove(file);
+        self.deleted_files.push(file);
     };
 
     $.ajax({
@@ -51,7 +51,6 @@ function ChequeDepositViewModel(data) {
             for (i in data[k]) {
                 self.file.push(new FileViewModel(data[k][i]));
             }
-            
         } else {
             self[k] = ko.observable(data[k]);
         }
@@ -71,7 +70,7 @@ function ChequeDepositViewModel(data) {
     };
 
     self.save = function (item, event) {
-        var form_data = new FormData()
+        var form_data = new FormData();
 
 
         for (index in self.upload.files()) {
@@ -84,11 +83,10 @@ function ChequeDepositViewModel(data) {
                     } else {
                         description = self.upload.files()[index].description();
                     }
-                    ;
                     form_data.append('file_description', description);
-                };
-            };
-        };
+                }
+            }
+        }
 
         if (!self.bank_account()) {
             bsalert.error('Bank account field is required');
@@ -131,14 +129,12 @@ function ChequeDepositViewModel(data) {
                         for (i in msg.attachment) {
                             self.file.push(new FileViewModel(msg.attachment[i]));
                         }
-                        ;
-                        self.upload.files([new File()])
+                        self.upload.files([new File()]);
                     }
                 }
             }
         });
     }
-
 }
 
 

@@ -179,9 +179,15 @@
         <input type="submit" class="btn btn-info btn-raised btn-lg" value="{% trans 'Save' %}">
 
         {% if scenario == 'Update' %}
-            {# <a class="btn btn-danger btn-raised btn-lg" #}
-            {# href="{% url 'purchase_order_delete' form.instance.id %}">{% trans 'Delete!' %}</a> #}
+            {% if obj.purchase_voucher.all.exists %}
+                <a class="btn btn-info btn-raised btn-lg"
+                   href="{% url 'purchase-edit' obj.purchase_voucher.all.first.id %}">{% trans 'Purchase Voucher for purchase order' %}</a>
+            {% endif %}
         {% endif %}
 
+        {% if not obj.purchase_voucher.all.exists %}
+        <a class="btn btn-success btn-raised btn-lg"
+           data-bind="visible: $root.id(), attr: {'href': '/voucher/export_purchase_voucher/'+$root.id()}">{% trans 'Create Purchase Voucher for purchase order' %}</a>
+        {% endif %}
 
 {% endblock %}

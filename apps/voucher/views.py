@@ -9,18 +9,19 @@ from django.views.generic.detail import DetailView
 
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, StaffMixin, \
     group_required, TableObjectMixin, UpdateView, CompanyRequiredMixin, CreateView, TableObject, CashierMixin, \
-    StockistMixin
+    StockistMixin, AccountantMixin
 from ..inventory.models import set_transactions
 from ..ledger.models import set_transactions as set_ledger_transactions, get_account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
 from .forms import JournalVoucherForm, VoucherSettingForm, CashPaymentForm, CashReceiptForm
 from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
     CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer, \
-    ExpenseSerializer
+    ExpenseSerializer, ExportPurchaseVoucherRowSerializer
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, \
     JournalVoucherRow, \
     PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, \
     VoucherSetting, Expense, ExpenseRow, TradeExpense, Lot, LotItemDetail
+from django.views.generic import TemplateView
 
 
 class FixedAssetView(CompanyView):
@@ -235,13 +236,13 @@ class PurchaseVoucherView(CompanyView):
     model = PurchaseVoucher
     serializer_class = PurchaseVoucherSerializer
     success_url = reverse_lazy("purchase-list")
-    check = 'show_purchases'
+    check = 'can_manage_purchases'
 
 
 class SaleView(CompanyView):
     model = Sale
     serializer_class = SaleSerializer
-    check = 'show_sales'
+    check = 'can_manage_sales'
 
 
 class PurchaseVoucherDetailView(PurchaseVoucherView, StaffMixin, DetailView):
@@ -260,7 +261,7 @@ class SaleDetailView(SaleView, StaffMixin, DetailView):
 
 class JournalVoucherDetailView(CompanyView, StaffMixin, DetailView):
     model = JournalVoucher
-    check = 'show_journal_vouchers'
+    check = 'can_manage_journal_vouchers'
 
     def get_context_data(self, **kwargs):
         context = super(JournalVoucherDetailView, self).get_context_data(**kwargs)
@@ -294,6 +295,35 @@ class PurchaseVoucherCreate(PurchaseVoucherView, TableObjectMixin):
             context['data'] = data
         return context
 
+class ExportPurchaseVoucher(TemplateView):
+    model = PurchaseVoucher
+    serializer_class = PurchaseVoucherSerializer
+    template_name = 'purchase-form.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ExportPurchaseVoucher, self).get_context_data(*args, **kwargs)
+        purchase_order = PurchaseOrder.objects.get(pk=self.kwargs.get('purchase_order_pk'))
+        row_data = []
+        if purchase_order.purchase_voucher.all().exists():
+            obj = purchase_order.purchase_voucher.all()[0]
+        else:
+            obj = self.model(company=self.request.company)
+            obj.party = purchase_order.party
+            obj.date = purchase_order.date
+            tax = self.request.company.settings.purchase_default_tax_application_type
+            tax_scheme = self.request.company.settings.purchase_default_tax_scheme
+            if tax:
+                obj.tax = tax
+            if tax_scheme:
+                obj.tax_scheme = tax_scheme
+            rows = purchase_order.rows.filter(fulfilled=True)
+            row_data = ExportPurchaseVoucherRowSerializer(rows, many=True).data
+        context['data'] = self.serializer_class(obj).data
+        if row_data:
+            context['data']['rows'] = row_data
+        context['data']['purchase_order_id'] = purchase_order.id
+        context['obj'] = obj
+        return context
 
 @group_required('Accountant')
 def save_cash_receipt(request):
@@ -365,6 +395,7 @@ def save_purchase(request):
                      'discount': params.get('voucher_discount'),
                      'credit': params.get('credit'), 'tax': params.get('tax'),
                      'tax_scheme_id': empty_to_none(params.get('tax_scheme_id')),
+                     'purchase_order_id': empty_to_none(params.get('purchase_order_id')),
                      'company': request.company}
 
     if params.get('id'):
@@ -646,7 +677,7 @@ class JournalVoucherView(CompanyView):
     success_url = reverse_lazy('journal_voucher_list')
     form_class = JournalVoucherForm
     serializer_class = JournalVoucherSerializer
-    check = 'show_journal_vouchers'
+    check = 'can_manage_journal_vouchers'
 
 
 class JournalVoucherList(JournalVoucherView, ListView):
@@ -711,7 +742,7 @@ class PurchaseOrderView(CompanyView):
     model = PurchaseOrder
     serializer_class = PurchaseOrderSerializer
     success_url = reverse_lazy("purchase_order_list")
-    check = 'show_purchase_orders'
+    check = 'can_manage_purchase_orders'
 
 
 class PurchaseOrderList(PurchaseOrderView, StockistMixin, ListView):
@@ -823,7 +854,7 @@ class CheckifConnected(object):
 class IncomingPurchaseOrder(CompanyRequiredMixin, StockistMixin, ListView):
     model = PurchaseOrder
     template_name = "voucher/incoming_purchase_order_list.html"
-    check = 'show_purchase_orders'
+    check = 'can_manage_purchase_orders'
 
     def get_queryset(self):
         return self.model.objects.filter(party__related_company=self.request.company)
@@ -831,7 +862,7 @@ class IncomingPurchaseOrder(CompanyRequiredMixin, StockistMixin, ListView):
 
 class IncomingPurchaseOrderDetailView(CompanyRequiredMixin, CheckifConnected, StockistMixin, DetailView):
     model = PurchaseOrder
-    check = 'show_purchase_orders'
+    check = 'can_manage_purchase_orders'
 
     def get_context_data(self, **kwargs):
         context = super(IncomingPurchaseOrderDetailView, self).get_context_data(**kwargs)
@@ -861,15 +892,15 @@ class ExpenseView(CompanyView):
     serializer_class = ExpenseSerializer
 
 
-class ExpenseList(ExpenseView, ListView):
+class ExpenseList(ExpenseView, AccountantMixin, ListView):
     pass
 
 
-class ExpenseDelete(ExpenseView, DeleteView):
+class ExpenseDelete(ExpenseView, AccountantMixin, DeleteView):
     pass
 
 
-class ExpenseDetailView(DetailView):
+class ExpenseDetailView(AccountantMixin, DetailView):
     model = Expense
 
     def get_context_data(self, **kwargs):
@@ -878,7 +909,7 @@ class ExpenseDetailView(DetailView):
         return context
 
 
-class ExpenseCreate(ExpenseView, TableObjectMixin):
+class ExpenseCreate(ExpenseView, AccountantMixin, TableObjectMixin):
     template_name = 'expense_form.html'
 
 

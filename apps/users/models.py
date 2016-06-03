@@ -74,34 +74,34 @@ class Company(models.Model):
     def has_shareholders(self):
         return True if self.organization_type in ['partnership', 'corporation'] else False
 
-    def show_purchases(self):
+    def can_manage_purchases(self):
         return (self.purchases_goods or self.purchases_services) and self.subscription.enable_purchase
 
-    def show_purchase_orders(self):
+    def can_manage_purchase_orders(self):
         return (self.purchases_goods or self.purchases_services) and self.subscription.enable_purchase_order
 
-    def show_sales(self):
+    def can_manage_sales(self):
         return (self.sells_goods or self.sells_services) and self.subscription.enable_sales
 
-    def show_cash_vouchers(self):
+    def can_manage_cash_vouchers(self):
         return self.subscription.enable_cash_vouchers
 
-    def show_journal_vouchers(self):
+    def can_manage_journal_vouchers(self):
         return self.subscription.enable_journal_voucher
 
-    def show_fixed_assets_vouchers(self):
+    def can_manage_fixed_assets_vouchers(self):
         return self.subscription.enable_fixed_assets_voucher
 
-    def show_bank_vouchers(self):
+    def can_manage_bank_vouchers(self):
         return self.subscription.enable_bank_vouchers
 
-    def show_shares(self):
+    def can_manage_shares(self):
         return self.has_shareholders() and self.subscription.enable_share_management
 
-    def show_payroll(self):
+    def can_manage_payroll(self):
         return self.subscription.enable_payroll
 
-    def show_reports(self):
+    def can_manage_reports(self):
         return self.subscription.enable_reports
 
     @property
@@ -364,7 +364,7 @@ def get_extra_data(request, user, sociallogin=None, **kwargs):
 from django.conf import settings
 
 if 'rest_framework.authtoken' in settings.INSTALLED_APPS:
-    from django.db.models.signals import post_save
+    from django.db.models.signals import post_save, post_delete
     from django.dispatch import receiver
     from rest_framework.authtoken.models import Token
 
@@ -474,3 +474,9 @@ class Branch(models.Model):
     class Meta:
         verbose_name_plural = "Branches"
         # def save(self, *args, **kwargs ):
+
+
+def branch_delete(sender, instance, **kwargs):
+    instance.branch_company.delete()
+
+post_delete.connect(branch_delete, sender=Branch)

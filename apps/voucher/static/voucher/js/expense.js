@@ -47,7 +47,7 @@ function ExpenseViewModel(data) {
     };
 
     self.save = function (item, event) {
-        var form_data = new FormData()
+        var form_data = new FormData();
 
 
         form_data.append('expense', ko.toJSON(self));

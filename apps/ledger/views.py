@@ -3,12 +3,12 @@ from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
 
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView, \
-    StockistMixin
+    StockistMixin, AccountantMixin
 from .models import Party, Category, Account, JournalEntry
 from .forms import PartyForm, AccountForm, CategoryForm
 
 
-class ViewAccount(ListView):
+class ViewAccount(AccountantMixin, ListView):
     model = Account
     template_name = 'view_ledger.html'
 
@@ -30,21 +30,21 @@ class CategoryView(CompanyView):
     model = Category
     success_url = reverse_lazy('category_list')
     form_class = CategoryForm
+0
 
-
-class CategoryList(CategoryView, ListView):
+class CategoryList(CategoryView, AccountantMixin, ListView):
     pass
 
 
-class CategoryCreate(AjaxableResponseMixin, CategoryView, CreateView):
+class CategoryCreate(AjaxableResponseMixin, CategoryView, AccountantMixin, CreateView):
     pass
 
 
-class CategoryUpdate(CategoryView, UpdateView):
+class CategoryUpdate(CategoryView, AccountantMixin, UpdateView):
     pass
 
 
-class CategoryDelete(CategoryView, DeleteView):
+class CategoryDelete(CategoryView, AccountantMixin, DeleteView):
     pass
 
 
@@ -60,11 +60,11 @@ class PartyView(CompanyView):
         return super(PartyView, self).form_valid(form)
 
 
-class PartyList(PartyView, ListView):
+class PartyList(PartyView, AccountantMixin, ListView):
     pass
 
 
-class PartyCreate(AjaxableResponseMixin, PartyView, CreateView):
+class PartyCreate(AjaxableResponseMixin, PartyView, AccountantMixin, CreateView):
     def get_initial(self):
         dct = {}
         if self.request.GET and 'source' in self.request.GET:
@@ -75,11 +75,11 @@ class PartyCreate(AjaxableResponseMixin, PartyView, CreateView):
         return dct
 
 
-class PartyUpdate(PartyView, UpdateView):
+class PartyUpdate(PartyView, AccountantMixin, UpdateView):
     pass
 
 
-class PartyDelete(PartyView, DeleteView):
+class PartyDelete(PartyView, AccountantMixin, DeleteView):
     pass
 
 

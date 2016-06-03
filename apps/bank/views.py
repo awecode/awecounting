@@ -22,7 +22,7 @@ class BankAccountView(CompanyView):
     model = BankAccount
     success_url = reverse_lazy('bank:bankaccount_list')
     form_class = BankAccountForm
-    check = 'show_bank_vouchers'
+    check = 'can_manage_bank_vouchers'
 
 
 class BankAccountList(BankAccountView, CashierMixin, ListView):
@@ -47,7 +47,7 @@ class CashDepositView(CompanyView):
     model = BankCashDeposit
     success_url = reverse_lazy('bank:cash_deposit_list')
     form_class = BankCashDepositForm
-    check = 'show_bank_vouchers'
+    check = 'can_manage_bank_vouchers'
 
 
 class CashDepositDelete(CashDepositView, CashierMixin, DeleteView):
@@ -76,7 +76,7 @@ class ChequeDepositView(CompanyView):
     model = ChequeDeposit
     success_url = reverse_lazy('bank:cheque_deposit_list')
     serializer_class = ChequeDepositSerializer
-    check = 'show_bank_vouchers'
+    check = 'can_manage_bank_vouchers'
 
 
 class ChequeDepositList(ChequeDepositView, CashierMixin, ListView):
@@ -161,7 +161,7 @@ class ChequePaymentView(CompanyView):
     model = ChequePayment
     success_url = reverse_lazy('bank:cheque_payment_list')
     form_class = ChequePaymentForm
-    check = 'show_bank_vouchers'
+    check = 'can_manage_bank_vouchers'
 
 
 class ChequePaymentList(ChequePaymentView, CashierMixin, ListView):

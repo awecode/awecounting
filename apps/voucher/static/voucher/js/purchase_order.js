@@ -25,8 +25,10 @@ function PurchaseViewModel(data) {
         async: false,
         success: function (data) {
             self.items = ko.observableArray(data);
-            self.items_of_current_company(self.items()[0].company);
-            company_items.push({'id': self.items_of_current_company(), 'items': self.items()})
+            if (self.items().length > 0) {
+                self.items_of_current_company(self.items()[0].company);
+                company_items.push({'id': self.items_of_current_company(), 'items': self.items()});
+            }
         }
     });
 
@@ -40,42 +42,42 @@ function PurchaseViewModel(data) {
     });
 
 
-    self.party_id.subscribe(function(party_id) {
+    self.party_id.subscribe(function (party_id) {
         if (party_id) {
-            party = get_by_id(vm.parties, party_id);
-            company = get_by_id(company_items, party.related_company);
-            if (party.related_company != null && typeof(company) == 'undefined' ) {
+            var party = get_by_id(vm.parties, party_id);
+            var company = get_by_id(company_items, party.related_company);
+            if (party.related_company != null && typeof(company) == 'undefined') {
                 $.ajax({
                     url: '/inventory/api/items/' + party.related_company + '/?format=json',
                     dataType: 'json',
                     async: false,
                     success: function (data) {
                         if (data.length >= 1) {
-                            self.items(data)
+                            self.items(data);
                             self.items_of_current_company(data[0].company);
-                            company_items.push({'id': data[0].company, 'items': self.items()})
+                            company_items.push({'id': data[0].company, 'items': self.items()});
                         } else {
                             bsalert.error('Requested company has no item');
-                        };
+                        }
                     }
                 });
             } else if (party.related_company == null && party.company != self.items_of_current_company()) {
-                company_item = get_by_id(company_items, party.company);
+                var company_item = get_by_id(company_items, party.company);
                 self.items(company_item.items);
-                self.items_of_current_company(party.company)
-            } else if (party.related_company != null && typeof(company) != 'undefined' ){
+                self.items_of_current_company(party.company);
+            } else if (party.related_company != null && typeof(company) != 'undefined') {
                 company_item = get_by_id(company_items, party.related_company);
                 self.items(company_item.items);
-                self.items_of_current_company(party.related_company)
-            };
-        };
+                self.items_of_current_company(party.related_company);
+            }
+        }
     });
 
     self.render_party_options = function (data) {
         var obj = get_by_id(vm.parties(), data.id);
         var klass = '';
         if (obj.related_company != null) {
-            klass = 'green'
+            klass = 'green';
         }
         return '<div class="' + klass + '">' + obj.name + '</div>';
     }
@@ -108,7 +110,7 @@ function PurchaseViewModel(data) {
         }
     });
 
-    self.expense_view = new TableViewModel({rows: data.trade_expense}, ExpenseRow)
+    self.expense_view = new TableViewModel({rows: data.trade_expense}, ExpenseRow);
 
     self.id.subscribe(function (id) {
         update_url_with_id(id);
@@ -181,15 +183,15 @@ function PurchaseViewModel(data) {
                     $("#tbody-expense > tr").each(function (i) {
                         $($("#tbody-expense > tr:not(.total)")[i]).addClass('invalid-row');
                     });
-                    if (msg.tax == 'no'){
+                    if (msg.tax == 'no') {
                         for (var i in msg.rows) {
                             self.table_view.rows()[i].row_tax_vm.tax_scheme(0);
                         }
                     }
-                    if (msg.tax_scheme_id != "" && msg.tax_scheme_id != null){
-                    for (var i in msg.rows) {
-                        self.table_view.rows()[i].row_tax_vm.tax_scheme(0);
-                    }
+                    if (msg.tax_scheme_id != "" && msg.tax_scheme_id != null) {
+                        for (var i in msg.rows) {
+                            self.table_view.rows()[i].row_tax_vm.tax_scheme(0);
+                        }
                     }
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];
@@ -286,7 +288,8 @@ function PurchaseRow(row, purchase_vm) {
     }
 
 
-    self.render_option = function (data) {purchase_vm
+    self.render_option = function (data) {
+        //purchase_vm
         var obj = get_by_id(purchase_vm.items(), data.id);
         return '<div>' + obj.full_name + '</div>';
     }
