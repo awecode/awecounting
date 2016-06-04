@@ -109,7 +109,7 @@ function PurchaseViewModel(data) {
     $.ajax({
         url: '/ledger/api/account.json',
         dataType: 'json',
-        data: "categories=direct_expenses,indirect_expenses",
+        data: "categories=purchase_expenses",
         async: false,
         success: function (data) {
             self.expense_accounts = ko.observableArray(data);

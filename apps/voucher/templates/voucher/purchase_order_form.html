@@ -162,7 +162,7 @@
                                 <td>
                                     <select data-bind="selectize: $root.expense_accounts, value: expense_id"
                                             id="from_account"
-                                            data-url="{% url 'account_add' %}"></select>
+                                            data-url="{% url 'account_add' %}?fy=0&category=purchase_expenses"></select>
                                 </td>
                                 <td data-bind="editableText: amount"></td>
                                 <td class="hidden-print">

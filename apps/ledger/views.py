@@ -30,7 +30,10 @@ class CategoryView(CompanyView):
     model = Category
     success_url = reverse_lazy('category_list')
     form_class = CategoryForm
+
+
 0
+
 
 class CategoryList(CategoryView, AccountantMixin, ListView):
     pass
@@ -87,6 +90,16 @@ class AccountView(CompanyView):
     model = Account
     success_url = reverse_lazy('account_list')
     form_class = AccountForm
+
+    def get_initial(self):
+        dct = super(AccountView, self).get_initial()
+        if self.request.GET.get('fy'):
+            dct['fy'] = int(self.request.GET.get('fy')) or self.request.company.fy
+        if self.request.GET.get('category'):
+            category_name = self.request.GET['category'].replace('_', ' ').title()
+            category = Category.objects.filter(name=category_name).first()
+            dct['category'] = category
+        return dct
 
 
 class AccountList(AccountView, StockistMixin, ListView):
