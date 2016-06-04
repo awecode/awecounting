@@ -534,36 +534,48 @@ class Party(models.Model):
         account.company = self.company
         if self.type == 'Customer':
             if not self.customer_account:
-                account.category = Category.objects.get(name='Customers', company=self.company)
-                account.code = 'C-' + str(self.id)
-                account.save()
-                self.customer_account = account
+                try:
+                    account.category = Category.objects.get(name='Customers', company=self.company)
+                    account.suggest_code()
+                    account.save()
+                    self.customer_account = account
+                except Category.DoesNotExist:
+                    pass
             if self.supplier_account:
                 self.supplier_account.delete()
                 self.supplier_account = None
         elif self.type == 'Supplier':
             if not self.supplier_account:
-                account.category = Category.objects.get(name='Suppliers', company=self.company)
-                account.code = 'S-' + str(self.id)
-                account.save()
-                self.supplier_account = account
+                try:
+                    account.category = Category.objects.get(name='Suppliers', company=self.company)
+                    account.suggest_code()
+                    account.save()
+                    self.supplier_account = account
+                except Category.DoesNotExist:
+                    pass
             if self.customer_account:
                 self.customer_account.delete()
                 self.customer_account = None
         else:
             if not self.customer_account:
                 account.name += ' (Receivable)'
-                account.category = Category.objects.get(name='Customers', company=self.company)
-                account.suggest_code()
-                account.save()
-                self.customer_account = account
+                try:
+                    account.category = Category.objects.get(name='Customers', company=self.company)
+                    account.suggest_code()
+                    account.save()
+                    self.customer_account = account
+                except Category.DoesNotExist:
+                    pass
             if not self.supplier_account:
-                account2 = Account(name=self.name + ' (Payable)')
-                account2.company = self.company
-                account2.category = Category.objects.get(name='Suppliers', company=self.company)
-                account2.suggest_code()
-                account2.save()
-                self.supplier_account = account2
+                try:
+                    account2 = Account(name=self.name + ' (Payable)')
+                    account2.company = self.company
+                    account2.category = Category.objects.get(name='Suppliers', company=self.company)
+                    account2.suggest_code()
+                    account2.save()
+                    self.supplier_account = account2
+                except Category.DoesNotExist:
+                    pass
         self.save(post=False)
 
     def __unicode__(self):
