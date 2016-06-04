@@ -1,7 +1,8 @@
 {% extends "_base.html" %}
 {% load i18n %}
 
-{% block title %}{{ account.name }} {% trans 'Ledger View' %} {% endblock %}
+{% block title %}{{ account.name }} {% trans 'Ledger View' %}
+{% endblock %}
 
 {% block breadcrumbs %}
     <li><a href="{% url "list_account" %}">{% trans 'Accounts' %}</a></li>
@@ -10,6 +11,7 @@
 
 {% block page-header %}
     {{ account.name }}
+    {% if account.company != request.company %} ({{ account.company }}) {% endif %}
 {% endblock %}
 
 {% block extrahead %}

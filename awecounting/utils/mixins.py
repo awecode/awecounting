@@ -10,8 +10,8 @@ from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
 from django.contrib.admin import ModelAdmin
-
 from modeltranslation.admin import TranslationAdmin
+
 from .helpers import json_from_object
 
 
@@ -134,7 +134,8 @@ class TableObject(object):
 
 class CompanyView(CompanyRequiredMixin):
     def form_valid(self, form):
-        form.instance.company = self.request.company
+        if not form.instance.company:
+            form.instance.company = self.request.company
         return super(CompanyView, self).form_valid(form)
 
     def get_queryset(self):
