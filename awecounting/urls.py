@@ -27,7 +27,7 @@ urlpatterns = [
                   url(r'^njango/', include('njango.urls')),
                   url(r'^api-token-auth/', rest_views.obtain_auth_token),
                   url(r'^log_errors/', users_views.log_js_errors),
-              ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+              ]
 
 handler400 = 'apps.users.views.bad_request'
 handler403 = 'apps.users.views.permission_denied'

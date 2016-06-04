@@ -409,3 +409,4 @@ def server_error(request):
 
 def log_js_errors(request):
     mail_admins('JS Error', request.body)
+    return HttpResponse(status=204)
