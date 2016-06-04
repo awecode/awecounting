@@ -35,7 +35,8 @@
 
 {% block content %}
 
-    {#    {{ root }}#}
+    {#    {{ data }}#}
+
     <div class="well">
         <div class="row">
             <div class="col-xs-6"><strong>{% trans 'Category' %}/{% trans 'Account' %}</strong></div>
@@ -53,10 +54,10 @@
             <ul data-bind="foreach: nodes">
                 <!-- ko if: is_visible() -->
                 <li>
-            <span data-bind="
-                template: { name: 'node-name-template', data: $data },
-                css: { 'pointer-icon': nodes().length > 0 },
-                click: toggleVisibility"></span>
+                <span data-bind="
+                    template: { name: 'node-name-template', data: $data },
+                    css: { 'pointer-icon': nodes().length > 0 },
+                    click: toggleVisibility"></span>
 
                     <div data-bind="template: { name: 'folder-template', data: $data }, visible: isExpanded"></div>
                 </li>
@@ -82,9 +83,9 @@
         <script type="text/html" id="node-template">
 
             <span data-bind="
-        template: { name: 'node-name-template', data: $data },
-        css: { 'pointer-icon': nodes().length > 0 },
-        click: toggleVisibility"></span>
+            template: { name: 'node-name-template', data: $data },
+            css: { 'pointer-icon': nodes().length > 0 },
+            click: toggleVisibility"></span>
 
             <!-- ko if: nodes().length !== 0 -->
 
@@ -98,19 +99,19 @@
             <!-- ko if: is_row_visible() -->
             <div class="row tb-row">
                 <div class="col-xs-6" data-bind="style: get_style">
-            <span class="hidden-print tree-item" data-bind="
-    css: { 
-        'fa fa-minus': isExpanded() && nodes().length > 0, 
-        'fa fa-plus': !isExpanded() && nodes().length > 0,
-        'pl-15': nodes().length === 0 
-    }
-    "></span>
+                <span class="hidden-print tree-item" data-bind="
+        css: { 
+            'fa fa-minus': isExpanded() && nodes().length > 0, 
+            'fa fa-plus': !isExpanded() && nodes().length > 0,
+            'pl-15': nodes().length === 0 
+        }
+        "></span>
 
                     <a data-bind="
-    text: name, 
-    attr: { 'title': type, 'href': get_url() }, 
-{#    tooltip: { delay: { show: 500, hide: 10 } }#}
-    ">
+        text: name, 
+        attr: { 'title': type, 'href': get_url() }, 
+        tooltip: { delay: { show: 500, hide: 10 } }
+        ">
 
                     </a>
                 </div>

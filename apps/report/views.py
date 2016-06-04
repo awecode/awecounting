@@ -10,17 +10,35 @@ from awecounting.utils.helpers import save_qs_from_ko, get_dict
 from awecounting.utils.mixins import group_required, SuperOwnerMixin, UpdateView
 
 
-def get_trial_balance_data(company):
-    root_categories = Category.objects.filter(company=company, parent=None)
-    root = {'nodes': [], 'total_dr': 0, 'total_cr': 0, 'settings': model_to_dict(ReportSetting.objects.get(company=company))}
+def dict_merge(root, node):
+    if node['name'] in [item.get('name') for item in root]:
+        existing_node = get_dict(root, 'name', node['name'])
+        existing_node['dr'] += node['dr']
+        existing_node['cr'] += node['cr']
+        if len(node['nodes']):
+            for inner_node in node['nodes']:
+                dict_merge(existing_node['nodes'], inner_node)
+    else:
+        root.append(node)
+    return root
+
+
+def get_trial_balance_data(root_company):
+    including_branches = root_company.get_all()
+    root = {'nodes': [], 'total_dr': 0, 'total_cr': 0, 'settings': model_to_dict(ReportSetting.objects.get(company=root_company))}
     del root['settings']['id']
     del root['settings']['company']
-    for root_category in root_categories:
-        node = Node(root_category)
-        root['nodes'].append(node.get_data())
-        root['total_dr'] += node.dr
-        root['total_cr'] += node.cr
     root['settings_save_url'] = reverse('report:save_report_settings')
+
+    for company in including_branches:
+        root_categories = Category.objects.filter(company=company, parent=None)
+
+        for root_category in root_categories:
+            node = Node(root_category)
+            root['nodes'] = dict_merge(root['nodes'], node.get_data())
+            root['total_dr'] += node.dr
+            root['total_cr'] += node.cr
+
     return root
 
 
