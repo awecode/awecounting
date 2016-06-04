@@ -138,7 +138,7 @@ class CompanyView(CompanyRequiredMixin):
         return super(CompanyView, self).form_valid(form)
 
     def get_queryset(self):
-        return super(CompanyView, self).get_queryset().filter(company=self.request.company)
+        return super(CompanyView, self).get_queryset().filter(company__in=self.request.company.get_all())
 
     def get_form(self, *args, **kwargs):
         form = super(CompanyView, self).get_form(*args, **kwargs)

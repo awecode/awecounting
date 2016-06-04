@@ -16,7 +16,7 @@ class ViewAccount(AccountantMixin, ListView):
         context = super(ViewAccount, self).get_context_data(**kwargs)
         base_template = 'dashboard.html'
         pk = int(self.kwargs.get('pk'))
-        obj = get_object_or_404(self.model, pk=pk, company=self.request.company)
+        obj = get_object_or_404(self.model, pk=pk, company__in=self.request.company.get_all())
         journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.pk).order_by('pk',
                                                                                                 'date') \
             .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
@@ -30,9 +30,6 @@ class CategoryView(CompanyView):
     model = Category
     success_url = reverse_lazy('category_list')
     form_class = CategoryForm
-
-
-0
 
 
 class CategoryList(CategoryView, AccountantMixin, ListView):
