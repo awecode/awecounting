@@ -6,6 +6,7 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
+from django.views.generic import TemplateView
 
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, StaffMixin, \
     group_required, TableObjectMixin, UpdateView, CompanyRequiredMixin, CreateView, TableObject, CashierMixin, \
@@ -21,7 +22,6 @@ from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, Pu
     JournalVoucherRow, \
     PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, \
     VoucherSetting, Expense, ExpenseRow, TradeExpense, Lot, LotItemDetail
-from django.views.generic import TemplateView
 
 
 class FixedAssetView(CompanyView):
@@ -295,6 +295,7 @@ class PurchaseVoucherCreate(PurchaseVoucherView, TableObjectMixin):
             context['data'] = data
         return context
 
+
 class ExportPurchaseVoucher(TemplateView):
     model = PurchaseVoucher
     serializer_class = PurchaseVoucherSerializer
@@ -324,6 +325,7 @@ class ExportPurchaseVoucher(TemplateView):
         context['data']['purchase_order_id'] = purchase_order.id
         context['obj'] = obj
         return context
+
 
 @group_required('Accountant')
 def save_cash_receipt(request):
@@ -454,19 +456,18 @@ def save_purchase(request):
                     )
                     po_receive_lot.lot_item_details.add(lot_item_detail)
 
-
                 values = {
-                          'sn': ind + 1,
-                          'item_id': row.get('item')['id'],
-                          'quantity': row.get('quantity'),
-                          'rate': row.get('rate'),
-                          'unit_id': row.get('unit')['id'],
-                          'discount': row.get('discount'),
-                          'tax_scheme_id': row_tax_scheme_id,
-                          'purchase': obj,
-                          'lot': po_receive_lot,
-                          # 'lot_item_detail': lot_item_detail
-                        }
+                    'sn': ind + 1,
+                    'item_id': row.get('item')['id'],
+                    'quantity': row.get('quantity'),
+                    'rate': row.get('rate'),
+                    'unit_id': row.get('unit')['id'],
+                    'discount': row.get('discount'),
+                    'tax_scheme_id': row_tax_scheme_id,
+                    'purchase': obj,
+                    'lot': po_receive_lot,
+                    # 'lot_item_detail': lot_item_detail
+                }
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
@@ -578,11 +579,11 @@ def save_sale(request):
                 else:
                     cr_acc = cash_account
 
-                # set_ledger_transactions(submodel, obj.date,
-                #                         ['dr', submodel.item.purchase_ledger, obj.total],
-                #                         ['cr', cr_acc, obj.total],
-                #                         # ['cr', sales_tax_account, tax_amount],
-                #                         )
+                    # set_ledger_transactions(submodel, obj.date,
+                    #                         ['dr', submodel.item.purchase_ledger, obj.total],
+                    #                         ['cr', cr_acc, obj.total],
+                    #                         # ['cr', sales_tax_account, tax_amount],
+                    #                         )
 
         delete_rows(params.get('table_view').get('deleted_rows'), model)
 
@@ -773,7 +774,7 @@ class PurchaseOrderDetailView(PurchaseOrderView, StockistMixin, DetailView):
 def save_purchase_order(request):
     if request.is_ajax():
         params = json.loads(request.body)
-    dct = {'rows': {}, 'expense':{}}
+    dct = {'rows': {}, 'expense': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
 

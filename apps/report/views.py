@@ -83,26 +83,36 @@ class ReportSettingUpdateView(SuperOwnerMixin, UpdateView):
 
 
 def get_subnode(node, name):
-    try:
-        return get_dict(node['nodes'], 'name', name)
-    except:
-        import ipdb
-
-        ipdb.set_trace()
+    return get_dict(node['nodes'], 'name', name)
 
 
 def trading_account(request):
     rows = []
     data = get_trial_balance_data(request.company)
+    gross_profit = 0
+
     income = get_subnode(data, 'Income')
-    sales = get_subnode(income, 'Sales')
-    rows.append(('Sales', sales['cr']))
+
+    if income:
+        sales = get_subnode(income, 'Sales')
+        if sales:
+            rows.append(('Sales', sales['cr']))
+            gross_profit += float(sales['cr'])
+        direct_income = get_subnode(income, 'Direct Income')
+        if direct_income:
+            rows.append(('Other Direct Income', direct_income['cr']))
+            gross_profit += float(direct_income['cr'])
     expenses = get_subnode(data, 'Expenses')
-    purchases = get_subnode(expenses, 'Purchase')
-    rows.append(('(Purchases)', purchases['dr']))
-    direct_expenses = get_subnode(expenses, 'Direct Expenses')
-    rows.append(('(Direct Expenses)', direct_expenses['dr']))
-    rows.append(('Gross Profit', float(sales['cr']) - float(purchases['dr']) - float(direct_expenses['dr']), 'ul'))
+    if expenses:
+        purchases = get_subnode(expenses, 'Purchase')
+        if purchases:
+            rows.append(('(Purchases)', purchases['dr']))
+            gross_profit -= float(purchases['dr'])
+        direct_expenses = get_subnode(expenses, 'Direct Expenses')
+        if direct_expenses:
+            rows.append(('(Direct Expenses)', direct_expenses['dr']))
+            gross_profit -= float(direct_expenses['dr'])
+    rows.append(('Gross Profit', gross_profit, 'ul'))
     return render(request, 'trading_account.html', {'data': data, 'rows': rows})
 
 
