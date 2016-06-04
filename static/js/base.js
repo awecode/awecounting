@@ -1690,3 +1690,18 @@ ajax_save = function (save_url, data) {
         error: save_error,
     });
 }
+
+// Client-side error logging
+
+function logError(details) {
+    $.ajax({
+        type: 'POST',
+        url: '/log_errors/',
+        data: JSON.stringify({context: navigator.userAgent, details: details}),
+        contentType: 'application/json; charset=utf-8'
+    });
+}
+
+window.onerror = function (message, file, line) {
+    logError(file + ':' + line + '\n\n' + message);
+};

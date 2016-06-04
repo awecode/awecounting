@@ -1,3 +1,4 @@
+from django.core.mail import mail_admins
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render, redirect, render_to_response
 from django.contrib.auth.views import login
@@ -404,3 +405,7 @@ def server_error(request):
     )
     response.status_code = 500
     return response
+
+
+def log_js_errors(request):
+    mail_admins('JS Error', request.body)

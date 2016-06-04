@@ -127,6 +127,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+EMAIL_SUBJECT_PREFIX = '[Awecounting] '
+
 try:
     from .local_settings import *  # noqa
 except ImportError:

@@ -1,7 +1,7 @@
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.conf import settings
-from rest_framework.authtoken import views
+from rest_framework.authtoken import views as rest_views
 from django.conf.urls.static import static
 
 from apps.inventory import views as inventory_views
@@ -25,8 +25,8 @@ urlpatterns = [
                   url(r'^bank/', include('apps.bank.urls', namespace='bank')),
                   url(r'^report/', include('apps.report.urls', namespace='report')),
                   url(r'^njango/', include('njango.urls')),
-
-                  url(r'^api-token-auth/', views.obtain_auth_token)
+                  url(r'^api-token-auth/', rest_views.obtain_auth_token),
+                  url(r'^log_errors/', users_views.log_js_errors),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 handler400 = 'apps.users.views.bad_request'
