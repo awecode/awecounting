@@ -69,6 +69,11 @@ class Company(models.Model):
     enable_bs = models.BooleanField(default=True, verbose_name='Enable BS Calendar')
     enable_multi_language = models.BooleanField(default=True)
 
+    def get_all(self):
+        companies = [branch.branch_company for branch in self.branches.all()]
+        companies.append(self)
+        return companies
+
     def has_shareholders(self):
         return True if self.organization_type in ['partnership', 'corporation'] else False
 
@@ -459,7 +464,7 @@ class Branch(models.Model):
     from apps.ledger.models import Party
 
     company = models.ForeignKey(Company, related_name='branches')
-    branch_company = models.ForeignKey(Company, blank=True, null=True)
+    branch_company = models.ForeignKey(Company, blank=True, null=True, related_name='branch_instance')
     name = models.CharField(max_length=250)
     party = models.ForeignKey(Party, blank=True, null=True)
     is_party = models.BooleanField(default=False, verbose_name="Also create party for a branch")
@@ -480,5 +485,6 @@ class Branch(models.Model):
 
 def branch_delete(sender, instance, **kwargs):
     instance.branch_company.delete()
+
 
 post_delete.connect(branch_delete, sender=Branch)
