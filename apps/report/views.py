@@ -24,13 +24,17 @@ def dict_merge(root, node):
 
 
 def get_trial_balance_data(root_company):
-    including_branches = root_company.get_all()
+    if root_company.show_combined_reports():
+        companies = root_company.get_all()
+    else:
+        companies = [root_company]
+    print companies
     root = {'nodes': [], 'total_dr': 0, 'total_cr': 0, 'settings': model_to_dict(ReportSetting.objects.get(company=root_company))}
     del root['settings']['id']
     del root['settings']['company']
     root['settings_save_url'] = reverse('report:save_report_settings')
 
-    for company in including_branches:
+    for company in companies:
         root_categories = Category.objects.filter(company=company, parent=None)
 
         for root_category in root_categories:
