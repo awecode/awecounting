@@ -487,6 +487,9 @@ def save_purchase(request):
             discount_rate = obj.discount / grand_total
         else:
             discount_rate = None
+            
+        print grand_total
+        print discount_rate
 
         try:
             discount_income = Account.objects.get(name='Discount Income', company=request.company, fy=request.company.fy,
@@ -498,20 +501,21 @@ def save_purchase(request):
 
             tax_scheme = obj.tax_scheme or purchase_row.tax_scheme
 
-            pure_total = row.quantity * row.rate
+            pure_total = purchase_row.quantity * purchase_row.rate
 
-            discount = row.discount or 0
+            row_discount = float(purchase_row.discount) or 0
+            divident_discount = 0
 
             # Pure total shouldn't include tax, handle for tax-inclusive
             if obj.tax == 'inclusive' and tax_scheme:
                 pure_total = pure_total * 100 / (100 + tax_scheme.percent)
 
+            entries = [['dr', submodel.item.purchase_ledger, pure_total]]
+
             # If the voucher has discount, apply discount proportionally
             if discount_rate:
-                pure_total -= pure_total * discount_rate
-                discount += pure_total * discount_rate
-
-            entries = [['dr', submodel.item.purchase_ledger, pure_total]]
+                divident_discount = pure_total * discount_rate
+                pure_total -= divident_discount
 
             if tax_scheme:
                 tax_amt = pure_total * tax_scheme.percent / 100
@@ -519,12 +523,16 @@ def save_purchase(request):
             else:
                 tax_amt = 0
 
+            discount = row_discount + divident_discount
+
             if discount and discount_income:
                 entries.append(['cr', discount_income, discount])
 
-            payable = pure_total - discount + tax_amt
+            payable = pure_total + tax_amt
 
             entries.append(['cr', cr_acc, payable])
+
+            set_ledger_transactions(purchase_row, obj.date, *entries)
 
         delete_rows(params.get('table_view').get('deleted_rows'), model)
 
