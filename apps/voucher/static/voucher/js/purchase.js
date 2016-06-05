@@ -374,7 +374,6 @@ function PurchaseRow(row, purchase_vm) {
 
     });
 
-
     self.total = ko.computed(function () {
         if (purchase_vm.tax() == 'no' || purchase_vm.tax_scheme()) {
             return r2z(parseFloat(self.quantity()) * parseFloat(self.rate()) - parseFloat(self.discount()));

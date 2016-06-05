@@ -134,7 +134,7 @@ class TableObject(object):
 
 class CompanyView(CompanyRequiredMixin):
     def form_valid(self, form):
-        if not form.instance.company:
+        if not form.instance.company_id:
             form.instance.company = self.request.company
         return super(CompanyView, self).form_valid(form)
 
