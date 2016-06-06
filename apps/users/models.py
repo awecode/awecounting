@@ -110,6 +110,9 @@ class Company(models.Model):
     def can_manage_branches(self):
         return self.subscription.enable_branches
 
+    def show_combined_reports(self):
+        return self.subscription.enable_branches and self.subscription.combine_reports
+
     @property
     def fy(self):
         return self.get_fy()
@@ -209,6 +212,8 @@ class Subscription(models.Model):
     enable_payroll = models.BooleanField(default=True)
     enable_reports = models.BooleanField(default=True)
     enable_branches = models.BooleanField(default=False)
+    combine_reports = models.BooleanField(default=False, verbose_name='Show combined reports of branches')
+    disable_head_office_vouchers = models.BooleanField(default=False)
     interconnection_among_branches = models.BooleanField(default=True)
 
     def __str__(self):

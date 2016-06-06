@@ -6,12 +6,13 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
+from django.views.generic import TemplateView
 
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, StaffMixin, \
     group_required, TableObjectMixin, UpdateView, CompanyRequiredMixin, CreateView, TableObject, CashierMixin, \
     StockistMixin, AccountantMixin
 from ..inventory.models import set_transactions
-from ..ledger.models import set_transactions as set_ledger_transactions, get_account
+from ..ledger.models import set_transactions as set_ledger_transactions, get_account, Account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
 from .forms import JournalVoucherForm, VoucherSettingForm, CashPaymentForm, CashReceiptForm
 from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
@@ -21,7 +22,6 @@ from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, Pu
     JournalVoucherRow, \
     PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, \
     VoucherSetting, Expense, ExpenseRow, TradeExpense, Lot, LotItemDetail
-from django.views.generic import TemplateView
 
 
 class FixedAssetView(CompanyView):
@@ -295,6 +295,7 @@ class PurchaseVoucherCreate(PurchaseVoucherView, TableObjectMixin):
             context['data'] = data
         return context
 
+
 class ExportPurchaseVoucher(TemplateView):
     model = PurchaseVoucher
     serializer_class = PurchaseVoucherSerializer
@@ -324,6 +325,7 @@ class ExportPurchaseVoucher(TemplateView):
         context['data']['purchase_order_id'] = purchase_order.id
         context['obj'] = obj
         return context
+
 
 @group_required('Accountant')
 def save_cash_receipt(request):
@@ -425,7 +427,7 @@ def save_purchase(request):
         if not obj.credit:
             cash_account = get_account(request, 'Cash')
         for ind, row in enumerate(params.get('table_view').get('rows')):
-            if invalid(row, ['item_id', 'quantity', 'unit_id']):
+            if invalid(row, ['item_id', 'quantity', 'rate', 'unit_id']):
                 continue
             else:
                 if params.get('tax') == 'no' or params.get('tax_scheme_id'):
@@ -456,19 +458,18 @@ def save_purchase(request):
                     )
                     po_receive_lot.lot_item_details.add(lot_item_detail)
 
-
                 values = {
-                          'sn': ind + 1,
-                          'item_id': row.get('item')['id'],
-                          'quantity': row.get('quantity'),
-                          'rate': row.get('rate'),
-                          'unit_id': row.get('unit')['id'],
-                          'discount': row.get('discount'),
-                          'tax_scheme_id': row_tax_scheme_id,
-                          'purchase': obj,
-                          'lot': po_receive_lot,
-                          # 'lot_item_detail': lot_item_detail
-                        }
+                    'sn': ind + 1,
+                    'item_id': row.get('item')['id'],
+                    'quantity': row.get('quantity'),
+                    'rate': row.get('rate'),
+                    'unit_id': row.get('unit')['id'],
+                    'discount': row.get('discount') or 0,
+                    'tax_scheme_id': row_tax_scheme_id,
+                    'purchase': obj,
+                    'lot': po_receive_lot,
+                    # 'lot_item_detail': lot_item_detail
+                }
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
@@ -478,16 +479,59 @@ def save_purchase(request):
                                  ['dr', submodel.item.account, submodel.quantity],
                                  )
 
-                if obj.credit:
-                    cr_acc = obj.party.supplier_account
-                else:
-                    cr_acc = cash_account
+        if obj.credit:
+            cr_acc = obj.party.supplier_account
+        else:
+            cr_acc = cash_account
 
-                set_ledger_transactions(submodel, obj.date,
-                                        ['dr', submodel.item.purchase_ledger, obj.total],
-                                        ['cr', cr_acc, obj.total],
-                                        # ['cr', sales_tax_account, tax_amount],
-                                        )
+        # Voucher discount needs to broken into row discounts
+        if grand_total and obj.discount:
+            discount_rate = obj.discount / grand_total
+        else:
+            discount_rate = None
+
+        try:
+            discount_income = Account.objects.get(name='Discount Income', company=request.company, fy=request.company.fy,
+                                                  category__name='Income')
+        except Account.DoesNotExist:
+            discount_income = None
+
+        for purchase_row in obj.rows.all():
+
+            tax_scheme = obj.tax_scheme or purchase_row.tax_scheme
+
+            pure_total = purchase_row.quantity * purchase_row.rate
+
+            row_discount = float(purchase_row.discount) or 0
+            divident_discount = 0
+
+            # Pure total shouldn't include tax, handle for tax-inclusive
+            if obj.tax == 'inclusive' and tax_scheme:
+                pure_total = pure_total * 100 / (100 + tax_scheme.percent)
+
+            entries = [['dr', submodel.item.purchase_ledger, pure_total]]
+
+            # If the voucher has discount, apply discount proportionally
+            if discount_rate:
+                divident_discount = pure_total * discount_rate
+                pure_total -= divident_discount
+
+            if tax_scheme:
+                tax_amt = pure_total * tax_scheme.percent / 100
+                entries.append(['dr', tax_scheme.receivable, tax_amt])
+            else:
+                tax_amt = 0
+
+            discount = row_discount + divident_discount
+
+            if discount and discount_income:
+                entries.append(['cr', discount_income, discount])
+
+            payable = pure_total - row_discount + tax_amt
+
+            entries.append(['cr', cr_acc, payable])
+
+            set_ledger_transactions(purchase_row, obj.date, *entries)
 
         delete_rows(params.get('table_view').get('deleted_rows'), model)
 
@@ -580,18 +624,18 @@ def save_sale(request):
                 else:
                     cr_acc = cash_account
 
-                # set_ledger_transactions(submodel, obj.date,
-                #                         ['dr', submodel.item.purchase_ledger, obj.total],
-                #                         ['cr', cr_acc, obj.total],
-                #                         # ['cr', sales_tax_account, tax_amount],
-                #                         )
+                set_ledger_transactions(submodel, obj.date,
+                                        ['dr', submodel.item.purchase_ledger, obj.total],
+                                        ['cr', cr_acc, obj.total],
+                                        # ['cr', sales_tax_account, tax_amount],
+                                        )
 
         delete_rows(params.get('table_view').get('deleted_rows'), model)
 
-        obj.total_amount = grand_total
         if obj.credit:
             # TODO when pending amount exists
             obj.pending_amount = grand_total
+        obj.total_amount = grand_total
         obj.save()
     except Exception as e:
         dct = write_error(dct, e)
@@ -775,7 +819,7 @@ class PurchaseOrderDetailView(PurchaseOrderView, StockistMixin, DetailView):
 def save_purchase_order(request):
     if request.is_ajax():
         params = json.loads(request.body)
-    dct = {'rows': {}, 'expense':{}}
+    dct = {'rows': {}, 'expense': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
 
