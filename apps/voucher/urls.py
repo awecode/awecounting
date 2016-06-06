@@ -33,6 +33,7 @@ web_urls = [
     url(r'^sale/today/$', views.daily_sale_today, name='today_sale'),
     url(r'^sale/yesterday/$', views.daily_sale_yesterday, name='yesterday_sale'),
     url(r'^sale/detail/(?P<pk>[0-9]+)/$', views.SaleDetailView.as_view(), name='sale_detail'),
+    url(r'^sale/delete/(?P<pk>[0-9]+)$', views.SaleDelete.as_view(), name='sale_delete'),
 
     url(r'^journal/$', views.JournalVoucherList.as_view(), name='journal_voucher_list'),
     url(r'^journal/add/$', views.JournalVoucherCreate.as_view(), name='journal_voucher_add'),
