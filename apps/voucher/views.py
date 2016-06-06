@@ -242,6 +242,7 @@ class PurchaseVoucherView(CompanyView):
 class SaleView(CompanyView):
     model = Sale
     serializer_class = SaleSerializer
+    success_url = reverse_lazy("sale-list")
     check = 'can_manage_sales'
 
 
@@ -517,6 +518,8 @@ class SaleCreate(SaleView, TableObjectMixin):
             context['data'] = data
         return context
 
+class SaleDelete(SaleView, DeleteView):
+    pass
 
 # def sale(request, id=None):
 #     if id:
