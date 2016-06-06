@@ -438,7 +438,9 @@ def save_purchase(request):
                 #     discount = row.get('discount')
                 item_id = row.get('item')['id']
                 lot_number = row.get('lot_number')
-                po_receive_lot, created = Lot.objects.get_or_create(lot_number=lot_number)
+                po_receive_lot, created = Lot.objects.get_or_create(
+                    lot_number=lot_number
+                )
 
                 item_exists = False
 
