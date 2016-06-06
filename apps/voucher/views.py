@@ -462,7 +462,7 @@ def save_purchase(request):
                     'quantity': row.get('quantity'),
                     'rate': row.get('rate'),
                     'unit_id': row.get('unit')['id'],
-                    'discount': row.get('discount'),
+                    'discount': row.get('discount') or 0,
                     'tax_scheme_id': row_tax_scheme_id,
                     'purchase': obj,
                     'lot': po_receive_lot,
@@ -487,9 +487,6 @@ def save_purchase(request):
             discount_rate = obj.discount / grand_total
         else:
             discount_rate = None
-            
-        print grand_total
-        print discount_rate
 
         try:
             discount_income = Account.objects.get(name='Discount Income', company=request.company, fy=request.company.fy,
@@ -528,7 +525,7 @@ def save_purchase(request):
             if discount and discount_income:
                 entries.append(['cr', discount_income, discount])
 
-            payable = pure_total + tax_amt
+            payable = pure_total - row_discount + tax_amt
 
             entries.append(['cr', cr_acc, payable])
 
