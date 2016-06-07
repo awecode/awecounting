@@ -10,8 +10,8 @@ from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
 from django.contrib.admin import ModelAdmin
-from modeltranslation.admin import TranslationAdmin
 
+from modeltranslation.admin import TranslationAdmin
 from .helpers import json_from_object
 
 
@@ -152,12 +152,21 @@ class CompanyView(CompanyRequiredMixin):
 
 USURPERS = {
     'Staff': ['Staff', 'Accountant', 'Owner', 'SuperOwner'],
+    'StockistCashier': ['Cashier', 'Stockist', 'Accountant', 'Owner', 'SuperOwner'],
     'Stockist': ['Stockist', 'Accountant', 'Owner', 'SuperOwner'],
     'Cashier': ['Cashier', 'Accountant', 'Owner', 'SuperOwner'],
     'Accountant': ['Accountant', 'Owner', 'SuperOwner'],
     'Owner': ['Owner', 'SuperOwner'],
     'SuperOwner': ['SuperOwner'],
 }
+
+
+class StockistCashierMixin(object):
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            if request.role.group.name in USURPERS['StockistCashier']:
+                return super(StockistCashierMixin, self).dispatch(request, *args, **kwargs)
+        raise PermissionDenied()
 
 
 class StaffMixin(object):
