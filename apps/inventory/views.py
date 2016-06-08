@@ -192,7 +192,7 @@ class InventoryAccountView(CompanyView):
 
 class InventoryAccountList(InventoryAccountView, StockistMixin, ListView):
     def get_queryset(self):
-        return self.model.objects.order_by('-item')
+        return super(InventoryAccountList, self).get_queryset().order_by('-item')
 
 
 # def list_inventory_accounts(request):
