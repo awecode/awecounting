@@ -70,6 +70,8 @@ web_urls = [
     url(r'^voucher_setting/$', views.VoucherSettingUpdateView.as_view(), name='voucher_setting'),
 
     url(r'^export_purchase_voucher/(?P<purchase_order_pk>\d+)$', views.ExportPurchaseVoucher.as_view(), name='export_purchase_voucher'),
+    url(r'^location/add/$', views.LocationCreate.as_view(), name='location_add'),
+    url(r'^location/list/$', views.LocationList.as_view(), name='location_list'),
 
 ]
 
@@ -84,6 +86,7 @@ api_urls = [
     url(r'^api/fixed_asset/(?P<pk>[0-9]+)/', api.FixedAssetDetailAPI.as_view()),
     url(r'^api/incoming_purchase_order/', api.IncomingPurchaseOrderListAPI.as_view()),
     url(r'^api/(?P<voucher>[\w]+)/party/(?P<party_pk>[0-9]+)/rates/$', api.PartyRateListAPI.as_view()),
+    url(r'^api/locations/$', api.LocationListAPI.as_view()),
 ]
 
 api_urls = format_suffix_patterns(api_urls)

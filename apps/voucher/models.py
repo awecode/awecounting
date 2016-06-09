@@ -177,6 +177,17 @@ class Lot(models.Model):
     def __unicode__(self):
         return self.lot_number
 
+class Location(models.Model):
+    code = models.CharField(max_length=100)
+    name = models.CharField(max_length=150)
+    enabled = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse_lazy('location_list')
+
 
 class PurchaseVoucherRow(models.Model):
     sn = models.PositiveIntegerField()
@@ -189,6 +200,7 @@ class PurchaseVoucherRow(models.Model):
     purchase = models.ForeignKey(PurchaseVoucher, related_name='rows')
     journal_entry = GenericRelation(JournalEntry)
     lot = models.ForeignKey(Lot, null=True, blank=True)
+    location = models.ForeignKey(Location, null=True, blank=True)
 
     def get_total(self):
         rate = float(self.rate)

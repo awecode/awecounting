@@ -70,6 +70,17 @@ function PurchaseViewModel(data, settings) {
 
     self.status = ko.observable();
 
+
+    // Get enabled location
+    $.ajax({
+        url: '/voucher/api/locations/',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            self.enabled_locations = ko.observableArray(data);
+        }
+    });
+
     $.ajax({
         url: '/tax/api/tax_schemes.json',
         dataType: 'json',
@@ -333,6 +344,8 @@ function PurchaseRow(row, purchase_vm) {
     self.tax_scheme_id = ko.observable();
     self.tax_scheme = ko.observable();
     self.lot_number = ko.observable();
+    // self.location_id = ko.observable();
+    self.location = ko.observable();
 
     for (var k in row)
         self[k] = ko.observable(row[k]);

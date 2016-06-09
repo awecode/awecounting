@@ -10,7 +10,7 @@ from django.views.generic import TemplateView
 
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, StaffMixin, \
     group_required, TableObjectMixin, UpdateView, CompanyRequiredMixin, CreateView, TableObject, CashierMixin, \
-    StockistMixin, AccountantMixin
+    StockistMixin, AccountantMixin, AjaxableResponseMixin
 from ..inventory.models import set_transactions
 from ..ledger.models import set_transactions as set_ledger_transactions, get_account, Account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
@@ -21,7 +21,8 @@ from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, \
     JournalVoucherRow, \
     PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, \
-    VoucherSetting, Expense, ExpenseRow, TradeExpense, Lot, LotItemDetail
+    VoucherSetting, Expense, ExpenseRow, TradeExpense, Lot, LotItemDetail, Location
+# from awecounting.utils.mixins import AjaxableResponseMixin, CreateView
 
 
 class FixedAssetView(CompanyView):
@@ -467,6 +468,7 @@ def save_purchase(request):
                     'tax_scheme_id': row_tax_scheme_id,
                     'purchase': obj,
                     'lot': po_receive_lot,
+                    'location_id': row.get('location')
                     # 'lot_item_detail': lot_item_detail
                 }
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
@@ -992,3 +994,11 @@ def save_expense(request):
     except Exception as e:
         dct = write_error(dct, e)
     return JsonResponse(dct)
+
+
+class LocationCreate(AjaxableResponseMixin, CreateView):
+    model = Location
+    fields = '__all__'
+
+class LocationList(ListView):
+    model = Location

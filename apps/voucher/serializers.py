@@ -5,7 +5,7 @@ from ..users.models import User
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashPayment, CashPaymentRow, CashReceipt, \
     CashReceiptRow, \
     PurchaseVoucherRow, PurchaseVoucher, SaleRow, Sale, JournalVoucherRow, JournalVoucher, \
-    PurchaseOrder, PurchaseOrderRow, ExpenseRow, Expense, TradeExpense
+    PurchaseOrder, PurchaseOrderRow, ExpenseRow, Expense, TradeExpense, Location
 
 
 class TradeExpenseSerializer(serializers.ModelSerializer):
@@ -194,3 +194,12 @@ class PartyRateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
         fields = ('id',)
+
+
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = (
+            'id',
+            'name'
+        )

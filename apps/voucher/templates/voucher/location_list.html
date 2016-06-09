@@ -1,0 +1,15 @@
+{% extends "_base.html" %}
+{% load i18n %}
+
+{% block page-title %} {% trans "Locations" %}{% endblock %}
+
+{% block content %}
+<ul>
+{% for location in object_list %}
+    <li>{{ location.name }}</li>
+{% empty %}
+    <li>No articles yet.</li>
+{% endfor %}
+</ul>
+{% endblock %}
+
