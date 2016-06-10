@@ -512,27 +512,27 @@ class VoucherSetting(models.Model):
     tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'), ]
     company = models.OneToOneField(Company, related_name='settings')
     unique_voucher_number = models.BooleanField(default=True)
-    single_discount_on_whole_invoice = models.BooleanField(default=True)
-    discount_on_each_invoice_particular = models.BooleanField(default=False)
-    sale_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='exclusive',
-                                                         null=True,
-                                                         blank=True)
-    sale_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True,
-                                                related_name="default_invoice_tax_scheme")
 
-    single_discount_on_whole_purchase = models.BooleanField(default=True)
-    discount_on_each_purchase_particular = models.BooleanField(default=False)
-    purchase_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='exclusive',
-                                                             null=True,
-                                                             blank=True)
-    purchase_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True,
-                                                    related_name="default_purchase_tax_scheme")
-    purchase_suggest_by_item = models.BooleanField(default=True, verbose_name='Suggest rate by item')
-    purchase_suggest_by_party_item = models.BooleanField(default=True, verbose_name='Suggest rate by item by party')
+    # Sales voucher settings
+    single_discount_on_whole_invoice = models.BooleanField(default=True)
+    sale_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='exclusive',
+                                                         null=True, blank=True)
     sale_suggest_by_item = models.BooleanField(default=True, verbose_name='Suggest rate by item')
     sale_suggest_by_party_item = models.BooleanField(default=True, verbose_name='Suggest rate by item by party')
+    sale_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True, related_name='default_invoice_tax_scheme')
+    discount_on_each_invoice_particular = models.BooleanField(default=False)
+
+    # Purchase voucher settings
+    single_discount_on_whole_purchase = models.BooleanField(default=True)
+
+    purchase_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='exclusive', null=True,
+                                                             blank=True)
+    purchase_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True, related_name='default_purchase_tax_scheme')
+    purchase_suggest_by_item = models.BooleanField(default=True, verbose_name='Suggest rate by item')
+    purchase_suggest_by_party_item = models.BooleanField(default=True, verbose_name='Suggest rate by item by party')
     enable_expense_in_purchase = models.BooleanField(default=True, verbose_name='Enable Expense')
     add_expense_cost_to_purchase = models.BooleanField(default=True, verbose_name='Add expense cost')
+    discount_on_each_purchase_particular = models.BooleanField(default=False)
 
     def add_expense_to_purchase(self):
         return self.enable_expense_in_purchase and self.add_expense_cost_to_purchase

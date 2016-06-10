@@ -127,8 +127,9 @@ class InventoryAccount(models.Model):
 
 
 class Item(models.Model):
-    code = models.CharField(max_length=250, blank=True, null=True)
     name = models.CharField(max_length=254)
+    code = models.CharField(max_length=250, blank=True, null=True)
+    oem_no = models.CharField(max_length=250, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     account = models.OneToOneField(InventoryAccount, related_name='item', null=True)
     image = models.ImageField(upload_to='items', blank=True, null=True)
