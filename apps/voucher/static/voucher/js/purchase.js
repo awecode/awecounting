@@ -123,7 +123,9 @@ function PurchaseViewModel(data, settings) {
                 });
             } else if (party.related_company == null && party.company != self.items_of_current_company()) {
                 var company_item = get_by_id(company_items, party.company);
-                self.items(company_item.items);
+                if (company_item) {
+                    self.items(company_item.items);
+                }
                 self.items_of_current_company(party.company);
             } else if (party.related_company != null && typeof(company) != 'undefined') {
                 company_item = get_by_id(company_items, party.related_company);
