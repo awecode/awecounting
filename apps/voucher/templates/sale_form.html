@@ -15,6 +15,9 @@
     <script>
         ko_data = {{data|jsonify}};
         voucher_settings = {{ request.company.settings|jsonify }};
+        $(document).on('click', '.dropdown-menu', function (e) {
+            e.stopPropagation();
+        });
     </script>
     <script>
         {% if not request.company.settings.invoice_default_tax_scheme and request.company.settings.discount_on_each_invoice_particular or request.company.settings.invoice_default_tax_scheme and request.company.settings.discount_on_each_invoice_particular %}
