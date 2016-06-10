@@ -338,9 +338,11 @@ def _transaction_delete(sender, instance, **kwargs):
     transaction = instance
     # cancel out existing dr_amount and cr_amount from account's current_dr and current_cr
     if transaction.dr_amount:
+        transaction.account.current_dr = zero_for_none(transaction.account.current_dr)
         transaction.account.current_dr -= transaction.dr_amount
 
     if transaction.cr_amount:
+        transaction.account.current_cr = zero_for_none(transaction.account.current_dr)
         transaction.account.current_cr -= transaction.cr_amount
 
     alter(transaction.account, transaction.journal_entry.date, float(zero_for_none(transaction.dr_amount)) * -1,

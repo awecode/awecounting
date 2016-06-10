@@ -501,10 +501,6 @@ def save_purchase(request):
 
         for purchase_row in obj.rows.all():
 
-            import ipdb
-
-            ipdb.set_trace()
-
             tax_scheme = obj.tax_scheme or purchase_row.tax_scheme
 
             rate = float(purchase_row.rate)
