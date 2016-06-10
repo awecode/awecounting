@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView
 
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView, \
-    StockistMixin, AccountantMixin
+    StockistMixin, AccountantMixin, StockistCashierMixin
 from .models import Party, Category, Account, JournalEntry
 from .forms import PartyForm, AccountForm, CategoryForm
 
@@ -60,11 +60,11 @@ class PartyView(CompanyView):
         return super(PartyView, self).form_valid(form)
 
 
-class PartyList(PartyView, AccountantMixin, ListView):
+class PartyList(PartyView, StockistCashierMixin, ListView):
     pass
 
 
-class PartyCreate(AjaxableResponseMixin, PartyView, AccountantMixin, CreateView):
+class PartyCreate(AjaxableResponseMixin, PartyView, StockistCashierMixin, CreateView):
     def get_initial(self):
         dct = {}
         if self.request.GET and 'source' in self.request.GET:
@@ -75,11 +75,11 @@ class PartyCreate(AjaxableResponseMixin, PartyView, AccountantMixin, CreateView)
         return dct
 
 
-class PartyUpdate(PartyView, AccountantMixin, UpdateView):
+class PartyUpdate(PartyView, StockistCashierMixin, UpdateView):
     pass
 
 
-class PartyDelete(PartyView, AccountantMixin, DeleteView):
+class PartyDelete(PartyView, StockistCashierMixin, DeleteView):
     pass
 
 
@@ -99,17 +99,17 @@ class AccountView(CompanyView):
         return dct
 
 
-class AccountList(AccountView, StockistMixin, ListView):
+class AccountList(AccountView, AccountantMixin, ListView):
     pass
 
 
-class AccountCreate(AjaxableResponseMixin, AccountView, StockistMixin, CreateView):
+class AccountCreate(AjaxableResponseMixin, AccountView, AccountantMixin, CreateView):
     pass
 
 
-class AccountUpdate(AccountView, StockistMixin, UpdateView):
+class AccountUpdate(AccountView, AccountantMixin, UpdateView):
     pass
 
 
-class AccountDelete(AccountView, StockistMixin, DeleteView):
+class AccountDelete(AccountView, AccountantMixin, DeleteView):
     pass

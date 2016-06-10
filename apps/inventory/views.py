@@ -14,7 +14,7 @@ from ..voucher.models import Sale
 from .models import Item, UnitConversion, Unit, JournalEntry, InventoryAccount
 from .forms import ItemForm, UnitForm, UnitConversionForm
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView, \
-    StockistMixin, AccountantMixin
+    StockistMixin, AccountantMixin, StockistCashierMixin
 
 
 @login_required
@@ -132,11 +132,11 @@ class ItemView(CompanyView):
 #         return data
 
 
-class ItemList(ItemView, AccountantMixin, ListView):
+class ItemList(ItemView, StockistCashierMixin, ListView):
     pass
 
 
-class ItemDelete(ItemView, AccountantMixin, DeleteView):
+class ItemDelete(ItemView, StockistCashierMixin, DeleteView):
     pass
 
 
@@ -146,19 +146,19 @@ class UnitConversionView(CompanyView):
     success_url = reverse_lazy('unit_conversion_list')
 
 
-class UnitConversionList(UnitConversionView, AccountantMixin, ListView):
+class UnitConversionList(UnitConversionView, StockistCashierMixin, ListView):
     pass
 
 
-class UnitConversionCreate(UnitConversionView, AccountantMixin, CreateView):
+class UnitConversionCreate(UnitConversionView, StockistCashierMixin, CreateView):
     pass
 
 
-class UnitConversionUpdate(UnitConversionView, AccountantMixin, UpdateView):
+class UnitConversionUpdate(UnitConversionView, StockistCashierMixin, UpdateView):
     pass
 
 
-class UnitConversionDelete(UnitConversionView, AccountantMixin, DeleteView):
+class UnitConversionDelete(UnitConversionView, StockistCashierMixin, DeleteView):
     pass
 
 
@@ -169,19 +169,19 @@ class UnitView(CompanyView):
     form_class = UnitForm
 
 
-class UnitList(UnitView, AccountantMixin, ListView):
+class UnitList(UnitView, StockistCashierMixin, ListView):
     pass
 
 
-class UnitCreate(AjaxableResponseMixin, UnitView, AccountantMixin, CreateView):
+class UnitCreate(AjaxableResponseMixin, UnitView, StockistCashierMixin, CreateView):
     pass
 
 
-class UnitUpdate(UnitView, AccountantMixin, UpdateView):
+class UnitUpdate(UnitView, StockistCashierMixin, UpdateView):
     pass
 
 
-class UnitDelete(UnitView, AccountantMixin, DeleteView):
+class UnitDelete(UnitView, StockistCashierMixin, DeleteView):
     pass
 
 
@@ -192,7 +192,7 @@ class InventoryAccountView(CompanyView):
 
 class InventoryAccountList(InventoryAccountView, StockistMixin, ListView):
     def get_queryset(self):
-        return self.model.objects.order_by('-item')
+        return super(InventoryAccountList, self).get_queryset().order_by('-item')
 
 
 # def list_inventory_accounts(request):

@@ -30,15 +30,15 @@ class FixedAssetView(CompanyView):
     serializer_class = FixedAssetSerializer
 
 
-class FixedAssetList(FixedAssetView, ListView):
+class FixedAssetList(FixedAssetView, AccountantMixin, ListView):
     pass
 
 
-class FixedAssetDelete(FixedAssetView, DeleteView):
+class FixedAssetDelete(FixedAssetView, AccountantMixin, DeleteView):
     pass
 
 
-class FixedAssetDetailView(DetailView):
+class FixedAssetDetailView(AccountantMixin, DetailView):
     model = FixedAsset
 
     def get_context_data(self, **kwargs):
@@ -47,7 +47,7 @@ class FixedAssetDetailView(DetailView):
         return context
 
 
-class FixedAssetCreate(FixedAssetView, TableObjectMixin):
+class FixedAssetCreate(FixedAssetView, AccountantMixin, TableObjectMixin):
     template_name = 'fixed_asset_form.html'
 
 
@@ -105,22 +105,22 @@ class CashReceiptView(CompanyView):
     form_class = CashReceiptForm
 
 
-class CashReceiptList(CashReceiptView, CashierMixin, ListView):
+class CashReceiptList(CashReceiptView, AccountantMixin, ListView):
     pass
 
 
-class CashReceiptDetailView(CashReceiptView, CashierMixin, DetailView):
+class CashReceiptDetailView(CashReceiptView, AccountantMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(CashReceiptDetailView, self).get_context_data(**kwargs)
         context['rows'] = CashReceiptRow.objects.select_related('invoice').filter(cash_receipt=self.object)
         return context
 
 
-class CashReceiptCreate(CashReceiptView, TableObject, CashierMixin, CreateView):
+class CashReceiptCreate(CashReceiptView, TableObject, AccountantMixin, CreateView):
     template_name = 'cash_receipt.html'
 
 
-class CashReceiptUpdate(CashReceiptView, TableObject, CashierMixin, UpdateView):
+class CashReceiptUpdate(CashReceiptView, TableObject, AccountantMixin, UpdateView):
     template_name = 'cash_receipt.html'
 
 
@@ -130,19 +130,19 @@ class CashPaymentView(CompanyView):
     form_class = CashPaymentForm
 
 
-class CashPaymentList(CashPaymentView, CashierMixin, ListView):
+class CashPaymentList(CashPaymentView, AccountantMixin, ListView):
     pass
 
 
-class CashPaymentCreate(CashPaymentView, TableObject, CashierMixin, CreateView):
+class CashPaymentCreate(CashPaymentView, TableObject, AccountantMixin, CreateView):
     template_name = 'cash_payment.html'
 
 
-class CashPaymentUpdate(CashPaymentView, TableObject, CashierMixin, UpdateView):
+class CashPaymentUpdate(CashPaymentView, TableObject, AccountantMixin, UpdateView):
     template_name = 'cash_payment.html'
 
 
-class CashPaymentDetailView(CashierMixin, DetailView):
+class CashPaymentDetailView(AccountantMixin, DetailView):
     model = CashPayment
 
     def get_context_data(self, **kwargs):
@@ -246,21 +246,21 @@ class SaleView(CompanyView):
     check = 'can_manage_sales'
 
 
-class PurchaseVoucherDetailView(PurchaseVoucherView, StaffMixin, DetailView):
+class PurchaseVoucherDetailView(PurchaseVoucherView, CashierMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(PurchaseVoucherDetailView, self).get_context_data(**kwargs)
         context['rows'] = PurchaseVoucherRow.objects.select_related('item', 'unit').filter(purchase=self.object)
         return context
 
 
-class SaleDetailView(SaleView, StaffMixin, DetailView):
+class SaleDetailView(SaleView, CashierMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(SaleDetailView, self).get_context_data(**kwargs)
         context['rows'] = SaleRow.objects.select_related('item', 'unit').filter(sale=self.object)
         return context
 
 
-class JournalVoucherDetailView(CompanyView, StaffMixin, DetailView):
+class JournalVoucherDetailView(CompanyView, AccountantMixin, DetailView):
     model = JournalVoucher
     check = 'can_manage_journal_vouchers'
 
@@ -270,15 +270,15 @@ class JournalVoucherDetailView(CompanyView, StaffMixin, DetailView):
         return context
 
 
-class PurchaseVoucherList(PurchaseVoucherView, ListView):
+class PurchaseVoucherList(PurchaseVoucherView, CashierMixin, ListView):
     pass
 
 
-class PurchaseVoucherDelete(PurchaseVoucherView, DeleteView):
+class PurchaseVoucherDelete(PurchaseVoucherView, CashierMixin, DeleteView):
     pass
 
 
-class PurchaseVoucherCreate(PurchaseVoucherView, TableObjectMixin):
+class PurchaseVoucherCreate(PurchaseVoucherView, CashierMixin, TableObjectMixin):
     template_name = 'purchase-form.html'
 
     def get_context_data(self, *args, **kwargs):
@@ -383,7 +383,7 @@ def save_cash_receipt(request):
     return JsonResponse(dct)
 
 
-@group_required('Accountant')
+@group_required('Cashier')
 def save_purchase(request):
     if request.is_ajax():
         params = json.loads(request.body)
@@ -544,7 +544,7 @@ def save_purchase(request):
     return JsonResponse(dct)
 
 
-class SaleCreate(SaleView, TableObjectMixin):
+class SaleCreate(SaleView, CashierMixin, TableObjectMixin):
     template_name = 'sale_form.html'
 
     def get_context_data(self, *args, **kwargs):
@@ -562,7 +562,7 @@ class SaleCreate(SaleView, TableObjectMixin):
             context['data'] = data
         return context
 
-class SaleDelete(SaleView, DeleteView):
+class SaleDelete(SaleView, CashierMixin, DeleteView):
     pass
 
 # def sale(request, id=None):
@@ -575,7 +575,7 @@ class SaleDelete(SaleView, DeleteView):
 #     data = SaleSerializer(obj).data
 #     return render(request, 'sale_form.html', {'data': data, 'scenario': scenario, 'sale': obj})
 
-@group_required('Accountant')
+@group_required('Cashier')
 def save_sale(request):
     if request.is_ajax():
         params = json.loads(request.body)
@@ -643,7 +643,7 @@ def save_sale(request):
     return JsonResponse(dct)
 
 
-class SaleList(SaleView, ListView):
+class SaleList(SaleView, CashierMixin, ListView):
     pass
 
 
@@ -651,7 +651,7 @@ class SaleList(SaleView, ListView):
 #     objects = Sale.objects.filter(company=request.company).prefetch_related('rows')
 #     return render(request, 'sale_list.html', {'objects': objects})
 
-@group_required('Accountant')
+@group_required('Cashier')
 def sale_day(request, voucher_date):
     objects = Sale.objects.filter(date=voucher_date, company=request.company).prefetch_related('rows')
     total_amount = 0
@@ -672,7 +672,7 @@ def sale_day(request, voucher_date):
     return render(request, 'sale_report.html', context)
 
 
-@group_required('Accountant')
+@group_required('Cashier')
 def sale_date_range(request, from_date, to_date):
     objects = Sale.objects.filter(date__gte=from_date, date__lte=to_date, company=request.company).prefetch_related(
         'rows')
@@ -695,7 +695,7 @@ def sale_date_range(request, from_date, to_date):
     return render(request, 'sale_report.html', context)
 
 
-@group_required('Accountant')
+@group_required('Cashier')
 def sales_report_router(request):
     if request.GET.get('date'):
         return sale_day(request, request.GET.get('date'))
@@ -707,13 +707,13 @@ def sales_report_router(request):
         return redirect(reverse_lazy('home'))
 
 
-@group_required('Accountant')
+@group_required('Cashier')
 def daily_sale_today(request):
     today = datetime.date.today()
     return sale_day(request, today)
 
 
-@group_required('Accountant')
+@group_required('Cashier')
 def daily_sale_yesterday(request):
     yesterday = datetime.date.today() - datetime.timedelta(1)
     return sale_day(request, yesterday)
@@ -727,11 +727,11 @@ class JournalVoucherView(CompanyView):
     check = 'can_manage_journal_vouchers'
 
 
-class JournalVoucherList(JournalVoucherView, ListView):
+class JournalVoucherList(JournalVoucherView, AccountantMixin, ListView):
     pass
 
 
-class JournalVoucherCreate(JournalVoucherView, TableObjectMixin):
+class JournalVoucherCreate(JournalVoucherView, AccountantMixin, TableObjectMixin):
     template_name = 'voucher/journal_voucher_form.html'
 
 
@@ -816,7 +816,7 @@ class PurchaseOrderDetailView(PurchaseOrderView, StockistMixin, DetailView):
         return context
 
 
-@group_required('Accountant')
+@group_required('Stokist')
 def save_purchase_order(request):
     if request.is_ajax():
         params = json.loads(request.body)
