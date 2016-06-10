@@ -480,6 +480,8 @@ def save_purchase(request):
                                  ['dr', submodel.item.account, submodel.quantity],
                                  )
 
+        delete_rows(params.get('table_view').get('deleted_rows'), model)
+
         if obj.credit:
             cr_acc = obj.party.supplier_account
         else:
@@ -499,6 +501,10 @@ def save_purchase(request):
 
         for purchase_row in obj.rows.all():
 
+            import ipdb
+
+            ipdb.set_trace()
+
             tax_scheme = obj.tax_scheme or purchase_row.tax_scheme
 
             pure_total = purchase_row.quantity * purchase_row.rate
@@ -517,13 +523,13 @@ def save_purchase(request):
                 # pure_total -= row_discount
                 divident_discount = (pure_total - row_discount) * discount_rate
 
+            discount = row_discount + divident_discount
+
             if tax_scheme:
-                tax_amt = pure_total * tax_scheme.percent / 100
+                tax_amt = (pure_total - discount) * tax_scheme.percent / 100
                 entries.append(['dr', tax_scheme.receivable, tax_amt])
             else:
                 tax_amt = 0
-
-            discount = row_discount + divident_discount
 
             if discount and discount_income:
                 entries.append(['cr', discount_income, discount])
@@ -533,8 +539,6 @@ def save_purchase(request):
             entries.append(['cr', cr_acc, payable])
 
             set_ledger_transactions(purchase_row, obj.date, *entries)
-
-        delete_rows(params.get('table_view').get('deleted_rows'), model)
 
         obj.total_amount = grand_total
         if obj.credit:

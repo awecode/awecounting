@@ -261,20 +261,24 @@ def set_transactions(submodel, date, *args):
                 transaction.dr_amount = round(float(zero_for_none(arg[2])), 2)
                 transaction.cr_amount = None
                 transaction.account.current_dr = none_for_zero(
-                    zero_for_none(transaction.account.current_dr) + transaction.dr_amount)
-                alter(arg[1], date, float(arg[2]), 0)
+                    round(zero_for_none(transaction.account.current_dr) + transaction.dr_amount, 2)
+                )
+                alter(arg[1], date, round(float(arg[2]), 2), 0)
             if arg[0] == 'cr':
                 transaction.cr_amount = round(float(zero_for_none(arg[2])), 2)
                 transaction.dr_amount = None
                 transaction.account.current_cr = none_for_zero(
-                    zero_for_none(transaction.account.current_cr) + transaction.cr_amount)
+                    round(zero_for_none(transaction.account.current_cr) + transaction.cr_amount, 2)
+                )
                 alter(arg[1], date, 0, float(arg[2]))
             transaction.current_dr = none_for_zero(
-                zero_for_none(transaction.account.get_dr_amount(date + datetime.timedelta(days=1)))
-                + zero_for_none(transaction.dr_amount))
+                round(zero_for_none(transaction.account.get_dr_amount(date + datetime.timedelta(days=1)))
+                      + zero_for_none(transaction.dr_amount), 2)
+            )
             transaction.current_cr = none_for_zero(
-                zero_for_none(transaction.account.get_cr_amount(date + datetime.timedelta(days=1)))
-                + zero_for_none(transaction.cr_amount))
+                round(zero_for_none(transaction.account.get_cr_amount(date + datetime.timedelta(days=1)))
+                      + zero_for_none(transaction.cr_amount), 2)
+            )
         else:
             transaction = matches[0]
             transaction.account = arg[1]
