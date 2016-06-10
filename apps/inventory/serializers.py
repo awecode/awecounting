@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from models import Item, Unit, JournalEntry, UnitConversion
+from models import Item, Unit, JournalEntry, UnitConversion, Location
 from ..voucher.models import PurchaseVoucherRow, SaleRow
 
 
@@ -135,3 +135,12 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
 
     def get_current_balance(self, obj):
         return obj.transactions.filter(account=obj.creator.item.account)[0].current_balance
+
+
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = (
+            'id',
+            'name'
+        )

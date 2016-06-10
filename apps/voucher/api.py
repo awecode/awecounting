@@ -2,7 +2,7 @@ from rest_framework import generics
 
 from .serializers import SaleSerializer, PurchaseVoucherSerializer, CashPaymentSerializer, CashReceiptSerializer, \
     FixedAssetSerializer, PurchaseOrderSerializer, \
-    PartyRateSerializer, LocationSerializer
+    PartyRateSerializer
 from .models import Sale, PurchaseVoucher
 from awecounting.utils.mixins import CompanyAPI
 
@@ -89,11 +89,7 @@ class PartyRateListAPI(CompanyAPI, generics.ListAPIView):
 
 
 
-class LocationListAPI(generics.ListCreateAPIView):
-    serializer_class = LocationSerializer
 
-    def get_queryset(self):
-        return self.serializer_class.Meta.model.objects.filter(enabled=True)
 
 # class LocationDetailAPI(generics.RetrieveAPIView):
 #     serializer_class = LocationSerializer

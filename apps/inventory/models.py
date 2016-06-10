@@ -249,3 +249,23 @@ def set_transactions(model, date, *args):
         except TypeError:  # for Django <1.9
             journal_entry.transactions.add(transaction)
         alter(transaction.account, date, diff)
+
+class LocationContain(models.Model):
+    item = models.ForeignKey(Item)
+    qty = models.PositiveIntegerField()
+
+    def __str__(self):
+        return str(self.item) + str(self.qty)
+
+
+class Location(models.Model):
+    code = models.CharField(max_length=100)
+    name = models.CharField(max_length=150)
+    enabled = models.BooleanField(default=True)
+    contains = models.ManyToManyField(LocationContain)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse_lazy('location_list')

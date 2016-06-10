@@ -73,7 +73,7 @@ function PurchaseViewModel(data, settings) {
 
     // Get enabled location
     $.ajax({
-        url: '/voucher/api/locations/',
+        url: '/inventory/api/locations/',
         dataType: 'json',
         async: false,
         success: function (data) {

@@ -11,7 +11,7 @@ from django.views.generic.detail import DetailView
 from ..users.models import Pin
 from .serializers import ItemSerializer, InventoryAccountRowSerializer
 from ..voucher.models import Sale
-from .models import Item, UnitConversion, Unit, JournalEntry, InventoryAccount
+from .models import Item, UnitConversion, Unit, JournalEntry, InventoryAccount, Location
 from .forms import ItemForm, UnitForm, UnitConversionForm
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView, \
     StockistMixin, AccountantMixin, StockistCashierMixin
@@ -283,6 +283,14 @@ class InventoryAccountWithRate(InventoryAccountView, StockistMixin, DetailView):
         context['multiple'] = multiple
         return context
 
+
+class LocationCreate(AjaxableResponseMixin, CreateView):
+    model = Location
+    fields = '__all__'
+
+
+class LocationList(ListView):
+    model = Location
 # def view_inventory_account_with_rate(request, pk):
 #     obj= get_object_or_404(InventoryAccount, pk=pk, company=request.company)
 #     if hasattr(obj, 'item'):

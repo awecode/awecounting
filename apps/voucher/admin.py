@@ -4,7 +4,7 @@ from awecounting.utils.mixins import CompanyAdmin
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, PurchaseVoucherRow, SaleRow, PurchaseVoucher, Sale, \
     JournalVoucher, \
     JournalVoucherRow, CashReceipt, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, VoucherSetting, \
-    ExpenseRow, Expense, TradeExpense, Lot, LotItemDetail, Location
+    ExpenseRow, Expense, TradeExpense, Lot, LotItemDetail
 
 
 class PurchaseVoucherRowInline(admin.TabularInline):
@@ -128,4 +128,4 @@ admin.site.register(CashPayment, CashPaymentAdmin)
 admin.site.register(CashPaymentRow)
 admin.site.register(Lot)
 admin.site.register(LotItemDetail)
-admin.site.register(Location)
+

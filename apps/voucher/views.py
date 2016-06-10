@@ -11,7 +11,7 @@ from django.views.generic import TemplateView
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, StaffMixin, \
     group_required, TableObjectMixin, UpdateView, CompanyRequiredMixin, CreateView, TableObject, CashierMixin, \
     StockistMixin, AccountantMixin, AjaxableResponseMixin
-from ..inventory.models import set_transactions
+from ..inventory.models import set_transactions, Location, LocationContain
 from ..ledger.models import set_transactions as set_ledger_transactions, get_account, Account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
 from .forms import JournalVoucherForm, VoucherSettingForm, CashPaymentForm, CashReceiptForm
@@ -21,7 +21,7 @@ from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, \
     JournalVoucherRow, \
     PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, \
-    VoucherSetting, Expense, ExpenseRow, TradeExpense, Lot, LotItemDetail, Location
+    VoucherSetting, Expense, ExpenseRow, TradeExpense, Lot, LotItemDetail
 # from awecounting.utils.mixins import AjaxableResponseMixin, CreateView
 
 
@@ -404,6 +404,7 @@ def save_purchase(request):
 
     if params.get('id'):
         obj = PurchaseVoucher.objects.get(id=params.get('id'), company=request.company)
+        # For Lot on edit==> delete or subtract item
         for row in obj.rows.all():
             lot = row.lot
             for item in lot.lot_item_details.all():
@@ -414,6 +415,20 @@ def save_purchase(request):
                     else:
                         item.qty -= row.quantity
                         item.save()
+        # End For lot on edit
+
+        # For Location on edit
+        for row in obj.rows.all():
+            location = row.location
+            for item in location.contains.all():
+                if item.item == row.item:
+                    if item.qty == row.quantity:
+                        lot.lot_item_details.remove(item)
+                        item.delete()
+                    else:
+                        item.qty -= row.quantity
+                        item.save()
+        # End For Location on edit
 
     else:
         obj = PurchaseVoucher(company=request.company)
@@ -440,6 +455,8 @@ def save_purchase(request):
                 #     discount = None
                 # else:
                 #     discount = row.get('discount')
+
+                # Setting lot items
                 item_id = row.get('item')['id']
                 lot_number = row.get('lot_number')
                 po_receive_lot, created = Lot.objects.get_or_create(lot_number=lot_number)
@@ -457,6 +474,25 @@ def save_purchase(request):
                         qty=int(row.get('quantity'))
                     )
                     po_receive_lot.lot_item_details.add(lot_item_detail)
+                # End Setting Lot Items
+
+                # Setting Location Items
+                item_in_location = False
+                location_id = row.get('location')
+                location_obj = Location.object.get(id=location_id)
+                for item in location_obj.contains.all():
+                    if item.item_id == item_id:
+                        item_in_location = True
+                        item.qty += int(row.get('quantity'))
+                        item.save()
+                if not item_exists:
+                    loc_contain_obj = LocationContain.objects.create(
+                        item_id=item_id,
+                        qty=int(row.get('quantity'))
+                    )
+                    location_obj.contains.add(loc_contain_obj)
+
+                # End Setting Location Items
 
                 values = {
                     'sn': ind + 1,
@@ -995,10 +1031,3 @@ def save_expense(request):
         dct = write_error(dct, e)
     return JsonResponse(dct)
 
-
-class LocationCreate(AjaxableResponseMixin, CreateView):
-    model = Location
-    fields = '__all__'
-
-class LocationList(ListView):
-    model = Location

@@ -12,7 +12,7 @@ from django.dispatch import receiver
 from django.contrib.contenttypes.fields import GenericForeignKey
 from njango.fields import BSDateField, today
 
-from ..inventory.models import Item, Unit
+from ..inventory.models import Item, Unit, Location
 from ..ledger.models import Party, Account, JournalEntry
 from ..users.models import Company, User
 from awecounting.utils.helpers import get_next_voucher_no, calculate_tax
@@ -176,17 +176,6 @@ class Lot(models.Model):
 
     def __unicode__(self):
         return self.lot_number
-
-class Location(models.Model):
-    code = models.CharField(max_length=100)
-    name = models.CharField(max_length=150)
-    enabled = models.BooleanField(default=True)
-
-    def __str__(self):
-        return self.name
-
-    def get_absolute_url(self):
-        return reverse_lazy('location_list')
 
 
 class PurchaseVoucherRow(models.Model):

@@ -1,6 +1,6 @@
 from ..voucher.models import CashReceipt, CashPayment
 from awecounting.utils.forms import HTML5BootstrapModelForm, KOModelForm
-from .models import JournalVoucher, VoucherSetting, Location
+from .models import JournalVoucher, VoucherSetting
 from django import forms
 from django.core.urlresolvers import reverse_lazy
 
@@ -43,7 +43,3 @@ class VoucherSettingForm(HTML5BootstrapModelForm):
         }
         company_filters = ('sale_default_tax_scheme', 'purchase_default_tax_scheme')
 
-class LocationForm(HTML5BootstrapModelForm):
-    class Meta:
-        model = Location
-        fields = '__all__'

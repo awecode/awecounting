@@ -1,6 +1,6 @@
 from rest_framework import generics
 
-from .serializers import ItemSerializer, UnitSerializer
+from .serializers import ItemSerializer, UnitSerializer, LocationSerializer
 from awecounting.utils.mixins import CompanyAPI
 
 
@@ -21,3 +21,10 @@ class ItemListAPI(CompanyAPI, generics.ListCreateAPIView):
 
 class UnitListAPI(CompanyAPI, generics.ListCreateAPIView):
     serializer_class = UnitSerializer
+
+
+class LocationListAPI(generics.ListCreateAPIView):
+    serializer_class = LocationSerializer
+
+    def get_queryset(self):
+        return self.serializer_class.Meta.model.objects.filter(enabled=True)
