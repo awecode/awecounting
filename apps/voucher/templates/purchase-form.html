@@ -104,6 +104,8 @@
                 <tr>
                     <th>{% trans "S.N." %}</th>
                     <th>{% trans "Item" %}</th>
+                    <th>{% trans "Code" %}</th>
+                    <th>{% trans "OEM Number" %}</th>
                     <th>{% trans "Quantity" %}</th>
                     <th>{% trans "Rate" %}</th>
                     <th>{% trans "Unit" %}</th>
@@ -128,6 +130,8 @@
                                 data-bind="selectize: $root.items, value: item_id, object: item">
                         </select>
                     </td>
+                    <td data-bind="text: code"></td>
+                    <td data-bind="text: oem_number"></td>
                     <td data-bind="editableText: quantity, numeric: true"></td>
                     <td data-bind="editableText: rate, numeric: true"></td>
                     <td class="unit-cell">
