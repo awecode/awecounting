@@ -507,20 +507,23 @@ def save_purchase(request):
 
             tax_scheme = obj.tax_scheme or purchase_row.tax_scheme
 
-            pure_total = purchase_row.quantity * purchase_row.rate
-
+            rate = float(purchase_row.rate)
             row_discount = float(purchase_row.discount) or 0
-            divident_discount = 0
 
-            # Pure total shouldn't include tax, handle for tax-inclusive
             if obj.tax == 'inclusive' and tax_scheme:
-                pure_total = pure_total * 100 / (100 + tax_scheme.percent)
+                rate = rate * 100 / (100 + tax_scheme.percent)
+                row_discount = row_discount * 100 / (100 + tax_scheme.percent)
+
+            pure_total = purchase_row.quantity * rate
+
+            divident_discount = 0
 
             entries = [['dr', submodel.item.purchase_ledger, pure_total]]
 
             # If the voucher has discount, apply discount proportionally
             if discount_rate:
-                # pure_total -= row_discount
+                if obj.tax == 'inclusive' and tax_scheme:
+                    discount_rate = discount_rate * 100 / (100 + tax_scheme.percent)
                 divident_discount = (pure_total - row_discount) * discount_rate
 
             discount = row_discount + divident_discount

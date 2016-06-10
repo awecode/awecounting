@@ -192,12 +192,18 @@ class PurchaseVoucherRow(models.Model):
 
     def get_total(self):
         rate = float(self.rate)
+        tax_scheme = None
         if self.purchase.tax == 'inclusive':
             tax_scheme = self.purchase.tax_scheme or self.tax_scheme
             if tax_scheme:
                 rate = (100 * rate) / (100 + tax_scheme.percent)
         total = float(self.quantity) * rate
         discount = get_discount_with_percent(total, self.discount)
+        if self.purchase.tax == 'inclusive':
+            if not tax_scheme:
+                tax_scheme = self.purchase.tax_scheme or self.tax_scheme
+            if tax_scheme:
+                discount = (100 * discount) / (100 + tax_scheme.percent)
         return total - discount
 
     def get_voucher_no(self):
