@@ -670,3 +670,8 @@ ul.mega-dropdown-menu li {
 .row.ul div{
  text-decoration: underline;   
 }
+
+.voucher-setting tbody div.checkbox {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}

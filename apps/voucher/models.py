@@ -520,7 +520,30 @@ class VoucherSetting(models.Model):
     sale_suggest_by_item = models.BooleanField(default=True, verbose_name='Suggest rate by item')
     sale_suggest_by_party_item = models.BooleanField(default=True, verbose_name='Suggest rate by item by party')
     sale_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True, related_name='default_invoice_tax_scheme')
-    discount_on_each_invoice_particular = models.BooleanField(default=False)
+    # discount_on_each_invoice_particular = models.BooleanField(default=False)
+
+    sale_voucher_sn = models.BooleanField(default=True)
+    sale_print_sn = models.BooleanField(default=True)
+
+    sale_voucher_code = models.BooleanField(default=True)
+    sale_print_code = models.BooleanField(default=True)
+
+    sale_voucher_oem_number = models.BooleanField(default=True)
+    sale_print_oem_number = models.BooleanField(default=True)
+
+    sale_voucher_discount = models.BooleanField(default=True)
+    sale_print_discount = models.BooleanField(default=True)
+
+    sale_voucher_tax_scheme = models.BooleanField(default=True)
+    sale_print_tax_scheme = models.BooleanField(default=True)
+
+    sale_voucher_lot = models.BooleanField(default=True)
+    sale_print_lot = models.BooleanField(default=True)
+
+    sale_voucher_location = models.BooleanField(default=True)
+    sale_print_location = models.BooleanField(default=True)
+
+
 
     # Purchase voucher settings
     single_discount_on_whole_purchase = models.BooleanField(default=True)
