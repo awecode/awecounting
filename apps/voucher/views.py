@@ -632,6 +632,8 @@ def save_sale(request):
 
     if params.get('id'):
         obj = Sale.objects.get(id=params.get('id'), company=request.company)
+        # SaleFromLocation Logic here for edit
+        # End SaleFromLocation Logic here for edit
 
     else:
         obj = Sale(company=request.company)
@@ -650,6 +652,16 @@ def save_sale(request):
                     row_tax_scheme_id = None
                 else:
                     row_tax_scheme_id = row.get('tax_scheme_id')
+
+                # Sale from Location logic here of save
+                import ipdb
+                ipdb.set_trace()
+                item_from_locations = row.get('sale_row_locations')
+                for items in item_from_locations:
+                    pass
+                continue
+                # End Sale from Location logic here of save
+
                 values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'quantity': row.get('quantity'),
                           'rate': row.get('rate'), 'unit_id': row.get('unit')['id'], 'discount': row.get('discount'),
                           'tax_scheme_id': row_tax_scheme_id,

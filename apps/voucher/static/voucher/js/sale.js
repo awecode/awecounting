@@ -306,7 +306,6 @@ function SaleRow(row, sale_vm) {
     self.get_item_locations = ko.computed(function(){
         if(self.item_id() && self.quantity()){
              // Get filtered locations
-            debugger;
             $.ajax({
                 url: '/voucher/get_item_locations/' + parseInt(self.item_id()),
                 dataType: 'json',
