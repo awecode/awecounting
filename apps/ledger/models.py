@@ -118,9 +118,9 @@ class Account(models.Model):
                 if code.isdigit() and int(code) > max:
                     max = int(code)
             if cat_code:
-                self.code = cat_code + '-' + str(max+1)
+                self.code = cat_code + '-' + str(max + 1)
             else:
-                self.code = str(max+1)
+                self.code = str(max + 1)
 
     @property
     def balance(self):
@@ -258,13 +258,13 @@ def set_transactions(submodel, date, *args):
             transaction = Transaction()
             transaction.account = arg[1]
             if arg[0] == 'dr':
-                transaction.dr_amount = float(zero_for_none(arg[2]))
+                transaction.dr_amount = round(float(zero_for_none(arg[2])), 2)
                 transaction.cr_amount = None
                 transaction.account.current_dr = none_for_zero(
                     zero_for_none(transaction.account.current_dr) + transaction.dr_amount)
                 alter(arg[1], date, float(arg[2]), 0)
             if arg[0] == 'cr':
-                transaction.cr_amount = float(zero_for_none(arg[2]))
+                transaction.cr_amount = round(float(zero_for_none(arg[2])), 2)
                 transaction.dr_amount = None
                 transaction.account.current_cr = none_for_zero(
                     zero_for_none(transaction.account.current_cr) + transaction.cr_amount)

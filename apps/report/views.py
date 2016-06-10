@@ -42,7 +42,8 @@ def get_trial_balance_data(root_company):
             root['nodes'] = dict_merge(root['nodes'], node.get_data())
             root['total_dr'] += node.dr
             root['total_cr'] += node.cr
-
+    root['total_dr'] = round(root['total_dr'], 2)
+    root['total_cr'] = round(root['total_cr'], 2)
     return root
 
 
