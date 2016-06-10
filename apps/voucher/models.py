@@ -226,6 +226,7 @@ class Sale(models.Model):
     tax = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True, blank=True)
     tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True)
     discount = models.CharField(max_length=50, blank=True, null=True)
+    from_locations = models.ManyToManyField(Location, blank=True)
 
     def __init__(self, *args, **kwargs):
         super(Sale, self).__init__(*args, **kwargs)

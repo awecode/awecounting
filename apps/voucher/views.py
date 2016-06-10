@@ -630,6 +630,7 @@ def save_sale(request):
 
     if params.get('id'):
         obj = Sale.objects.get(id=params.get('id'), company=request.company)
+
     else:
         obj = Sale(company=request.company)
     try:

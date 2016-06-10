@@ -139,7 +139,7 @@
                                 data-url="{% url 'tax_scheme_add' %}"></select>
                     </td>
                     <td>
-                        <select id="from-location" data-bind="selectize: $root.filtered_locations, value: location"></select>
+                        <select id="from-location" data-bind="selectize: $root.from_locations, selectedOptions: selected_from_locations" multiple></select>
                     </td>
                     <td data-bind="text: total"></td>
                     <td class="hide-on-print text-center">

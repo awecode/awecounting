@@ -35,6 +35,13 @@ $(document).ready(function () {
 //        return self.tax_scheme_visibility() && bool;
 //    };
 //}
+function SaleRowLocation(){
+    var self = this;
+    self.location_id = ko.observable();
+    self.qty = ko.observable();
+
+};
+
 
 function SaleViewModel(data, settings) {
     var self = this;
@@ -75,7 +82,7 @@ function SaleViewModel(data, settings) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.filtered_locations = ko.observableArray(data);
+            self.from_locations = ko.observableArray(data);
         }
     });
 
@@ -299,7 +306,12 @@ function SaleRow(row, sale_vm) {
     self.tax = ko.observable();
     self.tax_scheme_id = ko.observable();
     self.tax_scheme = ko.observable();
-    self.location = ko.observable();
+    // self.selected_from_locations = ko.observable();
+
+    self.sale_row_locations = ko.observableArray();
+    self.add_from_locatiom = function(){
+        self.sale_row_locations.push(new SaleRowLocation())
+    };
 
     for (var k in row)
         self[k] = ko.observable(row[k]);
