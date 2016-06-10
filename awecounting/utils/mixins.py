@@ -89,7 +89,7 @@ class TableObjectMixin(TemplateView):
         context = super(TableObjectMixin, self).get_context_data(**kwargs)
         if self.kwargs:
             pk = int(self.kwargs.get('pk'))
-            obj = get_object_or_404(self.model, pk=pk, company=self.request.company)
+            obj = get_object_or_404(self.model, pk=pk, company__in=self.request.company.get_all())
             scenario = 'Update'
         else:
             obj = self.model(company=self.request.company)
@@ -113,7 +113,7 @@ class TableObject(object):
         context = super(TableObject, self).get_context_data(**kwargs)
         if self.kwargs:
             pk = int(self.kwargs.get('pk'))
-            obj = get_object_or_404(self.model, pk=pk, company=self.request.company)
+            obj = get_object_or_404(self.model, pk=pk, company__in=self.request.company.get_all())
             scenario = 'Update'
         else:
             obj = self.model(company=self.request.company)
@@ -143,10 +143,9 @@ class CompanyView(CompanyRequiredMixin):
 
     def get_form(self, *args, **kwargs):
         form = super(CompanyView, self).get_form(*args, **kwargs)
-        form.company = self.request.company
         if hasattr(form.Meta, 'company_filters'):
             for field in form.Meta.company_filters:
-                form.fields[field].queryset = form.fields[field].queryset.filter(company=form.company)
+                form.fields[field].queryset = form.fields[field].queryset.filter(company__in=self.request.company.get_all())
         return form
 
 
