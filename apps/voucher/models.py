@@ -554,7 +554,7 @@ class VoucherSetting(models.Model):
 
     enable_expense_in_purchase = models.BooleanField(default=True, verbose_name='Enable Expense')
     add_expense_cost_to_purchase = models.BooleanField(default=True, verbose_name='Add expense cost')
-    discount_on_each_purchase_particular = models.BooleanField(default=False)
+    # discount_on_each_purchase_particular = models.BooleanField(default=False)
 
     def add_expense_to_purchase(self):
         return self.enable_expense_in_purchase and self.add_expense_cost_to_purchase
