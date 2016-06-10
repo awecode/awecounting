@@ -263,8 +263,8 @@ class Location(MPTTModel):
     code = models.CharField(max_length=100)
     name = models.CharField(max_length=150)
     enabled = models.BooleanField(default=True)
-    contains = models.ManyToManyField(LocationContain)
-    parent_location = TreeForeignKey('self', blank=True, null=True, related_name='children')
+    contains = models.ManyToManyField(LocationContain, blank=True)
+    parent = TreeForeignKey('self', blank=True, null=True, related_name='children')
 
     def __str__(self):
         return self.name

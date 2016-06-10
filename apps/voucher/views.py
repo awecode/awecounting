@@ -407,27 +407,29 @@ def save_purchase(request):
         # For Lot on edit==> delete or subtract item
         for row in obj.rows.all():
             lot = row.lot
-            for item in lot.lot_item_details.all():
-                if item.item == row.item:
-                    if item.qty == row.quantity:
-                        lot.lot_item_details.remove(item)
-                        item.delete()
-                    else:
-                        item.qty -= row.quantity
-                        item.save()
+            if lot:
+                for item in lot.lot_item_details.all():
+                    if item.item == row.item:
+                        if item.qty == row.quantity:
+                            lot.lot_item_details.remove(item)
+                            item.delete()
+                        else:
+                            item.qty -= row.quantity
+                            item.save()
         # End For lot on edit
 
         # For Location on edit
         for row in obj.rows.all():
             location = row.location
-            for item in location.contains.all():
-                if item.item == row.item:
-                    if item.qty == row.quantity:
-                        lot.lot_item_details.remove(item)
-                        item.delete()
-                    else:
-                        item.qty -= row.quantity
-                        item.save()
+            if location:
+                for item in location.contains.all():
+                    if item.item == row.item:
+                        if item.qty == row.quantity:
+                            location.contains.remove(item)
+                            item.delete()
+                        else:
+                            item.qty -= row.quantity
+                            item.save()
         # End For Location on edit
 
     else:
@@ -479,18 +481,19 @@ def save_purchase(request):
                 # Setting Location Items
                 item_in_location = False
                 location_id = row.get('location')
-                location_obj = Location.object.get(id=location_id)
-                for item in location_obj.contains.all():
-                    if item.item_id == item_id:
-                        item_in_location = True
-                        item.qty += int(row.get('quantity'))
-                        item.save()
-                if not item_exists:
-                    loc_contain_obj = LocationContain.objects.create(
-                        item_id=item_id,
-                        qty=int(row.get('quantity'))
-                    )
-                    location_obj.contains.add(loc_contain_obj)
+                if location_id:
+                    location_obj = Location.objects.get(id=location_id)
+                    for item in location_obj.contains.all():
+                        if item.item_id == item_id:
+                            item_in_location = True
+                            item.qty += int(row.get('quantity'))
+                            item.save()
+                    if not item_in_location:
+                        loc_contain_obj = LocationContain.objects.create(
+                            item_id=item_id,
+                            qty=int(row.get('quantity'))
+                        )
+                        location_obj.contains.add(loc_contain_obj)
 
                 # End Setting Location Items
 

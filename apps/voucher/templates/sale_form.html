@@ -108,6 +108,7 @@
                         <th>{% trans 'Discount' %}</th>
                     {% endif %}
                     <th data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">{% trans "Tax Scheme" %}</th>
+                    <th>{% trans 'From Location' %}</th>
                     <th>{% trans 'Total' %}</th>
                     <th></th>
                 </tr>
@@ -136,6 +137,9 @@
                     <td data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">
                         <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme_id, object: tax_scheme"
                                 data-url="{% url 'tax_scheme_add' %}"></select>
+                    </td>
+                    <td>
+                        <select id="from-location" data-bind="selectize: $root.filtered_locations, value: location"></select>
                     </td>
                     <td data-bind="text: total"></td>
                     <td class="hide-on-print text-center">

@@ -69,6 +69,16 @@ function SaleViewModel(data, settings) {
 
     self.status = ko.observable();
 
+    // Get filtered locations
+    $.ajax({
+        url: '/inventory/api/locations/?enabled=True',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            self.filtered_locations = ko.observableArray(data);
+        }
+    });
+
     $.ajax({
         url: '/tax/api/tax_schemes.json',
         dataType: 'json',
@@ -289,6 +299,7 @@ function SaleRow(row, sale_vm) {
     self.tax = ko.observable();
     self.tax_scheme_id = ko.observable();
     self.tax_scheme = ko.observable();
+    self.location = ko.observable();
 
     for (var k in row)
         self[k] = ko.observable(row[k]);

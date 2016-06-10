@@ -142,5 +142,7 @@ class LocationSerializer(serializers.ModelSerializer):
         model = Location
         fields = (
             'id',
-            'name'
+            'name',
+            'enabled',
+            'parent'
         )

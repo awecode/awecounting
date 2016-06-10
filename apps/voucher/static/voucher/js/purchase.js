@@ -73,7 +73,7 @@ function PurchaseViewModel(data, settings) {
 
     // Get enabled location
     $.ajax({
-        url: '/inventory/api/locations/',
+        url: '/inventory/api/locations/?enabled=True',
         dataType: 'json',
         async: false,
         success: function (data) {
