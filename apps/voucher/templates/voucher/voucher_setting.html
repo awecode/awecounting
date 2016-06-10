@@ -11,7 +11,7 @@
 {% block settings_form %}
     <form method="POST">
             {% csrf_token %}
-        
+
             <div class="form-group">
                 <div class="checkbox">
                     <label>
@@ -19,10 +19,10 @@
                     </label>
                 </div>
                 {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-            </div>            
+            </div>
 
         <h1> {% trans "Invoice Settings" %}</h1>
-        
+
             <div class="form-group">
                 <div class="checkbox">
                     <label>
@@ -30,7 +30,7 @@
                     </label>
                 </div>
                 {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-            </div>            
+            </div>
             <div class="form-group">
                 <div class="checkbox">
                     <label>
@@ -64,10 +64,10 @@
                 <label>{{ form.sale_default_tax_scheme.label }}</label>
                 {{ form.sale_default_tax_scheme }}
             </p>
-        
+
 
         <h1> {% trans "Purchase Settings" %}</h1>
-        
+
             <div class="form-group">
                 <div class="checkbox">
                     <label>
@@ -75,7 +75,7 @@
                     </label>
                 </div>
                 {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-            </div>            
+            </div>
             <div class="form-group">
                 <div class="checkbox">
                     <label>
@@ -125,7 +125,69 @@
                 <label>{{ form.purchase_default_tax_scheme.label }}</label>
                 {{ form.purchase_default_tax_scheme }}
             </p>
-        
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>{% trans "Columns" %}</th>
+                    <th>{% trans "S.N." %}</th>
+                    <th>{% trans "Item" %}</th>
+                    <th>{% trans "Code" %}</th>
+                    <th>{% trans "OEM number" %}</th>
+                    <th>{% trans "Quantity" %}</th>
+                    <th>{% trans "Rate" %}</th>
+                    <th>{% trans "Unit" %}</th>
+                    <th>{% trans 'Discount' %}</th>
+                    <th>{% trans "Tax Scheme" %}</th>
+                    <th>{% trans 'Lot#' %}</th>
+                    <th>{% trans 'Location' %}</th>
+                    <th>{% trans 'Total' %}</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{% trans "Voucher" %}</td>
+                        <td>
+                            <div class="checkbox">
+                                <label>
+                                    {{ form.purchase_voucher_sn }}
+                                </label>
+                            </div>
+                            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                        </td>
+                        <td></td>
+                        <td>
+                            <div class="checkbox">
+                                <label>
+                                    {{ form.purchase_voucher_code }}
+                                </label>
+                            </div>
+                            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                        </td>
+                        <td>
+                            <div class="checkbox">
+                                <label>
+                                    {{ form.purchase_voucher_oem_number }}
+                                </label>
+                            </div>
+                            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <div class="checkbox">
+                                <label>
+                                    {{ form.purchase_voucher_discount }}
+                                </label>
+                            </div>
+                            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
         <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
     </form>
 
