@@ -58,7 +58,7 @@ function PurchaseViewModel(data, settings) {
     self.tax_scheme = ko.observable();
     self.purchase_order_id = ko.observable();
     self.voucher_discount = ko.observable(0);
-
+    self.divident_rate_obs = ko.observable(0)
 
     self.items_of_current_company = ko.observable();
     for (var k in data) {
@@ -245,6 +245,22 @@ function PurchaseViewModel(data, settings) {
         return r2z(self.taxable_amount() + self.tax_amount());
     };
 
+    self.grand_total_without_tax = ko.computed(function () {
+        var tot = 0;
+        ko.utils.arrayForEach(self.table_view.rows(), function (row) {
+            tot += row.total_without_tax();
+        });
+        return tot;
+    });
+
+    self.divident_rate = ko.computed(function () {
+        if (self.grand_total()) {
+            self.divident_rate_obs(parseFloat(empty_to_zero(self.voucher_discount())) / self.grand_total_without_tax());
+        } else {
+            return 0;
+        }
+    });
+
     if (settings.purchase_suggest_by_party_item) {
         self.party.subscribe(function (party) {
             $.ajax({
@@ -347,19 +363,6 @@ function PurchaseRow(row, purchase_vm) {
         }
     });
 
-    self.tax_rate = ko.computed(function () {
-        var percent = 0;
-        if (purchase_vm.tax() != 'exclusive') {
-            if (purchase_vm.tax_scheme()) {
-                percent = purchase_vm.tax_scheme().percent;
-            }
-            if (self.tax_scheme()) {
-                percent = self.tax_scheme().percent;
-            }
-        }
-        return 1 + parseFloat(percent) / 100; // percent to rate
-    });
-
     self.tax_percent = ko.computed(function () {
         if (purchase_vm.tax() == 'no') {
             return 0;
@@ -373,6 +376,11 @@ function PurchaseRow(row, purchase_vm) {
         return 0;
 
     });
+
+    self.tax_rate = ko.computed(function () {
+        return self.tax_percent() / 100;
+    });
+
 
     self.total = ko.computed(function () {
         if (purchase_vm.tax() == 'no' || purchase_vm.tax_scheme()) {
@@ -391,7 +399,7 @@ function PurchaseRow(row, purchase_vm) {
             return r2z(parseFloat(self.quantity()) * parseFloat(self.rate()) - parseFloat(empty_to_zero(self.discount())));
         }
         else if (purchase_vm.tax() == 'inclusive') {
-            return r2z((100 / (100 + self.tax_percent())) * (parseFloat(self.quantity()) * parseFloat(self.rate()) - parseFloat(empty_to_zero(self.discount()))));
+            return r2z((1 / (1 + self.tax_rate())) * (parseFloat(self.quantity()) * parseFloat(self.rate()) - parseFloat(empty_to_zero(self.discount()))));
         }
     });
 
@@ -399,8 +407,11 @@ function PurchaseRow(row, purchase_vm) {
         if (purchase_vm.tax() == 'no' || purchase_vm.tax_scheme()) {
             return 0;
         }
-        else {
-            return self.tax_percent() * self.total_without_tax() / 100;
+        else if (purchase_vm.tax() == 'exclusive') {
+            return self.tax_rate() * (1 - purchase_vm.divident_rate_obs()) * (parseFloat(self.quantity()) * parseFloat(self.rate()) - parseFloat(empty_to_zero(self.discount())));
+        }
+        else if (purchase_vm.tax() == 'inclusive') {
+            return self.tax_rate() * (1 - purchase_vm.divident_rate_obs() / (1 + self.tax_rate())) * (parseFloat(self.quantity()) * parseFloat(self.rate()) / (1 + self.tax_rate()) - parseFloat(empty_to_zero(self.discount())) / (1 + self.tax_rate()));
         }
     });
 
