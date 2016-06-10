@@ -169,13 +169,13 @@ class LotItemDetail(models.Model):
 
 
 class Lot(models.Model):
-    lot_number = models.CharField(max_length=150, unique=True)
+    lot_number = models.CharField(max_length=150, unique=True, null=True, blank=True)
     lot_item_details = models.ManyToManyField(
         LotItemDetail
     )
 
-    def __unicode__(self):
-        return self.lot_number
+    def __str__(self):
+        return self.lot_number or 'null'
 
 
 class PurchaseVoucherRow(models.Model):
