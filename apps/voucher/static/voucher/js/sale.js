@@ -302,6 +302,7 @@ function SaleRow(row, sale_vm) {
     // self.selected_from_locations = ko.observable();
 
     self.sale_row_locations = ko.observableArray();
+    self.sale_row_location_error = ko.observable();
     self.get_item_locations = ko.computed(function(){
         if(self.item_id() && self.quantity()){
              // Get filtered locations
@@ -311,9 +312,23 @@ function SaleRow(row, sale_vm) {
                 dataType: 'json',
                 async: false,
                 success: function (res) {
+                    var remain_qty = self.quantity();
+                    self.sale_row_locations([]);
                     for(var obj of res.data){
                         var row_loc = new SaleRowLocation(obj);
+                        if(remain_qty-row_loc.qty()>0){
+                            row_loc.selected_qty(row_loc.qty());
+                            remain_qty -= row_loc.selected_qty();
+                        }else{
+                            row_loc.selected_qty(remain_qty);
+                            remain_qty -= row_loc.selected_qty();
+                        };
                         self.sale_row_locations.push(row_loc);
+                    };
+                    if(remain_qty > 0){
+                        self.sale_row_location_error('No Sufficient quantity in location');
+                    }else{
+                        self.sale_row_location_error(null);
                     };
                 }
             });

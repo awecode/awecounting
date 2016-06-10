@@ -141,14 +141,14 @@
                         <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme_id, object: tax_scheme"
                                 data-url="{% url 'tax_scheme_add' %}"></select>
                     </td>
-                    <td>
+                    <td data-bind="css: { 'danger': sale_row_location_error()}">
                         <div class="dropdown">
                           <button class="btn btn-default dropdown-toggle" type="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-bind="attr: { id: 'row-location-' + $index() }">
                             Select From Location
                             <span class="caret"></span>
                           </button>
                           <div class="dropdown-menu"  data-bind="attr: { 'aria-labelledby': 'row-location-' + $index() }">
-                                <table>
+                              <table class="table table-striped">
                               <tr>
                                     <th>ID#</th>
                                     <th>Location Name</th>
@@ -163,7 +163,12 @@
                                         <td data-bind="editableText: selected_qty "></td>
                                   </tr>
                               <!-- /ko -->
-                                    </table>
+                                  <!-- ko if: sale_row_location_error -->
+                                    <tr class="danger">
+                                        <td colspan="100%" data-bind='text: sale_row_location_error'></td>
+                                    </tr>
+                                  <!-- /ko -->
+                               </table>
                           </div>
                         </div>
                     </td>
