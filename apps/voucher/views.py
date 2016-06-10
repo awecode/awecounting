@@ -411,7 +411,7 @@ def save_purchase(request):
                 for item in lot.lot_item_details.all():
                     if item.item == row.item:
                         if item.qty == row.quantity:
-                            lot.lot_item_details.remove(item)
+                            # lot.lot_item_details.remove(item)
                             item.delete()
                         else:
                             item.qty -= row.quantity
@@ -425,7 +425,7 @@ def save_purchase(request):
                 for item in location.contains.all():
                     if item.item == row.item:
                         if item.qty == row.quantity:
-                            location.contains.remove(item)
+                            # location.contains.remove(item)
                             item.delete()
                         else:
                             item.qty -= row.quantity
@@ -472,10 +472,11 @@ def save_purchase(request):
                         item.save()
                 if not item_exists:
                     lot_item_detail = LotItemDetail.objects.create(
+                        lot=po_receive_lot,
                         item_id=item_id,
                         qty=int(row.get('quantity'))
                     )
-                    po_receive_lot.lot_item_details.add(lot_item_detail)
+                    # po_receive_lot.lot_item_details.add(lot_item_detail)
                 # End Setting Lot Items
 
                 # Setting Location Items
@@ -490,10 +491,11 @@ def save_purchase(request):
                             item.save()
                     if not item_in_location:
                         loc_contain_obj = LocationContain.objects.create(
+                            location=location_obj,
                             item_id=item_id,
                             qty=int(row.get('quantity'))
                         )
-                        location_obj.contains.add(loc_contain_obj)
+                        # location_obj.contains.add(loc_contain_obj)
 
                 # End Setting Location Items
 

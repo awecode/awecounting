@@ -159,23 +159,24 @@ class PurchaseVoucher(models.Model):
         return reverse_lazy('purchase-edit', kwargs={'pk': self.pk})
 
 
+class Lot(models.Model):
+    lot_number = models.CharField(max_length=150, unique=True)
+    # lot_item_details = models.ManyToManyField(
+    #     LotItemDetail
+    # )
+
+    def __str__(self):
+        return str(self.lot_number)
+
+
 class LotItemDetail(models.Model):
+    lot = models.ForeignKey(Lot, related_name='lot_item_details')
     item = models.ForeignKey(Item)
     qty = models.PositiveIntegerField()
     # po_receive_lot = models.ForeignKey(PoReceiveLot)
 
-    def __unicode__(self):
-        return '%s-QTY#%d' % (self.item, self.qty)
-
-
-class Lot(models.Model):
-    lot_number = models.CharField(max_length=150, unique=True)
-    lot_item_details = models.ManyToManyField(
-        LotItemDetail
-    )
-
-    def __unicode__(self):
-        return self.lot_number
+    def __str__(self):
+        return '%s-QTY#%d' % (str(self.item), self.qty)
 
 
 class PurchaseVoucherRow(models.Model):
@@ -226,7 +227,7 @@ class Sale(models.Model):
     tax = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True, blank=True)
     tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True)
     discount = models.CharField(max_length=50, blank=True, null=True)
-    from_locations = models.ManyToManyField(Location, blank=True)
+    # from_locations = models.ManyToManyField(SaleFromLocation, blank=True)
 
     def __init__(self, *args, **kwargs):
         super(Sale, self).__init__(*args, **kwargs)
@@ -291,6 +292,7 @@ class Sale(models.Model):
         return amount
 
 
+
 class SaleRow(models.Model):
     sn = models.PositiveIntegerField()
     item = models.ForeignKey(Item, related_name='sales')
@@ -314,6 +316,18 @@ class SaleRow(models.Model):
 
     def get_absolute_url(self):
         return reverse_lazy('sale-edit', kwargs={'pk': self.sale.pk})
+
+
+class SaleFromLocation(models.Model):
+    sale_row = models.ForeignKey(SaleRow, related_name='from_locations')
+    location = models.ForeignKey(Location)
+    qty = models.PositiveIntegerField()
+
+    def __str__(self):
+        return str(self.location) + str(self.qty)
+
+    class Meta:
+        unique_together = (('sale_row', 'location'),)
 
 
 class JournalVoucher(models.Model):
