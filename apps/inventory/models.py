@@ -10,6 +10,7 @@ from ..ledger.models import Account, Category
 from ..users.models import Company
 from awecounting.utils.helpers import none_for_zero, zero_for_none
 from ..users.signals import company_creation
+from mptt.models import MPTTModel, TreeForeignKey
 
 
 class Unit(models.Model):
@@ -258,11 +259,12 @@ class LocationContain(models.Model):
         return str(self.item) + str(self.qty)
 
 
-class Location(models.Model):
+class Location(MPTTModel):
     code = models.CharField(max_length=100)
     name = models.CharField(max_length=150)
     enabled = models.BooleanField(default=True)
     contains = models.ManyToManyField(LocationContain)
+    parent_location = TreeForeignKey('self', blank=True, null=True, related_name='children')
 
     def __str__(self):
         return self.name
