@@ -35,10 +35,12 @@ $(document).ready(function () {
 //        return self.tax_scheme_visibility() && bool;
 //    };
 //}
-function SaleRowLocation(){
+function SaleRowLocation(data){
     var self = this;
-    self.location_id = ko.observable();
-    self.qty = ko.observable();
+    self.location_id = ko.observable(data.location_id);
+    self.location_name = ko.observable(data.location_name);
+    self.qty = ko.observable(data.qty);
+    self.selected_qty = ko.observable();
 
 };
 
@@ -76,15 +78,6 @@ function SaleViewModel(data, settings) {
 
     self.status = ko.observable();
 
-    // Get filtered locations
-    $.ajax({
-        url: '/inventory/api/locations/?enabled=True',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.from_locations = ko.observableArray(data);
-        }
-    });
 
     $.ajax({
         url: '/tax/api/tax_schemes.json',
@@ -309,9 +302,27 @@ function SaleRow(row, sale_vm) {
     // self.selected_from_locations = ko.observable();
 
     self.sale_row_locations = ko.observableArray();
-    self.add_from_locatiom = function(){
-        self.sale_row_locations.push(new SaleRowLocation())
-    };
+    self.get_item_locations = ko.computed(function(){
+        if(self.item_id() && self.quantity()){
+             // Get filtered locations
+            debugger;
+            $.ajax({
+                url: '/voucher/get_item_locations/' + parseInt(self.item_id()),
+                dataType: 'json',
+                async: false,
+                success: function (res) {
+                    for(var obj of res.data){
+                        var row_loc = new SaleRowLocation(obj);
+                        self.sale_row_locations.push(row_loc);
+                    };
+                }
+            });
+        };
+    });
+    // self.sale_row_locations = ko.observableArray();
+    // self.add_from_locatiom = function(){
+    //     self.sale_row_locations.push(new SaleRowLocation())
+    // };
 
     for (var k in row)
         self[k] = ko.observable(row[k]);

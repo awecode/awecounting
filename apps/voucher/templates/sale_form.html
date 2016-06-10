@@ -139,8 +139,32 @@
                                 data-url="{% url 'tax_scheme_add' %}"></select>
                     </td>
                     <td>
-                        <select id="from-location" data-bind="selectize: $root.from_locations, selectedOptions: selected_from_locations" multiple></select>
+                        <div class="dropdown">
+                          <button class="btn btn-default dropdown-toggle" type="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-bind="attr: { id: 'row-location-' + $index() }">
+                            Select From Location
+                            <span class="caret"></span>
+                          </button>
+                          <div class="dropdown-menu"  data-bind="attr: { 'aria-labelledby': 'row-location-' + $index() }">
+                                <table>
+                              <tr>
+                                    <th>ID#</th>
+                                    <th>Location Name</th>
+                                    <th>Available Quantity</th>
+                                    <th>Required Quantity</th>
+                              </tr>
+                              <!-- ko foreach: sale_row_locations -->
+                                  <tr>
+                                        <td data-bind="text: location_id"></td>
+                                        <td data-bind="text: location_name"></td>
+                                        <td data-bind="text: qty"></td>
+                                        <td data-bind="editableText: selected_qty "></td>
+                                  </tr>
+                              <!-- /ko -->
+                                    </table>
+                          </div>
+                        </div>
                     </td>
+
                     <td data-bind="text: total"></td>
                     <td class="hide-on-print text-center">
                         <a href="#" class="red fa fa-trash-o fa-2x" data-bind="click: $parent.removeRow"></a>
@@ -195,7 +219,7 @@
                 </tr>
                 </tbody>
 
-            </table>
+        </table>
             <a class="btn btn-default btn-raised" data-bind="click: addRow">
                 {% trans 'Add New Row' %}
             </a>

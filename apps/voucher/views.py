@@ -3,7 +3,7 @@ import json
 
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import JsonResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView
@@ -11,7 +11,7 @@ from django.views.generic import TemplateView
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, StaffMixin, \
     group_required, TableObjectMixin, UpdateView, CompanyRequiredMixin, CreateView, TableObject, CashierMixin, \
     StockistMixin, AccountantMixin, AjaxableResponseMixin
-from ..inventory.models import set_transactions, Location, LocationContain
+from ..inventory.models import set_transactions, Location, LocationContain, Item
 from ..ledger.models import set_transactions as set_ledger_transactions, get_account, Account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
 from .forms import JournalVoucherForm, VoucherSettingForm, CashPaymentForm, CashReceiptForm
@@ -1037,3 +1037,9 @@ def save_expense(request):
         dct = write_error(dct, e)
     return JsonResponse(dct)
 
+
+def get_item_locations(request, pk=None):
+    response = {}
+    obj = get_object_or_404(Item, pk=pk)
+    response['data'] = [{'location_id': loc.location_id,'location_name':loc.location.name, 'qty': loc.qty} for loc in obj.location_contain.all()]
+    return JsonResponse(response)

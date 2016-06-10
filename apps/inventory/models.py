@@ -268,7 +268,7 @@ class Location(MPTTModel):
 
 class LocationContain(models.Model):
     location = models.ForeignKey(Location, related_name='contains')
-    item = models.ForeignKey(Item)
+    item = models.ForeignKey(Item, related_name='location_contain')
     qty = models.PositiveIntegerField()
 
     def __str__(self):
