@@ -8,8 +8,8 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView
 
-from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, StaffMixin, \
-    group_required, TableObjectMixin, UpdateView, CompanyRequiredMixin, CreateView, TableObject, CashierMixin, \
+from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, group_required, TableObjectMixin, UpdateView, \
+    CompanyRequiredMixin, CreateView, TableObject, CashierMixin, \
     StockistMixin, AccountantMixin
 from ..inventory.models import set_transactions
 from ..ledger.models import set_transactions as set_ledger_transactions, get_account, Account
@@ -514,8 +514,8 @@ def save_purchase(request):
 
             # If the voucher has discount, apply discount proportionally
             if discount_rate:
-                divident_discount = pure_total * discount_rate
-                pure_total -= divident_discount
+                # pure_total -= row_discount
+                divident_discount = (pure_total - row_discount) * discount_rate
 
             if tax_scheme:
                 tax_amt = pure_total * tax_scheme.percent / 100
@@ -528,7 +528,7 @@ def save_purchase(request):
             if discount and discount_income:
                 entries.append(['cr', discount_income, discount])
 
-            payable = pure_total - row_discount + tax_amt
+            payable = pure_total - discount + tax_amt
 
             entries.append(['cr', cr_acc, payable])
 
@@ -564,8 +564,10 @@ class SaleCreate(SaleView, CashierMixin, TableObjectMixin):
             context['data'] = data
         return context
 
+
 class SaleDelete(SaleView, CashierMixin, DeleteView):
     pass
+
 
 # def sale(request, id=None):
 #     if id:
