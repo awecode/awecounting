@@ -189,8 +189,12 @@ class PurchaseVoucherRow(models.Model):
     unit = models.ForeignKey(Unit)
     purchase = models.ForeignKey(PurchaseVoucher, related_name='rows')
     journal_entry = GenericRelation(JournalEntry)
-    lot = models.ForeignKey(Lot, null=True, blank=True)
-    location = models.ForeignKey(Location, null=True, blank=True)
+    lot = models.ForeignKey(Lot, null=True, blank=True, related_name='lot_purchase_vouchers')
+    location = models.ForeignKey(Location,
+        null=True,
+        blank=True,
+        related_name='location_puchase_vouchers'
+    )
 
     def get_total(self):
         rate = float(self.rate)

@@ -273,3 +273,6 @@ class LocationContain(models.Model):
 
     def __str__(self):
         return str(self.item) + str(self.qty)
+
+    class Meta:
+        unique_together = (('location', 'item'),)

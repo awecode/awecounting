@@ -21,7 +21,9 @@ from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, \
     JournalVoucherRow, \
     PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, \
-    VoucherSetting, Expense, ExpenseRow, TradeExpense, Lot, LotItemDetail
+    VoucherSetting, Expense, ExpenseRow, TradeExpense, Lot, LotItemDetail, SaleFromLocation
+
+
 # from awecounting.utils.mixins import AjaxableResponseMixin, CreateView
 
 
@@ -633,6 +635,21 @@ def save_sale(request):
     if params.get('id'):
         obj = Sale.objects.get(id=params.get('id'), company=request.company)
         # SaleFromLocation Logic here for edit
+        for roo in obj.rows.all():
+            for sale_frm_loc in roo.from_locations.all():
+                itm_in_loc = sale_frm_loc.location.contains.all().filter(item=roo.item)
+                if itm_in_loc:
+                    itm_in_loc[0].qty += sale_frm_loc.qty
+                    itm_in_loc[0].save()
+                    sale_frm_loc.delete()
+                else:
+                    LocationContain.objects.create(
+                        location=sale_frm_loc.location,
+                        item=roo.item,
+                        qty=sale_frm_loc.qty
+                    )
+                    sale_frm_loc.delete()
+
         # End SaleFromLocation Logic here for edit
 
     else:
@@ -653,14 +670,6 @@ def save_sale(request):
                 else:
                     row_tax_scheme_id = row.get('tax_scheme_id')
 
-                # Sale from Location logic here of save
-                import ipdb
-                ipdb.set_trace()
-                item_from_locations = row.get('sale_row_locations')
-                for items in item_from_locations:
-                    pass
-                continue
-                # End Sale from Location logic here of save
 
                 values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'quantity': row.get('quantity'),
                           'rate': row.get('rate'), 'unit_id': row.get('unit')['id'], 'discount': row.get('discount'),
@@ -669,6 +678,26 @@ def save_sale(request):
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
+                else:
+                    # Sale from Location logic here of save
+                    item_from_locations = row.get('sale_row_locations')
+
+                    for item in item_from_locations:
+                        sale_from_location = SaleFromLocation.objects.create(
+                            sale_row=submodel,
+                            loaction_id=item.get('location_id'),
+                            qty=item.get('selected_qty')
+                        )
+                        # Deduct item qty from that locatiom
+                        location_contain_obj = sale_from_location.location.contains.all().filter(item=submodel.item)[0]
+                        if location_contain_obj.qty == sale_from_location.qty:
+                            location_contain_obj.delete()
+                        else:
+                            location_contain_obj.qty -= sale_from_location.qty
+                            location_contain_obj.save()
+                        # End Deduct item qty from that locatiom
+                    # End Sale from Location logic here of save
+
                 grand_total += submodel.get_total()
                 dct['rows'][ind] = submodel.id
                 # TODO dr or cr in sale
