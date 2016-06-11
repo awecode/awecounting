@@ -1051,7 +1051,7 @@ def save_expense(request):
 
 
 def get_item_locations(request, pk=None):
-    response = {}
     obj = get_object_or_404(Item, pk=pk)
-    response['data'] = [{'location_id': loc.location_id,'location_name':loc.location.name, 'qty': loc.qty} for loc in obj.location_contain.all()]
-    return JsonResponse(response)
+    data = [{'location_id': loc.location_id,'location_name':loc.location.name, 'qty': loc.qty} for loc in obj.location_contain.all()]
+    data = sorted(data, key=lambda dic: dic['qty'], reverse=True)
+    return JsonResponse({'data': data})

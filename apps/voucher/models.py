@@ -320,7 +320,7 @@ class SaleRow(models.Model):
 
 class SaleFromLocation(models.Model):
     sale_row = models.ForeignKey(SaleRow, related_name='from_locations')
-    location = models.ForeignKey(Location)
+    location = models.ForeignKey(Location, related_name='sales')
     qty = models.PositiveIntegerField()
 
     def __str__(self):
