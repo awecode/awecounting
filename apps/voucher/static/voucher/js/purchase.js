@@ -217,9 +217,14 @@ function PurchaseViewModel(data, settings) {
         var amt = 0;
         ko.utils.arrayForEach(self.table_view.rows(), function (row) {
             amt += row.total_without_tax();
+            if (self.tax() == 'inclusive') {
+                amt -= row.divident_discount();
+            }
         });
-        if (self.voucher_discount()) {
-            amt -= parseFloat(self.voucher_discount());
+        if (self.tax() != 'inclusive') {
+            if (self.voucher_discount()) {
+                amt -= parseFloat(self.voucher_discount());
+            }
         }
         return r2z(amt);
     });
@@ -254,7 +259,7 @@ function PurchaseViewModel(data, settings) {
     });
 
     self.divident_rate = ko.computed(function () {
-        if (self.grand_total()) {
+        if (self.grand_total_without_tax()) {
             self.divident_rate_obs(parseFloat(empty_to_zero(self.voucher_discount())) / self.grand_total_without_tax());
         } else {
             return 0;
@@ -413,6 +418,10 @@ function PurchaseRow(row, purchase_vm) {
         else if (purchase_vm.tax() == 'inclusive') {
             return self.tax_rate() * (1 - purchase_vm.divident_rate_obs() / (1 + self.tax_rate())) * (parseFloat(self.quantity()) * parseFloat(self.rate()) / (1 + self.tax_rate()) - parseFloat(empty_to_zero(self.discount())) / (1 + self.tax_rate()));
         }
+    });
+
+    self.divident_discount = ko.computed(function () {
+        return r2z(self.total_without_tax() * purchase_vm.divident_rate_obs() / (1 + self.tax_rate()));
     });
 
     self.unit.subscription_changed(function (new_val, old_val) {
