@@ -39,16 +39,13 @@ function SaleRowLocation(data){
     var self = this;
     self.location_id = ko.observable(data.location_id);
     self.location_name = ko.observable(data.location_name);
-    if(data.qty){
-        self.qty = ko.observable(data.qty);
-    }else{
-        self.qty = ko.observable();
-    };
-    if(data.selected_qty){
-        self.selected_qty = ko.observable(data.selected_qty);
-    }else{
-        self.selected_qty = ko.observable();
-    };
+    self.qty = ko.observable(data.qty);
+    self.selected_qty = ko.observable(data.selected_qty);
+    self.adjust_selected_qty = ko.computed(function(){
+        if (self.selected_qty() > self.qty()){
+            self.selected_qty(self.qty());
+        };
+    });
 
 };
 
@@ -314,81 +311,42 @@ function SaleRow(row, sale_vm) {
     self.sale_row_location_error = ko.observable();
     self.get_item_locations = ko.computed(function(){
         if(self.item_id() && self.quantity()){
-             // Get filtered locations
-            $.ajax({
-                url: '/voucher/get_item_locations/' + parseInt(self.item_id()),
-                dataType: 'json',
-                async: false,
-                success: function (res) {
-                    var remain_qty = self.quantity();
-                    self.sale_row_locations([]);
-                    if(typeof(self.id) != 'undefined'){
-                        console.log('Inside edit');
-                        var sale_item_from_locations = null
-                        $.ajax({
-                            url: '/voucher/get_item_sale_from_locations/' + parseInt(self.id()),
-                            dataType: 'json',
-                            async: false,
-                            success: function (res1) {
-                                sale_item_from_locations = res1.data;
-                            }
-                        });
-                        if (sale_item_from_locations){
-                            for(var object of res.data){
-                                var same_loc_id_exists = false;
-                                for (var object1 of sale_item_from_locations){
-                                    if (object.location_id == object1.location_id){
-                                        same_loc_id_exists = true;
-                                        var edit_new_loc = new SaleRowLocation(object1);
-                                        edit_new_loc.qty(parseInt(object1.selected_qty) + parseInt(object.qty));
-                                        self.sale_row_locations(edit_new_loc);
-                                    };
-                                };
-                                if(!same_loc_id_exists){
-                                    var edit_new_loc = new SaleRowLocation(object);
-                                    // edit_new_loc.qty(parseInt(object.selected_qty));
-                                    self.sale_row_locations(edit_new_loc);
-                                };
-                            };
-                            for(var object of sale_item_from_locations){
-                                var same_loc_id_exists = false;
-                                for (var object1 of res.data){
-                                    if (object.location_id == object1.location_id){
-                                        same_loc_id_exists = true;
-                                        // var edit_new_loc = new SaleRowLocation(object1);
-                                        // edit_new_loc.qty(parseInt(object1.selected_qty) + parseInt(object.qty));
-                                        // self.sale_row_locations(edit_new_loc);
-                                    };
-                                };
-                                if(!same_loc_id_exists){
-                                    var edit_new_loc = new SaleRowLocation(object);
-                                    edit_new_loc.qty(parseInt(object.selected_qty));
-                                    self.sale_row_locations(edit_new_loc);
-                                };
-                            };
-                            // var r_loc = new SaleRowLocation(object);
-                        };
-                    }else{
+            if(typeof(self.id) != 'undefined'){
+                 $.ajax({
+                    url: '/voucher/sale_row_onedit_location_item_details/' + parseInt(self.id()) + '/' + parseInt(self.item_id()),
+                    dataType: 'json',
+                    async: false,
+                    success: function (res1) {
+                        self.sale_row_locations(ko.utils.arrayMap(res1.data, function(obj) {
+                            return new SaleRowLocation(obj)
+                        }));
+                    }
+                 });
+            }else{
+
+                $.ajax({
+                    url: '/voucher/get_item_locations/' + parseInt(self.item_id()),
+                    dataType: 'json',
+                    async: false,
+                    success: function (res) {
+                        var remain_qty = self.quantity();
+                        self.sale_row_locations([]);
+
                         for(var obj of res.data){
-                            var row_loc = new SaleRowLocation(obj);
-                            if(remain_qty-row_loc.qty()>0){
-                                var qty = row_loc.qty();
-                                row_loc.selected_qty(qty);
-                                remain_qty -= row_loc.selected_qty();
+                            if(remain_qty-obj.qty > 0){
+                                obj.selected_qty = obj.qty;
+                                remain_qty -= obj.selected_qty;
                             }else{
-                                row_loc.selected_qty(remain_qty);
-                                remain_qty -= row_loc.selected_qty();
+                                obj.selected_qty = remain_qty;
+                                remain_qty -= obj.selected_qty;
                             };
-                            self.sale_row_locations.push(row_loc);
                         };
-                        // if(remain_qty > 0){
-                        //     self.sale_row_location_error('No Sufficient quantity in location');
-                        // }else{
-                        //     self.sale_row_location_error(null);
-                        // };
-                    };
-                }
-            });
+                        self.sale_row_locations(ko.utils.arrayMap(res.data, function(obj) {
+                            return new SaleRowLocation(obj)
+                        }));
+                    }
+                });
+            };
         };
 
     });
@@ -399,7 +357,6 @@ function SaleRow(row, sale_vm) {
                 total += parseInt(object.selected_qty());
             };
         };
-        console.log('inside total function');
         if (self.quantity()){
             if (total > parseInt(self.quantity())){
                 self.sale_row_location_error('Quantity in locations exceeds required quantity');

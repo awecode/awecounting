@@ -1085,7 +1085,48 @@ def get_item_locations(request, pk=None):
     data = sorted(data, key=lambda dic: dic['qty'], reverse=True)
     return JsonResponse({'data': data})
 
-def get_item_sale_from_locations(request, sale_row_id=None):
-    obj = get_object_or_404(SaleRow, pk=sale_row_id)
-    data = [{'location_id': itm.location_id,'location_name':itm.location.name, 'selected_qty': itm.qty} for itm in obj.from_locations.all()]
-    return JsonResponse({'data': data})
+
+def sale_row_onedit_location_item_details(request, sale_row_id=None, item_id=None):
+    item = get_object_or_404(Item, pk=item_id)
+    sale_row = get_object_or_404(SaleRow, pk=sale_row_id)
+
+    item_present_locations = [{'location_id': loc.location_id,'location_name':loc.location.name, 'qty': loc.qty} for loc in item.location_contain.all()]
+    sale_from_locations = [{'location_id': itm.location_id,'location_name':itm.location.name, 'selected_qty': itm.qty} for itm in sale_row.from_locations.all()]
+
+    response_data = []
+    for dic0 in item_present_locations:
+        loc_exists = False
+        for dic1 in sale_from_locations:
+            if dic0['location_id'] == dic1['location_id']:
+                loc_exists = True
+                response_data.append(
+                    {
+                        'location_id': dic0['location_id'],
+                        'location_name': dic0['location_name'],
+                        'qty': dic0['qty'] + dic1['selected_qty'],
+                        'selected_qty': dic1['selected_qty']
+                    }
+                )
+        if not loc_exists:
+            response_data.append(
+                dic0.copy().update(
+                    {
+                        'selected_qty': 0
+                    }
+                )
+            )
+
+    for dic0 in sale_from_locations:
+        loc_exists = False
+        for dic1 in item_present_locations:
+            if dic0['location_id'] == dic1['location_id']:
+                loc_exists = True
+        if not loc_exists:
+            response_data.append(
+                dic0.copy().update(
+                    {
+                        'qty': dic0['selected_qty']
+                    }
+                )
+            )
+    return JsonResponse({'data': response_data})
