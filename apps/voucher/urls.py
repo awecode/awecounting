@@ -71,6 +71,7 @@ web_urls = [
 
     url(r'^export_purchase_voucher/(?P<purchase_order_pk>\d+)$', views.ExportPurchaseVoucher.as_view(), name='export_purchase_voucher'),
     url(r'^get_item_locations/(?P<pk>\d+)$', views.get_item_locations, name='get_item_locations'),
+    url(r'^get_item_sale_from_locations/(?P<sale_row_id>\d+)$', views.get_item_sale_from_locations, name='get_item_sale_from_locations'),
 
 
 ]

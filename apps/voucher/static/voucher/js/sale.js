@@ -39,8 +39,16 @@ function SaleRowLocation(data){
     var self = this;
     self.location_id = ko.observable(data.location_id);
     self.location_name = ko.observable(data.location_name);
-    self.qty = ko.observable(data.qty);
-    self.selected_qty = ko.observable();
+    if(data.qty){
+        self.qty = ko.observable(data.qty);
+    }else{
+        self.qty = ko.observable();
+    };
+    if(data.selected_qty){
+        self.selected_qty = ko.observable(data.selected_qty);
+    }else{
+        self.selected_qty = ko.observable();
+    };
 
 };
 
@@ -301,6 +309,7 @@ function SaleRow(row, sale_vm) {
     self.tax_scheme = ko.observable();
     // self.selected_from_locations = ko.observable();
 
+
     self.sale_row_locations = ko.observableArray();
     self.sale_row_location_error = ko.observable();
     self.get_item_locations = ko.computed(function(){
@@ -313,24 +322,93 @@ function SaleRow(row, sale_vm) {
                 success: function (res) {
                     var remain_qty = self.quantity();
                     self.sale_row_locations([]);
-                    for(var obj of res.data){
-                        var row_loc = new SaleRowLocation(obj);
-                        if(remain_qty-row_loc.qty()>0){
-                            row_loc.selected_qty(row_loc.qty());
-                            remain_qty -= row_loc.selected_qty();
-                        }else{
-                            row_loc.selected_qty(remain_qty);
-                            remain_qty -= row_loc.selected_qty();
+                    if(typeof(self.id) != 'undefined'){
+                        var sale_item_from_locations = null
+                        $.ajax({
+                            url: '/voucher/get_item_sale_from_locations/' + parseInt(self.id()),
+                            dataType: 'json',
+                            async: false,
+                            success: function (res1) {
+                                sale_item_from_locations = res1.data;
+                            }
+                        });
+                        if (sale_item_from_locations){
+                            for(var object of res.data){
+                                var same_loc_id_exists = false;
+                                for (var object1 of sale_item_from_locations){
+                                    if (object.location_id == object1.location_id){
+                                        same_loc_id_exists = true;
+                                        var edit_new_loc = new SaleRowLocation(object1);
+                                        edit_new_loc.qty(parseInt(object1.selected_qty) + parseInt(object.qty));
+                                        self.sale_row_locations(edit_new_loc);
+                                    };
+                                };
+                                if(!same_loc_id_exists){
+                                    var edit_new_loc = new SaleRowLocation(object);
+                                    // edit_new_loc.qty(parseInt(object.selected_qty));
+                                    self.sale_row_locations(edit_new_loc);
+                                };
+                            };
+                            for(var object of sale_item_from_locations){
+                                var same_loc_id_exists = false;
+                                for (var object1 of res.data){
+                                    if (object.location_id == object1.location_id){
+                                        same_loc_id_exists = true;
+                                        // var edit_new_loc = new SaleRowLocation(object1);
+                                        // edit_new_loc.qty(parseInt(object1.selected_qty) + parseInt(object.qty));
+                                        // self.sale_row_locations(edit_new_loc);
+                                    };
+                                };
+                                if(!same_loc_id_exists){
+                                    var edit_new_loc = new SaleRowLocation(object);
+                                    edit_new_loc.qty(parseInt(object.selected_qty));
+                                    self.sale_row_locations(edit_new_loc);
+                                };
+                            };
+                            // var r_loc = new SaleRowLocation(object);
                         };
-                        self.sale_row_locations.push(row_loc);
-                    };
-                    if(remain_qty > 0){
-                        self.sale_row_location_error('No Sufficient quantity in location');
                     }else{
-                        self.sale_row_location_error(null);
+                        for(var obj of res.data){
+                            var row_loc = new SaleRowLocation(obj);
+                            if(remain_qty-row_loc.qty()>0){
+                                var qty = row_loc.qty();
+                                row_loc.selected_qty(qty);
+                                remain_qty -= row_loc.selected_qty();
+                            }else{
+                                row_loc.selected_qty(remain_qty);
+                                remain_qty -= row_loc.selected_qty();
+                            };
+                            self.sale_row_locations.push(row_loc);
+                        };
+                        // if(remain_qty > 0){
+                        //     self.sale_row_location_error('No Sufficient quantity in location');
+                        // }else{
+                        //     self.sale_row_location_error(null);
+                        // };
                     };
                 }
             });
+        };
+
+    });
+    self.total_out4mloc = ko.computed(function(){
+        var total = 0;
+        for(var object of self.sale_row_locations()){
+            if(object.selected_qty()){
+                total += parseInt(object.selected_qty());
+            };
+        };
+        console.log('inside total function');
+        if (self.quantity()){
+            if (total > parseInt(self.quantity())){
+                self.sale_row_location_error('Quantity from location exceeds required quantity');
+                // console.log('set');
+            }else if (total < parseInt(self.quantity())){
+                self.sale_row_location_error('Quantity from location is less than required quantity');
+                // console.log('unset', total, self.quantity());
+            }else{
+                self.sale_row_location_error(null);
+            };
         };
     });
     // self.sale_row_locations = ko.observableArray();

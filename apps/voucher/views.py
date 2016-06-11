@@ -688,14 +688,14 @@ def save_sale(request):
                             loaction_id=item.get('location_id'),
                             qty=item.get('selected_qty')
                         )
-                        # Deduct item qty from that locatiom
+                        # Deduct item qty from that location or delete
                         location_contain_obj = sale_from_location.location.contains.all().filter(item=submodel.item)[0]
                         if location_contain_obj.qty == sale_from_location.qty:
                             location_contain_obj.delete()
                         else:
                             location_contain_obj.qty -= sale_from_location.qty
                             location_contain_obj.save()
-                        # End Deduct item qty from that locatiom
+                        # End Deduct item qty from that locatio or delete
                     # End Sale from Location logic here of save
 
                 grand_total += submodel.get_total()
@@ -1083,4 +1083,9 @@ def get_item_locations(request, pk=None):
     obj = get_object_or_404(Item, pk=pk)
     data = [{'location_id': loc.location_id,'location_name':loc.location.name, 'qty': loc.qty} for loc in obj.location_contain.all()]
     data = sorted(data, key=lambda dic: dic['qty'], reverse=True)
+    return JsonResponse({'data': data})
+
+def get_item_sale_from_locations(request, sale_row_id=None):
+    obj = get_object_or_404(SaleRow, pk=sale_row_id)
+    data = [{'location_id': itm.location_id,'location_name':itm.location.name, 'selected_qty': itm.qty} for itm in obj.from_locations.all()]
     return JsonResponse({'data': data})
