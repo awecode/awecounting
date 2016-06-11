@@ -323,6 +323,7 @@ function SaleRow(row, sale_vm) {
                     var remain_qty = self.quantity();
                     self.sale_row_locations([]);
                     if(typeof(self.id) != 'undefined'){
+                        console.log('Inside edit');
                         var sale_item_from_locations = null
                         $.ajax({
                             url: '/voucher/get_item_sale_from_locations/' + parseInt(self.id()),
@@ -401,10 +402,10 @@ function SaleRow(row, sale_vm) {
         console.log('inside total function');
         if (self.quantity()){
             if (total > parseInt(self.quantity())){
-                self.sale_row_location_error('Quantity from location exceeds required quantity');
+                self.sale_row_location_error('Quantity in locations exceeds required quantity');
                 // console.log('set');
             }else if (total < parseInt(self.quantity())){
-                self.sale_row_location_error('Quantity from location is less than required quantity');
+                self.sale_row_location_error('Quantity in locations is less than required quantity');
                 // console.log('unset', total, self.quantity());
             }else{
                 self.sale_row_location_error(null);
