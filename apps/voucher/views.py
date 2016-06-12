@@ -698,8 +698,6 @@ def save_sale(request):
                         if location_contain_obj.qty == sale_from_location.qty:
                             location_contain_obj.delete()
                         else:
-                            import ipdb
-                            ipdb.set_trace()
                             location_contain_obj.qty -= sale_from_location.qty
                             location_contain_obj.save()
                         # End Deduct item qty from that locatio or delete
