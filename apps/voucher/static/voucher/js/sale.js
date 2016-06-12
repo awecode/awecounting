@@ -427,7 +427,7 @@ function SaleRow(row, sale_vm) {
     self.sale_row_location_error = ko.observable();
     self.get_item_locations = ko.computed(function(){
         // console.log(self.id());
-        console.log('hey', self.item_id(), self.quantity());
+        // console.log('hey', self.item_id(), self.quantity());
         if(self.item_id()){
             if(typeof(self.id) != 'undefined'){
                  $.ajax({
