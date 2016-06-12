@@ -154,6 +154,8 @@ ko.bindingHandlers.selectize = {
 
             if (selected_obj) {
                 allBindingsAccessor.get('object')(selected_obj);
+            }else{
+                allBindingsAccessor.get('object')(undefined);
             }
         }
     }
