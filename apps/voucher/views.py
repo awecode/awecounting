@@ -678,25 +678,27 @@ def save_sale(request):
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
-                else:
-                    # Sale from Location logic here of save
-                    item_from_locations = row.get('sale_row_locations')
+                # else:
+                # Sale from Location logic here of save
+                item_from_locations = row.get('sale_row_locations')
 
-                    for item in item_from_locations:
-                        sale_from_location = SaleFromLocation.objects.create(
-                            sale_row=submodel,
-                            loaction_id=item.get('location_id'),
-                            qty=item.get('selected_qty')
-                        )
-                        # Deduct item qty from that location or delete
-                        location_contain_obj = sale_from_location.location.contains.all().filter(item=submodel.item)[0]
-                        if location_contain_obj.qty == sale_from_location.qty:
-                            location_contain_obj.delete()
-                        else:
-                            location_contain_obj.qty -= sale_from_location.qty
-                            location_contain_obj.save()
-                        # End Deduct item qty from that locatio or delete
-                    # End Sale from Location logic here of save
+                for item in item_from_locations:
+                    sale_from_location = SaleFromLocation.objects.create(
+                        sale_row=submodel,
+                        location_id=int(item.get('location_id')),
+                        qty=int(item.get('selected_qty'))
+                    )
+                    # Deduct item qty from that location or delete
+                    location_contain_obj = sale_from_location.location.contains.all().filter(item=submodel.item)[0]
+                    if location_contain_obj.qty == sale_from_location.qty:
+                        location_contain_obj.delete()
+                    else:
+                        import ipdb
+                        ipdb.set_trace()
+                        location_contain_obj.qty -= sale_from_location.qty
+                        location_contain_obj.save()
+                    # End Deduct item qty from that locatio or delete
+                # End Sale from Location logic here of save
 
                 grand_total += submodel.get_total()
                 dct['rows'][ind] = submodel.id

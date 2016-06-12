@@ -149,7 +149,6 @@ function SaleViewModel(data, settings) {
         }
         return '<div class="' + klass + '">' + obj.name + '</div>';
     }
-
     self.table_view = new TableViewModel({rows: data.rows, argument: self}, SaleRow);
 
     self.id.subscribe(function (id) {
@@ -224,6 +223,12 @@ function SaleViewModel(data, settings) {
             bsalert.error('Party is required!');
             return false;
         }
+        for(var row of vm.table_view.rows()){
+          if(row.sale_row_location_error()){
+              bsalert.error('Error in location Selection');
+              return false;
+          };
+        };
 
         var check_discount;
         self.table_view.rows().forEach(function (i) {
@@ -310,6 +315,7 @@ function SaleRow(row, sale_vm) {
     self.sale_row_locations = ko.observableArray();
     self.sale_row_location_error = ko.observable();
     self.get_item_locations = ko.computed(function(){
+        // console.log(self.id());
         if(self.item_id() && self.quantity()){
             if(typeof(self.id) != 'undefined'){
                  $.ajax({

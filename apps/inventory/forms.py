@@ -60,6 +60,7 @@ class UnitConversionForm(HTML5BootstrapModelForm):
         }
         company_filters = ('base_unit', 'unit_to_convert')
 
+
 class LocationForm(HTML5BootstrapModelForm):
     class Meta:
         model = Location

@@ -12,7 +12,7 @@ from ..users.models import Pin
 from .serializers import ItemSerializer, InventoryAccountRowSerializer
 from ..voucher.models import Sale
 from .models import Item, UnitConversion, Unit, JournalEntry, InventoryAccount, Location
-from .forms import ItemForm, UnitForm, UnitConversionForm
+from .forms import ItemForm, UnitForm, UnitConversionForm, LocationForm
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView, \
     StockistMixin, AccountantMixin, StockistCashierMixin
 
@@ -286,7 +286,7 @@ class InventoryAccountWithRate(InventoryAccountView, StockistMixin, DetailView):
 
 class LocationCreate(AjaxableResponseMixin, CreateView):
     model = Location
-    fields = '__all__'
+    form_class = LocationForm
 
 
 class LocationList(ListView):
