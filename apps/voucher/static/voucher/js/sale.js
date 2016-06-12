@@ -40,7 +40,11 @@ function SaleRowLocation(data){
     self.location_id = ko.observable(data.location_id);
     self.location_name = ko.observable(data.location_name);
     self.qty = ko.observable(data.qty);
-    self.selected_qty = ko.observable(data.selected_qty);
+    if (data.selected_qty){
+        self.selected_qty = ko.observable(data.selected_qty);
+    }else{
+        self.selected_qty = ko.observable(0);
+    };
     self.adjust_selected_qty = ko.computed(function(){
         if (self.selected_qty() > self.qty()){
             self.selected_qty(self.qty());
@@ -424,7 +428,7 @@ function SaleRow(row, sale_vm) {
     self.get_item_locations = ko.computed(function(){
         // console.log(self.id());
         console.log('hey', self.item_id(), self.quantity());
-        if(self.item_id() && self.quantity()){
+        if(self.item_id()){
             if(typeof(self.id) != 'undefined'){
                  $.ajax({
                     url: '/voucher/sale_row_onedit_location_item_details/' + parseInt(self.id()) + '/' + parseInt(self.item_id()),
@@ -443,18 +447,18 @@ function SaleRow(row, sale_vm) {
                     dataType: 'json',
                     async: false,
                     success: function (res) {
-                        var remain_qty = self.quantity();
-                        self.sale_row_locations([]);
-
-                        for(var obj of res.data){
-                            if(remain_qty-obj.qty > 0){
-                                obj.selected_qty = obj.qty;
-                                remain_qty -= obj.selected_qty;
-                            }else{
-                                obj.selected_qty = remain_qty;
-                                remain_qty -= obj.selected_qty;
-                            };
-                        };
+                        // var remain_qty = self.quantity();
+                        // self.sale_row_locations([]);
+                        //
+                        // for(var obj of res.data){
+                        //     if(remain_qty-obj.qty > 0){
+                        //         obj.selected_qty = obj.qty;
+                        //         remain_qty -= obj.selected_qty;
+                        //     }else{
+                        //         obj.selected_qty = remain_qty;
+                        //         remain_qty -= obj.selected_qty;
+                        //     };
+                        // };
                         self.sale_row_locations(ko.utils.arrayMap(res.data, function(obj) {
                             return new SaleRowLocation(obj)
                         }));
@@ -480,6 +484,23 @@ function SaleRow(row, sale_vm) {
                 // console.log('unset', total, self.quantity());
             }else{
                 self.sale_row_location_error(null);
+            };
+        };
+    });
+
+    self.suggest_qty_4m_location = ko.computed(function(){
+        if(self.quantity()){
+            var remain_qty = self.quantity();
+            // self.sale_row_locations([]);
+            //
+            for(var obj of self.sale_row_locations()){
+                if(remain_qty-obj.qty > 0){
+                    obj.selected_qty(obj.qty());
+                    remain_qty -= obj.qty();
+                }else{
+                    obj.selected_qty(remain_qty);
+                    remain_qty -= remain_qty;
+                };
             };
         };
     });
