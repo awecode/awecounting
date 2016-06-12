@@ -113,6 +113,9 @@ class Company(models.Model):
     def show_combined_reports(self):
         return self.subscription.enable_branches and self.subscription.combine_reports
 
+    def can_manage_locations(self):
+        return self.subscription.enable_locations
+
     @property
     def fy(self):
         return self.get_fy()
@@ -219,9 +222,6 @@ class Subscription(models.Model):
 
     def __str__(self):
         return 'Subscription for ' + str(self.company)
-
-    def location_enabled(self):
-        return self.enable_locations
 
 
 @receiver(company_creation)

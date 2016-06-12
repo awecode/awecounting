@@ -55,6 +55,7 @@ function SaleRowLocation(data){
 
 
 function SaleViewModel(data, settings) {
+    console.log(settings);
     var self = this;
 
     self.tax_types = [
