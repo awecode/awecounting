@@ -180,16 +180,6 @@ class LotItemDetail(models.Model):
         return '%s-QTY#%d' % (self.item, self.qty)
 
 
-class Lot(models.Model):
-    lot_number = models.CharField(max_length=150, unique=True, null=True, blank=True)
-    lot_item_details = models.ManyToManyField(
-        LotItemDetail
-    )
-
-    def __str__(self):
-        return '%s-QTY#%d' % (str(self.item), self.qty)
-
-
 class PurchaseVoucherRow(models.Model):
     sn = models.PositiveIntegerField()
     item = models.ForeignKey(Item, related_name='purchases')
