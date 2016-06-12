@@ -602,10 +602,19 @@ class VoucherSetting(models.Model):
     enable_expense_in_purchase = models.BooleanField(default=True, verbose_name='Enable Expense')
     add_expense_cost_to_purchase = models.BooleanField(default=True, verbose_name='Add expense cost')
     # discount_on_each_purchase_particular = models.BooleanField(default=False)
-    
+
+    @property
+    def purchase_enable_locations(self):
+        return self.company.subscription.enable_locations and self.purchase_voucher_location
+
+    @property
+    def sale_enable_locations(self):
+        return self.company.subscription.enable_locations and self.sale_voucher_location
 
     def add_expense_to_purchase(self):
         return self.enable_expense_in_purchase and self.add_expense_cost_to_purchase
+
+    extra_data = ['purchase_enable_locations', 'sale_enable_locations']
 
     def __unicode__(self):
         return self.company.name
