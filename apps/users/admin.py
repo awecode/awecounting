@@ -4,6 +4,7 @@ from django.contrib.auth.admin import UserAdmin, UserChangeForm as DjangoUserCha
 from django import forms
 from django.contrib.admin import ModelAdmin
 from django.contrib.sessions.models import Session
+from django.core.urlresolvers import reverse
 
 from apps.report.admin import ReportSettingStacked
 from awecounting.utils.mixins import CompanyAdmin
@@ -136,11 +137,37 @@ admin.site.register(Subscription)
 admin.site.register(Branch)
 
 
+def url_to_edit_object(obj):
+    if not obj:
+        return 'None'
+    url = reverse('admin:%s_%s_change' % (obj._meta.app_label, obj._meta.model_name), args=(obj.pk,))
+    return u'<a href="%s">%s</a>' % (url, obj.__str__())
+
+
 class SessionAdmin(ModelAdmin):
     def _session_data(self, obj):
         return obj.get_decoded()
 
-    list_display = ['session_key', '_session_data', 'expire_date']
+    def role(self, obj):
+        sess_data = self._session_data(obj)
+        try:
+            return url_to_edit_object(Role.objects.get(id=sess_data.get('role')))
+        except Role.DoesNotExist:
+            pass
+
+    role.allow_tags = True
+
+    def user(self, obj):
+        sess_data = self._session_data(obj)
+        try:
+            return url_to_edit_object(User.objects.get(id=sess_data.get('_auth_user_id')))
+        except User.DoesNotExist:
+            pass
+
+    user.allow_tags = True
+
+    list_display = ['session_key', 'role', 'user', 'expire_date']
+    search_fields = ['session_key', ]
 
 
 admin.site.register(Session, SessionAdmin)
