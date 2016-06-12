@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse_lazy
 from modeltranslation.forms import TranslationModelForm
 from django.utils.translation import ugettext_lazy as _
 
-from .models import Item, Unit, InventoryAccount, UnitConversion
+from .models import Item, Unit, InventoryAccount, UnitConversion, Location
 from awecounting.utils.forms import HTML5BootstrapModelForm, KOModelForm
 
 
@@ -59,3 +59,9 @@ class UnitConversionForm(HTML5BootstrapModelForm):
             'unit_to_convert': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('unit_add')}),
         }
         company_filters = ('base_unit', 'unit_to_convert')
+
+
+class LocationForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = Location
+        fields = '__all__'
