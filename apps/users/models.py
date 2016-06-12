@@ -212,12 +212,16 @@ class Subscription(models.Model):
     enable_payroll = models.BooleanField(default=True)
     enable_reports = models.BooleanField(default=True)
     enable_branches = models.BooleanField(default=False)
+    enable_locations = models.BooleanField(default=False)
     combine_reports = models.BooleanField(default=False, verbose_name='Show combined reports of branches')
     disable_head_office_vouchers = models.BooleanField(default=False)
     interconnection_among_branches = models.BooleanField(default=True)
 
     def __str__(self):
         return 'Subscription for ' + str(self.company)
+
+    def location_enabled(self):
+        return self.enable_locations
 
 
 @receiver(company_creation)

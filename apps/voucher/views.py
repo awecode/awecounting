@@ -420,19 +420,20 @@ def save_purchase(request):
                             item.save()
         # End For lot on edit
 
-        # For Location on edit
-        for row in obj.rows.all():
-            location = row.location
-            if location:
-                for item in location.contains.all():
-                    if item.item == row.item:
-                        if item.qty == row.quantity:
-                            # location.contains.remove(item)
-                            item.delete()
-                        else:
-                            item.qty -= row.quantity
-                            item.save()
-        # End For Location on edit
+        if request.company.subscription.location_enabled():
+            # For Location on edit
+            for row in obj.rows.all():
+                location = row.location
+                if location:
+                    for item in location.contains.all():
+                        if item.item == row.item:
+                            if item.qty == row.quantity:
+                                # location.contains.remove(item)
+                                item.delete()
+                            else:
+                                item.qty -= row.quantity
+                                item.save()
+            # End For Location on edit
 
     else:
         obj = PurchaseVoucher(company=request.company)
@@ -481,25 +482,26 @@ def save_purchase(request):
                     # po_receive_lot.lot_item_details.add(lot_item_detail)
                 # End Setting Lot Items
 
-                # Setting Location Items
-                item_in_location = False
-                location_id = row.get('location')
-                if location_id:
-                    location_obj = Location.objects.get(id=location_id)
-                    for item in location_obj.contains.all():
-                        if item.item_id == item_id:
-                            item_in_location = True
-                            item.qty += int(row.get('quantity'))
-                            item.save()
-                    if not item_in_location:
-                        loc_contain_obj = LocationContain.objects.create(
-                            location=location_obj,
-                            item_id=item_id,
-                            qty=int(row.get('quantity'))
-                        )
-                        # location_obj.contains.add(loc_contain_obj)
+                if request.company.subscription.location_enabled():
+                    # Setting Location Items
+                    item_in_location = False
+                    location_id = row.get('location')
+                    if location_id:
+                        location_obj = Location.objects.get(id=location_id)
+                        for item in location_obj.contains.all():
+                            if item.item_id == item_id:
+                                item_in_location = True
+                                item.qty += int(row.get('quantity'))
+                                item.save()
+                        if not item_in_location:
+                            loc_contain_obj = LocationContain.objects.create(
+                                location=location_obj,
+                                item_id=item_id,
+                                qty=int(row.get('quantity'))
+                            )
+                            # location_obj.contains.add(loc_contain_obj)
 
-                # End Setting Location Items
+                    # End Setting Location Items
 
                 values = {
                     'sn': ind + 1,
@@ -634,23 +636,25 @@ def save_sale(request):
 
     if params.get('id'):
         obj = Sale.objects.get(id=params.get('id'), company=request.company)
-        # SaleFromLocation Logic here for edit
-        for roo in obj.rows.all():
-            for sale_frm_loc in roo.from_locations.all():
-                itm_in_loc = sale_frm_loc.location.contains.all().filter(item=roo.item)
-                if itm_in_loc:
-                    itm_in_loc[0].qty += sale_frm_loc.qty
-                    itm_in_loc[0].save()
-                    sale_frm_loc.delete()
-                else:
-                    LocationContain.objects.create(
-                        location=sale_frm_loc.location,
-                        item=roo.item,
-                        qty=sale_frm_loc.qty
-                    )
-                    sale_frm_loc.delete()
 
-        # End SaleFromLocation Logic here for edit
+        if request.company.subscription.location_enabled():
+            # SaleFromLocation Logic here for edit
+            for roo in obj.rows.all():
+                for sale_frm_loc in roo.from_locations.all():
+                    itm_in_loc = sale_frm_loc.location.contains.all().filter(item=roo.item)
+                    if itm_in_loc:
+                        itm_in_loc[0].qty += sale_frm_loc.qty
+                        itm_in_loc[0].save()
+                        sale_frm_loc.delete()
+                    else:
+                        LocationContain.objects.create(
+                            location=sale_frm_loc.location,
+                            item=roo.item,
+                            qty=sale_frm_loc.qty
+                        )
+                        sale_frm_loc.delete()
+
+            # End SaleFromLocation Logic here for edit
 
     else:
         obj = Sale(company=request.company)
@@ -679,26 +683,27 @@ def save_sale(request):
                 if not created:
                     submodel = save_model(submodel, values)
                 # else:
-                # Sale from Location logic here of save
-                item_from_locations = row.get('sale_row_locations')
+                if request.company.subscription.location_enabled():
+                    # Sale from Location logic here of save
+                    item_from_locations = row.get('sale_row_locations')
 
-                for item in item_from_locations:
-                    sale_from_location = SaleFromLocation.objects.create(
-                        sale_row=submodel,
-                        location_id=int(item.get('location_id')),
-                        qty=int(item.get('selected_qty'))
-                    )
-                    # Deduct item qty from that location or delete
-                    location_contain_obj = sale_from_location.location.contains.all().filter(item=submodel.item)[0]
-                    if location_contain_obj.qty == sale_from_location.qty:
-                        location_contain_obj.delete()
-                    else:
-                        import ipdb
-                        ipdb.set_trace()
-                        location_contain_obj.qty -= sale_from_location.qty
-                        location_contain_obj.save()
-                    # End Deduct item qty from that locatio or delete
-                # End Sale from Location logic here of save
+                    for item in item_from_locations:
+                        sale_from_location = SaleFromLocation.objects.create(
+                            sale_row=submodel,
+                            location_id=int(item.get('location_id')),
+                            qty=int(item.get('selected_qty'))
+                        )
+                        # Deduct item qty from that location or delete
+                        location_contain_obj = sale_from_location.location.contains.all().filter(item=submodel.item)[0]
+                        if location_contain_obj.qty == sale_from_location.qty:
+                            location_contain_obj.delete()
+                        else:
+                            import ipdb
+                            ipdb.set_trace()
+                            location_contain_obj.qty -= sale_from_location.qty
+                            location_contain_obj.save()
+                        # End Deduct item qty from that locatio or delete
+                    # End Sale from Location logic here of save
 
                 grand_total += submodel.get_total()
                 dct['rows'][ind] = submodel.id
