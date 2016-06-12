@@ -254,7 +254,7 @@ def set_transactions(model, date, *args):
 
 
 class Location(MPTTModel):
-    code = models.CharField(max_length=100)
+    code = models.CharField(max_length=100, null=True, blank=True)
     name = models.CharField(max_length=150)
     enabled = models.BooleanField(default=True)
     # contains = models.ManyToManyField(LocationContain, blank=True)

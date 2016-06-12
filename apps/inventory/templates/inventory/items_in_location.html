@@ -1,0 +1,45 @@
+{% extends "_base.html" %}
+{% load i18n staticfiles filters %}
+
+{% block page-title %}{% trans 'Location Details' %}{% endblock %}
+
+
+
+{% block content %}
+    <div class="well">
+
+        {% load pagination_tags %}
+        {% load sorting_tags %}
+        {% load filters %}
+
+        {% autosort object_list as sorted_objects %}
+        {% autopaginate sorted_objects 25 as paginated_objects %}
+
+        <table class="table table-striped">
+            <thead>
+            <th>{% anchor item _('Item') %}</th>
+            <th>{% anchor qty _('Quantity') %}</th>
+{#            <th>{% anchor enabled _('Is Enabled') %}</th>#}
+{#            <th></th>#}
+
+            </thead>
+            <tbody>
+            {% for location_detail in paginated_objects %}
+                <tr>
+                    <td>
+                        <a href="#">{{ location_detail.item}}</a>
+                    </td>
+                    <td>
+                        <a href="#">{{ location_detail.qty }}</a>
+                    </td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% paginate %}
+
+    </div>
+
+{% endblock %}

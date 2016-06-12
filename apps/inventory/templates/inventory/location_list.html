@@ -22,43 +22,25 @@
             <th>{% anchor code _('Code') %}</th>
             <th>{% anchor name _('Name') %}</th>
             <th>{% anchor enabled _('Is Enabled') %}</th>
-            <th>Details</th>
+            <th></th>
+
             </thead>
             <tbody>
             {% for location in paginated_objects %}
                 <tr>
                     <td>
-                        <a href="{% url 'location_edit' location.pk %}">{{ location.code}}</a>
+                        <a href="{% url 'location_detail' location.pk %}">{{ location.code}}</a>
                     </td>
                     <td>
-                        <a href="{% url 'location_edit' location.pk %}">{{ location.name }}</a>
+                        <a href="{% url 'location_detail' location.pk %}">{{ location.name }}</a>
                     </td>
                     <td>
                         {{ location.enabled}}
                     </td>
                     <td>
-                        <div class="dropdown">
-                          <button class="btn btn-default dropdown-toggle" type="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-bind="attr: { id: 'location_{{ location.pk }}' }">
-                            Details
-                            <span class="caret"></span>
-                          </button>
-                          <div class="dropdown-menu"  data-bind="attr: { 'aria-labelledby': 'location_{{ location.pk }}' }">
-                              <table class="table table-striped">
-                                  <tr>
-                                        <th>Item</th>
-                                        <th>Quantity</th>
-                                  </tr>
-                                  {% for loc_detail in location.contains.all %}
-                                    <tr>
-                                        <td>{{ loc_detail.item }}</td>
-                                        <td>{{ loc_detail.qty }}</td>
-                                    </tr>
-                                  {% endfor %}
-
-                               </table>
-                          </div>
-                        </div>
+                        <a href="{% url 'location_edit' location.pk %}">Edit</a>
                     </td>
+
 
                 </tr>
             {% endfor %}
