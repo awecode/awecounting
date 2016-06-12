@@ -1082,7 +1082,7 @@ def save_expense(request):
 def get_item_locations(request, pk=None):
     obj = get_object_or_404(Item, pk=pk)
     data = [{'location_id': loc.location_id,'location_name':loc.location.name, 'qty': loc.qty} for loc in obj.location_contain.all()]
-    data = sorted(data, key=lambda dic: dic['qty'], reverse=True)
+    data = sorted(data, key=lambda dic: dic['location_id'])
     return JsonResponse({'data': data})
 
 
@@ -1129,4 +1129,5 @@ def sale_row_onedit_location_item_details(request, sale_row_id=None, item_id=Non
                     }
                 )
             )
+    response_data = sorted(response_data, key=lambda dic: dic['location_id'])
     return JsonResponse({'data': response_data})

@@ -150,14 +150,12 @@
                           <div class="dropdown-menu"  data-bind="attr: { 'aria-labelledby': 'row-location-' + $index() }">
                               <table class="table table-striped">
                               <tr>
-                                    <th>ID#</th>
                                     <th>Location Name</th>
                                     <th>Available Quantity</th>
                                     <th>Required Quantity</th>
                               </tr>
                               <!-- ko foreach: sale_row_locations -->
                                   <tr>
-                                        <td data-bind="text: location_id"></td>
                                         <td data-bind="text: location_name"></td>
                                         <td data-bind="text: qty"></td>
                                         <td data-bind="editableText: selected_qty, numeric: true "></td>

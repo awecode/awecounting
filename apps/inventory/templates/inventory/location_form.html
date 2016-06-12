@@ -6,7 +6,11 @@
 {% block content %}
     <form method="post">{% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Save" />
+    <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
+
+        {% if form.instance.id %}
+            <a href="{% url 'location_delete' form.instance.id %}" class="btn btn-danger btn-raised">{% trans 'Delete' %}</a>
+        {% endif %}
 </form>
 
 {% endblock %}

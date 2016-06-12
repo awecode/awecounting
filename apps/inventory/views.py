@@ -291,6 +291,26 @@ class LocationCreate(AjaxableResponseMixin, CreateView):
 
 class LocationList(ListView):
     model = Location
+
+    def get_context_data(self, **kwargs):
+        context = super(LocationList, self).get_context_data(**kwargs)
+        # import ipdb
+        # ipdb.set_trace()
+        # context['object_list'] = [{'loc':obj, 'loc_detail': obj.contains.all()}  for obj in context['object_list']]
+        return context
+
+
+class LocationUpdate(UpdateView):
+    queryset = Location.objects.all()
+    model = Location
+    success_url = reverse_lazy('location_list')
+    fields = ['code', 'name', 'enabled', 'parent']
+
+class LocationDelete(DeleteView):
+    model = Location
+    success_url = reverse_lazy('unit_list')
+
+
 # def view_inventory_account_with_rate(request, pk):
 #     obj= get_object_or_404(InventoryAccount, pk=pk, company=request.company)
 #     if hasattr(obj, 'item'):

@@ -31,6 +31,8 @@ web_urls = [
 
     url(r'^location/add/$', views.LocationCreate.as_view(), name='location_add'),
     url(r'^location/list/$', views.LocationList.as_view(), name='location_list'),
+    url(r'^location/edit/(?P<pk>\d+)/$', views.LocationUpdate.as_view(), name='location_edit'),
+    url(r'^location/delete/(?P<pk>\d+)/$', views.LocationDelete.as_view(), name='location_delete')
 ]
 
 api_urls = [
