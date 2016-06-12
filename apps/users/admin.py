@@ -3,8 +3,9 @@ from django.contrib.auth.admin import UserAdmin, UserChangeForm as DjangoUserCha
     UserCreationForm as DjangoUserCreationForm
 from django import forms
 from django.contrib.admin import ModelAdmin
-from apps.report.admin import ReportSettingStacked
+from django.contrib.sessions.models import Session
 
+from apps.report.admin import ReportSettingStacked
 from awecounting.utils.mixins import CompanyAdmin
 from .models import File, User, GroupProxy, Company, Role, Pin, Subscription, Branch
 
@@ -133,3 +134,13 @@ admin.site.register(File)
 admin.site.register(Pin)
 admin.site.register(Subscription)
 admin.site.register(Branch)
+
+
+class SessionAdmin(ModelAdmin):
+    def _session_data(self, obj):
+        return obj.get_decoded()
+
+    list_display = ['session_key', '_session_data', 'expire_date']
+
+
+admin.site.register(Session, SessionAdmin)
