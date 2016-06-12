@@ -134,7 +134,9 @@ function PurchaseViewModel(data, settings) {
                 });
             } else if (party.related_company == null && party.company != self.items_of_current_company()) {
                 var company_item = get_by_id(company_items, party.company);
-                self.items(company_item.items);
+                if (company_item) {
+                    self.items(company_item.items);
+                }
                 self.items_of_current_company(party.company);
             } else if (party.related_company != null && typeof(company) != 'undefined') {
                 company_item = get_by_id(company_items, party.related_company);
@@ -353,8 +355,9 @@ function PurchaseViewModel(data, settings) {
 
 function PurchaseRow(row, purchase_vm) {
     var self = this;
-
     self.item = ko.observable();
+    self.code = ko.observable();
+    self.oem_number = ko.observable();
     self.item_id = ko.observable();
     self.quantity = ko.observable();
     self.rate = ko.observable();
@@ -374,6 +377,8 @@ function PurchaseRow(row, purchase_vm) {
     self.item.subscribe(function (item) {
         // TODO
         var unit = get_by_id(purchase_vm.units(), item.unit.id);
+        self.code(item.code);
+        self.oem_number(item.oem_no);
         if (unit && !self.unit_id())
             self.unit_id(unit.id);
         if (item.last_purchase_price && !self.rate()) {

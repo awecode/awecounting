@@ -300,6 +300,8 @@ function SaleRow(row, sale_vm) {
     var self = this;
 
     self.item = ko.observable();
+    self.code = ko.observable();
+    self.oem_number = ko.observable();
     self.item_id = ko.observable();
     self.quantity = ko.observable();
     self.rate = ko.observable();
@@ -316,6 +318,8 @@ function SaleRow(row, sale_vm) {
     self.item.subscribe(function (item) {
         // TODO
         var unit = get_by_id(sale_vm.units(), item.unit.id);
+        self.code(item.code);
+        self.oem_number(item.oem_no);
         if (unit && !self.unit_id())
             self.unit_id(unit.id);
         if (item.last_sale_price && !self.rate()) {

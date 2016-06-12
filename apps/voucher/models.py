@@ -546,7 +546,30 @@ class VoucherSetting(models.Model):
     sale_suggest_by_item = models.BooleanField(default=True, verbose_name='Suggest rate by item')
     sale_suggest_by_party_item = models.BooleanField(default=True, verbose_name='Suggest rate by item by party')
     sale_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True, related_name='default_invoice_tax_scheme')
-    discount_on_each_invoice_particular = models.BooleanField(default=False)
+    # discount_on_each_invoice_particular = models.BooleanField(default=False)
+
+    sale_voucher_sn = models.BooleanField(default=True)
+    sale_print_sn = models.BooleanField(default=True)
+
+    sale_voucher_code = models.BooleanField(default=True)
+    sale_print_code = models.BooleanField(default=True)
+
+    sale_voucher_oem_number = models.BooleanField(default=True)
+    sale_print_oem_number = models.BooleanField(default=True)
+
+    sale_voucher_discount = models.BooleanField(default=True)
+    sale_print_discount = models.BooleanField(default=True)
+
+    sale_voucher_tax_scheme = models.BooleanField(default=True)
+    sale_print_tax_scheme = models.BooleanField(default=True)
+
+    sale_voucher_lot = models.BooleanField(default=True)
+    sale_print_lot = models.BooleanField(default=True)
+
+    sale_voucher_location = models.BooleanField(default=True)
+    sale_print_location = models.BooleanField(default=True)
+
+
 
     # Purchase voucher settings
     single_discount_on_whole_purchase = models.BooleanField(default=True)
@@ -556,9 +579,31 @@ class VoucherSetting(models.Model):
     purchase_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True, related_name='default_purchase_tax_scheme')
     purchase_suggest_by_item = models.BooleanField(default=True, verbose_name='Suggest rate by item')
     purchase_suggest_by_party_item = models.BooleanField(default=True, verbose_name='Suggest rate by item by party')
+
+    purchase_voucher_sn = models.BooleanField(default=True)
+    purchase_print_sn = models.BooleanField(default=True)
+
+    purchase_voucher_code = models.BooleanField(default=True)
+    purchase_print_code = models.BooleanField(default=True)
+
+    purchase_voucher_oem_number = models.BooleanField(default=True)
+    purchase_print_oem_number = models.BooleanField(default=True)
+
+    purchase_voucher_discount = models.BooleanField(default=True)
+    purchase_print_discount = models.BooleanField(default=True)
+
+    purchase_voucher_tax_scheme = models.BooleanField(default=True)
+    purchase_print_tax_scheme = models.BooleanField(default=True)
+
+    purchase_voucher_lot = models.BooleanField(default=True)
+    purchase_print_lot = models.BooleanField(default=True)
+
+    purchase_voucher_location = models.BooleanField(default=True)
+    purchase_print_location = models.BooleanField(default=True)
+
     enable_expense_in_purchase = models.BooleanField(default=True, verbose_name='Enable Expense')
     add_expense_cost_to_purchase = models.BooleanField(default=True, verbose_name='Add expense cost')
-    discount_on_each_purchase_particular = models.BooleanField(default=False)
+    # discount_on_each_purchase_particular = models.BooleanField(default=False)
 
     def add_expense_to_purchase(self):
         return self.enable_expense_in_purchase and self.add_expense_cost_to_purchase

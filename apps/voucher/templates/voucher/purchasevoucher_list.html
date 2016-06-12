@@ -24,7 +24,7 @@
             <th>{% anchor date _('Date') %}</th>
             <th>{% anchor party _('Party') %}</th>
             <th>{% anchor credit _('Credit/Cash') %}</th>
-            {% ifrole "Accountant" %}
+            {% ifrole "Cashier" %}
                 <th>{% trans "Action" %}</th>
             {% endrole %}
             </thead>
@@ -45,7 +45,7 @@
                     <td>
                         {{ purchase.type }}
                     </td>
-                    {% ifrole "Accountant" %}
+                    {% ifrole "Cashier" %}
                     <td>
                         <a href="{% url 'purchase-edit' purchase.id %}">{% trans "Edit" %}</a>
                     </td>

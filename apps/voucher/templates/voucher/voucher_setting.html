@@ -1,4 +1,4 @@
- {% extends base_template %}
+{% extends base_template %}
 {% load i18n %}
 
 {% block title %}{{ scenario }} {{ form.instance }}{% endblock %}
@@ -10,122 +10,418 @@
 
 {% block settings_form %}
     <form method="POST">
-            {% csrf_token %}
-        
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        {{ form.unique_voucher_number }} {{ form.unique_voucher_number.label }}
-                    </label>
-                </div>
-                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-            </div>            
+        {% csrf_token %}
+
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ form.unique_voucher_number }} {{ form.unique_voucher_number.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
 
         <h1> {% trans "Invoice Settings" %}</h1>
-        
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        {{ form.single_discount_on_whole_invoice }} {{ form.single_discount_on_whole_invoice.label }}
-                    </label>
-                </div>
-                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-            </div>            
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        {{ form.discount_on_each_invoice_particular }} {{ form.discount_on_each_invoice_particular.label }}
-                    </label>
-                </div>
-                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        {{ form.sale_suggest_by_item }} {{ form.sale_suggest_by_item.label }}
-                    </label>
-                </div>
-                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        {{ form.sale_suggest_by_party_item }} {{ form.sale_suggest_by_party_item.label }}
-                    </label>
-                </div>
-                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-            </div>
 
-            <p>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ form.single_discount_on_whole_invoice }} {{ form.single_discount_on_whole_invoice.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ form.discount_on_each_invoice_particular }} {{ form.discount_on_each_invoice_particular.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ form.sale_suggest_by_item }} {{ form.sale_suggest_by_item.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ form.sale_suggest_by_party_item }} {{ form.sale_suggest_by_party_item.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+
+        <p>
             <label>{{ form.sale_default_tax_application_type.label }}</label>
-                {{ form.sale_default_tax_application_type }}
-            </p>
-            <p>
-                <label>{{ form.sale_default_tax_scheme.label }}</label>
-                {{ form.sale_default_tax_scheme }}
-            </p>
-        
+            {{ form.sale_default_tax_application_type }}
+        </p>
+
+        <p>
+            <label>{{ form.sale_default_tax_scheme.label }}</label>
+            {{ form.sale_default_tax_scheme }}
+        </p>
+
+        <table class="voucher-setting table table-striped">
+            <thead>
+            <tr>
+                <th>{% trans "Columns" %}</th>
+                <th>{% trans "S.N." %}</th>
+                <th>{% trans "Item" %}</th>
+                <th>{% trans "Code" %}</th>
+                <th>{% trans "OEM number" %}</th>
+                <th>{% trans "Quantity" %}</th>
+                <th>{% trans "Rate" %}</th>
+                <th>{% trans "Unit" %}</th>
+                <th>{% trans 'Discount' %}</th>
+                <th>{% trans "Tax Scheme" %}</th>
+                <th>{% trans 'Lot#' %}</th>
+                <th>{% trans 'Location' %}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{% trans "Voucher" %}</td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.sale_voucher_sn }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td></td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.sale_voucher_code }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.sale_voucher_oem_number }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.sale_voucher_discount }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.sale_voucher_tax_scheme }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.sale_voucher_lot }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.sale_voucher_location }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+            </tr>
+            <tr>
+                <td>{% trans "Print" %}</td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.sale_print_sn }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td></td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.sale_print_code }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.sale_print_oem_number }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.sale_print_discount }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.sale_print_tax_scheme }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.sale_print_lot }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.sale_print_location }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
 
         <h1> {% trans "Purchase Settings" %}</h1>
-        
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        {{ form.single_discount_on_whole_purchase }} {{ form.single_discount_on_whole_purchase.label }}
-                    </label>
-                </div>
-                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-            </div>            
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        {{ form.discount_on_each_purchase_particular }} {{ form.discount_on_each_purchase_particular.label }}
-                    </label>
-                </div>
-                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        {{ form.purchase_suggest_by_item }} {{ form.purchase_suggest_by_item.label }}
-                    </label>
-                </div>
-                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        {{ form.purchase_suggest_by_party_item }} {{ form.purchase_suggest_by_party_item.label }}
-                    </label>
-                </div>
-                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        {{ form.enable_expense_in_purchase  }} {{ form.enable_expense_in_purchase.label }}
-                    </label>
-                </div>
-                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        {{ form.add_expense_cost_to_purchase }} {{ form.add_expense_cost_to_purchase.label }}
-                    </label>
-                </div>
-                {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-            </div>
 
-            <p>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ form.single_discount_on_whole_purchase }} {{ form.single_discount_on_whole_purchase.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+        {#            <div class="form-group">#}
+        {#                <div class="checkbox">#}
+        {#                    <label>#}
+        {#                        {{ form.discount_on_each_purchase_particular }} {{ form.discount_on_each_purchase_particular.label }}#}
+        {#                    </label>#}
+        {#                </div>#}
+        {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        {#            </div>#}
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ form.purchase_suggest_by_item }} {{ form.purchase_suggest_by_item.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ form.purchase_suggest_by_party_item }} {{ form.purchase_suggest_by_party_item.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ form.enable_expense_in_purchase }} {{ form.enable_expense_in_purchase.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ form.add_expense_cost_to_purchase }} {{ form.add_expense_cost_to_purchase.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+
+        <p>
             <label>{{ form.purchase_default_tax_application_type.label }}</label>
-                {{ form.purchase_default_tax_application_type }}
-            </p>
-            <p>
-                <label>{{ form.purchase_default_tax_scheme.label }}</label>
-                {{ form.purchase_default_tax_scheme }}
-            </p>
-        
+            {{ form.purchase_default_tax_application_type }}
+        </p>
+
+        <p>
+            <label>{{ form.purchase_default_tax_scheme.label }}</label>
+            {{ form.purchase_default_tax_scheme }}
+        </p>
+
+        <table class="voucher-setting table table-striped">
+            <thead>
+            <tr>
+                <th>{% trans "Columns" %}</th>
+                <th>{% trans "S.N." %}</th>
+                <th>{% trans "Item" %}</th>
+                <th>{% trans "Code" %}</th>
+                <th>{% trans "OEM number" %}</th>
+                <th>{% trans "Quantity" %}</th>
+                <th>{% trans "Rate" %}</th>
+                <th>{% trans "Unit" %}</th>
+                <th>{% trans 'Discount' %}</th>
+                <th>{% trans "Tax Scheme" %}</th>
+                <th>{% trans 'Lot#' %}</th>
+                <th>{% trans 'Location' %}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{% trans "Voucher" %}</td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.purchase_voucher_sn }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td></td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.purchase_voucher_code }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.purchase_voucher_oem_number }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.purchase_voucher_discount }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.purchase_voucher_tax_scheme }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.purchase_voucher_lot }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.purchase_voucher_location }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+            </tr>
+            <tr>
+                <td>{% trans "Print" %}</td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.purchase_print_sn }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td></td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.purchase_print_code }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.purchase_print_oem_number }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.purchase_print_discount }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.purchase_print_tax_scheme }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.purchase_print_lot }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.purchase_print_location }}
+                        </label>
+                    </div>
+                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
         <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
     </form>
 

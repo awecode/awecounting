@@ -250,7 +250,7 @@ class SaleView(CompanyView):
     check = 'can_manage_sales'
 
 
-class PurchaseVoucherDetailView(PurchaseVoucherView, CashierMixin, DetailView):
+class PurchaseVoucherDetailView(PurchaseVoucherView, AccountantMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(PurchaseVoucherDetailView, self).get_context_data(**kwargs)
         context['rows'] = PurchaseVoucherRow.objects.select_related('item', 'unit').filter(purchase=self.object)
@@ -274,15 +274,15 @@ class JournalVoucherDetailView(CompanyView, AccountantMixin, DetailView):
         return context
 
 
-class PurchaseVoucherList(PurchaseVoucherView, CashierMixin, ListView):
+class PurchaseVoucherList(PurchaseVoucherView, AccountantMixin, ListView):
     pass
 
 
-class PurchaseVoucherDelete(PurchaseVoucherView, CashierMixin, DeleteView):
+class PurchaseVoucherDelete(PurchaseVoucherView, AccountantMixin, DeleteView):
     pass
 
 
-class PurchaseVoucherCreate(PurchaseVoucherView, CashierMixin, TableObjectMixin):
+class PurchaseVoucherCreate(PurchaseVoucherView, AccountantMixin, TableObjectMixin):
     template_name = 'purchase-form.html'
 
     def get_context_data(self, *args, **kwargs):

@@ -48,7 +48,8 @@
             <div class="row">
                 <div class="col-md-6 col-sm-12">
                     <label for="party">{% trans 'Party' %}</label>
-                    <select id="party" data-bind="selectize: $root.parties, value: party_id, object: party, selectize_options:{render: {'option': render_party_options}}"
+                    <select id="party"
+                            data-bind="selectize: $root.parties, value: party_id, object: party, selectize_options:{render: {'option': render_party_options}}"
                             data-url="{% url 'party_add' %}?source=sale"></select>
                 </div>
 
@@ -102,16 +103,29 @@
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th>{% trans "S.N." %}</th>
+                    {% if request.company.settings.sale_voucher_sn %}
+                        <th>{% trans "S.N." %}</th>
+                    {% endif %}
                     <th>{% trans "Item" %}</th>
+                    {% if request.company.settings.sale_voucher_code %}
+                        <th>{% trans "Code" %}</th>
+                    {% endif %}
+                    {% if request.company.settings.sale_voucher_oem_number %}
+                        <th>{% trans "OEM Number" %}</th>
+                    {% endif %}
                     <th>{% trans "Quantity" %}</th>
                     <th>{% trans "Rate" %}</th>
                     <th>{% trans "Unit" %}</th>
-                    {% if request.company.settings.discount_on_each_invoice_particular %}
+                    {% if request.company.settings.sale_voucher_discount %}
                         <th>{% trans 'Discount' %}</th>
                     {% endif %}
-                    <th data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">{% trans "Tax Scheme" %}</th>
+
+                    {% if request.company.settings.sale_voucher_tax_scheme %}
+                        <th data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">{% trans "Tax Scheme" %}</th>
+                    {% endif %}
+
                     <th>{% trans 'From Location' %}</th>
+
                     <th>{% trans 'Total' %}</th>
                     <th></th>
                 </tr>
@@ -120,54 +134,69 @@
                 <tbody>
                 <!-- ko foreach: rows -->
                 <tr>
-                    <td>
-                        <span data-bind="text:  $index()+1, localize: 1"> </span>
-                    </td>
+                    {% if request.company.settings.sale_voucher_sn %}
+                        <td>
+                            <span data-bind="text:  $index()+1, localize: 1"> </span>
+                        </td>
+                    {% endif %}
                     <td>
                         <select data-url="{% url 'item_add' %}?source=sale" data-script="/static/inventory/js/item.js"
                                 data-bind="selectize: $root.items, value: item_id, object: item, selectize_options:{render: {'option': render_option, 'item':render_option}}">
                         </select>
                     </td>
+                    {% if request.company.settings.sale_voucher_code %}
+                        <td data-bind="text: code"></td>
+                    {% endif %}
+
+                    {% if request.company.settings.sale_voucher_oem_number %}
+                        <td data-bind="text: oem_number"></td>
+                    {% endif %}
                     <td data-bind="editableText: quantity, numeric: true"></td>
                     <td data-bind="editableText: rate, numeric: true"></td>
                     <td class="unit-cell">
                         <select data-bind="selectize: $root.units, value: unit_id, object:unit, selectize_options:{render: {'option': render_unit_options}}"
                                 data-url="{% url 'unit_add' %}"></select>
                     </td>
-                    {% if request.company.settings.discount_on_each_invoice_particular %}
+                    {% if request.company.settings.sale_voucher_discount %}
                         <td data-bind="editableText: discount, percentage_numeric: true"></td>
                     {% endif %}
-                    <td data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">
-                        <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme_id, object: tax_scheme"
-                                data-url="{% url 'tax_scheme_add' %}"></select>
-                    </td>
+                    {% if request.company.settings.sale_voucher_tax_scheme %}
+                        <td data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">
+                            <select id="tax_scheme"
+                                    data-bind="selectize: $root.tax_schemes, value: tax_scheme_id, object: tax_scheme"
+                                    data-url="{% url 'tax_scheme_add' %}"></select>
+                        </td>
+                    {% endif %}
+
                     <td data-bind="css: { 'danger': sale_row_location_error()}">
                         <div class="dropdown">
-                          <button class="btn btn-default dropdown-toggle" type="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-bind="attr: { id: 'row-location-' + $index() }">
-                            Select From Location
-                            <span class="caret"></span>
-                          </button>
-                          <div class="dropdown-menu"  data-bind="attr: { 'aria-labelledby': 'row-location-' + $index() }">
-                              <table class="table table-striped">
-                              <tr>
-                                    <th>Location Name</th>
-                                    <th>Available Quantity</th>
-                                    <th>Required Quantity</th>
-                              </tr>
-                              <!-- ko foreach: sale_row_locations -->
-                                  <tr>
+                            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="true"
+                                    data-bind="attr: { id: 'row-location-' + $index() }">
+                                Select From Location
+                                <span class="caret"></span>
+                            </button>
+                            <div class="dropdown-menu" data-bind="attr: { 'aria-labelledby': 'row-location-' + $index() }">
+                                <table class="table table-striped">
+                                    <tr>
+                                        <th>Location Name</th>
+                                        <th>Available Quantity</th>
+                                        <th>Required Quantity</th>
+                                    </tr>
+                                    <!-- ko foreach: sale_row_locations -->
+                                    <tr>
                                         <td data-bind="text: location_name"></td>
                                         <td data-bind="text: qty"></td>
                                         <td data-bind="editableText: selected_qty, numeric: true "></td>
-                                  </tr>
-                              <!-- /ko -->
-                                  <!-- ko if: sale_row_location_error -->
+                                    </tr>
+                                    <!-- /ko -->
+                                    <!-- ko if: sale_row_location_error -->
                                     <tr class="danger">
                                         <td colspan="100%" data-bind='text: sale_row_location_error'></td>
                                     </tr>
-                                  <!-- /ko -->
-                               </table>
-                          </div>
+                                    <!-- /ko -->
+                                </table>
+                            </div>
                         </div>
                     </td>
 
@@ -179,7 +208,7 @@
 
                 <!-- /ko -->
                 <tr class="sub-total total">
-                    <td colspan="7">
+                    <td colspan="9">
                         {% trans 'Sub Total' %}
                     </td>
                     <td colspan="2" data-bind="text: $root.sub_total(), localize: 2"></td>
@@ -187,7 +216,7 @@
                 </tr>
                 {% if request.company.settings.discount_on_each_invoice_particular %}
                     <tr class="discount-total total">
-                        <td colspan="7">
+                        <td colspan="9">
                             {% trans 'Discounted Amount' %}
                         </td>
                         <td colspan="2" data-bind="text: $root.total_discount(), localize: 2"></td>
@@ -195,7 +224,7 @@
                 {% endif %}
                 {% if request.company.settings.single_discount_on_whole_invoice %}
                     <tr class="discount-total total">
-                        <td colspan="7">
+                        <td colspan="9">
                             {% trans 'Discount' %}
                         </td>
                         <td colspan="2"
@@ -204,20 +233,20 @@
                 {% endif %}
                 <!-- ko if: $root.tax()!='no' -->
                 <tr class="taxable-amount total">
-                    <td colspan="7">
+                    <td colspan="9">
                         {% trans 'Taxable Amount' %}
                     </td>
                     <td colspan="2" data-bind="text: $root.taxable_amount(), localize: 2"></td>
                 </tr>
                 <tr class="tax-total total">
-                    <td colspan="7">
+                    <td colspan="9">
                         {% trans 'Tax Amount' %}
                     </td>
                     <td colspan="2" data-bind="text: $root.tax_amount(), localize: 2"></td>
                 </tr>
                 <!-- /ko -->
                 <tr class="grand-total total">
-                    <td colspan="7">
+                    <td colspan="9">
                         {% trans 'Grand Total' %}
                     </td>
                     <td colspan="2" data-bind="text: $root.grand_total(), localize: 2"></td>
@@ -225,7 +254,7 @@
                 </tr>
                 </tbody>
 
-        </table>
+            </table>
             <a class="btn btn-default btn-raised" data-bind="click: addRow">
                 {% trans 'Add New Row' %}
             </a>

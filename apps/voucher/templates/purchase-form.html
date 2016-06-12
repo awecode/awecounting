@@ -48,8 +48,8 @@
                     <select id="party"
                             data-bind="selectize: $root.parties, value: party_id, object: party, selectize_options:{render: {'option': render_party_options}}"
                             data-url="{% url 'party_add' %}?source=purchase"></select>
-{#                    <select id="party" data-bind="selectize: $root.parties, value: party_id, object: party"#}
-{#                            data-url="{% url 'party_add' %}?source=purchase"></select>#}
+                    {#                    <select id="party" data-bind="selectize: $root.parties, value: party_id, object: party"#}
+                    {#                            data-url="{% url 'party_add' %}?source=purchase"></select>#}
                 </div>
 
                 <div class="col-md-6 col-sm-12 hidden-print" data-bind="if: party_balance">
@@ -102,17 +102,31 @@
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th>{% trans "S.N." %}</th>
+                    {% if request.company.settings.purchase_voucher_sn %}
+                        <th>{% trans "S.N." %}</th>
+                    {% endif %}
                     <th>{% trans "Item" %}</th>
+                    {% if request.company.settings.purchase_voucher_code %}
+                        <th>{% trans "Code" %}</th>
+                    {% endif %}
+                    {% if request.company.settings.purchase_voucher_oem_number %}
+                        <th>{% trans "OEM Number" %}</th>
+                    {% endif %}
                     <th>{% trans "Quantity" %}</th>
                     <th>{% trans "Rate" %}</th>
                     <th>{% trans "Unit" %}</th>
-                    {% if request.company.settings.discount_on_each_purchase_particular %}
+                    {% if request.company.settings.purchase_voucher_discount %}
                         <th>{% trans 'Discount' %}</th>
                     {% endif %}
-                    <th data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">{% trans "Tax Scheme" %}</th>
-                    <th>{% trans 'Lot#' %}</th>
+
+                    {% if request.company.settings.purchase_voucher_tax_scheme %}
+                        <th data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">{% trans "Tax Scheme" %}</th>
+                    {% endif %}
+                    {% if request.company.settings.purchase_voucher_lot %}
+                        <th>{% trans 'Lot#' %}</th>
+                    {% endif %}
                     <th>{% trans 'Location' %}</th>
+
                     <th>{% trans 'Total' %}</th>
                     <th></th>
                 </tr>
@@ -121,32 +135,48 @@
                 <tbody>
                 <!-- ko foreach: rows -->
                 <tr>
-                    <td>
-                        <span data-bind="text:  $index()+1, localize: 1"> </span>
-                    </td>
+                    {% if request.company.settings.purchase_voucher_sn %}
+                        <td>
+                            <span data-bind="text:  $index()+1, localize: 1"> </span>
+                        </td>
+                    {% endif %}
                     <td>
                         <select data-url="{% url 'item_add' %}?source=purchase" data-script="/static/inventory/js/item.js"
                                 data-bind="selectize: $root.items, value: item_id, object: item">
                         </select>
                     </td>
+                    {% if request.company.settings.purchase_voucher_code %}
+                        <td data-bind="text: code"></td>
+                    {% endif %}
+
+                    {% if request.company.settings.purchase_voucher_oem_number %}
+                        <td data-bind="text: oem_number"></td>
+                    {% endif %}
                     <td data-bind="editableText: quantity, numeric: true"></td>
                     <td data-bind="editableText: rate, numeric: true"></td>
                     <td class="unit-cell">
                         <select data-bind="selectize: $root.units, value: unit_id, object:unit, selectize_options:{render: {'option': render_unit_options}}"
                                 data-url="{% url 'unit_add' %}"></select>
                     </td>
-                    {% if request.company.settings.discount_on_each_purchase_particular %}
+                    {% if request.company.settings.purchase_voucher_discount %}
                         <td data-bind="editableText: discount, percentage_numeric: true"></td>
                     {% endif %}
-                    <td data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">
-                        <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme_id, object: tax_scheme"
-                                data-url="{% url 'tax_scheme_add' %}"></select>
-                    </td>
-                    <td class="lot-cell" data-bind="editableText: lot_number"></td>
+                    {% if request.company.settings.purchase_voucher_tax_scheme %}
+                        <td data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">
+                            <select id="tax_scheme"
+                                    data-bind="selectize: $root.tax_schemes, value: tax_scheme_id, object: tax_scheme"
+                                    data-url="{% url 'tax_scheme_add' %}"></select>
+                        </td>
+                    {% endif %}
+                    {% if request.company.settings.purchase_voucher_lot %}
+                        <td class="lot-cell" data-bind="editableText: lot_number"></td>
+                    {% endif %}
+
                     <td class="location-cell">
                         <select data-bind="selectize: $root.enabled_locations, value: location"
                                 data-url="{% url 'location_add' %}"></select>
                     </td>
+
                     <td data-bind="text: total"></td>
                     <td class="hide-on-print text-center">
                         <a href="#" class="red fa fa-trash-o fa-2x" data-bind="click: $parent.removeRow"></a>
@@ -155,7 +185,7 @@
 
                 <!-- /ko -->
                 <tr class="sub-total total">
-                    <td colspan="7">
+                    <td colspan="9">
                         {% trans 'Sub Total' %}
                     </td>
                     <td colspan="2" data-bind="text: $root.sub_total(), localize: 2"></td>
@@ -163,7 +193,7 @@
                 </tr>
                 {% if request.company.settings.discount_on_each_purchase_particular %}
                     <tr class="discount-total total">
-                        <td colspan="7">
+                        <td colspan="9">
                             {% trans 'Discounted Amount' %}
                         </td>
                         <td colspan="2" data-bind="text: $root.total_discount(), localize: 2"></td>
@@ -171,7 +201,7 @@
                 {% endif %}
                 {% if request.company.settings.single_discount_on_whole_purchase %}
                     <tr class="discount-total total">
-                        <td colspan="7">
+                        <td colspan="9">
                             {% trans 'Discount' %}
                         </td>
                         <td colspan="2"
@@ -180,20 +210,20 @@
                 {% endif %}
                 <!-- ko if: $root.tax()!='no' -->
                 <tr class="taxable-amount total">
-                    <td colspan="7">
+                    <td colspan="9">
                         {% trans 'Taxable Amount' %}
                     </td>
                     <td colspan="2" data-bind="text: $root.taxable_amount(), localize: 2"></td>
                 </tr>
                 <tr class="tax-total total">
-                    <td colspan="7">
+                    <td colspan="9">
                         {% trans 'Tax Amount' %}
                     </td>
                     <td colspan="2" data-bind="text: $root.tax_amount(), localize: 2"></td>
                 </tr>
                 <!-- /ko -->
                 <tr class="grand-total total">
-                    <td colspan="7">
+                    <td colspan="9">
                         {% trans 'Grand Total' %}
                     </td>
                     <td colspan="2" data-bind="text: $root.grand_total(), localize: 2"></td>
@@ -209,7 +239,8 @@
         <input type="submit" class="btn btn-raised btn-info" value="{% trans 'Save' %}">
         {% if scenario == 'Update' %}
             {% if request.company.can_manage_purchase_orders and obj.purchase_order.pk %}
-                <a class="btn btn-info btn-raised" href="{% url 'purchase_order_edit' obj.purchase_order.pk %}">{% trans 'Purchase Order' %}</a>
+                <a class="btn btn-info btn-raised"
+                   href="{% url 'purchase_order_edit' obj.purchase_order.pk %}">{% trans 'Purchase Order' %}</a>
             {% endif %}
             <a class="btn btn-danger btn-raised" href="{% url 'purchase_delete' obj.id %}">{% trans 'Delete!' %}</a>
         {% endif %}
