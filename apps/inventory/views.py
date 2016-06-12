@@ -315,7 +315,7 @@ class LocationDelete(DeleteView):
 def get_items_in_location(request, loc_id=None):
     obj = get_object_or_404(Location, pk=loc_id)
     object_list = obj.contains.all()
-    return render(request, 'items_in_location.html', {'object_list': object_list})
+    return render(request, 'inventory/items_in_location.html', {'object_list': object_list})
 
 
 # def view_inventory_account_with_rate(request, pk):
