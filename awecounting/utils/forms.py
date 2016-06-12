@@ -1,5 +1,6 @@
-from django import forms
 import re
+
+from django import forms
 from django.template.defaultfilters import slugify
 
 
@@ -174,4 +175,7 @@ class KOModelForm(forms.ModelForm):
             # add HTML5 required attribute for required fields
             if field.required:
                 field.widget.attrs['required'] = 'required'
-            field.widget.attrs['data-bind'] = 'value: ' + name
+            if 'data-bind' in field.widget.attrs:
+                field.widget.attrs['data-bind'] += ', value: ' + name
+            else:
+                field.widget.attrs['data-bind'] = 'value: ' + name
