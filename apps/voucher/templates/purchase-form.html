@@ -122,12 +122,12 @@
                     {% if request.company.settings.show_purchase_voucher_tax_scheme %}
                         <th class="{% print_view 'show_purchase_print_tax_scheme' %}" data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">{% trans "Tax Scheme" %}</th>
                     {% endif %}
-                    {% if request.company.settings.show_purchase_voucher_lot %}
-                        <th class="{% print_view 'show_purchase_print_lot' %}">{% trans 'Lot#' %}</th>
+                    {% if request.company.settings.show_lot %}
+                        <th>{% trans 'Lot#' %}</th>
                     {% endif %}
 
-                    {% if request.company.settings.purchase_enable_locations %}
-                        <th class="{% print_view 'show_purchase_print_location' %}">{% trans 'Location' %}</th>
+                    {% if request.company.settings.show_locations %}
+                        <th>{% trans 'Location' %}</th>
                     {% endif %}
 
                     <th>{% trans 'Total' %}</th>
@@ -171,12 +171,12 @@
                                 data-url="{% url 'tax_scheme_add' %}"></select>
                     </td>
                     {% endif %}
-                    {% if request.company.settings.show_purchase_voucher_lot %}
-                    <td class="lot-cell {% print_view 'show_purchase_print_lot' %}" data-bind="editableText: lot_number"></td>
+                    {% if request.company.settings.show_lot %}
+                    <td class="lot-cell" data-bind="editableText: lot_number"></td>
                     {% endif %}
 
-                    {% if request.company.settings.purchase_enable_locations %}
-                    <td class="location-cell {% print_view 'show_purchase_print_location' %}">
+                    {% if request.company.settings.show_locations %}
+                    <td class="location-cell">
                         <select data-bind="selectize: $root.enabled_locations, value: location"
                                 data-url="{% url 'location_add' %}"></select>
                     </td>
