@@ -488,6 +488,8 @@ def save_purchase(request):
                         )
                         # po_receive_lot.lot_item_details.add(lot_item_detail)
                     # End Setting Lot Items
+                else:
+                    po_receive_lot = None
 
                 if request.company.settings.show_locations:
                     # Setting Location Items
