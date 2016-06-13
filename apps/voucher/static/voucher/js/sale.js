@@ -227,11 +227,14 @@ function SaleViewModel(data, settings) {
             bsalert.error('Party is required!');
             return false;
         }
-        for(var row of vm.table_view.rows()){
-          if(row.sale_row_location_error()){
-              bsalert.error(row.item().full_name + '-' + row.sale_row_location_error());
-              return false;
-          };
+        if(settings.sale_voucher_location){
+
+            for(var row of vm.table_view.rows()){
+                if(row.sale_row_location_error()){
+                    bsalert.error(row.item().full_name + '-' + row.sale_row_location_error());
+                    return false;
+                };
+            };
         };
 
         var check_discount;
