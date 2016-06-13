@@ -5,14 +5,19 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 import django.db.models.deletion
 
-def add_lot(apps, schema_editor):
-    from apps.voucher.models import Lot, LotItemDetail
-    lots = Lot.objects.all()
-    if lots:
-        lot = lots[0]
-        for l_d in LotItemDetail.objects.all():
-            l_d.lot = lot
-            l_d.save()
+# def add_lot(apps, schema_editor):
+#     from apps.voucher.models import Lot, LotItemDetail
+#     lots = Lot.objects.all()
+#     if lots:
+#         lot = lots[0]
+#         for l_d in LotItemDetail.objects.all():
+#             l_d.lot = lot
+#             l_d.save()
+
+def empty_lotitemdetails(apps, schema_editor):
+    from apps.voucher.models import LotItemDetail
+    LotItemDetail.objects.all().delete()
+
 
 class Migration(migrations.Migration):
 
@@ -25,18 +30,19 @@ class Migration(migrations.Migration):
             model_name='lot',
             name='lot_item_details',
         ),
+        migrations.RunPython(empty_lotitemdetails),
         migrations.AddField(
             model_name='lotitemdetail',
             name='lot',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='lot_item_details', to='voucher.Lot'),
+            field=models.ForeignKey(default=4, on_delete=django.db.models.deletion.CASCADE, related_name='lot_item_details', to='voucher.Lot'),
             preserve_default=False,
         ),
-        migrations.RunPython(add_lot),
-
-        migrations.AlterField(
-            model_name='lotitemdetail',
-            name='lot',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                    related_name='lot_item_details', to='voucher.Lot'),
-        ),
+        # migrations.RunPython(add_lot),
+        #
+        # migrations.AlterField(
+        #     model_name='lotitemdetail',
+        #     name='lot',
+        #     field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+        #                             related_name='lot_item_details', to='voucher.Lot'),
+        # ),
     ]
