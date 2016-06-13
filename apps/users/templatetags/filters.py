@@ -156,3 +156,10 @@ def format_search_string(string):
 @register.filter
 def fy(year):
     return str(year)+'-'+str(year+1)[-2:]
+
+@register.simple_tag(takes_context=True)
+def print_view(context, string):
+    request = context['request']
+    if not getattr(request.company.settings, string):
+        return 'hidden-print'
+    return ''
