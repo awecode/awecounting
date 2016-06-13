@@ -216,6 +216,7 @@ class Subscription(models.Model):
     enable_reports = models.BooleanField(default=True)
     enable_branches = models.BooleanField(default=False)
     enable_locations = models.BooleanField(default=False)
+    enable_lot = models.BooleanField(default=False)
     combine_reports = models.BooleanField(default=False, verbose_name='Show combined reports of branches')
     disable_head_office_vouchers = models.BooleanField(default=False)
     interconnection_among_branches = models.BooleanField(default=True)
