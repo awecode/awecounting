@@ -1,7 +1,7 @@
 {% extends "_base.html" %}
 {% load i18n staticfiles filters %}
 
-{% block page-title %}{% trans 'Location Details' %}{% endblock %}
+{% block page-title %}{% trans 'Location Details' %}({{ location_name }}-{{ location_code }}){% endblock %}
 
 
 
