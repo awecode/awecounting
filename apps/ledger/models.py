@@ -5,7 +5,6 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import pre_delete
-from django.dispatch.dispatcher import receiver
 from django.db.models import F
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -333,7 +332,7 @@ def delete_rows(rows, model):
             instance.delete()
 
 
-@receiver(pre_delete, sender=Transaction)
+# @receiver(pre_delete, sender=Transaction)
 def _transaction_delete(sender, instance, **kwargs):
     transaction = instance
     # cancel out existing dr_amount and cr_amount from account's current_dr and current_cr
@@ -342,7 +341,7 @@ def _transaction_delete(sender, instance, **kwargs):
         transaction.account.current_dr -= transaction.dr_amount
 
     if transaction.cr_amount:
-        transaction.account.current_cr = zero_for_none(transaction.account.current_dr)
+        transaction.account.current_cr = zero_for_none(transaction.account.current_cr)
         transaction.account.current_cr -= transaction.cr_amount
 
     alter(transaction.account, transaction.journal_entry.date, float(zero_for_none(transaction.dr_amount)) * -1,
@@ -350,6 +349,8 @@ def _transaction_delete(sender, instance, **kwargs):
 
     transaction.account.save()
 
+
+pre_delete.connect(_transaction_delete, Transaction, dispatch_uid="apps.ledgers.models")
 
 from apps.users.signals import company_creation
 
