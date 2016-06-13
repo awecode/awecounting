@@ -407,21 +407,23 @@ def save_purchase(request):
 
     if params.get('id'):
         obj = PurchaseVoucher.objects.get(id=params.get('id'), company=request.company)
-        # For Lot on edit==> delete or subtract item
-        for row in obj.rows.all():
-            lot = row.lot
-            if lot:
-                for item in lot.lot_item_details.all():
-                    if item.item == row.item:
-                        if item.qty == row.quantity:
-                            # lot.lot_item_details.remove(item)
-                            item.delete()
-                        else:
-                            item.qty -= row.quantity
-                            item.save()
-        # End For lot on edit
 
-        if request.company.settings.sale_enable_locations:
+        if request.company.settings.show_lot:
+            # For Lot on edit==> delete or subtract item
+            for row in obj.rows.all():
+                lot = row.lot
+                if lot:
+                    for item in lot.lot_item_details.all():
+                        if item.item == row.item:
+                            if item.qty == row.quantity:
+                                # lot.lot_item_details.remove(item)
+                                item.delete()
+                            else:
+                                item.qty -= row.quantity
+                                item.save()
+            # End For lot on edit
+
+        if request.company.settings.show_locations:
             # For Location on edit
             for row in obj.rows.all():
                 location = row.location
@@ -462,30 +464,32 @@ def save_purchase(request):
                 # else:
                 #     discount = row.get('discount')
 
-                # Setting lot items
                 item_id = row.get('item')['id']
-                lot_number = row.get('lot_number')
-                po_receive_lot, created = Lot.objects.get_or_create(
-                    lot_number=lot_number
-                )
 
-                item_exists = False
-
-                for item in po_receive_lot.lot_item_details.all():
-                    if item.item_id == item_id:
-                        item_exists = True
-                        item.qty += int(row.get('quantity'))
-                        item.save()
-                if not item_exists:
-                    lot_item_detail = LotItemDetail.objects.create(
-                        lot=po_receive_lot,
-                        item_id=item_id,
-                        qty=int(row.get('quantity'))
+                if request.company.settings.show_lot:
+                    # Setting lot items
+                    lot_number = row.get('lot_number')
+                    po_receive_lot, created = Lot.objects.get_or_create(
+                        lot_number=lot_number
                     )
-                    # po_receive_lot.lot_item_details.add(lot_item_detail)
-                # End Setting Lot Items
 
-                if request.company.settings.sale_enable_locations:
+                    item_exists = False
+
+                    for item in po_receive_lot.lot_item_details.all():
+                        if item.item_id == item_id:
+                            item_exists = True
+                            item.qty += int(row.get('quantity'))
+                            item.save()
+                    if not item_exists:
+                        lot_item_detail = LotItemDetail.objects.create(
+                            lot=po_receive_lot,
+                            item_id=item_id,
+                            qty=int(row.get('quantity'))
+                        )
+                        # po_receive_lot.lot_item_details.add(lot_item_detail)
+                    # End Setting Lot Items
+
+                if request.company.settings.show_locations:
                     # Setting Location Items
                     item_in_location = False
                     location_id = row.get('location')
@@ -504,7 +508,7 @@ def save_purchase(request):
                             )
                             # location_obj.contains.add(loc_contain_obj)
 
-                            # End Setting Location Items
+                    # End Setting Location Items
 
                 values = {
                     'sn': ind + 1,
@@ -645,7 +649,7 @@ def save_sale(request):
     if params.get('id'):
         obj = Sale.objects.get(id=params.get('id'), company=request.company)
 
-        if request.company.settings.sale_enable_locations:
+        if request.company.settings.show_locations:
             # SaleFromLocation Logic here for edit
             for roo in obj.rows.all():
                 for sale_frm_loc in roo.from_locations.all():
@@ -690,7 +694,7 @@ def save_sale(request):
                 if not created:
                     submodel = save_model(submodel, values)
                 # else:
-                if request.company.settings.sale_enable_locations:
+                if request.company.settings.show_locations:
                     # Sale from Location logic here of save
                     item_from_locations = row.get('sale_row_locations')
 
@@ -707,8 +711,8 @@ def save_sale(request):
                         else:
                             location_contain_obj.qty -= sale_from_location.qty
                             location_contain_obj.save()
-                            # End Deduct item qty from that locatio or delete
-                            # End Sale from Location logic here of save
+                        # End Deduct item qty from that locatio or delete
+                    # End Sale from Location logic here of save
 
                 grand_total += submodel.get_total()
                 dct['rows'][ind] = submodel.id
