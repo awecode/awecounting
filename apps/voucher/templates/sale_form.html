@@ -20,6 +20,7 @@
         });
     </script>
     <script>
+        {#    TODO @roshan see #187 https://github.com/awecode/awecounting/issues/187 #}
         {% if not request.company.settings.invoice_default_tax_scheme and request.company.settings.discount_on_each_invoice_particular or request.company.settings.invoice_default_tax_scheme and request.company.settings.discount_on_each_invoice_particular %}
             colspan = 6;
         {% else %}
@@ -103,29 +104,30 @@
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    {% if request.company.settings.sale_voucher_sn %}
-                        <th>{% trans "S.N." %}</th>
+                    {% if request.company.settings.show_sale_voucher_sn %}
+                        <th class="{% print_view 'show_sale_voucher_sn' %}">{% trans "S.N." %}</th>
                     {% endif %}
                     <th>{% trans "Item" %}</th>
-                    {% if request.company.settings.sale_voucher_code %}
-                        <th>{% trans "Code" %}</th>
+                    {% if request.company.settings.show_sale_voucher_code %}
+                        <th class="{% print_view 'show_sale_print_code' %}">{% trans "Code" %}</th>
                     {% endif %}
-                    {% if request.company.settings.sale_voucher_oem_number %}
-                        <th>{% trans "OEM Number" %}</th>
+                    {% if request.company.settings.show_sale_voucher_oem_number %}
+                        <th class="{% print_view 'show_sale_print_oem_number' %}">{% trans "OEM Number" %}</th>
                     {% endif %}
                     <th>{% trans "Quantity" %}</th>
                     <th>{% trans "Rate" %}</th>
                     <th>{% trans "Unit" %}</th>
-                    {% if request.company.settings.sale_voucher_discount %}
-                        <th>{% trans 'Discount' %}</th>
+                    {% if request.company.settings.show_sale_voucher_discount %}
+                        <th class="{% print_view 'show_sale_print_discount' %}">{% trans 'Discount' %}</th>
                     {% endif %}
 
-                    {% if request.company.settings.sale_voucher_tax_scheme %}
-                        <th data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">{% trans "Tax Scheme" %}</th>
+                    {% if request.company.settings.show_sale_voucher_tax_scheme %}
+                        <th class="{% print_view 'show_sale_print_tax_scheme' %}" data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">{% trans "Tax Scheme" %}</th>
                     {% endif %}
 
-                    <th>{% trans 'From Location' %}</th>
-
+                    {% if request.company.settings.show_sale_voucher_location %}
+                    <th class="{% print_view 'show_sale_print_location' %}">{% trans 'Location' %}</th>
+                    {% endif %}
                     <th>{% trans 'Total' %}</th>
                     <th></th>
                 </tr>
@@ -134,22 +136,22 @@
                 <tbody>
                 <!-- ko foreach: rows -->
                 <tr>
-                    {% if request.company.settings.sale_voucher_sn %}
-                        <td>
-                            <span data-bind="text:  $index()+1, localize: 1"> </span>
-                        </td>
+                    {% if request.company.settings.show_sale_voucher_sn %}
+                    <td class="{% print_view 'show_sale_voucher_sn' %}">
+                        <span data-bind="text:  $index()+1, localize: 1"> </span>
+                    </td>
                     {% endif %}
                     <td>
                         <select data-url="{% url 'item_add' %}?source=sale" data-script="/static/inventory/js/item.js"
                                 data-bind="selectize: $root.items, value: item_id, object: item, selectize_options:{render: {'option': render_option, 'item':render_option}}">
                         </select>
                     </td>
-                    {% if request.company.settings.sale_voucher_code %}
-                        <td data-bind="text: code"></td>
+                    {% if request.company.settings.show_sale_voucher_code %}
+                        <td class="{% print_view 'show_sale_print_code' %}" data-bind="text: code"></td>
                     {% endif %}
 
-                    {% if request.company.settings.sale_voucher_oem_number %}
-                        <td data-bind="text: oem_number"></td>
+                    {% if request.company.settings.show_sale_voucher_oem_number %}
+                        <td class="{% print_view 'show_sale_print_oem_number' %}" data-bind="text: oem_number"></td>
                     {% endif %}
                     <td data-bind="editableText: quantity, numeric: true"></td>
                     <td data-bind="editableText: rate, numeric: true"></td>
@@ -157,18 +159,18 @@
                         <select data-bind="selectize: $root.units, value: unit_id, object:unit, selectize_options:{render: {'option': render_unit_options}}"
                                 data-url="{% url 'unit_add' %}"></select>
                     </td>
-                    {% if request.company.settings.sale_voucher_discount %}
-                        <td data-bind="editableText: discount, percentage_numeric: true"></td>
+                    {% if request.company.settings.show_sale_voucher_discount %}
+                        <td class="{% print_view 'show_sale_print_discount' %}" data-bind="editableText: discount, percentage_numeric: true"></td>
                     {% endif %}
-                    {% if request.company.settings.sale_voucher_tax_scheme %}
-                        <td data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">
-                            <select id="tax_scheme"
-                                    data-bind="selectize: $root.tax_schemes, value: tax_scheme_id, object: tax_scheme"
-                                    data-url="{% url 'tax_scheme_add' %}"></select>
-                        </td>
+                    {% if request.company.settings.show_sale_voucher_tax_scheme %}
+                    <td class="{% print_view 'show_sale_print_tax_scheme' %}" data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">
+                        <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme_id, object: tax_scheme"
+                                data-url="{% url 'tax_scheme_add' %}"></select>
+                    </td>
                     {% endif %}
 
-                    <td data-bind="css: { 'danger': sale_row_location_error()}">
+                    {% if request.company.settings.show_sale_voucher_location %}
+                    <td class="{% print_view 'show_sale_print_location' %}" data-bind="css: { 'danger': sale_row_location_error()}">
                         <div class="dropdown">
                             <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"
                                     aria-haspopup="true" aria-expanded="true"
@@ -199,6 +201,7 @@
                             </div>
                         </div>
                     </td>
+                    {% endif %}
 
                     <td data-bind="text: total"></td>
                     <td class="hide-on-print text-center">

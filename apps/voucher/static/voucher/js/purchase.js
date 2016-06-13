@@ -375,10 +375,16 @@ function PurchaseRow(row, purchase_vm) {
         self[k] = ko.observable(row[k]);
 
     self.item.subscribe(function (item) {
-        // TODO
-        var unit = get_by_id(purchase_vm.units(), item.unit.id);
         self.code(item.code);
         self.oem_number(item.oem_no);
+        // TODO
+        var unit = get_by_id(purchase_vm.units(), item.unit.id);
+        if (!unit) {
+            //    if unit not found, the unit is newly added from item form, add
+            purchase_vm.units.push(item.unit);
+            unit = item.unit;
+            self.unit_id(unit.id);
+        }
         if (unit && !self.unit_id())
             self.unit_id(unit.id);
         if (item.last_purchase_price && !self.rate()) {
@@ -470,7 +476,6 @@ function PurchaseRow(row, purchase_vm) {
 
 
     self.render_option = function (data) {
-        purchase_vm
         var obj = get_by_id(purchase_vm.items(), data.id);
         return '<div>' + obj.full_name + '</div>';
     }

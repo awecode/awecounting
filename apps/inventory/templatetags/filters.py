@@ -102,8 +102,10 @@ def jsonify(obj):
     if isinstance(obj, QuerySet):
         return serializers.serialize('json', obj)
     if isinstance(obj, Model):
-        model_dict = obj.__dict__
-        del model_dict['_state']
+        model_dict = model_to_dict(obj)
+        if hasattr(obj, 'extra_data'):
+            for key in obj.extra_data:
+                model_dict[key] = getattr(obj, key)
         return mark_safe(json.dumps(model_dict, default=handler))
     return mark_safe(json.dumps(obj, default=handler))
 

@@ -1,3 +1,166 @@
+/*@import "bootstrap.print.css";*/
+
+/*App Template*/
+
+.header, footer, .left-sidebar, .breadcrumbs, .breadcrumb, a.button, input[type="submit"], #alert_placeholder, a.red.fa.fa-trash-o.fa-2x {
+    display: none !important;
+}
+
+.main-content {
+    border: none;
+}
+
+.inline-fields div {
+    padding: 0 !important;
+}
+
+* {
+    line-height: 1.5 !important;
+}
+
+/*Generic*/
+
 a[href]:after {
     content: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+button {
+    display: none !important;
+}
+
+input, textarea, select {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    -webkit-appearance: none;
+    background: none;
+}
+
+/*Bootstrap*/
+
+a.btn {
+    display: none;
+}
+
+.form-control {
+    transition: none !important;
+    height: auto;
+    padding: 0;
+}
+
+/*Browser specific*/
+
+input[type='number'] {
+    -moz-appearance: textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+/*Tables*/
+
+table {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+table.table-bordered {
+    border-color: #000000;
+}
+
+.table-bordered th, .table-bordered td {
+    border-color: #000000;
+}
+
+th.only-on-print, td.only-on-print {
+    display: table-cell !important;
+}
+
+td, tr, th {
+    vertical-align: middle !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: auto !important;
+}
+
+
+
+/*Selectize*/
+
+.selectize-input {
+    border: none;
+    display: none;
+    padding: 0;
+    min-height: 0;
+}
+
+.selectize-input.has-items {
+    display: inline-block;
+}
+
+.selectize-input input {
+    display: none !important;
+}
+
+.selectize-control.single .selectize-input:after {
+    border: none !important;
+}
+
+.selectize-inline .selectize-input{
+    display: inline !important;
+}
+
+@media print {
+    .inline {
+        display: inline !important;
+    }
+
+    .form-group {
+        display: inline;
+    }
+
+    .form-group input {
+        margin-top: -9px;
+    }
+
+    .form-group input.form-inline {
+        display: inline;
+    }
+
+    .container-fluid .well {
+        padding: 0px !important;
+        margin-bottom: 0px !important;
+    }
+
+    h6 {
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }
+
+    table {
+        border: 1px solid #DDDDDD;
+    }
+
+    table>thead>tr>th {
+        border: 1px solid #DDDDDD;
+    }
+ 
+    table>tbody>tr>td {
+        border: 1px solid #DDDDDD;
+    }
+
+    .onlyprintbutton {
+    display: block !important;
+    border: none;
+    }
+
+    th.tableprintview, td.tableprintview {
+    display: table-cell !important;
+    }
 }

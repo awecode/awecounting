@@ -55,6 +55,7 @@ function SaleRowLocation(data){
 
 
 function SaleViewModel(data, settings) {
+    console.log(settings);
     var self = this;
 
     self.tax_types = [
@@ -323,10 +324,16 @@ function SaleRow(row, sale_vm) {
         self[k] = ko.observable(row[k]);
 
     self.item.subscribe(function (item) {
-        // TODO
-        var unit = get_by_id(sale_vm.units(), item.unit.id);
         self.code(item.code);
         self.oem_number(item.oem_no);
+        // TODO
+        var unit = get_by_id(sale_vm.units(), item.unit.id);
+        if (!unit) {
+            //    if unit not found, the unit is newly added from item form, add
+            sale_vm.units.push(item.unit);
+            unit = item.unit;
+            self.unit_id(unit.id);
+        }
         if (unit && !self.unit_id())
             self.unit_id(unit.id);
         if (item.last_sale_price && !self.rate()) {
