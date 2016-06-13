@@ -48,11 +48,11 @@
                 <table class="table table-striped">
                     <tr>
                         <th>{% trans 'Dr Amount' %}</th>
-                        <td>{{ account.current_dr }}</td>
+                        <td>{{ account.current_dr|default:'-' }}</td>
                     </tr>
                     <tr>
                         <th>{% trans 'Cr Amount' %}</th>
-                        <td>{{ account.current_cr }}</td>
+                        <td>{{ account.current_cr|default:'-' }}</td>
                     </tr>
                     <tr>
                         <th>{% trans 'Closing Balance ' %}</th>
