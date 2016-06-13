@@ -55,7 +55,6 @@ function SaleRowLocation(data){
 
 
 function SaleViewModel(data, settings) {
-    console.log(settings);
     var self = this;
 
     self.tax_types = [
@@ -228,7 +227,7 @@ function SaleViewModel(data, settings) {
             bsalert.error('Party is required!');
             return false;
         }
-        if(settings.sale_voucher_location){
+        if(settings.show_locations){
 
             for(var row of vm.table_view.rows()){
                 if(row.sale_row_location_error()){
