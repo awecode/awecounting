@@ -116,6 +116,9 @@ class Company(models.Model):
     def can_manage_locations(self):
         return self.subscription.enable_locations
 
+    def can_manage_lot(self):
+        return self.subscription.enable_lot
+
     @property
     def fy(self):
         return self.get_fy()

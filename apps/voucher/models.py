@@ -563,11 +563,11 @@ class VoucherSetting(models.Model):
     show_sale_voucher_tax_scheme = models.BooleanField(default=True)
     show_sale_print_tax_scheme = models.BooleanField(default=True)
 
-    show_sale_voucher_lot = models.BooleanField(default=True)
-    show_sale_print_lot = models.BooleanField(default=True)
-
-    show_sale_voucher_location = models.BooleanField(default=True)
-    show_sale_print_location = models.BooleanField(default=True)
+    # show_sale_voucher_lot = models.BooleanField(default=True)
+    # show_sale_print_lot = models.BooleanField(default=True)
+    #
+    # show_sale_voucher_location = models.BooleanField(default=True)
+    # show_sale_print_location = models.BooleanField(default=True)
 
     # Purchase voucher settings
     single_discount_on_whole_purchase = models.BooleanField(default=True)
@@ -593,23 +593,23 @@ class VoucherSetting(models.Model):
     show_purchase_voucher_tax_scheme = models.BooleanField(default=True)
     show_purchase_print_tax_scheme = models.BooleanField(default=True)
 
-    show_purchase_voucher_lot = models.BooleanField(default=True)
-    show_purchase_print_lot = models.BooleanField(default=True)
-
-    show_purchase_voucher_location = models.BooleanField(default=True)
-    show_purchase_print_location = models.BooleanField(default=True)
+    # show_purchase_voucher_lot = models.BooleanField(default=True)
+    # show_purchase_print_lot = models.BooleanField(default=True)
+    #
+    # show_purchase_voucher_location = models.BooleanField(default=True)
+    # show_purchase_print_location = models.BooleanField(default=True)
 
     enable_expense_in_purchase = models.BooleanField(default=True, verbose_name='Enable Expense')
     add_expense_cost_to_purchase = models.BooleanField(default=True, verbose_name='Add expense cost')
     # discount_on_each_purchase_particular = models.BooleanField(default=False)
 
-    @property
-    def purchase_enable_locations(self):
-        return self.company.subscription.enable_locations and self.show_purchase_voucher_location
-
-    @property
-    def sale_enable_locations(self):
-        return self.company.subscription.enable_locations and self.show_sale_voucher_location
+    # @property
+    # def purchase_enable_locations(self):
+    #     return self.company.subscription.enable_locations and self.show_purchase_voucher_location
+    #
+    # @property
+    # def sale_enable_locations(self):
+    #     return self.company.subscription.enable_locations and self.show_sale_voucher_location
 
     def add_expense_to_purchase(self):
         return self.enable_expense_in_purchase and self.add_expense_cost_to_purchase
