@@ -125,8 +125,9 @@
                         <th class="{% print_view 'sale_print_tax_scheme' %}" data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">{% trans "Tax Scheme" %}</th>
                     {% endif %}
 
-                    <th>{% trans 'Location' %}</th>
-
+                    {% if request.company.settings.sale_voucher_location %}
+                    <th class="{% print_view 'sale_print_location' %}">{% trans 'Location' %}</th>
+                    {% endif %}
                     <th>{% trans 'Total' %}</th>
                     <th></th>
                 </tr>
@@ -168,7 +169,8 @@
                     </td>
                     {% endif %}
 
-                    <td data-bind="css: { 'danger': sale_row_location_error()}">
+                    {% if request.company.settings.sale_voucher_location %}
+                    <td class="{% print_view 'sale_print_location' %}" data-bind="css: { 'danger': sale_row_location_error()}">
                         <div class="dropdown">
                             <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"
                                     aria-haspopup="true" aria-expanded="true"
@@ -199,6 +201,7 @@
                             </div>
                         </div>
                     </td>
+                    {% endif %}
 
                     <td data-bind="text: total"></td>
                     <td class="hide-on-print text-center">
