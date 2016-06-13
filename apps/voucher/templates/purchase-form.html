@@ -126,7 +126,7 @@
                         <th class="{% print_view 'show_purchase_print_lot' %}">{% trans 'Lot#' %}</th>
                     {% endif %}
 
-                    {% if request.company.settings.show_purchase_voucher_location %}
+                    {% if request.company.settings.purchase_enable_locations %}
                         <th class="{% print_view 'show_purchase_print_location' %}">{% trans 'Location' %}</th>
                     {% endif %}
 
@@ -175,7 +175,7 @@
                     <td class="lot-cell {% print_view 'show_purchase_print_lot' %}" data-bind="editableText: lot_number"></td>
                     {% endif %}
 
-                    {% if request.company.settings.show_purchase_voucher_location %}
+                    {% if request.company.settings.purchase_enable_locations %}
                     <td class="location-cell {% print_view 'show_purchase_print_location' %}">
                         <select data-bind="selectize: $root.enabled_locations, value: location"
                                 data-url="{% url 'location_add' %}"></select>
