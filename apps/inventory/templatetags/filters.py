@@ -29,29 +29,29 @@ USURPERS = {
 }
 
 
-@register.simple_tag(takes_context=True)
-def colspan(context):
-    obj = context['object']
-    request = context['request']
-    column = 0
-    tax_scheme = True
-    if obj.tax == 'no':
-        tax_scheme = False
-    # if obj.tax != 'no' and tax_scheme == False:
-    #     tax_scheme = True
-    _bool = False
-    if not obj.tax_scheme:
-        _bool = True
-
-    if not obj.tax_scheme and request.company.settings.discount_on_each_purchase_particular:
-        column = 6
-    elif obj.tax_scheme and request.company.settings.discount_on_each_purchase_particular:
-        column = 6
-    else:
-        column = 5
-    if tax_scheme and _bool:
-        column = column + 1
-    return column
+# @register.simple_tag(takes_context=True)
+# def colspan(context):
+#     obj = context['object']
+#     request = context['request']
+#     column = 0
+#     tax_scheme = True
+#     if obj.tax == 'no':
+#         tax_scheme = False
+#     # if obj.tax != 'no' and tax_scheme == False:
+#     #     tax_scheme = True
+#     _bool = False
+#     if not obj.tax_scheme:
+#         _bool = True
+#
+#     if not obj.tax_scheme and request.company.settings.discount_on_each_purchase_particular:
+#         column = 6
+#     elif obj.tax_scheme and request.company.settings.discount_on_each_purchase_particular:
+#         column = 6
+#     else:
+#         column = 5
+#     if tax_scheme and _bool:
+#         column = column + 1
+#     return column
 
 
 @register.tag

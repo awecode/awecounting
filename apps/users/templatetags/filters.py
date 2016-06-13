@@ -1,11 +1,8 @@
 from django import template
-from django.template.base import FilterExpression
-from django.template.loader import get_template
 
 register = template.Library()
 
 from apps.inventory.templatetags.filters import *
-
 
 
 def _setup_macros_dict(parser):
@@ -36,6 +33,7 @@ class DefineMacroNode(template.Node):
     def render(self, context):
         ## empty string - {% macro %} tag does no output
         return ''
+
 
 # @register.simple_tag(takes_context=True)
 # def get_related_party(context, accessible_company):
@@ -148,14 +146,17 @@ def do_usemacro(parser, token):
     macro.parser = parser
     return UseMacroNode(macro, fe_args, fe_kwargs)
 
+
 @register.filter
 def format_search_string(string):
     string = string.replace('/', '')
     return string.strip()
 
+
 @register.filter
 def fy(year):
-    return str(year)+'-'+str(year+1)[-2:]
+    return str(year) + '-' + str(year + 1)[-2:]
+
 
 @register.simple_tag(takes_context=True)
 def print_view(context, string):
@@ -163,3 +164,29 @@ def print_view(context, string):
     if not getattr(request.company.settings, string):
         return 'hidden-print'
     return ''
+
+
+@register.simple_tag(takes_context=True)
+def colspan(context):
+    request = context['request']
+    if context['obj'].__class__.__name__ == 'PurchaseVoucher':
+        colspan = 4
+        attr_list = ['show_purchase_voucher_sn', 'show_purchase_voucher_code', 'show_purchase_voucher_oem_number',
+                 'show_purchase_voucher_discount', 'show_purchase_voucher_tax_scheme']
+        if request.company.settings.show_lot:
+            colspan += 1
+
+    if context['obj'].__class__.__name__ == 'Sale':
+        colspan = 4
+        attr_list = ['show_sale_voucher_sn', 'show_sale_voucher_code', 'show_sale_voucher_oem_number',
+                 'show_sale_voucher_discount', 'show_sale_voucher_tax_scheme']
+
+    if request.company.settings.show_locations:
+        colspan += 1
+
+    for field in request.company.settings._meta.get_fields():
+        if field.name in attr_list:
+            if getattr(request.company.settings, field.name):
+                colspan = colspan + 1
+
+    return colspan
