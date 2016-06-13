@@ -79,10 +79,10 @@
                 <th>{% trans "Unit" %}</th>
                 <th>{% trans 'Discount' %}</th>
                 <th>{% trans "Tax Scheme" %}</th>
-                <th>{% trans 'Lot#' %}</th>
-                {% if request.company.subscription.enable_locations %}
-                    <th>{% trans 'Location' %}</th>
-                {% endif %}
+{#                <th>{% trans 'Lot#' %}</th>#}
+{#                {% if request.company.subscription.enable_locations %}#}
+{#                    <th>{% trans 'Location' %}</th>#}
+{#                {% endif %}#}
             </tr>
             </thead>
             <tbody>
@@ -132,24 +132,24 @@
                     </div>
                     {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
                 </td>
-                <td>
-                    <div class="checkbox">
-                        <label>
-                            {{ form.show_sale_voucher_lot }}
-                        </label>
-                    </div>
+{#                <td>#}
+{#                    <div class="checkbox">#}
+{#                        <label>#}
+{#                            {{ form.show_sale_voucher_lot }}#}
+{#                        </label>#}
+{#                    </div>#}
                     {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-                </td>
-                {% if request.company.subscription.enable_locations %}
-                <td>
-                    <div class="checkbox">
-                        <label>
-                            {{ form.show_sale_voucher_location }}
-                        </label>
-                    </div>
+{#                </td>#}
+{#                {% if request.company.subscription.enable_locations %}#}
+{#                <td>#}
+{#                    <div class="checkbox">#}
+{#                        <label>#}
+{#                            {{ form.show_sale_voucher_location }}#}
+{#                        </label>#}
+{#                    </div>#}
                     {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-                </td>
-                {% endif %}
+{#                </td>#}
+{#                {% endif %}#}
             </tr>
             <tr>
                 <td>{% trans "Print" %}</td>
@@ -197,24 +197,24 @@
                     </div>
                     {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
                 </td>
-                <td>
-                    <div class="checkbox">
-                        <label>
-                            {{ form.show_sale_print_lot }}
-                        </label>
-                    </div>
+{#                <td>#}
+{#                    <div class="checkbox">#}
+{#                        <label>#}
+{#                            {{ form.show_sale_print_lot }}#}
+{#                        </label>#}
+{#                    </div>#}
                     {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-                </td>
-                {% if request.company.subscription.enable_locations %}
-                <td>
-                    <div class="checkbox">
-                        <label>
-                            {{ form.show_sale_print_location }}
-                        </label>
-                    </div>
+{#                </td>#}
+{#                {% if request.company.subscription.enable_locations %}#}
+{#                <td>#}
+{#                    <div class="checkbox">#}
+{#                        <label>#}
+{#                            {{ form.show_sale_print_location }}#}
+{#                        </label>#}
+{#                    </div>#}
                     {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-                </td>
-                {% endif %}
+{#                </td>#}
+{#                {% endif %}#}
             </tr>
             </tbody>
         </table>
@@ -294,10 +294,10 @@
                 <th>{% trans "Unit" %}</th>
                 <th>{% trans 'Discount' %}</th>
                 <th>{% trans "Tax Scheme" %}</th>
-                <th>{% trans 'Lot#' %}
-                {% if request.company.subscription.enable_locations %}
-                <th>{% trans 'Location' %}</th>
-                {% endif %}
+{#                <th>{% trans 'Lot#' %}#}
+{#                {% if request.company.subscription.enable_locations %}#}
+{#                <th>{% trans 'Location' %}</th>#}
+{#                {% endif %}#}
             </tr>
             </thead>
             <tbody>
@@ -347,24 +347,24 @@
                     </div>
                     {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
                 </td>
-                <td>
-                    <div class="checkbox">
-                        <label>
-                            {{ form.show_purchase_voucher_lot }}
-                        </label>
-                    </div>
-                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-                </td>
-                {% if request.company.subscription.enable_locations %}
-                <td>
-                    <div class="checkbox">
-                        <label>
-                            {{ form.show_purchase_voucher_location }}
-                        </label>
-                    </div>
-                    {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-                </td>
-                {% endif %}
+{#                <td>#}
+{#                    <div class="checkbox">#}
+{#                        <label>#}
+{#                            {{ form.show_purchase_voucher_lot }}#}
+{#                        </label>#}
+{#                    </div>#}
+{#                     <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+{#                </td>#}
+{#                {% if request.company.subscription.enable_locations %}#}
+{#                <td>#}
+{#                    <div class="checkbox">#}
+{#                        <label>#}
+{#                            {{ form.show_purchase_voucher_location }}#}
+{#                        </label>#}
+{#                    </div>#}
+{#                     <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+{#                </td>#}
+{#                {% endif %}#}
             </tr>
             <tr>
                 <td>{% trans "Print" %}</td>
@@ -412,24 +412,24 @@
                     </div>
                     {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
                 </td>
-                <td>
-                    <div class="checkbox">
-                        <label>
-                            {{ form.show_purchase_print_lot }}
-                        </label>
-                    </div>
+{#                <td>#}
+{#                    <div class="checkbox">#}
+{#                        <label>#}
+{#                            {{ form.show_purchase_print_lot }}#}
+{#                        </label>#}
+{#                    </div>#}
                     {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-                </td>
-                {% if request.company.subscription.enable_locations %}
-                <td>
-                    <div class="checkbox">
-                        <label>
-                            {{ form.show_purchase_print_location }}
-                        </label>
-                    </div>
+{#                </td>#}
+{#                {% if request.company.subscription.enable_locations %}#}
+{#                <td>#}
+{#                    <div class="checkbox">#}
+{#                        <label>#}
+{#                            {{ form.show_purchase_print_location }}#}
+{#                        </label>#}
+{#                    </div>#}
                     {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
-                </td>
-                {% endif %}
+{#                </td>#}
+{#                {% endif %}#}
             </tr>
             </tbody>
         </table>

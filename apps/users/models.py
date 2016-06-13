@@ -116,6 +116,9 @@ class Company(models.Model):
     def can_manage_locations(self):
         return self.subscription.enable_locations
 
+    def can_manage_lot(self):
+        return self.subscription.enable_lot
+
     @property
     def fy(self):
         return self.get_fy()
@@ -216,6 +219,7 @@ class Subscription(models.Model):
     enable_reports = models.BooleanField(default=True)
     enable_branches = models.BooleanField(default=False)
     enable_locations = models.BooleanField(default=False)
+    enable_lot = models.BooleanField(default=False)
     combine_reports = models.BooleanField(default=False, verbose_name='Show combined reports of branches')
     disable_head_office_vouchers = models.BooleanField(default=False)
     interconnection_among_branches = models.BooleanField(default=True)
