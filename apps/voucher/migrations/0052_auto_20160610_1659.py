@@ -15,12 +15,13 @@ import django.db.models.deletion
 #             l_d.save()
 
 def empty_lotitemdetails(apps, schema_editor):
-    from apps.voucher.models import LotItemDetail
+    from apps.voucher.models import LotItemDetail, Lot
+
+    Lot.objects.all().delete()
     LotItemDetail.objects.all().delete()
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('voucher', '0051_auto_20160610_1639'),
     ]
@@ -34,7 +35,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='lotitemdetail',
             name='lot',
-            field=models.ForeignKey(default=4, on_delete=django.db.models.deletion.CASCADE, related_name='lot_item_details', to='voucher.Lot'),
+            field=models.ForeignKey(default=4, on_delete=django.db.models.deletion.CASCADE, related_name='lot_item_details',
+                                    to='voucher.Lot'),
             preserve_default=False,
         ),
         # migrations.RunPython(add_lot),
