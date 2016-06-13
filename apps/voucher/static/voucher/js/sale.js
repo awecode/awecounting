@@ -228,11 +228,14 @@ function SaleViewModel(data, settings) {
             bsalert.error('Party is required!');
             return false;
         }
-        for(var row of vm.table_view.rows()){
-          if(row.sale_row_location_error()){
-              bsalert.error('Error in location Selection');
-              return false;
-          };
+        if(settings.sale_voucher_location){
+
+            for(var row of vm.table_view.rows()){
+                if(row.sale_row_location_error()){
+                    bsalert.error(row.item().full_name + '-' + row.sale_row_location_error());
+                    return false;
+                };
+            };
         };
 
         var check_discount;
@@ -454,18 +457,6 @@ function SaleRow(row, sale_vm) {
                     dataType: 'json',
                     async: false,
                     success: function (res) {
-                        // var remain_qty = self.quantity();
-                        // self.sale_row_locations([]);
-                        //
-                        // for(var obj of res.data){
-                        //     if(remain_qty-obj.qty > 0){
-                        //         obj.selected_qty = obj.qty;
-                        //         remain_qty -= obj.selected_qty;
-                        //     }else{
-                        //         obj.selected_qty = remain_qty;
-                        //         remain_qty -= obj.selected_qty;
-                        //     };
-                        // };
                         self.sale_row_locations(ko.utils.arrayMap(res.data, function(obj) {
                             return new SaleRowLocation(obj)
                         }));
@@ -501,7 +492,7 @@ function SaleRow(row, sale_vm) {
             // self.sale_row_locations([]);
             //
             for(var obj of self.sale_row_locations()){
-                if(remain_qty-obj.qty > 0){
+                if(remain_qty-obj.qty() > 0){
                     obj.selected_qty(obj.qty());
                     remain_qty -= obj.qty();
                 }else{

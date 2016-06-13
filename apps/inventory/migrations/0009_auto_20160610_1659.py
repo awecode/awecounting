@@ -5,6 +5,14 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 import django.db.models.deletion
 
+def add_location(apps, schema_editor):
+    from apps.inventory.models import Location, LocationContain
+    locations = Location.objects.all()
+    if locations:
+        loc = locations[0]
+        for l_c in LocationContain.objects.all():
+            l_c.location = loc
+            l_c.save()
 
 class Migration(migrations.Migration):
 
@@ -20,7 +28,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='locationcontain',
             name='location',
-            field=models.ForeignKey(default=2, on_delete=django.db.models.deletion.CASCADE, related_name='contains', to='inventory.Location'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='contains', to='inventory.Location'),
             preserve_default=False,
+        ),
+
+        migrations.RunPython(add_location),
+
+        migrations.AlterField(
+            model_name='locationcontain',
+            name='location',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='contains',
+                                    to='inventory.Location'),
         ),
     ]
