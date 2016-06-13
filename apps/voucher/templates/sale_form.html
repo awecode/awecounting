@@ -100,23 +100,23 @@
                 <thead>
                 <tr>
                     {% if request.company.settings.sale_voucher_sn %}
-                        <th>{% trans "S.N." %}</th>
+                        <th class="{% print_view 'sale_print_sn' %}">{% trans "S.N." %}</th>
                     {% endif %}
                     <th>{% trans "Item" %}</th>
                     {% if request.company.settings.sale_voucher_code %}
-                        <th>{% trans "Code" %}</th>
+                        <th class="{% print_view 'sale_print_code' %}">{% trans "Code" %}</th>
                     {% endif %}
                     {% if request.company.settings.sale_voucher_oem_number %}
-                        <th>{% trans "OEM Number" %}</th>
+                        <th class="{% print_view 'sale_print_oem_number' %}">{% trans "OEM Number" %}</th>
                     {% endif %}
                     <th>{% trans "Quantity" %}</th>
                     <th>{% trans "Rate" %}</th>
                     <th>{% trans "Unit" %}</th>
                     {% if request.company.settings.sale_voucher_discount %}
-                        <th>{% trans 'Discount' %}</th>
+                        <th class="{% print_view 'sale_print_discount' %}">{% trans 'Discount' %}</th>
                     {% endif %}
                     {% if request.company.settings.sale_voucher_tax_scheme %}
-                        <th data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">{% trans "Tax Scheme" %}</th>
+                        <th class="{% print_view 'sale_print_tax_scheme' %}" data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">{% trans "Tax Scheme" %}</th>
                     {% endif %}
                     <th>{% trans 'Total' %}</th>
                     <th></th>
@@ -127,7 +127,7 @@
                 <!-- ko foreach: rows -->
                 <tr>
                     {% if request.company.settings.sale_voucher_sn %}
-                    <td>
+                    <td class="{% print_view 'sale_print_sn' %}">
                         <span data-bind="text:  $index()+1, localize: 1"> </span>
                     </td>
                     {% endif %}
@@ -137,11 +137,11 @@
                         </select>
                     </td>
                     {% if request.company.settings.sale_voucher_code %}
-                        <td data-bind="text: code"></td>
+                        <td class="{% print_view 'sale_print_code' %}" data-bind="text: code"></td>
                     {% endif %}
 
                     {% if request.company.settings.sale_voucher_oem_number %}
-                        <td data-bind="text: oem_number"></td>
+                        <td class="{% print_view 'sale_print_oem_number' %}" data-bind="text: oem_number"></td>
                     {% endif %}
                     <td data-bind="editableText: quantity, numeric: true"></td>
                     <td data-bind="editableText: rate, numeric: true"></td>
@@ -150,10 +150,10 @@
                                 data-url="{% url 'unit_add' %}"></select>
                     </td>
                     {% if request.company.settings.sale_voucher_discount %}
-                        <td data-bind="editableText: discount, percentage_numeric: true"></td>
+                        <td class="{% print_view 'sale_print_discount' %}" data-bind="editableText: discount, percentage_numeric: true"></td>
                     {% endif %}
                     {% if request.company.settings.sale_voucher_tax_scheme %}
-                    <td data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">
+                    <td class="{% print_view 'sale_print_tax_scheme' %}" data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">
                         <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme_id, object: tax_scheme"
                                 data-url="{% url 'tax_scheme_add' %}"></select>
                     </td>
