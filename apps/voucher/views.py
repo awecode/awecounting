@@ -421,7 +421,7 @@ def save_purchase(request):
                             item.save()
         # End For lot on edit
 
-        if request.company.subscription.location_enabled():
+        if request.company.settings.sale_enable_locations:
             # For Location on edit
             for row in obj.rows.all():
                 location = row.location
@@ -485,7 +485,7 @@ def save_purchase(request):
                     # po_receive_lot.lot_item_details.add(lot_item_detail)
                 # End Setting Lot Items
 
-                if request.company.subscription.location_enabled():
+                if request.company.settings.sale_enable_locations:
                     # Setting Location Items
                     item_in_location = False
                     location_id = row.get('location')
@@ -645,7 +645,7 @@ def save_sale(request):
     if params.get('id'):
         obj = Sale.objects.get(id=params.get('id'), company=request.company)
 
-        if request.company.subscription.location_enabled():
+        if request.company.settings.sale_enable_locations:
             # SaleFromLocation Logic here for edit
             for roo in obj.rows.all():
                 for sale_frm_loc in roo.from_locations.all():
@@ -690,7 +690,7 @@ def save_sale(request):
                 if not created:
                     submodel = save_model(submodel, values)
                 # else:
-                if request.company.subscription.location_enabled():
+                if request.company.settings.sale_enable_locations:
                     # Sale from Location logic here of save
                     item_from_locations = row.get('sale_row_locations')
 
