@@ -19,31 +19,8 @@
 </div>
 
 <script>
-    $(document).ready(function () {
-        if ($('.modal-lg #form').length == 2) {
-            $('.modal-lg #form').last().submit(function () {
-                $('.modal').last().modal('hide');
-            });
-        } else {
-            $('.modal-lg #form').submit(function () {
-                $('.modal').modal('hide');
-            });
 
-        }
-    });
-
-    if ($('.modal').length == 2) {
-        $('.modal').last().on('hidden.bs.modal', function () {
-            $('.modal').last().remove();
-        })
-    } else {
-        $('.modal').on('hidden.bs.modal', function () {
-            $('.modal').remove();
-        })
-    }
-
-
-    $('.modal-body .selectize').each(function (el) {
+    $('.modal-body select.selectize:not(.selectized)').each(function (el) {
         var $select = $(this).selectize();
         selectizeValidationFix($select);
         if (typeof init_selectize == 'function') {
