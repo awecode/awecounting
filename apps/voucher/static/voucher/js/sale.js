@@ -35,8 +35,27 @@ $(document).ready(function () {
 //        return self.tax_scheme_visibility() && bool;
 //    };
 //}
+function SaleRowLocation(data){
+    var self = this;
+    self.location_id = ko.observable(data.location_id);
+    self.location_name = ko.observable(data.location_name);
+    self.qty = ko.observable(data.qty);
+    if (data.selected_qty){
+        self.selected_qty = ko.observable(data.selected_qty);
+    }else{
+        self.selected_qty = ko.observable(0);
+    };
+    self.adjust_selected_qty = ko.computed(function(){
+        if (self.selected_qty() > self.qty()){
+            self.selected_qty(self.qty());
+        };
+    });
+
+};
+
 
 function SaleViewModel(data, settings) {
+    console.log(settings);
     var self = this;
 
     self.tax_types = [
@@ -68,6 +87,7 @@ function SaleViewModel(data, settings) {
     }
 
     self.status = ko.observable();
+
 
     $.ajax({
         url: '/tax/api/tax_schemes.json',
@@ -134,7 +154,6 @@ function SaleViewModel(data, settings) {
         }
         return '<div class="' + klass + '">' + obj.name + '</div>';
     }
-
     self.table_view = new TableViewModel({rows: data.rows, argument: self}, SaleRow);
 
     self.id.subscribe(function (id) {
@@ -209,6 +228,12 @@ function SaleViewModel(data, settings) {
             bsalert.error('Party is required!');
             return false;
         }
+        for(var row of vm.table_view.rows()){
+          if(row.sale_row_location_error()){
+              bsalert.error('Error in location Selection');
+              return false;
+          };
+        };
 
         var check_discount;
         self.table_view.rows().forEach(function (i) {
@@ -296,10 +321,16 @@ function SaleRow(row, sale_vm) {
         self[k] = ko.observable(row[k]);
 
     self.item.subscribe(function (item) {
-        // TODO
-        var unit = get_by_id(sale_vm.units(), item.unit.id);
         self.code(item.code);
         self.oem_number(item.oem_no);
+        // TODO
+        var unit = get_by_id(sale_vm.units(), item.unit.id);
+        if (!unit) {
+            //    if unit not found, the unit is newly added from item form, add
+            sale_vm.units.push(item.unit);
+            unit = item.unit;
+            self.unit_id(unit.id);
+        }
         if (unit && !self.unit_id())
             self.unit_id(unit.id);
         if (item.last_sale_price && !self.rate()) {
@@ -397,5 +428,89 @@ function SaleRow(row, sale_vm) {
         var obj = get_by_id(sale_vm.items(), data.id);
         return '<div>' + obj.full_name + '</div>';
     }
+
+    // Location Logic Start
+    self.sale_row_locations = ko.observableArray();
+    self.sale_row_location_error = ko.observable();
+    self.get_item_locations = ko.computed(function(){
+        // console.log(self.id());
+        // console.log('hey', self.item_id(), self.quantity());
+        if(self.item_id()){
+            if(typeof(self.id) != 'undefined'){
+                 $.ajax({
+                    url: '/voucher/sale_row_onedit_location_item_details/' + parseInt(self.id()) + '/' + parseInt(self.item_id()),
+                    dataType: 'json',
+                    async: false,
+                    success: function (res1) {
+                        self.sale_row_locations(ko.utils.arrayMap(res1.data, function(obj) {
+                            return new SaleRowLocation(obj)
+                        }));
+                    }
+                 });
+            }else{
+
+                $.ajax({
+                    url: '/voucher/get_item_locations/' + parseInt(self.item_id()),
+                    dataType: 'json',
+                    async: false,
+                    success: function (res) {
+                        // var remain_qty = self.quantity();
+                        // self.sale_row_locations([]);
+                        //
+                        // for(var obj of res.data){
+                        //     if(remain_qty-obj.qty > 0){
+                        //         obj.selected_qty = obj.qty;
+                        //         remain_qty -= obj.selected_qty;
+                        //     }else{
+                        //         obj.selected_qty = remain_qty;
+                        //         remain_qty -= obj.selected_qty;
+                        //     };
+                        // };
+                        self.sale_row_locations(ko.utils.arrayMap(res.data, function(obj) {
+                            return new SaleRowLocation(obj)
+                        }));
+                    }
+                });
+            };
+        };
+
+    });
+    self.total_out4mloc = ko.computed(function(){
+        var total = 0;
+        for(var object of self.sale_row_locations()){
+            if(object.selected_qty()){
+                total += parseInt(object.selected_qty());
+            };
+        };
+        if (self.quantity()){
+            if (total > parseInt(self.quantity())){
+                self.sale_row_location_error('Quantity in locations exceeds required quantity');
+                // console.log('set');
+            }else if (total < parseInt(self.quantity())){
+                self.sale_row_location_error('Quantity in locations is less than required quantity');
+                // console.log('unset', total, self.quantity());
+            }else{
+                self.sale_row_location_error(null);
+            };
+        };
+    });
+
+    self.suggest_qty_4m_location = ko.computed(function(){
+        if(self.quantity()){
+            var remain_qty = self.quantity();
+            // self.sale_row_locations([]);
+            //
+            for(var obj of self.sale_row_locations()){
+                if(remain_qty-obj.qty > 0){
+                    obj.selected_qty(obj.qty());
+                    remain_qty -= obj.qty();
+                }else{
+                    obj.selected_qty(remain_qty);
+                    remain_qty -= remain_qty;
+                };
+            };
+        };
+    });
+    // Location logic end
 
 }

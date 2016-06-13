@@ -14,13 +14,6 @@
     <script>
         item_data = {{ form.instance.other_properties| jsonify }};
     </script>
-    <script>
-        {% if base_template == "_modal.html" %}
-            $(function () {
-                $('.selectize').selectize(options);
-            });
-        {% endif %}
-    </script>
 {% endblock %}
 
 {% block content %}
@@ -57,14 +50,14 @@
 
                 <div class="col-lg-6 col-sm-12">
 
-                {% if request.GET.source == 'sale' and not request.company.sells_goods %}
+                    {% if request.GET.source == 'sale' and not request.company.sells_goods %}
                     {% else %}
-                    <div>
-                        {{ form.size.label_tag }}
-                        {{ form.size }}
-                        {{ form.size.errors }}
-                    </div>
-                {% endif %}
+                        <div>
+                            {{ form.size.label_tag }}
+                            {{ form.size }}
+                            {{ form.size.errors }}
+                        </div>
+                    {% endif %}
 
                     {% if request.GET.source == 'purchase' and not request.company.sells_goods %}
                     {% else %}
@@ -93,6 +86,7 @@
             </div>
 
             <div class="row">
+
                 <div class="col-lg-6 col-sm-12">
                     {{ form.unit.label_tag }}
                     {{ form.unit }}

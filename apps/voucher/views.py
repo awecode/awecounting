@@ -3,15 +3,15 @@ import json
 
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import JsonResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView
 
-from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, StaffMixin, \
-    group_required, TableObjectMixin, UpdateView, CompanyRequiredMixin, CreateView, TableObject, CashierMixin, \
+from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, group_required, TableObjectMixin, UpdateView, \
+    CompanyRequiredMixin, CreateView, TableObject, CashierMixin, \
     StockistMixin, AccountantMixin
-from ..inventory.models import set_transactions
+from ..inventory.models import set_transactions, Location, LocationContain, Item
 from ..ledger.models import set_transactions as set_ledger_transactions, get_account, Account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
 from .forms import JournalVoucherForm, VoucherSettingForm, CashPaymentForm, CashReceiptForm
@@ -21,7 +21,11 @@ from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, \
     JournalVoucherRow, \
     PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, \
-    VoucherSetting, Expense, ExpenseRow, TradeExpense, Lot, LotItemDetail
+    VoucherSetting, Expense, ExpenseRow, TradeExpense, Lot, LotItemDetail, SaleFromLocation
+
+
+
+# from awecounting.utils.mixins import AjaxableResponseMixin, CreateView
 
 
 class FixedAssetView(CompanyView):
@@ -403,16 +407,34 @@ def save_purchase(request):
 
     if params.get('id'):
         obj = PurchaseVoucher.objects.get(id=params.get('id'), company=request.company)
+        # For Lot on edit==> delete or subtract item
         for row in obj.rows.all():
             lot = row.lot
-            for item in lot.lot_item_details.all():
-                if item.item == row.item:
-                    if item.qty == row.quantity:
-                        lot.lot_item_details.remove(item)
-                        item.delete()
-                    else:
-                        item.qty -= row.quantity
-                        item.save()
+            if lot:
+                for item in lot.lot_item_details.all():
+                    if item.item == row.item:
+                        if item.qty == row.quantity:
+                            # lot.lot_item_details.remove(item)
+                            item.delete()
+                        else:
+                            item.qty -= row.quantity
+                            item.save()
+        # End For lot on edit
+
+        if request.company.subscription.location_enabled():
+            # For Location on edit
+            for row in obj.rows.all():
+                location = row.location
+                if location:
+                    for item in location.contains.all():
+                        if item.item == row.item:
+                            if item.qty == row.quantity:
+                                # location.contains.remove(item)
+                                item.delete()
+                            else:
+                                item.qty -= row.quantity
+                                item.save()
+                                # End For Location on edit
 
     else:
         obj = PurchaseVoucher(company=request.company)
@@ -439,6 +461,8 @@ def save_purchase(request):
                 #     discount = None
                 # else:
                 #     discount = row.get('discount')
+
+                # Setting lot items
                 item_id = row.get('item')['id']
                 lot_number = row.get('lot_number')
                 po_receive_lot, created = Lot.objects.get_or_create(
@@ -454,10 +478,33 @@ def save_purchase(request):
                         item.save()
                 if not item_exists:
                     lot_item_detail = LotItemDetail.objects.create(
+                        lot=po_receive_lot,
                         item_id=item_id,
                         qty=int(row.get('quantity'))
                     )
-                    po_receive_lot.lot_item_details.add(lot_item_detail)
+                    # po_receive_lot.lot_item_details.add(lot_item_detail)
+                # End Setting Lot Items
+
+                if request.company.subscription.location_enabled():
+                    # Setting Location Items
+                    item_in_location = False
+                    location_id = row.get('location')
+                    if location_id:
+                        location_obj = Location.objects.get(id=location_id)
+                        for item in location_obj.contains.all():
+                            if item.item_id == item_id:
+                                item_in_location = True
+                                item.qty += int(row.get('quantity'))
+                                item.save()
+                        if not item_in_location:
+                            loc_contain_obj = LocationContain.objects.create(
+                                location=location_obj,
+                                item_id=item_id,
+                                qty=int(row.get('quantity'))
+                            )
+                            # location_obj.contains.add(loc_contain_obj)
+
+                            # End Setting Location Items
 
                 values = {
                     'sn': ind + 1,
@@ -469,6 +516,7 @@ def save_purchase(request):
                     'tax_scheme_id': row_tax_scheme_id,
                     'purchase': obj,
                     'lot': po_receive_lot,
+                    'location_id': row.get('location')
                     # 'lot_item_detail': lot_item_detail
                 }
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
@@ -479,6 +527,8 @@ def save_purchase(request):
                 set_transactions(submodel, obj.date,
                                  ['dr', submodel.item.account, submodel.quantity],
                                  )
+
+        delete_rows(params.get('table_view').get('deleted_rows'), model)
 
         if obj.credit:
             cr_acc = obj.party.supplier_account
@@ -501,40 +551,41 @@ def save_purchase(request):
 
             tax_scheme = obj.tax_scheme or purchase_row.tax_scheme
 
-            pure_total = purchase_row.quantity * purchase_row.rate
-
+            rate = float(purchase_row.rate)
             row_discount = float(purchase_row.discount) or 0
-            divident_discount = 0
 
-            # Pure total shouldn't include tax, handle for tax-inclusive
             if obj.tax == 'inclusive' and tax_scheme:
-                pure_total = pure_total * 100 / (100 + tax_scheme.percent)
+                rate = rate * 100 / (100 + tax_scheme.percent)
+                row_discount = row_discount * 100 / (100 + tax_scheme.percent)
+
+            pure_total = purchase_row.quantity * rate
+
+            divident_discount = 0
 
             entries = [['dr', submodel.item.purchase_ledger, pure_total]]
 
             # If the voucher has discount, apply discount proportionally
             if discount_rate:
-                divident_discount = pure_total * discount_rate
-                pure_total -= divident_discount
+                if obj.tax == 'inclusive' and tax_scheme:
+                    discount_rate = discount_rate * 100 / (100 + tax_scheme.percent)
+                divident_discount = (pure_total - row_discount) * discount_rate
+
+            discount = row_discount + divident_discount
 
             if tax_scheme:
-                tax_amt = pure_total * tax_scheme.percent / 100
+                tax_amt = (pure_total - discount) * tax_scheme.percent / 100
                 entries.append(['dr', tax_scheme.receivable, tax_amt])
             else:
                 tax_amt = 0
 
-            discount = row_discount + divident_discount
-
             if discount and discount_income:
                 entries.append(['cr', discount_income, discount])
 
-            payable = pure_total - row_discount + tax_amt
+            payable = pure_total - discount + tax_amt
 
             entries.append(['cr', cr_acc, payable])
 
             set_ledger_transactions(purchase_row, obj.date, *entries)
-
-        delete_rows(params.get('table_view').get('deleted_rows'), model)
 
         obj.total_amount = grand_total
         if obj.credit:
@@ -564,8 +615,10 @@ class SaleCreate(SaleView, CashierMixin, TableObjectMixin):
             context['data'] = data
         return context
 
+
 class SaleDelete(SaleView, CashierMixin, DeleteView):
     pass
+
 
 # def sale(request, id=None):
 #     if id:
@@ -591,6 +644,26 @@ def save_sale(request):
 
     if params.get('id'):
         obj = Sale.objects.get(id=params.get('id'), company=request.company)
+
+        if request.company.subscription.location_enabled():
+            # SaleFromLocation Logic here for edit
+            for roo in obj.rows.all():
+                for sale_frm_loc in roo.from_locations.all():
+                    itm_in_loc = sale_frm_loc.location.contains.all().filter(item=roo.item)
+                    if itm_in_loc:
+                        itm_in_loc[0].qty += sale_frm_loc.qty
+                        itm_in_loc[0].save()
+                        sale_frm_loc.delete()
+                    else:
+                        LocationContain.objects.create(
+                            location=sale_frm_loc.location,
+                            item=roo.item,
+                            qty=sale_frm_loc.qty
+                        )
+                        sale_frm_loc.delete()
+
+                        # End SaleFromLocation Logic here for edit
+
     else:
         obj = Sale(company=request.company)
     try:
@@ -608,6 +681,7 @@ def save_sale(request):
                     row_tax_scheme_id = None
                 else:
                     row_tax_scheme_id = row.get('tax_scheme_id')
+
                 values = {'sn': ind + 1, 'item_id': row.get('item')['id'], 'quantity': row.get('quantity'),
                           'rate': row.get('rate'), 'unit_id': row.get('unit')['id'], 'discount': row.get('discount'),
                           'tax_scheme_id': row_tax_scheme_id,
@@ -615,6 +689,27 @@ def save_sale(request):
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
+                # else:
+                if request.company.subscription.location_enabled():
+                    # Sale from Location logic here of save
+                    item_from_locations = row.get('sale_row_locations')
+
+                    for item in item_from_locations:
+                        sale_from_location = SaleFromLocation.objects.create(
+                            sale_row=submodel,
+                            location_id=int(item.get('location_id')),
+                            qty=int(item.get('selected_qty'))
+                        )
+                        # Deduct item qty from that location or delete
+                        location_contain_obj = sale_from_location.location.contains.all().filter(item=submodel.item)[0]
+                        if location_contain_obj.qty == sale_from_location.qty:
+                            location_contain_obj.delete()
+                        else:
+                            location_contain_obj.qty -= sale_from_location.qty
+                            location_contain_obj.save()
+                            # End Deduct item qty from that locatio or delete
+                            # End Sale from Location logic here of save
+
                 grand_total += submodel.get_total()
                 dct['rows'][ind] = submodel.id
                 # TODO dr or cr in sale
@@ -994,3 +1089,60 @@ def save_expense(request):
     except Exception as e:
         dct = write_error(dct, e)
     return JsonResponse(dct)
+
+
+def get_item_locations(request, pk=None):
+    obj = get_object_or_404(Item, pk=pk)
+    data = [{'location_id': loc.location_id, 'location_name': loc.location.name, 'qty': loc.qty} for loc in
+            obj.location_contain.all()]
+    data = sorted(data, key=lambda dic: dic['location_id'])
+    return JsonResponse({'data': data})
+
+
+def sale_row_onedit_location_item_details(request, sale_row_id=None, item_id=None):
+    item = get_object_or_404(Item, pk=item_id)
+    sale_row = get_object_or_404(SaleRow, pk=sale_row_id)
+
+    item_present_locations = [{'location_id': loc.location_id, 'location_name': loc.location.name, 'qty': loc.qty} for loc in
+                              item.location_contain.all()]
+    sale_from_locations = [{'location_id': itm.location_id, 'location_name': itm.location.name, 'selected_qty': itm.qty} for itm
+                           in sale_row.from_locations.all()]
+
+    response_data = []
+    for dic0 in item_present_locations:
+        loc_exists = False
+        for dic1 in sale_from_locations:
+            if dic0['location_id'] == dic1['location_id']:
+                loc_exists = True
+                response_data.append(
+                    {
+                        'location_id': dic0['location_id'],
+                        'location_name': dic0['location_name'],
+                        'qty': dic0['qty'] + dic1['selected_qty'],
+                        'selected_qty': dic1['selected_qty']
+                    }
+                )
+        if not loc_exists:
+            response_data.append(
+                dic0.copy().update(
+                    {
+                        'selected_qty': 0
+                    }
+                )
+            )
+
+    for dic0 in sale_from_locations:
+        loc_exists = False
+        for dic1 in item_present_locations:
+            if dic0['location_id'] == dic1['location_id']:
+                loc_exists = True
+        if not loc_exists:
+            response_data.append(
+                dic0.copy().update(
+                    {
+                        'qty': dic0['selected_qty']
+                    }
+                )
+            )
+    response_data = sorted(response_data, key=lambda dic: dic['location_id'])
+    return JsonResponse({'data': response_data})

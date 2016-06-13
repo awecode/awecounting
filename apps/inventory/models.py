@@ -10,6 +10,7 @@ from ..ledger.models import Account, Category
 from ..users.models import Company
 from awecounting.utils.helpers import none_for_zero, zero_for_none
 from ..users.signals import company_creation
+from mptt.models import MPTTModel, TreeForeignKey
 
 
 class Unit(models.Model):
@@ -250,3 +251,29 @@ def set_transactions(model, date, *args):
         except TypeError:  # for Django <1.9
             journal_entry.transactions.add(transaction)
         alter(transaction.account, date, diff)
+
+
+class Location(MPTTModel):
+    code = models.CharField(max_length=100, null=True, blank=True)
+    name = models.CharField(max_length=150)
+    enabled = models.BooleanField(default=True)
+    # contains = models.ManyToManyField(LocationContain, blank=True)
+    parent = TreeForeignKey('self', blank=True, null=True, related_name='children')
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse_lazy('location_list')
+
+
+class LocationContain(models.Model):
+    location = models.ForeignKey(Location, related_name='contains')
+    item = models.ForeignKey(Item, related_name='location_contain')
+    qty = models.PositiveIntegerField()
+
+    def __str__(self):
+        return str(self.item) + str(self.qty)
+
+    class Meta:
+        unique_together = (('location', 'item'),)

@@ -28,12 +28,19 @@ web_urls = [
     url(r'^accounts/(?P<pk>[0-9]+)/$', views.InventoryAccountDetail.as_view(), name='view_inventory_account'),
     url(r'^accounts/(?P<pk>[0-9]+)/rate/$', views.InventoryAccountWithRate.as_view(),
         name='view_inventory_account_with_rate'),
+
+    url(r'^location/add/$', views.LocationCreate.as_view(), name='location_add'),
+    url(r'^location/list/$', views.LocationList.as_view(), name='location_list'),
+    url(r'^location/edit/(?P<pk>\d+)/$', views.LocationUpdate.as_view(), name='location_edit'),
+    url(r'^location/delete/(?P<pk>\d+)/$', views.LocationDelete.as_view(), name='location_delete'),
+    url(r'^location/items/(?P<loc_id>\d+)/$', views.get_items_in_location, name='location_detail')
 ]
 
 api_urls = [
     url(r'^api/(?P<voucher>[\w]*)/?items/$', api.ItemListAPI.as_view()),
     url(r'^api/items/(?P<pk>[0-9]+)/$', api.ItemListAPI.as_view()),
     url(r'^api/units/$', api.UnitListAPI.as_view()),
+    url(r'^api/locations/$', api.LocationListAPI.as_view()),
 ]
 
 api_urls = format_suffix_patterns(api_urls)

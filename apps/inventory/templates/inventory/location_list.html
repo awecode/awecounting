@@ -1,0 +1,54 @@
+{% extends "_base.html" %}
+{% load i18n staticfiles filters %}
+
+{% block page-title %}{% trans 'Location' %}{% endblock %}
+
+{% block header-buttons %}
+    <a class="btn btn-success btn-raised" href="{% url 'location_add' %}">{% trans 'New' %} {% trans 'Location' %}</a>
+{% endblock %}
+
+{% block content %}
+    <div class="well">
+
+        {% load pagination_tags %}
+        {% load sorting_tags %}
+        {% load filters %}
+
+        {% autosort object_list as sorted_objects %}
+        {% autopaginate sorted_objects 25 as paginated_objects %}
+
+        <table class="table table-striped">
+            <thead>
+            <th>{% anchor code _('Code') %}</th>
+            <th>{% anchor name _('Name') %}</th>
+            <th>{% anchor enabled _('Is Enabled') %}</th>
+            <th></th>
+
+            </thead>
+            <tbody>
+            {% for location in paginated_objects %}
+                <tr>
+                    <td>
+                        <a href="{% url 'location_detail' location.pk %}">{{ location.code}}</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'location_detail' location.pk %}">{{ location.name }}</a>
+                    </td>
+                    <td>
+                        {{ location.enabled}}
+                    </td>
+                    <td>
+                        <a href="{% url 'location_edit' location.pk %}">Edit</a>
+                    </td>
+
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% paginate %}
+
+    </div>
+
+{% endblock %}

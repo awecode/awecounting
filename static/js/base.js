@@ -88,43 +88,44 @@ appended_link_clicked = function (e) {
 
 handle_ajax_response = function (obj) {
 
-    var no_of_modals = $('.reveal-modal').length;
-    $('#reveal-modal' + $('.reveal-modal').length).find($('.close-reveal-modal')).click();
+    $('#reveal-modal' + $('.reveal-modal').length).find($('button.close')).click();
     $select = window.last_active_select.pop();
-
-    if ($select.$input.data('bind') && $select.$input.data('bind').indexOf('selectize') != -1) {
-        var matches = $select.$input.data('bind').match(/selectize: \$root\.([a-z_]+)/);
-        if ($select.$input.data('to')) {
-        }
-        else if (matches) {
-            var match = matches[1];
-            if (typeof(vm) == 'undefined') {
-                item[match].push(obj);
-            } else if (typeof(item) == 'undefined') {
-                vm[match].push(obj);
-            } else if (typeof vm[match] == 'function' && typeof item[match] == 'function') {
-                vm[match].push(obj);
-                item[match].push(obj);
-            } else {
-                vm[match].push(obj);
+    if ($select) {
+        if ($select.$input.data('bind') && $select.$input.data('bind').indexOf('selectize') != -1) {
+            var matches = $select.$input.data('bind').match(/selectize: \$root\.([a-z_]+)/);
+            if ($select.$input.data('to')) {
             }
-            $select.addItem(obj.id);
+            else if (matches) {
+                var match = matches[1];
+                if (typeof(vm) == 'undefined') {
+                    item[match].push(obj);
+                } else if (typeof(item) == 'undefined') {
+                    vm[match].push(obj);
+                } else if (typeof vm[match] == 'function' && typeof item[match] == 'function') {
+                    vm[match].push(obj);
+                    item[match].push(obj);
+                } else {
+                    vm[match].push(obj);
+                }
+                $select.addItem(obj.id);
+            }
         }
-    }
-    else {
-        $select.$input.append("<option value='" + obj.id + "'>" + obj.name + "</option>");
-        $select.addOption({
-            text: obj.name,
-            value: obj.id
-        });
-        $select.addItem(obj.id);
-        $select.refreshItems();
-    }
-    $select.$wrapper.find('> .appended-link').remove();
-    if ($select.$input.closest('.reveal-modal').length) {
-        $select.$input.closest('.reveal-modal').modal('hide');
-    } else {
-        $('.modal').modal('hide');
+        else {
+            $select.$input.append("<option value='" + obj.id + "'>" + obj.name + "</option>");
+            $select.addOption({
+                text: obj.name,
+                value: obj.id
+            });
+            $select.addItem(obj.id);
+            $select.refreshItems();
+        }
+        $select.$wrapper.find('> .appended-link').remove();
+        
+        if ($select.$input.closest('.reveal-modal').length) {
+            $select.$input.closest('.reveal-modal').modal('hide');
+        } else {
+            $('.modal').modal('hide');
+        }
     }
 }
 

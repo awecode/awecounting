@@ -11,8 +11,8 @@ from django.views.generic.detail import DetailView
 from ..users.models import Pin
 from .serializers import ItemSerializer, InventoryAccountRowSerializer
 from ..voucher.models import Sale
-from .models import Item, UnitConversion, Unit, JournalEntry, InventoryAccount
-from .forms import ItemForm, UnitForm, UnitConversionForm
+from .models import Item, UnitConversion, Unit, JournalEntry, InventoryAccount, Location
+from .forms import ItemForm, UnitForm, UnitConversionForm, LocationForm
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView, \
     StockistMixin, AccountantMixin, StockistCashierMixin
 
@@ -282,6 +282,41 @@ class InventoryAccountWithRate(InventoryAccountView, StockistMixin, DetailView):
         context['unit'] = unit
         context['multiple'] = multiple
         return context
+
+
+class LocationCreate(AjaxableResponseMixin, CreateView):
+    model = Location
+    form_class = LocationForm
+
+
+class LocationList(ListView):
+    model = Location
+
+    def get_context_data(self, **kwargs):
+        context = super(LocationList, self).get_context_data(**kwargs)
+        # import ipdb
+        # ipdb.set_trace()
+        # context['object_list'] = [{'loc':obj, 'loc_detail': obj.contains.all()}  for obj in context['object_list']]
+        return context
+
+
+class LocationUpdate(UpdateView):
+    queryset = Location.objects.all()
+    model = Location
+    form_class = LocationForm
+    success_url = reverse_lazy('location_list')
+    # fields = ['code', 'name', 'enabled', 'parent']
+
+class LocationDelete(DeleteView):
+    model = Location
+    success_url = reverse_lazy('unit_list')
+
+
+def get_items_in_location(request, loc_id=None):
+    obj = get_object_or_404(Location, pk=loc_id)
+    object_list = obj.contains.all()
+    return render(request, 'inventory/items_in_location.html', {'object_list': object_list})
+
 
 # def view_inventory_account_with_rate(request, pk):
 #     obj= get_object_or_404(InventoryAccount, pk=pk, company=request.company)

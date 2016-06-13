@@ -1,4 +1,4 @@
-var inject_binding = function (allBindings, key, value) {
+    var inject_binding = function (allBindings, key, value) {
     //https://github.com/knockout/knockout/pull/932#issuecomment-26547528
     return {
         has: function (bindingKey) {
@@ -154,6 +154,8 @@ ko.bindingHandlers.selectize = {
 
             if (selected_obj) {
                 allBindingsAccessor.get('object')(selected_obj);
+            }else{
+                allBindingsAccessor.get('object')(undefined);
             }
         }
     }

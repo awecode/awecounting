@@ -85,3 +85,11 @@ class PartyRateListAPI(CompanyAPI, generics.ListAPIView):
         elif self.kwargs.get('voucher') == 'sale':
             return self.serializer_class.Meta.model.objects.filter(sales__sale__party_id=self.kwargs.get('party_pk')).select_related()
     
+
+
+
+
+
+
+# class LocationDetailAPI(generics.RetrieveAPIView):
+#     serializer_class = LocationSerializer

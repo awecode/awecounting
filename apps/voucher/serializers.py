@@ -194,3 +194,5 @@ class PartyRateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
         fields = ('id',)
+
+

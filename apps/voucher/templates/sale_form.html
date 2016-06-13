@@ -15,8 +15,12 @@
     <script>
         ko_data = {{data|jsonify}};
         voucher_settings = {{ request.company.settings|jsonify }};
+        $(document).on('click', '.dropdown-menu', function (e) {
+            e.stopPropagation();
+        });
     </script>
     <script>
+        {#    TODO @roshan see #187 https://github.com/awecode/awecounting/issues/187 #}
         {% if not request.company.settings.invoice_default_tax_scheme and request.company.settings.discount_on_each_invoice_particular or request.company.settings.invoice_default_tax_scheme and request.company.settings.discount_on_each_invoice_particular %}
             colspan = 6;
         {% else %}
@@ -45,7 +49,8 @@
             <div class="row">
                 <div class="col-md-6 col-sm-12">
                     <label for="party">{% trans 'Party' %}</label>
-                    <select id="party" data-bind="selectize: $root.parties, value: party_id, object: party, selectize_options:{render: {'option': render_party_options}}"
+                    <select id="party"
+                            data-bind="selectize: $root.parties, value: party_id, object: party, selectize_options:{render: {'option': render_party_options}}"
                             data-url="{% url 'party_add' %}?source=sale"></select>
                 </div>
 
@@ -115,9 +120,13 @@
                     {% if request.company.settings.sale_voucher_discount %}
                         <th class="{% print_view 'sale_print_discount' %}">{% trans 'Discount' %}</th>
                     {% endif %}
+
                     {% if request.company.settings.sale_voucher_tax_scheme %}
                         <th class="{% print_view 'sale_print_tax_scheme' %}" data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">{% trans "Tax Scheme" %}</th>
                     {% endif %}
+
+                    <th>{% trans 'Location' %}</th>
+
                     <th>{% trans 'Total' %}</th>
                     <th></th>
                 </tr>
@@ -158,6 +167,39 @@
                                 data-url="{% url 'tax_scheme_add' %}"></select>
                     </td>
                     {% endif %}
+
+                    <td data-bind="css: { 'danger': sale_row_location_error()}">
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="true"
+                                    data-bind="attr: { id: 'row-location-' + $index() }">
+                                Select From Location
+                                <span class="caret"></span>
+                            </button>
+                            <div class="dropdown-menu" data-bind="attr: { 'aria-labelledby': 'row-location-' + $index() }">
+                                <table class="table table-striped">
+                                    <tr>
+                                        <th>Location Name</th>
+                                        <th>Available Quantity</th>
+                                        <th>Required Quantity</th>
+                                    </tr>
+                                    <!-- ko foreach: sale_row_locations -->
+                                    <tr>
+                                        <td data-bind="text: location_name"></td>
+                                        <td data-bind="text: qty"></td>
+                                        <td data-bind="editableText: selected_qty, numeric: true "></td>
+                                    </tr>
+                                    <!-- /ko -->
+                                    <!-- ko if: sale_row_location_error -->
+                                    <tr class="danger">
+                                        <td colspan="100%" data-bind='text: sale_row_location_error'></td>
+                                    </tr>
+                                    <!-- /ko -->
+                                </table>
+                            </div>
+                        </div>
+                    </td>
+
                     <td data-bind="text: total"></td>
                     <td class="hide-on-print text-center">
                         <a href="#" class="red fa fa-trash-o fa-2x" data-bind="click: $parent.removeRow"></a>

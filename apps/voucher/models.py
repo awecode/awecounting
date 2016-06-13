@@ -12,7 +12,7 @@ from django.dispatch import receiver
 from django.contrib.contenttypes.fields import GenericForeignKey
 from njango.fields import BSDateField, today
 
-from ..inventory.models import Item, Unit
+from ..inventory.models import Item, Unit, Location
 from ..ledger.models import Party, Account, JournalEntry
 from ..users.models import Company, User
 from awecounting.utils.helpers import get_next_voucher_no, calculate_tax
@@ -159,23 +159,25 @@ class PurchaseVoucher(models.Model):
         return reverse_lazy('purchase-edit', kwargs={'pk': self.pk})
 
 
+class Lot(models.Model):
+    lot_number = models.CharField(max_length=150, unique=True)
+    # lot_item_details = models.ManyToManyField(
+    #     LotItemDetail
+    # )
+
+    def __str__(self):
+        return str(self.lot_number)
+
+
 class LotItemDetail(models.Model):
+    lot = models.ForeignKey(Lot, related_name='lot_item_details')
     item = models.ForeignKey(Item)
     qty = models.PositiveIntegerField()
     # po_receive_lot = models.ForeignKey(PoReceiveLot)
 
+
     def __unicode__(self):
         return '%s-QTY#%d' % (self.item, self.qty)
-
-
-class Lot(models.Model):
-    lot_number = models.CharField(max_length=150, unique=True, null=True, blank=True)
-    lot_item_details = models.ManyToManyField(
-        LotItemDetail
-    )
-
-    def __str__(self):
-        return self.lot_number or 'null'
 
 
 class PurchaseVoucherRow(models.Model):
@@ -188,16 +190,27 @@ class PurchaseVoucherRow(models.Model):
     unit = models.ForeignKey(Unit)
     purchase = models.ForeignKey(PurchaseVoucher, related_name='rows')
     journal_entry = GenericRelation(JournalEntry)
-    lot = models.ForeignKey(Lot, null=True, blank=True)
+    lot = models.ForeignKey(Lot, null=True, blank=True, related_name='lot_purchase_vouchers')
+    location = models.ForeignKey(Location,
+                                 null=True,
+                                 blank=True,
+                                 related_name='location_puchase_vouchers'
+                                 )
 
     def get_total(self):
         rate = float(self.rate)
+        tax_scheme = None
         if self.purchase.tax == 'inclusive':
             tax_scheme = self.purchase.tax_scheme or self.tax_scheme
             if tax_scheme:
                 rate = (100 * rate) / (100 + tax_scheme.percent)
         total = float(self.quantity) * rate
         discount = get_discount_with_percent(total, self.discount)
+        if self.purchase.tax == 'inclusive':
+            if not tax_scheme:
+                tax_scheme = self.purchase.tax_scheme or self.tax_scheme
+            if tax_scheme:
+                discount = (100 * discount) / (100 + tax_scheme.percent)
         return total - discount
 
     def get_voucher_no(self):
@@ -225,6 +238,7 @@ class Sale(models.Model):
     tax = models.CharField(max_length=10, choices=tax_choices, default='inclusive', null=True, blank=True)
     tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True)
     discount = models.CharField(max_length=50, blank=True, null=True)
+    # from_locations = models.ManyToManyField(SaleFromLocation, blank=True)
 
     def __init__(self, *args, **kwargs):
         super(Sale, self).__init__(*args, **kwargs)
@@ -312,6 +326,18 @@ class SaleRow(models.Model):
 
     def get_absolute_url(self):
         return reverse_lazy('sale-edit', kwargs={'pk': self.sale.pk})
+
+
+class SaleFromLocation(models.Model):
+    sale_row = models.ForeignKey(SaleRow, related_name='from_locations')
+    location = models.ForeignKey(Location, related_name='sales')
+    qty = models.PositiveIntegerField()
+
+    def __str__(self):
+        return str(self.location) + str(self.qty)
+
+    class Meta:
+        unique_together = (('sale_row', 'location'),)
 
 
 class JournalVoucher(models.Model):
@@ -543,8 +569,6 @@ class VoucherSetting(models.Model):
     sale_voucher_location = models.BooleanField(default=True)
     sale_print_location = models.BooleanField(default=True)
 
-
-
     # Purchase voucher settings
     single_discount_on_whole_purchase = models.BooleanField(default=True)
 
@@ -579,8 +603,18 @@ class VoucherSetting(models.Model):
     add_expense_cost_to_purchase = models.BooleanField(default=True, verbose_name='Add expense cost')
     # discount_on_each_purchase_particular = models.BooleanField(default=False)
 
+    @property
+    def purchase_enable_locations(self):
+        return self.company.subscription.enable_locations and self.purchase_voucher_location
+
+    @property
+    def sale_enable_locations(self):
+        return self.company.subscription.enable_locations and self.sale_voucher_location
+
     def add_expense_to_purchase(self):
         return self.enable_expense_in_purchase and self.add_expense_cost_to_purchase
+
+    extra_data = ['purchase_enable_locations', 'sale_enable_locations']
 
     def __unicode__(self):
         return self.company.name

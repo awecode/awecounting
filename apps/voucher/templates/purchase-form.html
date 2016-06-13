@@ -48,8 +48,8 @@
                     <select id="party"
                             data-bind="selectize: $root.parties, value: party_id, object: party, selectize_options:{render: {'option': render_party_options}}"
                             data-url="{% url 'party_add' %}?source=purchase"></select>
-{#                    <select id="party" data-bind="selectize: $root.parties, value: party_id, object: party"#}
-{#                            data-url="{% url 'party_add' %}?source=purchase"></select>#}
+                    {#                    <select id="party" data-bind="selectize: $root.parties, value: party_id, object: party"#}
+                    {#                            data-url="{% url 'party_add' %}?source=purchase"></select>#}
                 </div>
 
                 <div class="col-md-6 col-sm-12 hidden-print" data-bind="if: party_balance">
@@ -118,12 +118,15 @@
                     {% if request.company.settings.purchase_voucher_discount %}
                         <th class="{% print_view 'purchase_print_discount' %}">{% trans 'Discount' %}</th>
                     {% endif %}
+
                     {% if request.company.settings.purchase_voucher_tax_scheme %}
                         <th class="{% print_view 'purchase_print_tax_scheme' %}" data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">{% trans "Tax Scheme" %}</th>
                     {% endif %}
                     {% if request.company.settings.purchase_voucher_lot %}
                         <th class="{% print_view 'purchase_print_lot' %}">{% trans 'Lot#' %}</th>
                     {% endif %}
+                    <th>{% trans 'Location' %}</th>
+
                     <th>{% trans 'Total' %}</th>
                     <th></th>
                 </tr>
@@ -159,6 +162,7 @@
                         <td class="{% print_view 'purchase_print_discount' %}" data-bind="editableText: discount, percentage_numeric: true"></td>
                     {% endif %}
                     {% if request.company.settings.purchase_voucher_tax_scheme %}
+
                     <td class="{% print_view 'purchase_print_tax_scheme' %}" data-bind="visible: $root.tax()!='no'  && !$root.tax_scheme()">
                         <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme_id, object: tax_scheme"
                                 data-url="{% url 'tax_scheme_add' %}"></select>
@@ -167,6 +171,12 @@
                     {% if request.company.settings.purchase_voucher_lot %}
                     <td class="lot-cell {% print_view 'purchase_print_lot' %}" data-bind="editableText: lot_number"></td>
                     {% endif %}
+
+                    <td class="location-cell">
+                        <select data-bind="selectize: $root.enabled_locations, value: location"
+                                data-url="{% url 'location_add' %}"></select>
+                    </td>
+
                     <td data-bind="text: total"></td>
                     <td class="hide-on-print text-center">
                         <a href="#" class="red fa fa-trash-o fa-2x" data-bind="click: $parent.removeRow"></a>
@@ -229,7 +239,8 @@
         <input type="submit" class="btn btn-raised btn-info" value="{% trans 'Save' %}">
         {% if scenario == 'Update' %}
             {% if request.company.can_manage_purchase_orders and obj.purchase_order.pk %}
-                <a class="btn btn-info btn-raised" href="{% url 'purchase_order_edit' obj.purchase_order.pk %}">{% trans 'Purchase Order' %}</a>
+                <a class="btn btn-info btn-raised"
+                   href="{% url 'purchase_order_edit' obj.purchase_order.pk %}">{% trans 'Purchase Order' %}</a>
             {% endif %}
             <a class="btn btn-danger btn-raised" href="{% url 'purchase_delete' obj.id %}">{% trans 'Delete!' %}</a>
         {% endif %}

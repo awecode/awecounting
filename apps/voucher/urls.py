@@ -70,6 +70,9 @@ web_urls = [
     url(r'^voucher_setting/$', views.VoucherSettingUpdateView.as_view(), name='voucher_setting'),
 
     url(r'^export_purchase_voucher/(?P<purchase_order_pk>\d+)$', views.ExportPurchaseVoucher.as_view(), name='export_purchase_voucher'),
+    url(r'^get_item_locations/(?P<pk>\d+)$', views.get_item_locations, name='get_item_locations'),
+    url(r'^sale_row_onedit_location_item_details/(?P<sale_row_id>\d+)/(?P<item_id>\d+)$', views.sale_row_onedit_location_item_details, name='sale_row_onedit_location_item_details'),
+
 
 ]
 
