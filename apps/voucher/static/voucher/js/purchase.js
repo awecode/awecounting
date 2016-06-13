@@ -248,7 +248,7 @@ function PurchaseViewModel(data, settings) {
             return 0;
         }
         if (self.tax_scheme()) {
-            return r2z(self.sub_total() * self.tax_scheme().percent / 100);
+            return r2z(self.taxable_amount() * self.tax_scheme().percent / 100);
         }
         var total = 0;
         ko.utils.arrayForEach(self.table_view.rows(), function (row) {
