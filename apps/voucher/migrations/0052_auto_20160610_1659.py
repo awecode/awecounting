@@ -17,7 +17,7 @@ import django.db.models.deletion
 def empty_lotitemdetails(apps, schema_editor):
     from apps.voucher.models import LotItemDetail, Lot
 
-    Lot.objects.all().delete()
+    # Lot.objects.all().delete()
     LotItemDetail.objects.all().delete()
 
 
