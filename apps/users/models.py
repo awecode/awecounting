@@ -119,6 +119,9 @@ class Company(models.Model):
     def can_manage_lot(self):
         return self.subscription.enable_lot
 
+    def has_branches(self):
+        return self.can_manage_branches() and self.branches.all().count()
+
     @property
     def fy(self):
         return self.get_fy()

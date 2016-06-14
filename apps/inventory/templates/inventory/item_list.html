@@ -23,6 +23,9 @@
             <thead>
             <th>{% anchor name _('Name') %}</th>
             <th>{% trans 'Other Properties' %}</th>
+            {% if request.company.has_branches %}
+                <th>{% trans 'Branch' %}</th>
+            {% endif %}
             <th>{% trans 'Ledger' %}</th>
             </thead>
             <tbody>
@@ -36,6 +39,9 @@
                             <span><b>{{ key }}</b>: <i>{{ value }}</i></span>{% if not forloop.last %},{% endif %}
                         {% endfor %}
                     </td>
+                    {% if request.company.has_branches %}
+                        <td>{{ item.company }}</td>
+                    {% endif %}
                     <td>
                         {% if item.account %}
                             <a class="btn btn-sm btn-info btn-raised no-margin"
