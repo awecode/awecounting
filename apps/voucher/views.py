@@ -13,7 +13,7 @@ from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, g
     StockistMixin, AccountantMixin
 from ..inventory.models import set_transactions, Location, LocationContain, Item
 from ..ledger.models import set_transactions as set_ledger_transactions, get_account, Account
-from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
+from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error, mail_exception
 from .forms import JournalVoucherForm, VoucherSettingForm, CashPaymentForm, CashReceiptForm
 from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
     CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer, \
@@ -22,10 +22,6 @@ from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, Pu
     JournalVoucherRow, \
     PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, \
     VoucherSetting, Expense, ExpenseRow, TradeExpense, Lot, LotItemDetail, SaleFromLocation
-
-
-
-# from awecounting.utils.mixins import AjaxableResponseMixin, CreateView
 
 
 class FixedAssetView(CompanyView):
@@ -421,7 +417,7 @@ def save_purchase(request):
                             else:
                                 item.qty -= row.quantity
                                 item.save()
-            # End For lot on edit
+                                # End For lot on edit
 
         if request.company.settings.show_locations:
             # For Location on edit
@@ -449,7 +445,7 @@ def save_purchase(request):
         # if params.get('tax_vm').get('tax') == 'no':
         #     common_tax = True
         #     tax_scheme = None
-        
+
         for ind, row in enumerate(params.get('table_view').get('rows')):
             if invalid(row, ['item_id', 'quantity', 'rate', 'unit_id']):
                 continue
@@ -486,7 +482,7 @@ def save_purchase(request):
                             qty=int(row.get('quantity'))
                         )
                         # po_receive_lot.lot_item_details.add(lot_item_detail)
-                    # End Setting Lot Items
+                        # End Setting Lot Items
                 else:
                     po_receive_lot = None
 
@@ -509,7 +505,7 @@ def save_purchase(request):
                             )
                             # location_obj.contains.add(loc_contain_obj)
 
-                    # End Setting Location Items
+                            # End Setting Location Items
 
                 values = {
                     'sn': ind + 1,
@@ -712,8 +708,8 @@ def save_sale(request):
                         else:
                             location_contain_obj.qty -= sale_from_location.qty
                             location_contain_obj.save()
-                        # End Deduct item qty from that locatio or delete
-                    # End Sale from Location logic here of save
+                            # End Deduct item qty from that locatio or delete
+                            # End Sale from Location logic here of save
 
                 grand_total += submodel.get_total()
                 dct['rows'][ind] = submodel.id
@@ -736,7 +732,7 @@ def save_sale(request):
 
         try:
             discount_expense = Account.objects.get(name='Discount Expenses', company=request.company, fy=request.company.fy,
-                                                  category__name='Indirect Expenses')
+                                                   category__name='Indirect Expenses')
         except Account.DoesNotExist:
             discount_expense = None
 
@@ -788,6 +784,7 @@ def save_sale(request):
         obj.save()
     except Exception as e:
         dct = write_error(dct, e)
+        mail_exception(request)
     return JsonResponse(dct)
 
 

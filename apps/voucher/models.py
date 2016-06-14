@@ -10,8 +10,8 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.dispatch import receiver
 from django.contrib.contenttypes.fields import GenericForeignKey
-
 from njango.fields import BSDateField, today
+
 from ..inventory.models import Item, Unit, Location
 from ..ledger.models import Party, Account, JournalEntry
 from ..users.models import Company, User
@@ -317,6 +317,10 @@ class SaleRow(models.Model):
     def get_total(self):
         rate = float(self.rate)
         tax_scheme = None
+
+        if not self.tax_scheme_id:
+            self.tax_scheme = None
+
         if self.sale.tax == 'inclusive':
             tax_scheme = self.sale.tax_scheme or self.tax_scheme
             if tax_scheme:
