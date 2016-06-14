@@ -4,7 +4,11 @@
 {% block page-title %}{% trans 'Accounts' %}{% endblock %}
 
 {% block header-buttons %}
+    <form class="form-horizontal inline" role="form">
+        <input type="text" placeholder="Search..." name="q" class="form-control search" value="{{ request.GET.q }}">
+    </form>
     <a class="btn btn-success btn-raised" href="{% url 'account_add' %}">{% trans 'New' %} {% trans 'Account' %}</a>
+
 {% endblock %}
 
 {% block content %}
