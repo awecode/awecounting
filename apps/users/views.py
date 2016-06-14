@@ -328,11 +328,15 @@ class BranchView(CompanyView):
         Role.objects.get_or_create(user=self.request.user, group_id=1, company=self.object.branch_company)
         Pin.connect_company(self.request.company, self.object.branch_company)
         if self.object.is_party and not self.object.party and self.object.branch_company:
-            party = Party.objects.create(name=self.object.name, company=self.request.company,
+            company_party, company_party_created = Party.objects.get_or_create(name=self.object.name, company=self.request.company,
                                          related_company=self.object.branch_company)
-            Party.objects.create(name=self.request.company.name, company=self.object.branch_company,
+            company_party.name = self.object.name
+            company_party.save()
+            branch_party, branch_party_created = Party.objects.get_or_create(company=self.object.branch_company,
                                  related_company=self.request.company)
-            self.object.party = party
+            branch_party.name = self.request.company.name
+            branch_party.save()
+            self.object.party = company_party
             self.object.save()
 
         copy_attribute(self.request.company.report_settings, self.object.branch_company.report_settings, ['id', 'company'])
@@ -348,10 +352,14 @@ class BranchView(CompanyView):
                 if branch != self.object and not Pin.objects.filter(company=branch.branch_company,
                                                                     used_by=self.object.branch_company).exists():
                     Pin.connect_company(branch.branch_company, self.object.branch_company)
-                    Party.objects.create(name=self.object.branch_company.name, company=branch.branch_company,
+                    new_branch_party, new_branch_party_created = Party.objects.get_or_create(company=branch.branch_company,
                                          related_company=self.object.branch_company)
-                    Party.objects.create(name=branch.branch_company.name, company=self.object.branch_company,
+                    new_branch_party.name = self.object.branch_company.name
+                    new_branch_party.save()
+                    old_branch_party, old_branch_party_created = Party.objects.get_or_create(company=self.object.branch_company,
                                          related_company=branch.branch_company)
+                    old_branch_party.name = branch.branch_company.name
+                    old_branch_party.save()
         return super(BranchView, self).form_valid(form)
 
 
