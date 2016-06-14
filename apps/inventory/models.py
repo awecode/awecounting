@@ -132,6 +132,7 @@ class ItemCategory(MPTTModel):
     name = models.CharField(max_length=50)
     description = models.TextField(max_length=254, null=True, blank=True)
     parent = TreeForeignKey('self', blank=True, null=True, related_name='children')
+    company = models.ForeignKey(Company)
 
     def __unicode__(self):
         return self.name
@@ -154,6 +155,7 @@ class Item(models.Model):
     ledger = models.ForeignKey(Account, null=True)
     purchase_ledger = models.OneToOneField(Account, null=True, related_name='purchase_detail')
     sale_ledger = models.OneToOneField(Account, null=True, related_name='sale_detail')
+    category = models.ForeignKey(ItemCategory, null=True, blank=True)
     company = models.ForeignKey(Company)
 
     def __str__(self):

@@ -1,9 +1,9 @@
 from django import forms
 from django.core.urlresolvers import reverse_lazy
-from modeltranslation.forms import TranslationModelForm
 from django.utils.translation import ugettext_lazy as _
 
-from .models import Item, Unit, InventoryAccount, UnitConversion, Location
+from modeltranslation.forms import TranslationModelForm
+from .models import Item, Unit, InventoryAccount, UnitConversion, Location, ItemCategory
 from awecounting.utils.forms import HTML5BootstrapModelForm, KOModelForm
 
 
@@ -55,6 +55,7 @@ class UnitForm(HTML5BootstrapModelForm):
 
 
 class UnitConversionForm(HTML5BootstrapModelForm):
+
     class Meta:
         model = UnitConversion
         exclude = ('company',)
@@ -69,3 +70,12 @@ class LocationForm(HTML5BootstrapModelForm):
     class Meta:
         model = Location
         fields = '__all__'
+
+
+class ItemCategoryForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = ItemCategory
+        exclude = ('company',)
+        widgets = {
+            'parent': forms.Select(attrs={'class': 'selectize'}),
+        }
