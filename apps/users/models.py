@@ -447,7 +447,10 @@ class Pin(models.Model):
     @classmethod
     def connect_company(cls, first_company, second_company):
         code = str(first_company.id) + '-' + str(random.choice(range(10000, 99999)))
-        cls.objects.create(code=code, company=first_company, used_by=second_company)
+        obj, created = cls.objects.get_or_create(company=first_company, used_by=second_company)
+        if created:
+            obj.code = code
+        obj.save()
 
     @staticmethod
     def validate_pin(pin):
@@ -492,6 +495,9 @@ class Branch(models.Model):
         if not self.branch_company:
             assign_company = Company.objects.create(name=self.name)
             self.branch_company = assign_company
+        if self.id and self.branch_company:
+            self.branch_company.name = self.name
+            self.branch_company.save()
         super(Branch, self).save(*args, **kwargs)
 
     class Meta:

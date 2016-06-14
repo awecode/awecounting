@@ -73,12 +73,30 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>{% trans "S.N." %}</th>
+                {% if request.company.settings.show_sale_voucher_sn %}
+                    <th class="{% print_view 'show_sale_voucher_sn' %}">{% trans "S.N." %}</th>
+                {% endif %}
                 <th>{% trans "Item" %}</th>
+                {% if request.company.settings.show_sale_voucher_code %}
+                    <th class="{% print_view 'show_sale_print_code' %}">{% trans "Code" %}</th>
+                {% endif %}
+                {% if request.company.settings.show_sale_voucher_oem_number %}
+                    <th class="{% print_view 'show_sale_print_oem_number' %}">{% trans "OEM Number" %}</th>
+                {% endif %}
                 <th>{% trans "Quantity" %}</th>
                 <th>{% trans "Rate" %}</th>
                 <th>{% trans "Unit" %}</th>
-                <th>{% trans 'Discount' %}</th>
+                {% if request.company.settings.show_sale_voucher_discount %}
+                    <th class="{% print_view 'show_sale_print_discount' %}">{% trans 'Discount' %}</th>
+                {% endif %}
+
+                {% if request.company.settings.show_sale_voucher_tax_scheme %}
+                    <th class="{% print_view 'show_sale_print_tax_scheme' %}">{% trans "Tax Scheme" %}</th>
+                {% endif %}
+
+                {% if request.company.settings.show_locations %}
+                <th>{% trans 'Location' %}</th>
+                {% endif %}
                 <th>{% trans 'Total' %}</th>
             </tr>
         </thead>
@@ -86,31 +104,41 @@
         <tbody>
             {% for row in rows %}
             <tr>
-                <td>
-                    {{ row.sn }}
-                </td>
-                <td>
-                    {{ row.item }}
-                </td>
-                <td>
-                    {{ row.quantity }}
-                </td>
-                <td>
-                    {{ row.rate }}
-                </td>
-                <td>
-                    {{ row.unit }}
-                </td>
-                <td>
-                    {{ row.discount }}
-                </td>
-                <td>
-                    {{ row.get_total }}
-                </td>
+                {% if request.company.settings.show_sale_voucher_sn %}
+                        <td class="{% print_view 'show_sale_print_sn' %}">{{ row.sn }}</td>
+                    {% endif %}
+                    <td>{{ row.item }}</td>
+                    {% if request.company.settings.show_sale_voucher_code %}
+                        <td class="{% print_view 'show_sale_print_code' %}">{{ row.item.code }}</td>
+                    {% endif %}
+                    {% if request.company.settings.show_sale_voucher_oem_number %}
+                        <td class="{% print_view 'show_sale_print_oem_number' %}">{{ row.item.oem_no }}</td>
+                    {% endif %}
+                    <td>{{ row.quantity }}</td>
+                    <td>{{ row.rate }}</td>
+                    <td>{{ row.unit }}</td>
+                    {% if request.company.settings.show_sale_voucher_discount %}
+                        <td class="{% print_view 'show_sale_print_discount' %}">
+                            {{ row.discount | default:''}}
+                        </td>
+                    {% endif %}
+
+                    {% if request.company.settings.show_sale_voucher_tax_scheme %}
+                        <td class="{% print_view 'show_sale_print_tax_scheme' %}">
+{#                            {% if object.tax != "no" and not object.tax_scheme %}#}
+                                {{ row.tax_scheme | default:''}}
+{#                            {% endif %}#}
+                        </td>
+                    {% endif %}
+                    {% if request.company.settings.show_locations %}
+                        <td>{{ row.location.name }}</td>
+                    {% endif %}
+
+                    <td>{{ row.get_total }}</td>
             </tr>
             {% endfor %}
             <tr class="total">
-                <td colspan="6">
+                <td colspan="{{ request.company.settings.sale_colspan }}">
                     {% trans 'Grand Total' %}
                 </td>
                 <td colspan="2">{{ object.total }}</td>
