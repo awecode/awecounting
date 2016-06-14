@@ -29,6 +29,7 @@ INSTALLED_APPS = (
     'apps.tax',
     'apps.payroll',
     'apps.report',
+    'apps.import',
 
     'njango',
     'rest_framework',
