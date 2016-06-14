@@ -1,0 +1,37 @@
+{% extends "_base.html" %}
+{% load i18n staticfiles filters %}
+
+{% block page-title %}{% trans 'Accounts and Categories' %}{% endblock %}
+
+{% block header-buttons %}
+    <a class="btn btn-success btn-raised" href="{% url 'category_add' %}">{% trans 'New' %} {% trans 'Category' %}</a>
+{% endblock %}
+
+{% block content %}
+    {% load mptt_tags %}
+
+    <div class="well">
+
+        <ul class="list-group">
+            {% recursetree object_list %}
+                <li class="list-group-item link">
+                    <i class="fa fa-plus-circle"></i> <a href="{% url 'category_edit' node.id %}">{{ node.name }}</a>
+                    <ul class="accounts children">
+                        {% for account in node.accounts.all %}
+                            <li class="list-group-item tb-row"><a
+                                    href="{% url 'view_ledger' account.id %}">{{ account.name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    {% if not node.is_leaf_node %}
+                        <ul class="children">
+                            {{ children }}
+                        </ul>
+
+                    {% endif %}
+                </li>
+            {% endrecursetree %}
+        </ul>
+    </div>
+
+{% endblock %}

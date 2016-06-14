@@ -97,6 +97,14 @@ class AccountView(CompanyView):
             category = Category.objects.filter(name=category_name).first()
             dct['category'] = category
         return dct
+    
+class AccountTree(CategoryView, AccountantMixin, ListView):
+    template_name = 'ledger/account_tree.html'
+    
+    def get_queryset(self):
+        qs = super(AccountTree, self).get_queryset()
+        qs = qs.prefetch_related('accounts')
+        return qs
 
 
 class AccountList(AccountView, AccountantMixin, ListView):

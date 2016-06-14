@@ -673,7 +673,7 @@ ul.mega-dropdown-menu li {
 }
 
 .tb-row {
-    padding-top: 0.5em;
+    padding-top: 0.5em !important;
 }
 
 /* EO Trial Balance */
