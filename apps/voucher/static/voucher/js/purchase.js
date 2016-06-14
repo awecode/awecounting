@@ -300,8 +300,8 @@ function PurchaseViewModel(data, settings) {
     }
 
     self.save = function (item, event) {
-        if (!self.party()) {
-            bsalert.error('Party is required!');
+        if (!self.party() && self.credit()) {
+            bsalert.error('Party is required for credit purchase!');
             return false;
         }
 

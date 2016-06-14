@@ -145,10 +145,10 @@ function PurchaseViewModel(data) {
     };
 
     self.save = function (item, event) {
-        if (!self.party()) {
-            bsalert.error('Party is required!');
-            return false;
-        }
+        //if (!self.party()) {
+        //    bsalert.error('Party is required!');
+        //    return false;
+        //}
 
         $.ajax({
             type: "POST",

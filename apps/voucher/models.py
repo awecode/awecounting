@@ -33,7 +33,7 @@ class TradeExpense(models.Model):
 
 
 class PurchaseOrder(models.Model):
-    party = models.ForeignKey(Party)
+    party = models.ForeignKey(Party, blank=True, null=True)
     voucher_no = models.IntegerField(blank=True, null=True)
     date = BSDateField(default=today)
     purchase_agent = models.ForeignKey(User, related_name="purchase_order", blank=True, null=True)
@@ -78,7 +78,7 @@ class PurchaseOrderRow(models.Model):
 
 class PurchaseVoucher(models.Model):
     tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'), ]
-    party = models.ForeignKey(Party)
+    party = models.ForeignKey(Party, blank=True, null=True)
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     credit = models.BooleanField(default=False)
     date = BSDateField(default=today)
