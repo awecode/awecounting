@@ -449,8 +449,7 @@ def save_purchase(request):
         # if params.get('tax_vm').get('tax') == 'no':
         #     common_tax = True
         #     tax_scheme = None
-        if not obj.credit:
-            cash_account = get_account(request, 'Cash')
+        
         for ind, row in enumerate(params.get('table_view').get('rows')):
             if invalid(row, ['item_id', 'quantity', 'rate', 'unit_id']):
                 continue
@@ -539,6 +538,7 @@ def save_purchase(request):
         if obj.credit:
             cr_acc = obj.party.supplier_account
         else:
+            cash_account = get_account(request, 'Cash')
             cr_acc = cash_account
 
         # Voucher discount needs to broken into row discounts
@@ -677,8 +677,7 @@ def save_sale(request):
         dct['id'] = obj.id
         model = SaleRow
         grand_total = 0
-        if not obj.credit:
-            cash_account = get_account(request, 'Cash')
+
         for ind, row in enumerate(params.get('table_view').get('rows')):
             if invalid(row, ['item_id', 'quantity', 'unit_id']):
                 continue
@@ -723,17 +722,63 @@ def save_sale(request):
                 #                  ['dr', submodel.item.account, submodel.quantity],
                 #                  )
 
-                if obj.credit:
-                    cr_acc = obj.party.supplier_account
-                else:
-                    cr_acc = cash_account
+        if obj.credit:
+            dr_acc = obj.party.customer_account
+        else:
+            cash_account = get_account(request, 'Cash')
+            dr_acc = cash_account
 
-                set_ledger_transactions(submodel, obj.date,
-                                        ['dr', submodel.item.purchase_ledger, obj.total],
-                                        ['cr', cr_acc, obj.total],
-                                        # ['cr', sales_tax_account, tax_amount],
-                                        )
+        # Voucher discount needs to broken into row discounts
+        if grand_total and obj.discount:
+            discount_rate = obj.discount / grand_total
+        else:
+            discount_rate = None
 
+        try:
+            discount_expense = Account.objects.get(name='Discount Expenses', company=request.company, fy=request.company.fy,
+                                                  category__name='Indirect Expenses')
+        except Account.DoesNotExist:
+            discount_expense = None
+
+        for sale_row in obj.rows.all():
+
+            tax_scheme = obj.tax_scheme or sale_row.tax_scheme
+
+            rate = float(sale_row.rate)
+            row_discount = float(sale_row.discount) or 0
+
+            if obj.tax == 'inclusive' and tax_scheme:
+                rate = rate * 100 / (100 + tax_scheme.percent)
+                row_discount = row_discount * 100 / (100 + tax_scheme.percent)
+
+            pure_total = sale_row.quantity * rate
+
+            divident_discount = 0
+
+            entries = [['cr', submodel.item.sale_ledger, pure_total]]
+
+            # If the voucher has discount, apply discount proportionally
+            if discount_rate:
+                if obj.tax == 'inclusive' and tax_scheme:
+                    discount_rate = discount_rate * 100 / (100 + tax_scheme.percent)
+                divident_discount = (pure_total - row_discount) * discount_rate
+
+            discount = row_discount + divident_discount
+
+            if tax_scheme:
+                tax_amt = (pure_total - discount) * tax_scheme.percent / 100
+                entries.append(['cr', tax_scheme.payable, tax_amt])
+            else:
+                tax_amt = 0
+
+            if discount and discount_expense:
+                entries.append(['dr', discount_expense, discount])
+
+            receivable = pure_total - discount + tax_amt
+
+            entries.append(['dr', dr_acc, receivable])
+
+            set_ledger_transactions(sale_row, obj.date, *entries)
         delete_rows(params.get('table_view').get('deleted_rows'), model)
 
         if obj.credit:
