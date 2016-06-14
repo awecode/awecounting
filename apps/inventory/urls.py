@@ -33,7 +33,13 @@ web_urls = [
     url(r'^location/list/$', views.LocationList.as_view(), name='location_list'),
     url(r'^location/edit/(?P<pk>\d+)/$', views.LocationUpdate.as_view(), name='location_edit'),
     url(r'^location/delete/(?P<pk>\d+)/$', views.LocationDelete.as_view(), name='location_delete'),
-    url(r'^location/items/(?P<loc_id>\d+)/$', views.get_items_in_location, name='location_detail')
+    url(r'^location/items/(?P<loc_id>\d+)/$', views.get_items_in_location, name='location_detail'),
+
+    url(r'^item_category/add$', views.ItemCategoryCreate.as_view(), name='item_category_add'),
+    url(r'^item_categories/$', views.ItemCategoryList.as_view(), name='item_category_list'),
+    url(r'^item_category/edit/(?P<pk>\d+)/$', views.ItemCategoryUpdate.as_view(), name='item_category_edit'),
+    url(r'^item_category/delete/(?P<pk>\d+)/$', views.ItemCategoryDelete.as_view(), name='item_category_delete'),
+
 ]
 
 api_urls = [
