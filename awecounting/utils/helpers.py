@@ -1,6 +1,7 @@
 import json
 import sys
 import linecache
+
 from django.core.mail import mail_admins
 
 from django.http import JsonResponse
@@ -173,9 +174,14 @@ def mail_exception(request):
     filename = f.f_code.co_filename
     linecache.checkcache(filename)
     line = linecache.getline(filename, lineno, f.f_globals)
-    mail_body = 'EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj) 
+    exception_summary = 'EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj)
+    mail_body = '''
+    {0}
+    User: {1}
+    Role: {2}
+    URL: {3}
+    Line no.: {4}
+    Error: {5}
+    '''.format(exception_summary, request.user, request.role, filename, lineno, exc_obj)
     print mail_body
-    import ipdb
-    # ipdb.set_trace()
     mail_admins('Exception caught!', mail_body)
-    

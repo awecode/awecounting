@@ -96,6 +96,7 @@ def save_fixed_asset(request):
         delete_rows(params.get('additional_detail').get('deleted_rows'), additional_detail)
     except Exception as e:
         dct = write_error(dct, e)
+        mail_exception(request)
     return JsonResponse(dct)
 
 
@@ -229,6 +230,7 @@ def save_cash_payment(request):
         obj.save()
     except Exception as e:
         dct = write_error(dct, e)
+        mail_exception(request)
     return JsonResponse(dct)
 
 
@@ -380,6 +382,7 @@ def save_cash_receipt(request):
         obj.save()
     except Exception as e:
         dct = write_error(dct, e)
+        mail_exception(request)
     return JsonResponse(dct)
 
 
@@ -596,6 +599,7 @@ def save_purchase(request):
         obj.save()
     except Exception as e:
         dct = write_error(dct, e)
+        mail_exception(request)
     return JsonResponse(dct)
 
 
@@ -926,6 +930,7 @@ def journal_voucher_save(request):
                 dct['rows'][ind] = submodel.id
     except Exception as e:
         dct = write_error(dct, e)
+        mail_exception(request)
     delete_rows(params.get('table_view').get('deleted_rows'), model)
     return JsonResponse(dct)
 
@@ -1031,6 +1036,7 @@ def save_purchase_order(request):
         # obj.save()
     except Exception as e:
         dct = write_error(dct, e)
+        mail_exception(request)
     return JsonResponse(dct)
 
 
@@ -1135,6 +1141,7 @@ def save_expense(request):
             dct['rows'][ind] = submodel.id
         delete_rows(params.get('table_view').get('deleted_rows'), model)
     except Exception as e:
+        mail_exception(request)
         dct = write_error(dct, e)
     return JsonResponse(dct)
 
