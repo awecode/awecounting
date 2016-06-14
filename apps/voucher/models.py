@@ -10,8 +10,8 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.dispatch import receiver
 from django.contrib.contenttypes.fields import GenericForeignKey
-
 from njango.fields import BSDateField, today
+
 from ..inventory.models import Item, Unit, Location
 from ..ledger.models import Party, Account, JournalEntry
 from ..users.models import Company, User
@@ -315,7 +315,24 @@ class SaleRow(models.Model):
     journal_entry = GenericRelation(JournalEntry)
 
     def get_total(self):
-        return float(self.quantity) * float(self.rate) - float(self.discount)
+        rate = float(self.rate)
+        tax_scheme = None
+
+        if not self.tax_scheme_id:
+            self.tax_scheme = None
+
+        if self.sale.tax == 'inclusive':
+            tax_scheme = self.sale.tax_scheme or self.tax_scheme
+            if tax_scheme:
+                rate = (100 * rate) / (100 + tax_scheme.percent)
+        total = float(self.quantity) * rate
+        discount = get_discount_with_percent(total, self.discount)
+        if self.sale.tax == 'inclusive':
+            if not tax_scheme:
+                tax_scheme = self.sale.tax_scheme or self.tax_scheme
+            if tax_scheme:
+                discount = (100 * discount) / (100 + tax_scheme.percent)
+        return total - discount
 
     def get_voucher_no(self):
         return self.sale.voucher_no

@@ -11,7 +11,7 @@ from django.views.generic.detail import DetailView
 from .models import Entry, EntryRow, Employee
 from .serializers import EntrySerializer
 from .forms import EmployeeForm
-from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error
+from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error, mail_exception
 
 
 class EntryView(CompanyView):
@@ -77,6 +77,7 @@ def save_entry(request):
         delete_rows(params.get('table_view').get('deleted_rows'), model)
     except Exception as e:
         dct = write_error(dct, e)
+        mail_exception(request)
     return JsonResponse(dct)
 
 

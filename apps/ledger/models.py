@@ -451,7 +451,8 @@ def handle_fy_creation(sender, **kwargs):
 
     income = Category.objects.get(name='Income', company=company)
     sales = Category.objects.get(name='Sales', parent=income, company=company)
-    Account.objects.create(name='Discount Income', category=income, code='I-DI', company=company, fy=fy)
+    indirect_income = Category.objects.get(name='Indirect Income', code='I-II', parent=income, company=company)
+    Account.objects.create(name='Discount Income', category=indirect_income, code='I-II-DI', company=company, fy=fy)
     Account.objects.create(name='Non-tax Sales', category=sales, code='I-S-NT', company=company, fy=fy)
     Account.objects.create(name='Sales', category=sales, code='I-S-S', company=company, fy=fy)
     direct_income = Category.objects.get(name='Direct Income', parent=income, company=company)

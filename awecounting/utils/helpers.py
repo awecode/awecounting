@@ -1,4 +1,8 @@
 import json
+import sys
+import linecache
+
+from django.core.mail import mail_admins
 
 from django.http import JsonResponse
 
@@ -161,3 +165,23 @@ def save_qs_from_ko(model, filter_kwargs, request_body):
 
 def get_dict(lst, key, val):
     return next((item for item in lst if item[key] == val), None)
+
+
+def mail_exception(request):
+    exc_type, exc_obj, tb = sys.exc_info()
+    f = tb.tb_frame
+    lineno = tb.tb_lineno
+    filename = f.f_code.co_filename
+    linecache.checkcache(filename)
+    line = linecache.getline(filename, lineno, f.f_globals)
+    exception_summary = 'EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj)
+    mail_body = '''
+    {0}
+    User: {1}
+    Role: {2}
+    URL: {3}
+    Line no.: {4}
+    Error: {5}
+    '''.format(exception_summary, request.user, request.role, filename, lineno, exc_obj)
+    print mail_body
+    mail_admins('Exception caught!', mail_body)
