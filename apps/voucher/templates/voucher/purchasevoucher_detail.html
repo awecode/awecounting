@@ -86,16 +86,36 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>{% trans "S.N." %}</th>
+                {% if request.company.settings.show_purchase_voucher_sn %}
+                    <th class="{% print_view 'show_purchase_print_sn' %}">{% trans "S.N." %}</th>
+                {% endif %}
                 <th>{% trans "Item" %}</th>
+                {% if request.company.settings.show_purchase_voucher_code %}
+                    <th class="{% print_view 'show_purchase_print_code' %}">{% trans "Code" %}</th>
+                {% endif %}
+                {% if request.company.settings.show_purchase_voucher_oem_number %}
+                    <th class="{% print_view 'show_purchase_print_oem_number' %}">{% trans "OEM Number" %}</th>
+                {% endif %}
                 <th>{% trans "Quantity" %}</th>
                 <th>{% trans "Rate" %}</th>
                 <th>{% trans "Unit" %}</th>
-                {% if object.tax != "no" and not object.tax_scheme %}
-                <th>{% trans "Tax Scheme" %}</th>
+                {% if request.company.settings.show_purchase_voucher_discount %}
+                    <th class="{% print_view 'show_purchase_print_discount' %}">{% trans 'Discount' %}</th>
                 {% endif %}
-                {% if request.company.settings.discount_on_each_purchase_particular %}
-                    <th>{% trans 'Discount' %}</th>
+
+                {% if request.company.settings.show_purchase_voucher_tax_scheme %}
+                    <th class="{% print_view 'show_purchase_print_tax_scheme' %}">
+{#                            {% if object.tax != "no" and not object.tax_scheme %}#}
+                                {% trans "Tax Scheme" %}
+{#                            {% endif %}#}
+                        </th>
+                {% endif %}
+                {% if request.company.settings.show_lot %}
+                    <th>{% trans 'Lot#' %}</th>
+                {% endif %}
+
+                {% if request.company.settings.show_locations %}
+                    <th>{% trans 'Location' %}</th>
                 {% endif %}
                 <th>{% trans 'Total' %}</th>
             </tr>
@@ -104,48 +124,52 @@
         <tbody>
             {% for row in rows %}
             <tr>
-                <td>
-                    {{ row.sn }}
-                </td>
-                <td>
-                    {{ row.item }}
-                </td>
-                <td>
-                    {{ row.quantity }}
-                </td>
-                <td>
-                    {{ row.rate }}
-                </td>
-                <td>
-                    {{ row.unit }}
-                </td>
-                {% if object.tax != "no" and not object.tax_scheme %}
-                <td>
-                    {{ row.tax_scheme | default:''}}
-                </td>
-                {% endif %}
-                {% if request.company.settings.discount_on_each_purchase_particular %}
-                <td>
-                    {{ row.discount | default:''}}
-                </td>
-                {% endif %}
-                <td>
-                    {{ row.get_total }}
-                </td>
-                <td>
-                    {{ row.remarks }}
-                </td>
+                    {% if request.company.settings.show_purchase_voucher_sn %}
+                        <td class="{% print_view 'show_purchase_print_sn' %}">{{ row.sn }}</td>
+                    {% endif %}
+                    <td>{{ row.item }}</td>
+                    {% if request.company.settings.show_purchase_voucher_code %}
+                        <td class="{% print_view 'show_purchase_print_code' %}">{{ row.item.code }}</td>
+                    {% endif %}
+                    {% if request.company.settings.show_purchase_voucher_oem_number %}
+                        <td class="{% print_view 'show_purchase_print_oem_number' %}">{{ row.item.oem_no }}</td>
+                    {% endif %}
+                    <td>{{ row.quantity }}</td>
+                    <td>{{ row.rate }}</td>
+                    <td>{{ row.unit }}</td>
+                    {% if request.company.settings.show_purchase_voucher_discount %}
+                        <td class="{% print_view 'show_purchase_print_discount' %}">
+                            {{ row.discount | default:''}}
+                        </td>
+                    {% endif %}
+
+                    {% if request.company.settings.show_purchase_voucher_tax_scheme %}
+                        <td class="{% print_view 'show_purchase_print_tax_scheme' %}">
+{#                            {% if object.tax != "no" and not object.tax_scheme %}#}
+                                    {{ row.tax_scheme | default:''}}
+{#                            {% endif %}#}
+                        </td>
+                    {% endif %}
+                    {% if request.company.settings.show_lot %}
+                        <td>{{ row.lot }}</td>
+                    {% endif %}
+
+                    {% if request.company.settings.show_locations %}
+                        <td>{{ row.location.name }}</td>
+                    {% endif %}
+
+                    <td>{{ row.get_total }}</td>
             </tr>
             {% endfor %}
             <tr class="sub-total total">
-                <td colspan="{% colspan %}">
+                <td colspan="{{ request.company.settings.purchase_colspan }}">
                     {% trans 'Sub Total' %}
                 </td>
                 <td colspan="2">{{ object.sub_total }}</td>
 
             </tr>
             <tr class="tax-total total">
-                <td colspan="{% colspan %}">
+                <td colspan="{{ request.company.settings.purchase_colspan }}">
                     {% trans 'Tax Amount' %}
                 </td>
                 <td colspan="2">{{ object.tax_amount }}</td>
@@ -153,7 +177,7 @@
             </tr>
             {% if request.company.settings.discount_on_each_purchase_particular %}
             <tr class="discount total">
-                <td colspan="{% colspan %}">
+                <td colspan="{{ request.company.settings.purchase_colspan }}">
                     {% trans 'Discount Amount' %}
                 </td>
                 <td colspan="2">{{ object.row_discount_total }}</td>
@@ -162,7 +186,7 @@
             {% endif %}
             {% if request.company.settings.single_discount_on_whole_purchase %}
             <tr class="discount-voucher total">
-                <td colspan="{% colspan %}">
+                <td colspan="{{ request.company.settings.purchase_colspan }}">
                     {% trans 'Discount on voucher' %}
                 </td>
                 <td colspan="2">{{ object.discount |default:'0'}}</td>
@@ -170,7 +194,7 @@
             </tr>
             {% endif %}
             <tr class="total">
-                <td colspan="{% colspan %}">
+                <td colspan="{{ request.company.settings.purchase_colspan }}">
                     {% trans 'Grand Total' %}
                 </td>
                 <td colspan="2">{{ object.total }}</td>

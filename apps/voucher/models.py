@@ -10,8 +10,8 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.dispatch import receiver
 from django.contrib.contenttypes.fields import GenericForeignKey
-from njango.fields import BSDateField, today
 
+from njango.fields import BSDateField, today
 from ..inventory.models import Item, Unit, Location
 from ..ledger.models import Party, Account, JournalEntry
 from ..users.models import Company, User
@@ -545,11 +545,12 @@ class VoucherSetting(models.Model):
                                                          null=True, blank=True)
     sale_suggest_by_item = models.BooleanField(default=True, verbose_name='Suggest rate by item')
     sale_suggest_by_party_item = models.BooleanField(default=True, verbose_name='Suggest rate by item by party')
-    sale_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True, related_name='default_invoice_tax_scheme')
+    sale_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True,
+                                                related_name='default_invoice_tax_scheme')
     # discount_on_each_invoice_particular = models.BooleanField(default=False)
 
     show_sale_voucher_sn = models.BooleanField(default=True)
-    show_sale_voucher_sn = models.BooleanField(default=True)
+    show_sale_print_sn = models.BooleanField(default=True)
 
     show_sale_voucher_code = models.BooleanField(default=True)
     show_sale_print_code = models.BooleanField(default=True)
@@ -572,9 +573,11 @@ class VoucherSetting(models.Model):
     # Purchase voucher settings
     single_discount_on_whole_purchase = models.BooleanField(default=True)
 
-    purchase_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='exclusive', null=True,
+    purchase_default_tax_application_type = models.CharField(max_length=10, choices=tax_choices, default='exclusive',
+                                                             null=True,
                                                              blank=True)
-    purchase_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True, related_name='default_purchase_tax_scheme')
+    purchase_default_tax_scheme = models.ForeignKey(TaxScheme, blank=True, null=True,
+                                                    related_name='default_purchase_tax_scheme')
     purchase_suggest_by_item = models.BooleanField(default=True, verbose_name='Suggest rate by item')
     purchase_suggest_by_party_item = models.BooleanField(default=True, verbose_name='Suggest rate by item by party')
 
@@ -615,6 +618,24 @@ class VoucherSetting(models.Model):
 
     def add_expense_to_purchase(self):
         return self.enable_expense_in_purchase and self.add_expense_cost_to_purchase
+
+    def purchase_colspan(self):
+        colspan = 4
+        attr_list = [self.show_purchase_voucher_sn, self.show_purchase_voucher_code,
+                     self.show_purchase_voucher_oem_number,
+                     self.show_purchase_voucher_discount, self.show_purchase_voucher_tax_scheme, self.show_lot,
+                     self.show_locations]
+        colspan = colspan + attr_list.count(True)
+        return colspan
+
+    def sale_colspan(self):
+        colspan = 4
+        attr_list = [self.show_sale_voucher_sn, self.show_sale_voucher_code,
+                     self.show_sale_voucher_oem_number,
+                     self.show_sale_voucher_discount, self.show_sale_voucher_tax_scheme,
+                     self.show_locations]
+        colspan = colspan + attr_list.count(True)
+        return colspan
 
     extra_data = ['show_locations', 'show_lot']
 
