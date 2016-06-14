@@ -919,7 +919,7 @@ class PurchaseOrderDetailView(PurchaseOrderView, StockistMixin, DetailView):
         return context
 
 
-@group_required('Stokist')
+@group_required('Stockist')
 def save_purchase_order(request):
     if request.is_ajax():
         params = json.loads(request.body)

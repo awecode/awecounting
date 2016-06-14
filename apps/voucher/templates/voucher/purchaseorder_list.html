@@ -73,7 +73,7 @@
         <th>{% anchor voucher_no _('Voucher No.') %}</th>
         <th>{% anchor date _('Date') %}</th>
         <th>{% anchor party _('Party') %}</th>
-        {% ifrole "Stokist" %}
+        {% ifrole "Stockist" %}
         <th>{% trans "Action" %}</th>
         {% endrole %}
         </thead>
@@ -91,7 +91,7 @@
                     {{ agent_purchase_order.party }}
                 </a>
             </td>
-            {% ifrole "Stokist" %}
+            {% ifrole "Stockist" %}
             <td>
                 <a href="{% url 'purchase_order_edit' agent_purchase_order.id %}">{% trans "Edit" %}</a>
             </td>
