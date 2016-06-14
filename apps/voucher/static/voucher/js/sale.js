@@ -431,76 +431,79 @@ function SaleRow(row, sale_vm) {
         return '<div>' + obj.full_name + '</div>';
     }
 
-    // Location Logic Start
-    self.sale_row_locations = ko.observableArray();
-    self.sale_row_location_error = ko.observable();
-    self.get_item_locations = ko.computed(function(){
-        // console.log(self.id());
-        // console.log('hey', self.item_id(), self.quantity());
-        if(self.item_id()){
-            if(typeof(self.id) != 'undefined'){
-                 $.ajax({
-                    url: '/voucher/sale_row_onedit_location_item_details/' + parseInt(self.id()) + '/' + parseInt(self.item_id()),
-                    dataType: 'json',
-                    async: false,
-                    success: function (res1) {
-                        self.sale_row_locations(ko.utils.arrayMap(res1.data, function(obj) {
-                            return new SaleRowLocation(obj)
-                        }));
-                    }
-                 });
-            }else{
+    if(voucher_settings.show_locations){
 
-                $.ajax({
-                    url: '/voucher/get_item_locations/' + parseInt(self.item_id()),
-                    dataType: 'json',
-                    async: false,
-                    success: function (res) {
-                        self.sale_row_locations(ko.utils.arrayMap(res.data, function(obj) {
-                            return new SaleRowLocation(obj)
-                        }));
-                    }
-                });
-            };
-        };
-
-    });
-    self.total_out4mloc = ko.computed(function(){
-        var total = 0;
-        for(var object of self.sale_row_locations()){
-            if(object.selected_qty()){
-                total += parseInt(object.selected_qty());
-            };
-        };
-        if (self.quantity()){
-            if (total > parseInt(self.quantity())){
-                self.sale_row_location_error('Quantity in locations exceeds required quantity');
-                // console.log('set');
-            }else if (total < parseInt(self.quantity())){
-                self.sale_row_location_error('Quantity in locations is less than required quantity');
-                // console.log('unset', total, self.quantity());
-            }else{
-                self.sale_row_location_error(null);
-            };
-        };
-    });
-
-    self.suggest_qty_4m_location = ko.computed(function(){
-        if(self.quantity()){
-            var remain_qty = self.quantity();
-            // self.sale_row_locations([]);
-            //
-            for(var obj of self.sale_row_locations()){
-                if(remain_qty-obj.qty() > 0){
-                    obj.selected_qty(obj.qty());
-                    remain_qty -= obj.qty();
+        // Location Logic Start
+        self.sale_row_locations = ko.observableArray();
+        self.sale_row_location_error = ko.observable();
+        self.get_item_locations = ko.computed(function(){
+            // console.log(self.id());
+            // console.log('hey', self.item_id(), self.quantity());
+            if(self.item_id()){
+                if(typeof(self.id) != 'undefined'){
+                    $.ajax({
+                        url: '/voucher/sale_row_onedit_location_item_details/' + parseInt(self.id()) + '/' + parseInt(self.item_id()),
+                        dataType: 'json',
+                        async: false,
+                        success: function (res1) {
+                            self.sale_row_locations(ko.utils.arrayMap(res1.data, function(obj) {
+                                return new SaleRowLocation(obj)
+                            }));
+                        }
+                    });
                 }else{
-                    obj.selected_qty(remain_qty);
-                    remain_qty -= remain_qty;
+
+                    $.ajax({
+                        url: '/voucher/get_item_locations/' + parseInt(self.item_id()),
+                        dataType: 'json',
+                        async: false,
+                        success: function (res) {
+                            self.sale_row_locations(ko.utils.arrayMap(res.data, function(obj) {
+                                return new SaleRowLocation(obj)
+                            }));
+                        }
+                    });
                 };
             };
-        };
-    });
-    // Location logic end
+
+        });
+        self.total_out4mloc = ko.computed(function(){
+            var total = 0;
+            for(var object of self.sale_row_locations()){
+                if(object.selected_qty()){
+                    total += parseInt(object.selected_qty());
+                };
+            };
+            if (self.quantity()){
+                if (total > parseInt(self.quantity())){
+                    self.sale_row_location_error('Quantity in locations exceeds required quantity');
+                    // console.log('set');
+                }else if (total < parseInt(self.quantity())){
+                    self.sale_row_location_error('Quantity in locations is less than required quantity');
+                    // console.log('unset', total, self.quantity());
+                }else{
+                    self.sale_row_location_error(null);
+                };
+            };
+        });
+
+        self.suggest_qty_4m_location = ko.computed(function(){
+            if(self.quantity()){
+                var remain_qty = self.quantity();
+                // self.sale_row_locations([]);
+                //
+                for(var obj of self.sale_row_locations()){
+                    if(remain_qty-obj.qty() > 0){
+                        obj.selected_qty(obj.qty());
+                        remain_qty -= obj.qty();
+                    }else{
+                        obj.selected_qty(remain_qty);
+                        remain_qty -= remain_qty;
+                    };
+                };
+            };
+        });
+        // Location logic end
+    };
 
 }
