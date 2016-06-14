@@ -14,7 +14,7 @@ from ..voucher.models import Sale
 from .models import Item, UnitConversion, Unit, JournalEntry, InventoryAccount, Location
 from .forms import ItemForm, UnitForm, UnitConversionForm, LocationForm
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView, \
-    StockistMixin, AccountantMixin, StockistCashierMixin
+    StockistMixin, StockistCashierMixin
 
 
 @login_required
@@ -54,7 +54,7 @@ def item_search(request):
 
 def item(request, pk=None):
     if pk:
-        item_obj = get_object_or_404(Item, id=pk, company=request.company)
+        item_obj = get_object_or_404(Item, id=pk, company__in=request.company.get_all())
         scenario = 'Update'
         unit = item_obj.unit.id
     else:
@@ -69,7 +69,8 @@ def item(request, pk=None):
             item_property = request.POST.getlist('property')
             unit_id = request.POST.get('unit')
             item_obj.unit_id = int(unit_id)
-            item_obj.company = request.company
+            if not item_obj.company_id:
+                item_obj.company = request.company
             if request.FILES != {}:
                 item_obj.image = request.FILES['image']
             other_properties = {}
@@ -292,12 +293,10 @@ class LocationCreate(AjaxableResponseMixin, CreateView):
 class LocationList(ListView):
     model = Location
 
-    def get_context_data(self, **kwargs):
-        context = super(LocationList, self).get_context_data(**kwargs)
-        # import ipdb
-        # ipdb.set_trace()
-        # context['object_list'] = [{'loc':obj, 'loc_detail': obj.contains.all()}  for obj in context['object_list']]
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super(LocationList, self).get_context_data(**kwargs)
+    #     context['object_list'] = [{'loc':obj, 'loc_detail': obj.contains.all()}  for obj in context['object_list']]
+    #     return context
 
 
 class LocationUpdate(UpdateView):
@@ -306,6 +305,7 @@ class LocationUpdate(UpdateView):
     form_class = LocationForm
     success_url = reverse_lazy('location_list')
     # fields = ['code', 'name', 'enabled', 'parent']
+
 
 class LocationDelete(DeleteView):
     model = Location
@@ -321,7 +321,6 @@ def get_items_in_location(request, loc_id=None):
                       'location_name': obj.name,
                       'location_code': obj.code
                   })
-
 
 # def view_inventory_account_with_rate(request, pk):
 #     obj= get_object_or_404(InventoryAccount, pk=pk, company=request.company)

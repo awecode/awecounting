@@ -1,5 +1,5 @@
 {% extends "_base.html" %}
-{% load i18n %}
+{% load i18n filters %}
 
 {% block title %}{{ account.name }} {% trans 'Ledger View' %}
 {% endblock %}
@@ -24,7 +24,11 @@
         });
     </script>
 {% endblock %}
-{% load filters %}
+
+{% block header-buttons %}
+    <a class="btn btn-success btn-raised" href="{% url 'account_edit' account.pk %}">{% trans "Edit" %}</a>
+{% endblock %}
+
 {% block content %}
     <div class="well">
         <div class="row">

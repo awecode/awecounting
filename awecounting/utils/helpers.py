@@ -1,5 +1,6 @@
-from django.http import JsonResponse
 import json
+
+from django.http import JsonResponse
 
 
 def save_model(model, values):

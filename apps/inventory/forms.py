@@ -13,20 +13,24 @@ class ItemForm(HTML5BootstrapModelForm, KOModelForm, TranslationModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
         super(ItemForm, self).__init__(*args, **kwargs)
+        if self.instance.company_id:
+            self.company = self.instance.company
+        else:
+            self.company = self.request.company
 
         if self.instance.account:
             self.fields['account_no'].initial = self.instance.account.account_no
         else:
-            self.fields['account_no'].initial = InventoryAccount.get_next_account_no(company=self.request.company)
+            self.fields['account_no'].initial = InventoryAccount.get_next_account_no(company=self.company)
         if self.instance.id:
             self.fields['account_no'].widget = forms.HiddenInput()
-        self.fields['unit'].queryset = Unit.objects.filter(company=self.request.company)
+        self.fields['unit'].queryset = Unit.objects.filter(company=self.company)
 
     def clean_account_no(self):
         if not self.cleaned_data['account_no'].isdigit():
             raise forms.ValidationError("The account no. must be a number.")
         try:
-            existing = InventoryAccount.objects.get(account_no=self.cleaned_data['account_no'], company=self.request.company)
+            existing = InventoryAccount.objects.get(account_no=self.cleaned_data['account_no'], company=self.company)
             if self.instance.account_id is not existing.id:
                 raise forms.ValidationError("The account no. " + str(
                     self.cleaned_data['account_no']) + " is already in use.")
