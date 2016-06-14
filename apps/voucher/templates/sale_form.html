@@ -211,7 +211,7 @@
 
                 <!-- /ko -->
                 <tr class="sub-total total">
-                    <td colspan="9">
+                    <td colspan="{% colspan %}">
                         {% trans 'Sub Total' %}
                     </td>
                     <td colspan="2" data-bind="text: $root.sub_total(), localize: 2"></td>
@@ -219,7 +219,7 @@
                 </tr>
                 {% if request.company.settings.discount_on_each_invoice_particular %}
                     <tr class="discount-total total">
-                        <td colspan="9">
+                        <td colspan="{% colspan %}">
                             {% trans 'Discounted Amount' %}
                         </td>
                         <td colspan="2" data-bind="text: $root.total_discount(), localize: 2"></td>
@@ -227,7 +227,7 @@
                 {% endif %}
                 {% if request.company.settings.single_discount_on_whole_invoice %}
                     <tr class="discount-total total">
-                        <td colspan="9">
+                        <td colspan="{% colspan %}">
                             {% trans 'Discount' %}
                         </td>
                         <td colspan="2"
@@ -236,20 +236,20 @@
                 {% endif %}
                 <!-- ko if: $root.tax()!='no' -->
                 <tr class="taxable-amount total">
-                    <td colspan="9">
+                    <td colspan="{% colspan %}">
                         {% trans 'Taxable Amount' %}
                     </td>
                     <td colspan="2" data-bind="text: $root.taxable_amount(), localize: 2"></td>
                 </tr>
                 <tr class="tax-total total">
-                    <td colspan="9">
+                    <td colspan="{% colspan %}">
                         {% trans 'Tax Amount' %}
                     </td>
                     <td colspan="2" data-bind="text: $root.tax_amount(), localize: 2"></td>
                 </tr>
                 <!-- /ko -->
                 <tr class="grand-total total">
-                    <td colspan="9">
+                    <td colspan="{% colspan %}">
                         {% trans 'Grand Total' %}
                     </td>
                     <td colspan="2" data-bind="text: $root.grand_total(), localize: 2"></td>
