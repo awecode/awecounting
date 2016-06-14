@@ -5,7 +5,6 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.db.models import Q
-from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
 from ..users.models import Pin
@@ -14,7 +13,7 @@ from ..voucher.models import Sale
 from .models import Item, UnitConversion, Unit, JournalEntry, InventoryAccount, Location
 from .forms import ItemForm, UnitForm, UnitConversionForm, LocationForm
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView, \
-    StockistMixin, StockistCashierMixin
+    StockistMixin, StockistCashierMixin, ListView
 
 
 @login_required
@@ -98,6 +97,7 @@ class ItemView(CompanyView):
     model = Item
     form_class = ItemForm
     success_url = reverse_lazy('item_list')
+    search_fields = ['company__name', 'name', 'code', 'size', 'description', 'other_properties', 'unit__name', 'selling_rate']
 
 
 # def form_valid(self, form):
