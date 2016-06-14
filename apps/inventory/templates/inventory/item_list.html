@@ -24,7 +24,7 @@
             <th>{% anchor name _('Name') %}</th>
             <th>{% trans 'Other Properties' %}</th>
             {% if request.company.has_branches %}
-                <th>{% trans 'Branch' %}</th>
+                <th>{% anchor company _('Branch') %}</th>
             {% endif %}
             <th>{% trans 'Ledger' %}</th>
             </thead>
