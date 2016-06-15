@@ -47,13 +47,13 @@
 
         <h3>{% trans 'Direct Income' %}</h3>
 
-        <!-- ko if: income_node.nodes -->
+        <!-- ko if: income_node().nodes -->
         <div class="report-tree net_cr" data-bind="template: { name: 'tree-template', 'data': income_node }"></div>
         <!-- /ko -->
 
         <h3>{% trans 'Less' %}: {% trans 'Direct Expenses' %}</h3>
 
-        <!-- ko if: expense_node.nodes -->
+        <!-- ko if: expense_node().nodes -->
         <div class="report-tree net_dr" data-bind="template: { name: 'tree-template', 'data': expense_node }"></div>
         <!-- /ko -->
 
@@ -65,13 +65,13 @@
 
         <h3>{% trans 'Indirect Income' %}</h3>
 
-        <!-- ko if: indirect_income_node.nodes -->
+        <!-- ko if: indirect_income_node().nodes -->
         <div class="report-tree net_cr" data-bind="template: { name: 'tree-template', 'data': indirect_income_node }"></div>
         <!-- /ko -->
 
         <h3>{% trans 'Less' %}: {% trans 'Indirect Expenses' %}</h3>
 
-        <!-- ko if: indirect_expense_node.nodes -->
+        <!-- ko if: indirect_expense_node().nodes -->
         <div class="report-tree net_dr" data-bind="template: { name: 'tree-template', 'data': indirect_expense_node }"></div>
         <!-- /ko -->
 

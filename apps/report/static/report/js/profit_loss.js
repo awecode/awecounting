@@ -87,10 +87,10 @@ var TreeModel = function () {
     self.tree_data = ko.observable();
     self.total_dr = ko.observable();
     self.total_cr = ko.observable();
-    self.income_node = ko.observable();
-    self.indirect_income_node = ko.observable();
-    self.expense_node = ko.observable();
-    self.indirect_expense_node = ko.observable();
+    self.income_node = ko.observable({'nodes': ko.observableArray([])});
+    self.indirect_income_node = ko.observable({'nodes': ko.observableArray([])});
+    self.expense_node = ko.observable({'nodes': ko.observableArray([])});
+    self.indirect_expense_node = ko.observable({'nodes': ko.observableArray([])});
 
     self.load_data = function (data) {
         self.settings = ko.mapping.fromJS(data.settings);
@@ -98,22 +98,25 @@ var TreeModel = function () {
         self.tree_data(new NodeModel(data, self.settings));
         self.total_dr(data.total_dr);
         self.total_cr(data.total_cr);
-        self.income_node(get_by_name(self.tree_data().nodes(), 'Income'));
-
-        if (self.income_node()) {
-            self.income_node()['balance'] = 'cr';
-            self.indirect_income_node(get_by_name(self.income_node().nodes(), 'Indirect Income'));
-            self.indirect_income_node()['balance'] = 'cr';
-            self.income_node().nodes.remove(self.indirect_income_node())
+        var income = get_by_name(self.tree_data().nodes(), 'Income');
+        
+        if (income) {
+            self.income_node(income);
+            var indirect_income = get_by_name(self.income_node().nodes(), 'Indirect Income');
+            if (indirect_income) {
+                self.indirect_income_node(indirect_income);
+                self.income_node().nodes.remove(self.indirect_income_node())
+            }
         }
-
-        self.expense_node(get_by_name(self.tree_data().nodes(), 'Expenses'));
-
-        if (self.expense_node()) {
-            self.expense_node()['balance'] = 'dr';
-            self.indirect_expense_node(get_by_name(self.expense_node().nodes(), 'Indirect Expenses'));
-            self.indirect_expense_node()['balance'] = 'dr';
-            self.expense_node().nodes.remove(self.indirect_expense_node())
+        
+        var expense = get_by_name(self.tree_data().nodes(), 'Expenses');
+        if (expense) {
+            self.expense_node(expense);
+            var indirect_expense = get_by_name(self.expense_node().nodes(), 'Indirect Expenses');
+            if (indirect_expense) {
+                self.indirect_expense_node(indirect_expense);
+                self.expense_node().nodes.remove(self.indirect_expense_node())
+            }
         }
     };
 
