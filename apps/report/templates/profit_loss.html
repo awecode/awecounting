@@ -46,7 +46,17 @@
         <hr/>
 
 
-        <div id="trial-balance" data-bind="template: { name: 'tree-template', data: tree_data }"></div>
+        <h3>{% trans 'Direct Income' %}</h3>
+        <div class="report-tree" data-bind="template: { name: 'tree-template', data: income_node }"></div>
+        <h3>{% trans 'Less' %}: {% trans 'Direct Expenses' %}</h3>
+        <div class="report-tree" data-bind="template: { name: 'tree-template', data: expense_node }"></div>
+        <h3><u>{% trans 'Gross Profit' %}</u></h3>
+        <h3>{% trans 'Indirect Income' %}</h3>
+        <div class="report-tree" data-bind="template: { name: 'tree-template', data: indirect_income_node }"></div>
+        <h3>{% trans 'Less' %}: {% trans 'Indirect Expenses' %}</h3>
+        <div class="report-tree" data-bind="template: { name: 'tree-template', data: indirect_expense_node }"></div>
+        <h3><u>{% trans 'Net Profit' %}</u></h3>
+        
 
 
         <script type="text/html" id="tree-template">

@@ -1237,7 +1237,13 @@ get_by_name = function (array, name) {
         array = array()
     }
     return $.grep(array, function (e) {
-        return e.name == name;
+        var obj_name;
+        if (typeof e.name == 'function'){
+            obj_name = e.name();
+        }else{
+            obj_name = e.name;
+        }
+        return obj_name == name;
     })[0];
 }
 

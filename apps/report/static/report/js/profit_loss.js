@@ -78,6 +78,10 @@ var TreeModel = function () {
     self.tree_data = ko.observable();
     self.total_dr = ko.observable();
     self.total_cr = ko.observable();
+    self.income_node = ko.observable();
+    self.indirect_income_node = ko.observable();
+    self.expense_node = ko.observable();
+    self.indirect_expense_node = ko.observable();
 
     self.load_data = function (data) {
         console.log(data);
@@ -86,6 +90,15 @@ var TreeModel = function () {
         self.tree_data(new NodeModel(data, self.settings));
         self.total_dr(data.total_dr);
         self.total_cr(data.total_cr);
+        self.income_node(get_by_name(self.tree_data().nodes(), 'Income'));
+        if (self.income_node())
+            self.indirect_income_node(get_by_name(self.income_node().nodes(), 'Indirect Income'));
+            self.income_node().nodes.remove(self.indirect_income_node())
+        
+        self.expense_node(get_by_name(self.tree_data().nodes(), 'Expenses'));
+        if (self.expense_node())
+            self.indirect_expense_node(get_by_name(self.expense_node().nodes(), 'Indirect Expenses'));
+            self.expense_node().nodes.remove(self.indirect_expense_node())
     };
 
     self.save_settings = function () {

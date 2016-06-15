@@ -623,21 +623,21 @@ ul.list-group > li.list-group-item {
 
 /* EO Settings */
 
-/* Trial Balance */
+/* Reports */
 
-#trial-balance ul {
+.report-tree ul {
     list-style-type: none;
     padding-left: 0;
 }
 
-#trial-balance ul li {
+.report-tree ul li {
     /*padding-top: 0.5em;*/
     border-bottom: 1px solid #FAFAFA;
     border-collapse: collapse;
 
 }
 
-#trial-balance {
+.report-tree {
     padding-left: 0;
 }
 
@@ -676,7 +676,7 @@ ul.mega-dropdown-menu li {
     padding-top: 0.5em !important;
 }
 
-/* EO Trial Balance */
+/* EO Reports */
 
 .row.ul div {
     text-decoration: underline;
