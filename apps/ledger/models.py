@@ -191,9 +191,10 @@ class Account(models.Model):
         if len(transactions) > 0:
             return transactions[0].current_dr
         return 0
-    
+
     def get_voucher_no(self):
-        # Use code as voucher number in ledger view when an account is the source of journal entry for opening balance transactions
+        # Use code as voucher number in ledger view when 
+        # an account is the source of journal entry for opening balance transactions
         return self.code
 
     def save(self, *args, **kwargs):
@@ -225,7 +226,6 @@ class Account(models.Model):
             entries.append(['cr', self, self.opening_cr])
             self._original_opening_cr = self.opening_cr
             set_transactions(opening_balance_equity, datetime.date.today(), *entries)
-            
 
     def __unicode__(self):
         return self.name
