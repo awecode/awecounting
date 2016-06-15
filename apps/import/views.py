@@ -1,4 +1,6 @@
 from zipfile import BadZipfile
+from django.core.urlresolvers import reverse, reverse_lazy
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from awecounting.utils.helpers import zero_for_none
 from ..ledger.models import Party, Account
@@ -40,6 +42,7 @@ def import_debtor_tally(request):
                     # account.save()
                     party.customer_account.save()
                     party.save()
+            return HttpResponseRedirect(reverse('party_list'))
     form = ImportDebtor()
     return render(request, 'import/import_debtor_tally.html', {'form': form})
 
@@ -50,7 +53,7 @@ def import_stock_tally(request):
         wb = load_workbook(file)
         sheets = wb.worksheets
         for sheet in sheets:
-            category = ItemCategory.object.create(name=sheet.title, company=request.company)
+            category, category_created = ItemCategory.object.get_or_create(name=sheet.title, company=request.company)
     form = ImportDebtor()
     return render(request, 'import/import_debtor_tally.html', {'form': form})
 
