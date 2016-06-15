@@ -1,6 +1,7 @@
 import datetime
 
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.core.mail import mail_admins
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
@@ -276,26 +277,27 @@ def set_transactions(submodel, date, *args):
         defaults={
             'date': date
         })
+    dr_total = 0
+    cr_total = 0
     for arg in args:
         # transaction = Transaction(account=arg[1], dr_amount=arg[2])
         matches = journal_entry.transactions.filter(account=arg[1])
+        val = round(float(zero_for_none(arg[2])), 2)
         if not matches:
             transaction = Transaction()
             transaction.account = arg[1]
             if arg[0] == 'dr':
-                transaction.dr_amount = round(float(zero_for_none(arg[2])), 2)
+                transaction.dr_amount = val
                 transaction.cr_amount = None
-                transaction.account.current_dr = none_for_zero(
-                    round(zero_for_none(transaction.account.current_dr) + transaction.dr_amount, 2)
-                )
-                alter(arg[1], date, round(float(arg[2]), 2), 0)
+                transaction.account.current_dr = none_for_zero(zero_for_none(transaction.account.current_dr) + val)
+                alter(arg[1], date, val, 0)
+                dr_total += val
             if arg[0] == 'cr':
-                transaction.cr_amount = round(float(zero_for_none(arg[2])), 2)
+                transaction.cr_amount = val
                 transaction.dr_amount = None
-                transaction.account.current_cr = none_for_zero(
-                    round(zero_for_none(transaction.account.current_cr) + transaction.cr_amount, 2)
-                )
+                transaction.account.current_cr = none_for_zero(zero_for_none(transaction.account.current_cr) + val)
                 alter(arg[1], date, 0, float(arg[2]))
+                cr_total += val
             transaction.current_dr = none_for_zero(
                 round(zero_for_none(transaction.account.get_dr_amount(date + datetime.timedelta(days=1)))
                       + zero_for_none(transaction.dr_amount), 2)
@@ -319,17 +321,19 @@ def set_transactions(submodel, date, *args):
 
             # save new dr_amount and add it to current_dr/cr
             if arg[0] == 'dr':
-                dr_difference = float(arg[2]) - zero_for_none(transaction.dr_amount)
+                dr_difference = val - zero_for_none(transaction.dr_amount)
                 cr_difference = zero_for_none(transaction.cr_amount) * -1
                 alter(arg[1], transaction.journal_entry.date, dr_difference, cr_difference)
-                transaction.dr_amount = float(arg[2])
+                transaction.dr_amount = val
                 transaction.cr_amount = None
+                dr_total += transaction.dr_amount
             else:
-                cr_difference = float(arg[2]) - zero_for_none(transaction.cr_amount)
+                cr_difference = val - zero_for_none(transaction.cr_amount)
                 dr_difference = zero_for_none(transaction.dr_amount) * -1
                 alter(arg[1], transaction.journal_entry.date, dr_difference, cr_difference)
-                transaction.cr_amount = float(arg[2])
+                transaction.cr_amount = val
                 transaction.dr_amount = None
+                cr_total += transaction.cr_amount
 
             transaction.current_dr = none_for_zero(zero_for_none(transaction.current_dr) + dr_difference)
             transaction.current_cr = none_for_zero(zero_for_none(transaction.current_cr) + cr_difference)
@@ -344,6 +348,10 @@ def set_transactions(submodel, date, *args):
             journal_entry.transactions.add(transaction, bulk=False)
         except TypeError:  # for Django <1.9
             journal_entry.transactions.add(transaction)
+    if dr_total != cr_total:
+        mail_admins('Dr/Cr mismatch!',
+                    'Dr/Cr mismatch from {0}, ID: {1}, Dr: {2}, Cr: {3}'.format(str(submodel), submodel.id, dr_total, cr_total))
+        raise RuntimeError('Dr/Cr mismatch!')
 
 
 def delete_rows(rows, model):

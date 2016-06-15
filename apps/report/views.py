@@ -11,6 +11,9 @@ from apps.report.models import ReportSetting
 from awecounting.utils.helpers import save_qs_from_ko, get_dict
 from awecounting.utils.mixins import group_required, SuperOwnerMixin, UpdateView
 
+BALANCE_SHEET = ['Equity', 'Assets', 'Liabilities']
+PL_ACCOUNT = ['Income', 'Expenses']
+
 
 def dict_merge(root, node, combined):
     # Merge only if node with same name exists already in the list of dicts
@@ -37,7 +40,7 @@ def dict_merge(root, node, combined):
     return root
 
 
-def get_trial_balance_data(root_company):
+def get_trial_balance_data(root_company, mode=None):
     if root_company.show_combined_reports():
         companies = root_company.get_all()
     else:
@@ -52,7 +55,8 @@ def get_trial_balance_data(root_company):
 
     for company in companies:
         root_categories = Category.objects.filter(company=company, parent=None)
-
+        if mode:
+            root_categories = root_categories.filter(name__in=mode)
         for root_category in root_categories:
             node = Node(root_category)
             root['nodes'] = dict_merge(root['nodes'], node.get_data(), combined)
