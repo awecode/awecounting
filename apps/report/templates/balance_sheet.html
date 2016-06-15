@@ -4,115 +4,163 @@
 {% block page-title %}{% trans 'Balance Sheet' %}{% endblock %}
 
 {% block extrahead %}
+    <script src="{% static 'report/js/balance_sheet.js' %}"></script>
+    <script src="{% static 'js/libs/knockout.mapping.js' %}"></script>
+    <script>
+        trial_balance_data = {{ data|jsonify }};
+    </script>
 {% endblock %}
 
 {% block header-buttons %}
-    {#    <ul class="nav navbar-right">#}
-    {#        <li class="dropdown mega-dropdown ">#}
-    {#            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">#}
-    {#                <i class="fa fa-cog"></i> {% trans 'Settings' %}<span class="fa fa-chevron-down pull-right"></span>#}
-    {#            </a>#}
-    {##}
-    {#            <ul class="dropdown-menu mega-dropdown-menu">#}
-    {#                <div data-bind="foreachprop: settings">#}
-    {#                    <li>#}
-    {#                        <input type="checkbox" data-bind="checked: value, attr:{'id': key}">#}
-    {#                        <label data-bind="text: name, attr:{'for': key}"></label>#}
-    {#                    </li>#}
-    {#                </div>#}
-    {#                <li>#}
-    {#                    <button data-bind="click: save_settings" class="btn btn-raised btn-info">{% trans 'Save Settings' %}</button>#}
-    {#                </li>#}
-    {#            </ul>#}
-    {#        </li>#}
-    {#    </ul>#}
+    <ul class="nav navbar-right">
+        <li class="dropdown mega-dropdown ">
+            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
+                <i class="fa fa-cog"></i> {% trans 'Settings' %}<span class="fa fa-chevron-down pull-right"></span>
+            </a>
+
+            <ul class="dropdown-menu mega-dropdown-menu">
+                <div data-bind="foreachprop: settings">
+                    <li>
+                        <input type="checkbox" data-bind="checked: value, attr:{'id': key}">
+                        <label data-bind="text: name, attr:{'for': key}"></label>
+                    </li>
+                </div>
+                <li>
+                    <button data-bind="click: save_settings" class="btn btn-raised btn-info">{% trans 'Save Settings' %}</button>
+                </li>
+            </ul>
+        </li>
+    </ul>
 {% endblock %}
 
 {% block content %}
 
+    {#    {{ data }}#}
+
     <div class="well">
-        {#    <table class="table table-responsive table-striped">#}
-        {#        <thead>#}
-        {#        <tr>#}
-        {#            <th>{% trans 'Liabilities & Equity' %}</th>#}
-        {#            <th>{% trans 'Assets' %}</th>#}
-        {#        </tr>#}
-        {#        </thead>#}
-        {#        <tbody>#}
-        {#        {% for row in liabilities %}#}
-        {#            <tr>#}
-        {#            <div class="row">#}
-        {#                <div class="col-sm-6"></div>#}
-        {#                <div class="col-sm-6"></div>#}
-        {#            </div>#}
-        {#            </tr>#}
-        {#        {% endfor %}#}
-        {#        </tbody>#}
-        {#    </table>#}
+
+
         <div class="row">
-            <div class="col-sm-6"><strong>{% trans 'Liabilities & Equity' %}</strong></div>
-            <div class="col-sm-6"><strong>{% trans 'Assets' %}</strong></div>
+            <div class="col-xs-6">
+                <h4>{% trans 'Equity & Liabilities' %}</h4>
+                <hr/>
+                <!-- ko if: equity_node().nodes -->
+                <h5>{% trans 'Equity' %}</h5>
+
+                <div class="report-tree net_cr" data-bind="template: { name: 'tree-template', 'data': equity_node }"></div>
+                <!-- /ko -->
+                <!-- ko if: liabilities_node().nodes -->
+                <h5>{% trans 'Liabilities' %}</h5>
+
+                <div class="report-tree net_cr" data-bind="template: { name: 'tree-template', 'data': liabilities_node }"></div>
+                <!-- /ko -->
+            </div>
+
+            <div class="col-xs-6">
+                <h4>{% trans 'Assets' %}</h4>
+                <hr/>
+                <!-- ko if: assets_node().nodes -->
+                <div class="report-tree net_dr" data-bind="template: { name: 'tree-template', 'data': assets_node }"></div>
+                <!-- /ko -->
+
+            </div>
         </div>
 
         <div class="row">
-            <div class="col-sm-6">
-                {% for row in equities %}
-                    <div class="tb-row row">
-                        <div class="col-sm-6">{{ row.0 }}</div>
-                        <div class="col-sm-6">{{ row.1 }}</div>
+            <div class="col-xs-6">
+                <div class="row">
+                    <div class="col-xs-6">
                     </div>
-                {% endfor %}
-                <div class="tb-row row">
-                    <div class="col-sm-12">
-                        <u>{% trans 'Liabilities' %}</u>
-                    </div>
-                </div>
-                {% for row in liabilities %}
-                    <div class="tb-row row">
-                        <div class="col-sm-6">{{ row.0 }}</div>
-                        <div class="col-sm-6">{{ row.1 }}</div>
-                    </div>
-                {% endfor %}
-                <div class="tb-row row">
-                    <div class="col-sm-6">
-                    </div>
-                    <div class="col-sm-6">
-                        _________________
-                    </div>
-                </div>
-                <div class="tb-row row">
-                    <div class="col-sm-6">
-                    </div>
-                    <div class="col-sm-6">
-                        {{ liabilities_total }}
+                    <div class="col-xs-6 border-top">
+                        <span data-bind="text: equity_liabilities_total"></span>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6">
-                {% for row in assets %}
-                    <div class="tb-row row">
-                        <div class="col-sm-6">{{ row.0 }}</div>
-                        <div class="col-sm-6">{{ row.1 }}</div>
+            <div class="col-xs-6">
+                <div class="row">
+                    <div class="col-xs-6">
                     </div>
-                {% endfor %}
-                <div class="tb-row row">
-                    <div class="col-sm-6">
-                    </div>
-                    <div class="col-sm-6">
-                        _________________
-                    </div>
-                </div>
-                <div class="tb-row row">
-                    <div class="col-sm-6">
-                    </div>
-                    <div class="col-sm-6">
-                        {{ assets_total }}
+                    <div class="col-xs-6 border-top">
+                        <span data-bind="text: assets_total"></span>
                     </div>
                 </div>
             </div>
         </div>
+
+
+        <script type="text/html" id="tree-template">
+
+            <ul data-bind="foreach: nodes">
+                <!-- ko if: is_visible() -->
+                <li>
+                <span data-bind="
+                    template: { name: 'node-name-template', data: $data },
+                    css: { 'pointer-icon': nodes().length > 0 },
+                    click: toggleVisibility"></span>
+
+                    <div data-bind="template: { name: 'folder-template', data: $data }, visible: isExpanded"></div>
+                </li>
+                <!-- /ko -->
+            </ul>
+
+        </script>
+
+        <script type="text/html" id="folder-template">
+
+            <ul data-bind="foreach: nodes">
+                <!-- ko if: is_visible() -->
+                <li>
+
+                    <div data-bind="template: { name: 'node-template', data: $data }"></div>
+
+                </li>
+                <!-- /ko -->
+            </ul>
+
+        </script>
+
+        <script type="text/html" id="node-template">
+
+            <span data-bind="
+            template: { name: 'node-name-template', data: $data },
+            css: { 'pointer-icon': nodes().length > 0 },
+            click: toggleVisibility"></span>
+
+            <!-- ko if: nodes().length !== 0 -->
+
+            <div data-bind="template: { name: 'folder-template', data: $data }, visible: isExpanded"></div>
+
+            <!-- /ko -->
+
+        </script>
+
+        <script type="text/html" id="node-name-template">
+            <!-- ko if: is_row_visible() -->
+            <div class="row tb-row">
+                <div class="col-xs-6" data-bind="style: get_style">
+                <span class="hidden-print tree-item" data-bind="
+        css: { 
+            'fa fa-minus': isExpanded() && nodes().length > 0, 
+            'fa fa-plus': !isExpanded() && nodes().length > 0,
+            'pl-15': nodes().length === 0 
+        }
+        "></span>
+
+                    <a data-bind="
+        text: name, 
+        attr: { 'title': type, 'href': get_url() }, 
+        tooltip: { delay: { show: 500, hide: 10 } }
+        ">
+
+                    </a>
+                </div>
+                <div class="col-xs-6 net_dr" data-bind="text: net_dr()"></div>
+                <div class="col-xs-6 net_cr" data-bind="text: net_cr()"></div>
+            </div>
+            <!-- /ko -->
+
+        </script>
+
     </div>
-
-
 
 {% endblock %}

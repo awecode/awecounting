@@ -87,10 +87,9 @@ var TreeModel = function () {
     self.tree_data = ko.observable();
     self.total_dr = ko.observable();
     self.total_cr = ko.observable();
-    self.income_node = ko.observable({'nodes': ko.observableArray([])});
-    self.indirect_income_node = ko.observable({'nodes': ko.observableArray([])});
-    self.expense_node = ko.observable({'nodes': ko.observableArray([])});
-    self.indirect_expense_node = ko.observable({'nodes': ko.observableArray([])});
+    self.equity_node = ko.observable({'nodes': ko.observableArray([])});
+    self.liabilities_node = ko.observable({'nodes': ko.observableArray([])});
+    self.assets_node = ko.observable({'nodes': ko.observableArray([])});
 
     self.load_data = function (data) {
         self.settings = ko.mapping.fromJS(data.settings);
@@ -99,55 +98,46 @@ var TreeModel = function () {
         self.total_dr(data.total_dr);
         self.total_cr(data.total_cr);
 
-        var income = get_by_name(self.tree_data().nodes(), 'Income');
-        if (income) {
-            self.income_node(income);
-            var indirect_income = get_by_name(self.income_node().nodes(), 'Indirect Income');
-            if (indirect_income) {
-                self.indirect_income_node(indirect_income);
-                self.income_node().nodes.remove(self.indirect_income_node())
-            }
+        var equity = get_by_name(self.tree_data().nodes(), 'Equity');
+        if (equity) {
+            self.equity_node(equity);
         }
 
-        var expense = get_by_name(self.tree_data().nodes(), 'Expenses');
-        if (expense) {
-            self.expense_node(expense);
-            var indirect_expense = get_by_name(self.expense_node().nodes(), 'Indirect Expenses');
-            if (indirect_expense) {
-                self.indirect_expense_node(indirect_expense);
-                self.expense_node().nodes.remove(self.indirect_expense_node())
-            }
+        var liabilities = get_by_name(self.tree_data().nodes(), 'Liabilities');
+        if (liabilities) {
+            self.liabilities_node(liabilities);
         }
+
+        var assets = get_by_name(self.tree_data().nodes(), 'Assets');
+        if (assets) {
+            self.assets_node(assets);
+        }
+
     };
 
-    self.gross_profit = ko.computed(function () {
-        var gross = 0;
-        if (self.income_node() && self.income_node().nodes()) {
-            ko.utils.arrayForEach(self.income_node().nodes(), function (node) {
-                gross += node.net_cr();
+    self.assets_total = ko.computed(function () {
+        var total = 0;
+        if (self.assets_node() && self.assets_node().nodes()) {
+            ko.utils.arrayForEach(self.assets_node().nodes(), function (node) {
+                total += node.net_dr();
             });
         }
-        if (self.expense_node() && self.expense_node().nodes()) {
-            ko.utils.arrayForEach(self.expense_node().nodes(), function (node) {
-                gross -= node.net_dr();
-            });
-        }
-        return r2z(gross);
+        return r2z(total);
     });
 
-    self.net_profit = ko.computed(function () {
-        var net = self.gross_profit();
-        if (self.indirect_income_node() && self.indirect_income_node().nodes()) {
-            ko.utils.arrayForEach(self.indirect_income_node().nodes(), function (node) {
-                net += node.net_cr();
+    self.equity_liabilities_total = ko.computed(function () {
+        var total = 0;
+        if (self.equity_node() && self.equity_node().nodes()) {
+            ko.utils.arrayForEach(self.equity_node().nodes(), function (node) {
+                total += node.net_cr();
             });
         }
-        if (self.indirect_expense_node() && self.indirect_expense_node().nodes()) {
-            ko.utils.arrayForEach(self.indirect_expense_node().nodes(), function (node) {
-                net -= node.net_dr();
+        if (self.liabilities_node() && self.liabilities_node().nodes()) {
+            ko.utils.arrayForEach(self.liabilities_node().nodes(), function (node) {
+                total += node.net_cr();
             });
         }
-        return r2z(net);
+        return r2z(total);
     });
 
     self.save_settings = function () {

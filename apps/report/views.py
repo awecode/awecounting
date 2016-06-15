@@ -133,38 +133,46 @@ def cr_bal(node):
     return float(node['cr'] or 0) - (float(node['dr'] or 0))
 
 
+# def balance_sheet(request):
+#     data = get_trial_balance_data(request.company)
+#     equity_rows = []
+#     liability_rows = []
+#     asset_rows = []
+# 
+#     equity = get_subnode(data, 'Equity')
+#     equity_rows.append(('Equity', cr_bal(equity)))
+# 
+#     liabilities = get_subnode(data, 'Liabilities')
+#     payables = get_subnode(liabilities, 'Account Payables')
+#     liability_rows.append(('Payables/Suppliers', cr_bal(payables)))
+#     taxes = get_subnode(liabilities, 'Duties & Taxes')
+#     liability_rows.append(('Duties & Taxes', cr_bal(taxes)))
+#     other_payables = get_subnode(liabilities, 'Other Payables')
+#     liability_rows.append(('Other Payables', cr_bal(other_payables)))
+#     liabilities_total = cr_bal(equity) + cr_bal(payables) + cr_bal(taxes) + cr_bal(other_payables)
+# 
+#     assets = get_subnode(data, 'Assets')
+#     cash_accounts = get_subnode(assets, 'Cash Accounts')
+#     asset_rows.append(('Cash in Hand', dr_bal(cash_accounts)))
+#     cash_equivalent = get_subnode(assets, 'Cash Equivalent Account')
+#     asset_rows.append(('Cash Equivalent', dr_bal(cash_equivalent)))
+#     bank_account = get_subnode(assets, 'Bank Account')
+#     asset_rows.append(('Bank Accounts', dr_bal(bank_account)))
+#     fixed_assets = get_subnode(assets, 'Fixed Assets')
+#     asset_rows.append(('Fixed Assets', dr_bal(fixed_assets)))
+#     tax_receivables = get_subnode(assets, 'Tax Receivables')
+#     asset_rows.append(('Tax Receivables', dr_bal(tax_receivables)))
+#     assets_total = dr_bal(cash_accounts) + dr_bal(cash_equivalent) + dr_bal(bank_account) + dr_bal(fixed_assets) + dr_bal(
+#         tax_receivables)
+# 
+#     return render(request, 'balance_sheet.html',
+#                   {'data': data, 'equities': equity_rows, 'liabilities': liability_rows, 'assets': asset_rows,
+#                    'liabilities_total': liabilities_total, 'assets_total': assets_total})
+
+@group_required('Accountant')
 def balance_sheet(request):
-    data = get_trial_balance_data(request.company)
-    equity_rows = []
-    liability_rows = []
-    asset_rows = []
-
-    equity = get_subnode(data, 'Equity')
-    equity_rows.append(('Equity', cr_bal(equity)))
-
-    liabilities = get_subnode(data, 'Liabilities')
-    payables = get_subnode(liabilities, 'Account Payables')
-    liability_rows.append(('Payables/Suppliers', cr_bal(payables)))
-    taxes = get_subnode(liabilities, 'Duties & Taxes')
-    liability_rows.append(('Duties & Taxes', cr_bal(taxes)))
-    other_payables = get_subnode(liabilities, 'Other Payables')
-    liability_rows.append(('Other Payables', cr_bal(other_payables)))
-    liabilities_total = cr_bal(equity) + cr_bal(payables) + cr_bal(taxes) + cr_bal(other_payables)
-
-    assets = get_subnode(data, 'Assets')
-    cash_accounts = get_subnode(assets, 'Cash Accounts')
-    asset_rows.append(('Cash in Hand', dr_bal(cash_accounts)))
-    cash_equivalent = get_subnode(assets, 'Cash Equivalent Account')
-    asset_rows.append(('Cash Equivalent', dr_bal(cash_equivalent)))
-    bank_account = get_subnode(assets, 'Bank Account')
-    asset_rows.append(('Bank Accounts', dr_bal(bank_account)))
-    fixed_assets = get_subnode(assets, 'Fixed Assets')
-    asset_rows.append(('Fixed Assets', dr_bal(fixed_assets)))
-    tax_receivables = get_subnode(assets, 'Tax Receivables')
-    asset_rows.append(('Tax Receivables', dr_bal(tax_receivables)))
-    assets_total = dr_bal(cash_accounts) + dr_bal(cash_equivalent) + dr_bal(bank_account) + dr_bal(fixed_assets) + dr_bal(
-        tax_receivables)
-
-    return render(request, 'balance_sheet.html',
-                  {'data': data, 'equities': equity_rows, 'liabilities': liability_rows, 'assets': asset_rows,
-                   'liabilities_total': liabilities_total, 'assets_total': assets_total})
+    data = get_trial_balance_data(request.company, mode=BALANCE_SHEET)
+    context = {
+        'data': data,
+    }
+    return render(request, 'balance_sheet.html', context)
