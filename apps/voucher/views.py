@@ -548,7 +548,7 @@ def save_purchase(request):
 
         try:
             discount_income = Account.objects.get(name='Discount Income', company=request.company, fy=request.company.fy,
-                                                  category__name='Income')
+                                                  category__name='Indirect Income')
         except Account.DoesNotExist:
             discount_income = None
 
@@ -574,12 +574,12 @@ def save_purchase(request):
                 divident_discount = (pure_total - row_discount) * discount_rate
 
             discount = row_discount + divident_discount
-            
+
             purchase_price = pure_total
-            
-            # if not discount_income:
-            #     purchase_price -= - discount
-            
+
+            if not discount_income:
+                purchase_price -= discount
+
             entries = [['dr', submodel.item.purchase_ledger, purchase_price]]
 
             if tax_scheme:
@@ -590,6 +590,8 @@ def save_purchase(request):
 
             if discount and discount_income:
                 entries.append(['cr', discount_income, discount])
+            elif discount_income:
+                entries.append(['dr', discount_income, 0])
 
             payable = pure_total - discount + tax_amt
 
@@ -760,8 +762,6 @@ def save_sale(request):
 
             divident_discount = 0
 
-            entries = [['cr', submodel.item.sale_ledger, pure_total]]
-
             # If the voucher has discount, apply discount proportionally
             if discount_rate:
                 if obj.tax == 'inclusive' and tax_scheme:
@@ -769,6 +769,13 @@ def save_sale(request):
                 divident_discount = (pure_total - row_discount) * discount_rate
 
             discount = row_discount + divident_discount
+
+            sale_price = pure_total
+
+            if not discount_expense:
+                sale_price -= discount
+
+            entries = [['cr', submodel.item.sale_ledger, sale_price]]
 
             if tax_scheme:
                 tax_amt = (pure_total - discount) * tax_scheme.percent / 100
@@ -778,6 +785,8 @@ def save_sale(request):
 
             if discount and discount_expense:
                 entries.append(['dr', discount_expense, discount])
+            elif discount_expense:
+                entries.append(['dr', discount_expense, 0])
 
             receivable = pure_total - discount + tax_amt
 
