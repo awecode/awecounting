@@ -1,6 +1,8 @@
+from zipfile import BadZipfile
 from django.shortcuts import render
 from awecounting.utils.helpers import zero_for_none
 from ..ledger.models import Party, Account
+from ..inventory.models import ItemCategory
 from forms import ImportDebtor
 from openpyxl import load_workbook
 
@@ -38,6 +40,17 @@ def import_debtor_tally(request):
                     # account.save()
                     party.customer_account.save()
                     party.save()
+    form = ImportDebtor()
+    return render(request, 'import/import_debtor_tally.html', {'form': form})
+
+
+def import_stock_tally(request):
+    if request.POST:
+        file = request.FILES['file']
+        wb = load_workbook(file)
+        sheets = wb.worksheets
+        for sheet in sheets:
+            category = ItemCategory.object.create(name=sheet.title, company=request.company)
     form = ImportDebtor()
     return render(request, 'import/import_debtor_tally.html', {'form': form})
 
