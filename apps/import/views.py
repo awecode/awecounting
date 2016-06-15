@@ -1,24 +1,28 @@
-from zipfile import BadZipfile
-from django.core.urlresolvers import reverse, reverse_lazy
+import re
+
+from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+
 from django.shortcuts import render
+
 from awecounting.utils.helpers import zero_for_none
-from ..ledger.models import Party, Account
-from ..inventory.models import ItemCategory
+from ..ledger.models import Party
+from ..inventory.models import ItemCategory, Unit, InventoryAccount, Item
 from forms import ImportDebtor
 from openpyxl import load_workbook
-import re
+
 
 def xls_debtor_tally(row):
     dct = {}
-    header = {'A': 'particulars','B': 'debit','C': 'credit'}
+    header = {'A': 'particulars', 'B': 'debit', 'C': 'credit'}
     for cell in row:
         dct[header.get(cell.column)] = cell.value
     return dct
 
+
 def xls_stock_tally(row):
     dct = {}
-    header = {'A': 'particulars','B': 'quantity','C': 'rate', 'D': 'value'}
+    header = {'A': 'particulars', 'B': 'quantity', 'C': 'rate', 'D': 'value'}
     for cell in row:
         dct[header.get(cell.column)] = cell.value
         if cell.column == "A":
@@ -42,16 +46,10 @@ def import_debtor_tally(request):
                     if 'new_party' in request.POST:
                         party = Party.objects.create(name=params.get('particulars'), company=request.company)
                     else:
-                        party, party_created = Party.objects.get_or_create(name=params.get('particulars'), company=request.company)
-                    # account = Account.objects.get(name="Opening Balance Difference", category__name="Opening Balance Difference", company=request.company)
-
+                        party, party_created = Party.objects.get_or_create(name=params.get('particulars'),
+                                                                           company=request.company)
                     party.customer_account.opening_cr = zero_for_none(params.get('credit'))
-                    # account.opening_dr = zero_for_none(params.get('credit'))
-
                     party.customer_account.opening_dr = zero_for_none(params.get('debit'))
-                    # account.opening_cr = zero_for_none(params.get('debit'))
-
-                    # account.save()
                     party.customer_account.save()
                     party.save()
             return HttpResponseRedirect(reverse('party_list'))
@@ -61,16 +59,29 @@ def import_debtor_tally(request):
 
 def import_stock_tally(request):
     if request.POST:
-        file = request.FILES['file']
-        wb = load_workbook(file)
-        sheets = wb.worksheets
-        for sheet in sheets:
-            category, category_created = ItemCategory.objects.get_or_create(name=sheet.title, company=request.company)
-            rows = tuple(sheet.iter_rows())
-            for row in rows[5:]:
-                params = xls_stock_tally(row)
-                print str(type(params.get('rate'))) + ' ' + str(type(params.get('quantity'))) + ' ' + str(type(params.get('value')))
-
+        form = ImportDebtor(request.POST, request.FILES)
+        import ipdb
+        if form.is_valid():
+            file = request.FILES['file']
+            wb = load_workbook(file)
+            sheets = wb.worksheets
+            for sheet in sheets:
+                category, category_created = ItemCategory.objects.get_or_create(name=sheet.title, company=request.company)
+                rows = tuple(sheet.iter_rows())
+                unit, created = Unit.objects.get_or_create(name="Pieces", company=request.company)
+                account_no = InventoryAccount.get_next_account_no(company=request.company)
+                for row in rows[5:]:
+                    params = xls_stock_tally(row)
+                    if params.get('particulars') not in ['Grand Total', 'Total', 'total']:
+                        item= Item(name=params.get('particulars'),
+                                                  cost_price=zero_for_none(params.get('rate')), category=category,
+                                                  unit=unit, company=request.company)
+                        if params.get('oem_number'):
+                            item.oem_no = params.get('oem_number')
+                        item.save(account_no=account_no)
+                        account_no = account_no + 1
+                        item.account.current_balance = zero_for_none(params.get('quantity'))
+                        item.account.save()
+            return HttpResponseRedirect(reverse('item_list'))
     form = ImportDebtor()
     return render(request, 'import/import_debtor_tally.html', {'form': form})
-
