@@ -40,7 +40,7 @@ def dict_merge(root, node, combined):
     return root
 
 
-def get_trial_balance_data(root_company, mode=None):
+def get_trial_balance_data(root_company, mode=None, exclude_indirect_accounts=False):
     if root_company.show_combined_reports():
         companies = root_company.get_all()
     else:
@@ -107,76 +107,13 @@ def get_subnode(node, name):
     return get_dict(node['nodes'], 'name', name)
 
 
+@group_required('Accountant')
 def trading_account(request):
-    rows = []
-    data = get_trial_balance_data(request.company)
-    gross_profit = 0
-
-    income = get_subnode(data, 'Income')
-
-    if income:
-        sales = get_subnode(income, 'Sales')
-        if sales:
-            rows.append(('Sales', sales['cr']))
-            gross_profit += float(sales['cr'])
-        direct_income = get_subnode(income, 'Direct Income')
-        if direct_income:
-            rows.append(('Other Direct Income', direct_income['cr']))
-            gross_profit += float(direct_income['cr'])
-    expenses = get_subnode(data, 'Expenses')
-    if expenses:
-        purchases = get_subnode(expenses, 'Purchase')
-        if purchases:
-            rows.append(('(Purchases)', purchases['dr']))
-            gross_profit -= float(purchases['dr'])
-        direct_expenses = get_subnode(expenses, 'Direct Expenses')
-        if direct_expenses:
-            rows.append(('(Direct Expenses)', direct_expenses['dr']))
-            gross_profit -= float(direct_expenses['dr'])
-    rows.append(('Gross Profit', gross_profit, 'ul'))
-    return render(request, 'trading_account.html', {'data': data, 'rows': rows})
-
-
-# def profit_loss(request):
-#     rows = []
-#     data = get_trial_balance_data(request.company)
-#     gross_profit = 0
-# 
-#     income = get_subnode(data, 'Income')
-# 
-#     if income:
-#         sales = get_subnode(income, 'Sales')
-#         if sales:
-#             rows.append(('Sales', sales['cr']))
-#             gross_profit += float(sales['cr'])
-#         direct_income = get_subnode(income, 'Direct Income')
-#         if direct_income:
-#             rows.append(('Other Direct Income', direct_income['cr']))
-#             gross_profit += float(direct_income['cr'])
-#     expenses = get_subnode(data, 'Expenses')
-#     if expenses:
-#         purchases = get_subnode(expenses, 'Purchase')
-#         if purchases:
-#             rows.append(('(Purchases)', purchases['dr']))
-#             gross_profit -= float(purchases['dr'])
-#         direct_expenses = get_subnode(expenses, 'Direct Expenses')
-#         if direct_expenses:
-#             rows.append(('(Direct Expenses)', direct_expenses['dr']))
-#             gross_profit -= float(direct_expenses['dr'])
-#     rows.append(('Gross Profit', gross_profit, 'ul'))
-#     net_profit = gross_profit
-#     if income:
-#         indirect_income = get_subnode(income, 'Indirect Income')
-#         if indirect_income:
-#             rows.append(('Indirect Income', indirect_income['cr']))
-#             net_profit += float(indirect_income['cr'])
-#     if expenses:
-#         indirect_expenses = get_subnode(expenses, 'Indirect Expenses')
-#         if indirect_expenses:
-#             rows.append(('(Indirect Expenses)', indirect_expenses['dr']))
-#             net_profit -= float(indirect_expenses['dr'])
-#     rows.append(('Net Profit', net_profit, 'ul'))
-#     return render(request, 'profit_loss.html', {'data': data, 'rows': rows})
+    data = get_trial_balance_data(request.company, mode=PL_ACCOUNT)
+    context = {
+        'data': data,
+    }
+    return render(request, 'trading_account.html', context)
 
 
 @group_required('Accountant')
@@ -186,6 +123,7 @@ def profit_loss(request):
         'data': data,
     }
     return render(request, 'profit_loss.html', context)
+
 
 def dr_bal(node):
     return float(node['dr'] or 0) - (float(node['cr'] or 0))
