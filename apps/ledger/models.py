@@ -45,8 +45,8 @@ class Node(object):
         data = {
             'name': self.name,
             'type': self.type,
-            'dr': self.dr,
-            'cr': self.cr,
+            'dr': round(self.dr, 2),
+            'cr': round(self.cr, 2),
             'nodes': self.children,
             'depth': self.depth,
             'url': self.url,
