@@ -382,6 +382,8 @@ def refine_voucher_type(the_type):
         the_type = the_type[:-3]
     if the_type[-11:] == ' particular':
         the_type = the_type[:-10]
+    if the_type == 'account':
+        return 'Opening Balance'
     return the_type.title()
 
 
