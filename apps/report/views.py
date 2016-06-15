@@ -1,3 +1,5 @@
+import copy
+
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.forms import model_to_dict
 from django.http import JsonResponse
@@ -10,14 +12,26 @@ from awecounting.utils.helpers import save_qs_from_ko, get_dict
 from awecounting.utils.mixins import group_required, SuperOwnerMixin, UpdateView
 
 
-def dict_merge(root, node):
+def dict_merge(root, node, combined):
+    # Merge only if node with same name exists already in the list of dicts
     if node['name'] in [item.get('name') for item in root]:
         existing_node = get_dict(root, 'name', node['name'])
+        # For combined report of branches, Accounts have subnodes of accounts of each branch.
+        if combined and node.get('type') == 'Account':
+            # Find existing node and make it a subnode
+            old_node = copy.deepcopy(existing_node)
+            old_node['name'] = old_node['name'] + ' [' + str(old_node['company']) + ']'
+            existing_node['nodes'].append(old_node)
+            existing_node['url'] = None
+            # Create new subnode
+            new_node = copy.deepcopy(node)
+            new_node['name'] = node['name'] + ' [' + str(node['company']) + ']'
+            existing_node['nodes'].append(new_node)
         existing_node['dr'] += node['dr']
         existing_node['cr'] += node['cr']
         if len(node['nodes']):
             for inner_node in node['nodes']:
-                dict_merge(existing_node['nodes'], inner_node)
+                dict_merge(existing_node['nodes'], inner_node, combined)
     else:
         root.append(node)
     return root
@@ -28,18 +42,20 @@ def get_trial_balance_data(root_company):
         companies = root_company.get_all()
     else:
         companies = [root_company]
-    print companies
-    root = {'nodes': [], 'total_dr': 0, 'total_cr': 0, 'settings': model_to_dict(ReportSetting.objects.get(company=root_company))}
-    del root['settings']['id']
-    del root['settings']['company']
-    root['settings_save_url'] = reverse('report:save_report_settings')
+    if len(companies) > 1:
+        combined = True
+    else:
+        combined = False
+    root = {'nodes': [], 'total_dr': 0, 'total_cr': 0,
+            'settings': model_to_dict(ReportSetting.objects.get(company=root_company), exclude=['id', 'company']),
+            'settings_save_url': reverse('report:save_report_settings')}
 
     for company in companies:
         root_categories = Category.objects.filter(company=company, parent=None)
 
         for root_category in root_categories:
             node = Node(root_category)
-            root['nodes'] = dict_merge(root['nodes'], node.get_data())
+            root['nodes'] = dict_merge(root['nodes'], node.get_data(), combined)
             root['total_dr'] += node.dr
             root['total_cr'] += node.cr
     root['total_dr'] = round(root['total_dr'], 2)

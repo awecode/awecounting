@@ -35,6 +35,7 @@ class Node(object):
         if self.parent:
             self.parent.dr += self.dr
             self.parent.cr += self.cr
+        self.company = str(self.model.company)
 
     def add_child(self, obj):
         self.children.append(obj.get_data())
@@ -48,6 +49,7 @@ class Node(object):
             'nodes': self.children,
             'depth': self.depth,
             'url': self.url,
+            'company': self.company,
         }
         return data
 
