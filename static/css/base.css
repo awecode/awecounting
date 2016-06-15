@@ -641,6 +641,14 @@ ul.list-group > li.list-group-item {
     padding-left: 0;
 }
 
+.report-tree.net_cr div.net_dr{
+    display: none;
+}
+
+.report-tree.net_dr div.net_cr{
+    display: none;
+}
+
 .tree-item {
     font-family: 'FontAwesome';
     -webkit-font-smoothing: antialiased;

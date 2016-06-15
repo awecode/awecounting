@@ -40,21 +40,20 @@
     <div class="well">
         <div class="row">
             <div class="col-xs-6"><strong>{% trans 'Category' %}/{% trans 'Account' %}</strong></div>
-            <div class="col-xs-3"><strong>{% trans 'Dr' %}</strong></div>
-            <div class="col-xs-3"><strong>{% trans 'Cr' %}</strong></div>
+            <div class="col-xs-3"><strong>{% trans 'Net Balance' %}</strong></div>
         </div>
         <hr/>
 
 
         <h3>{% trans 'Direct Income' %}</h3>
-        <div class="report-tree" data-bind="template: { name: 'tree-template', data: income_node }"></div>
+        <div class="report-tree net_cr" data-bind="template: { name: 'tree-template', data: income_node }"></div>
         <h3>{% trans 'Less' %}: {% trans 'Direct Expenses' %}</h3>
-        <div class="report-tree" data-bind="template: { name: 'tree-template', data: expense_node }"></div>
+        <div class="report-tree net_dr" data-bind="template: { name: 'tree-template', data: expense_node }"></div>
         <h3><u>{% trans 'Gross Profit' %}</u></h3>
         <h3>{% trans 'Indirect Income' %}</h3>
-        <div class="report-tree" data-bind="template: { name: 'tree-template', data: indirect_income_node }"></div>
+        <div class="report-tree net_cr" data-bind="template: { name: 'tree-template', data: indirect_income_node }"></div>
         <h3>{% trans 'Less' %}: {% trans 'Indirect Expenses' %}</h3>
-        <div class="report-tree" data-bind="template: { name: 'tree-template', data: indirect_expense_node }"></div>
+        <div class="report-tree net_dr" data-bind="template: { name: 'tree-template', data: indirect_expense_node }"></div>
         <h3><u>{% trans 'Net Profit' %}</u></h3>
         
 
@@ -125,18 +124,12 @@
 
                     </a>
                 </div>
-                <div class="col-xs-3" data-bind="text: dr"></div>
-                <div class="col-xs-3" data-bind="text: cr"></div>
+                <div class="col-xs-3 net_dr" data-bind="text: net_dr()"></div>
+                <div class="col-xs-3 net_cr" data-bind="text: net_cr()"></div>
             </div>
             <!-- /ko -->
 
         </script>
-        <hr/>
-        <div class="row">
-            <div class="col-xs-6"><strong>TOTAL</strong></div>
-            <div class="col-xs-3"><strong><span data-bind="text: total_dr"></span></strong></div>
-            <div class="col-xs-3"><strong><span data-bind="text: total_cr"></span></strong></div>
-        </div>
 
     </div>
 
