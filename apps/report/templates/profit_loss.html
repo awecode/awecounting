@@ -46,16 +46,39 @@
 
 
         <h3>{% trans 'Direct Income' %}</h3>
-        <div class="report-tree net_cr" data-bind="template: { name: 'tree-template', data: income_node }"></div>
+
+        <!-- ko if: income_node.nodes -->
+        <div class="report-tree net_cr" data-bind="template: { name: 'tree-template', 'data': income_node }"></div>
+        <!-- /ko -->
+
         <h3>{% trans 'Less' %}: {% trans 'Direct Expenses' %}</h3>
-        <div class="report-tree net_dr" data-bind="template: { name: 'tree-template', data: expense_node }"></div>
-        <h3><u>{% trans 'Gross Profit' %}</u></h3>
+
+        <!-- ko if: expense_node.nodes -->
+        <div class="report-tree net_dr" data-bind="template: { name: 'tree-template', 'data': expense_node }"></div>
+        <!-- /ko -->
+
+
+        <div class="row border-bottom">
+            <div class="col-xs-6"><h3>{% trans 'Gross Profit' %}</h3></div>
+            <div class="col-xs-6"><h3><span data-bind="text: gross_profit"></span></h3></div>
+        </div>
+
         <h3>{% trans 'Indirect Income' %}</h3>
-        <div class="report-tree net_cr" data-bind="template: { name: 'tree-template', data: indirect_income_node }"></div>
+
+        <!-- ko if: indirect_income_node.nodes -->
+        <div class="report-tree net_cr" data-bind="template: { name: 'tree-template', 'data': indirect_income_node }"></div>
+        <!-- /ko -->
+
         <h3>{% trans 'Less' %}: {% trans 'Indirect Expenses' %}</h3>
-        <div class="report-tree net_dr" data-bind="template: { name: 'tree-template', data: indirect_expense_node }"></div>
-        <h3><u>{% trans 'Net Profit' %}</u></h3>
-        
+
+        <!-- ko if: indirect_expense_node.nodes -->
+        <div class="report-tree net_dr" data-bind="template: { name: 'tree-template', 'data': indirect_expense_node }"></div>
+        <!-- /ko -->
+
+        <div class="row border-bottom">
+            <div class="col-xs-6"><h3>{% trans 'Net Profit' %}</h3></div>
+            <div class="col-xs-6"><h3><span data-bind="text: net_profit"></span></h3></div>
+        </div>
 
 
         <script type="text/html" id="tree-template">
@@ -124,8 +147,8 @@
 
                     </a>
                 </div>
-                <div class="col-xs-3 net_dr" data-bind="text: net_dr()"></div>
-                <div class="col-xs-3 net_cr" data-bind="text: net_cr()"></div>
+                <div class="col-xs-6 net_dr" data-bind="text: net_dr()"></div>
+                <div class="col-xs-6 net_cr" data-bind="text: net_cr()"></div>
             </div>
             <!-- /ko -->
 

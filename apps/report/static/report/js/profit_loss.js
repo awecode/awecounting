@@ -17,12 +17,12 @@ var NodeModel = function (data, settings) {
     };
 
     ko.mapping.fromJS(data, self.mapOptions, self);
-    
-    self.net_dr = function(){
+
+    self.net_dr = function () {
         return parseFloat(self.dr()) - parseFloat(self.cr());
     };
-    
-    self.net_cr = function(){
+
+    self.net_cr = function () {
         return parseFloat(self.cr()) - parseFloat(self.dr());
     }
 
@@ -49,7 +49,8 @@ var NodeModel = function (data, settings) {
             return self.url();
         } else {
             return 'javascript: void()';
-        }income_node
+        }
+        income_node
     }
 
     self.is_visible = function () {
@@ -92,26 +93,59 @@ var TreeModel = function () {
     self.indirect_expense_node = ko.observable();
 
     self.load_data = function (data) {
-        console.log(data);
         self.settings = ko.mapping.fromJS(data.settings);
         self.settings_save_url = data.settings_save_url;
         self.tree_data(new NodeModel(data, self.settings));
         self.total_dr(data.total_dr);
         self.total_cr(data.total_cr);
         self.income_node(get_by_name(self.tree_data().nodes(), 'Income'));
-        self.income_node()['balance'] = 'cr';
-        if (self.income_node())
+
+        if (self.income_node()) {
+            self.income_node()['balance'] = 'cr';
             self.indirect_income_node(get_by_name(self.income_node().nodes(), 'Indirect Income'));
             self.indirect_income_node()['balance'] = 'cr';
             self.income_node().nodes.remove(self.indirect_income_node())
-        
+        }
+
         self.expense_node(get_by_name(self.tree_data().nodes(), 'Expenses'));
-        self.expense_node()['balance'] = 'dr';
-        if (self.expense_node())
+
+        if (self.expense_node()) {
+            self.expense_node()['balance'] = 'dr';
             self.indirect_expense_node(get_by_name(self.expense_node().nodes(), 'Indirect Expenses'));
             self.indirect_expense_node()['balance'] = 'dr';
             self.expense_node().nodes.remove(self.indirect_expense_node())
+        }
     };
+
+    self.gross_profit = ko.computed(function () {
+        var gross = 0;
+        if (self.income_node() && self.income_node().nodes()) {
+            ko.utils.arrayForEach(self.income_node().nodes(), function (node) {
+                gross += node.net_cr();
+            });
+        }
+        if (self.expense_node() && self.expense_node().nodes()) {
+            ko.utils.arrayForEach(self.expense_node().nodes(), function (node) {
+                gross -= node.net_dr();
+            });
+        }
+        return gross;
+    });
+
+    self.net_profit = ko.computed(function () {
+        var net = self.gross_profit();
+        if (self.indirect_income_node() && self.indirect_income_node().nodes()) {
+            ko.utils.arrayForEach(self.indirect_income_node().nodes(), function (node) {
+                net += node.net_cr();
+            });
+        }
+        if (self.indirect_expense_node() && self.indirect_expense_node().nodes()) {
+            ko.utils.arrayForEach(self.indirect_expense_node().nodes(), function (node) {
+                net -= node.net_dr();
+            });
+        }
+        return net;
+    });
 
     self.save_settings = function () {
         ajax_save(self.settings_save_url, ko.toJSON(self.settings));
