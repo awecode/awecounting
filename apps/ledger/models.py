@@ -407,7 +407,7 @@ def handle_company_creation(sender, **kwargs):
     Category.objects.create(name='Tax Receivables', code='A-TR', parent=assets, company=company)
     Category.objects.create(name='Deferred Assets', code='A-DA', parent=assets, company=company)
     Category.objects.create(name='Fixed Assets', code='A-FA', parent=assets, company=company)
-    Category.objects.create(name='Loads and Advances Given', code='A-L', parent=assets, company=company)
+    Category.objects.create(name='Loans and Advances Given', code='A-L', parent=assets, company=company)
     Category.objects.create(name='Deposits Made', code='A-D', parent=assets, company=company)
     Category.objects.create(name='Employee', code='A-E', parent=assets, company=company)
 
