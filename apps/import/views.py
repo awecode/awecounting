@@ -80,8 +80,7 @@ def import_stock_tally(request):
                             item.oem_no = params.get('oem_number')
                         item.save(account_no=account_no)
                         account_no = account_no + 1
-                        item.account.current_balance = zero_for_none(params.get('quantity'))
-                        item.account.save()
+                        item.purchase_ledger.opening_dr = params.get('value')
             return HttpResponseRedirect(reverse('item_list'))
     form = ImportDebtor()
     return render(request, 'import/import_debtor_tally.html', {'form': form})
