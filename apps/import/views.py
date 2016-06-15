@@ -7,12 +7,24 @@ from ..ledger.models import Party, Account
 from ..inventory.models import ItemCategory
 from forms import ImportDebtor
 from openpyxl import load_workbook
+import re
 
 def xls_debtor_tally(row):
     dct = {}
     header = {'A': 'particulars','B': 'debit','C': 'credit'}
     for cell in row:
         dct[header.get(cell.column)] = cell.value
+    return dct
+
+def xls_stock_tally(row):
+    dct = {}
+    header = {'A': 'particulars','B': 'quantity','C': 'rate', 'D': 'value'}
+    for cell in row:
+        dct[header.get(cell.column)] = cell.value
+        if cell.column == "A":
+            data = re.search("\(([^\)]+)\)", cell.value)
+            if data:
+                dct['oem_number'] = data.group()[1:-1]
     return dct
 
 
@@ -53,7 +65,12 @@ def import_stock_tally(request):
         wb = load_workbook(file)
         sheets = wb.worksheets
         for sheet in sheets:
-            category, category_created = ItemCategory.object.get_or_create(name=sheet.title, company=request.company)
+            category, category_created = ItemCategory.objects.get_or_create(name=sheet.title, company=request.company)
+            rows = tuple(sheet.iter_rows())
+            for row in rows[5:]:
+                params = xls_stock_tally(row)
+                print str(type(params.get('rate'))) + ' ' + str(type(params.get('quantity'))) + ' ' + str(type(params.get('value')))
+
     form = ImportDebtor()
     return render(request, 'import/import_debtor_tally.html', {'form': form})
 
