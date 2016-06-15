@@ -5,6 +5,9 @@
 {% block page-title %}{% trans 'Items' %}{% endblock %}
 
 {% block header-buttons %}
+    <form class="form-horizontal inline" role="form">
+        <input type="text" placeholder="Search..." name="q" class="form-control search" value="{{ request.GET.q }}">
+    </form>
     <a class="btn btn-success btn-raised" href="{% url 'item_add' %}">{% trans 'New' %} {% trans 'Item' %}</a>
 {% endblock %}
 
@@ -24,7 +27,7 @@
             <th>{% anchor name _('Name') %}</th>
             <th>{% trans 'Other Properties' %}</th>
             {% if request.company.has_branches %}
-                <th>{% trans 'Branch' %}</th>
+                <th>{% anchor company _('Branch') %}</th>
             {% endif %}
             <th>{% trans 'Ledger' %}</th>
             </thead>

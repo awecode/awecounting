@@ -4,73 +4,83 @@
 {% block page-title %}{% trans 'Accounts' %}{% endblock %}
 
 {% block header-buttons %}
+    <form class="form-horizontal inline" role="form">
+        <input type="text" placeholder="Search..." name="q" class="form-control search" value="{{ request.GET.q }}">
+    </form>
     <a class="btn btn-success btn-raised" href="{% url 'account_add' %}">{% trans 'New' %} {% trans 'Account' %}</a>
+
 {% endblock %}
 
 {% block content %}
-    <div class="well">
+<div class="well">
 
-        {% load pagination_tags %}
-        {% load sorting_tags %}
-        {% load filters %}
+    {% load pagination_tags %}
+    {% load sorting_tags %}
+    {% load filters %}
 
-        {% autosort object_list as sorted_objects %}
-        {% autopaginate sorted_objects 25 as paginated_objects %}
+    {% autosort object_list as sorted_objects %}
+    {% autopaginate sorted_objects 25 as paginated_objects %}
 
-        <table class="table table-striped">
-            <thead>
-            <th>{% anchor code _('Code') %}</th>
-            <th>{% anchor name _('Name') %}</th>
-            <th>{% anchor current_dr _('Current Dr.') %}</th>
-            <th>{% anchor current_cr _('Current Cr.') %}</th>
-            <th>{% anchor tax_rate _('Tax Rate') %}</th>
-            <th>{% anchor opening_dr _('Opening Dr.') %}</th>
-            <th>{% anchor opening_cr _('Opening Cr.') %}</th>
-            <th>{% anchor category _('Category') %}</th>
+    <table class="table table-striped">
+        <thead>
+        <th>{% anchor code _('Code') %}</th>
+        <th>{% anchor name _('Name') %}</th>
+        {% if request.company.has_branches %}
+            <th>{% anchor company _('Branch') %}</th>
+        {% endif %}
+        <th>{% anchor current_dr _('Current Dr.') %}</th>
+        <th>{% anchor current_cr _('Current Cr.') %}</th>
+        <th>{% anchor tax_rate _('Tax Rate') %}</th>
+        <th>{% anchor opening_dr _('Opening Dr.') %}</th>
+        <th>{% anchor opening_cr _('Opening Cr.') %}</th>
+        <th>{% anchor category _('Category') %}</th>
+        {% ifrole "Stockist" %}
+        <th>{% trans "Action" %}</th>
+        {% endrole %}
+
+        </thead>
+        <tbody>
+        {% for account in paginated_objects %}
+        <tr>
+            <td>
+                <a href="{% url 'view_ledger' account.pk %}">{{ account.code |default:'' }}</a>
+            </td>
+            <td>
+                <a href="{% url 'view_ledger' account.pk %}">{{ account.name }}</a>
+            </td>
+            {% if request.company.has_branches %}
+                <td>{{ account.company }}</td>
+            {% endif %}
+            <td>
+                {{ account.current_dr |default:'' }}
+            </td>
+            <td>
+                {{ account.current_cr |default:'' }}
+            </td>
+            <td>
+                {{ account.tax_rate |default:'' }}
+            </td>
+            <td>
+                {{ account.opening_dr }}
+            </td>
+            <td>
+                {{ account.opening_cr }}
+            </td>
+            <td>
+                {{ account.category| default:'-' }}
+            </td>
             {% ifrole "Stockist" %}
-                <th>{% trans "Action" %}</th>
+            <td>
+                <a href="{% url 'account_edit' account.pk %}">{% trans "Edit" %}</a>
+            </td>
             {% endrole %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
-            </thead>
-            <tbody>
-            {% for account in paginated_objects %}
-                <tr>
-                    <td>
-                        <a href="{% url 'view_ledger' account.pk %}">{{ account.code |default:''}}</a>
-                    </td>
-                    <td>
-                        <a href="{% url 'view_ledger' account.pk %}">{{ account.name }}</a>
-                    </td>
-                    <td>
-                        {{ account.current_dr |default:''}}
-                    </td>
-                    <td>
-                        {{ account.current_cr |default:''}}
-                    </td>
-                    <td>
-                        {{ account.tax_rate |default:''}}
-                    </td>
-                    <td>
-                        {{ account.opening_dr }}
-                    </td>
-                    <td>
-                        {{ account.opening_cr }}
-                    </td>
-                    <td>
-                        {{ account.category| default:'-' }}
-                    </td>
-                    {% ifrole "Stockist" %}
-                    <td>
-                        <a href="{% url 'account_edit' account.pk %}">{% trans "Edit" %}</a>
-                    </td>
-                    {% endrole %}
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+    {% paginate %}
 
-        {% paginate %}
-
-    </div>
+</div>
 
 {% endblock %}

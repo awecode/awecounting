@@ -52,6 +52,10 @@ h1 {
     color: red;
 }
 
+.inline {
+    display: inline;
+}
+
 td .select2-choice {
     border: none !important;
     box-shadow: none;
@@ -655,20 +659,27 @@ ul.list-group > li.list-group-item {
     list-style: none;
 }
 
+.page-header-right > div > * {
+    display: inline-block;
+}
+
+.page-header-right input.search {
+    margin-right: 1em;
+}
+
 ul.mega-dropdown-menu li {
     min-width: 250px;
     padding: 0.5em;
 }
 
 .tb-row {
-    padding-top: 0.5em;
+    padding-top: 0.5em !important;
 }
 
 /* EO Trial Balance */
 
-
-.row.ul div{
- text-decoration: underline;   
+.row.ul div {
+    text-decoration: underline;
 }
 
 .voucher-setting tbody div.checkbox {

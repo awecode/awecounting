@@ -5,16 +5,15 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.db.models import Q
-from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
 from ..users.models import Pin
 from .serializers import ItemSerializer, InventoryAccountRowSerializer
 from ..voucher.models import Sale
-from .models import Item, UnitConversion, Unit, JournalEntry, InventoryAccount, Location
-from .forms import ItemForm, UnitForm, UnitConversionForm, LocationForm
+from .models import Item, UnitConversion, Unit, JournalEntry, InventoryAccount, Location, ItemCategory
+from .forms import ItemForm, UnitForm, UnitConversionForm, LocationForm, ItemCategoryForm
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView, \
-    StockistMixin, StockistCashierMixin
+    StockistMixin, StockistCashierMixin, ListView
 
 
 @login_required
@@ -98,6 +97,7 @@ class ItemView(CompanyView):
     model = Item
     form_class = ItemForm
     success_url = reverse_lazy('item_list')
+    search_fields = ['company__name', 'name', 'code', 'size', 'description', 'other_properties', 'unit__name', 'selling_rate']
 
 
 # def form_valid(self, form):
@@ -322,6 +322,7 @@ def get_items_in_location(request, loc_id=None):
                       'location_code': obj.code
                   })
 
+
 # def view_inventory_account_with_rate(request, pk):
 #     obj= get_object_or_404(InventoryAccount, pk=pk, company=request.company)
 #     if hasattr(obj, 'item'):
@@ -341,3 +342,31 @@ def get_items_in_location(request, loc_id=None):
 #     return render(request, 'inventory_account_detail_with_rate.html',
 #                   {'obj': obj, 'entries': journal_entries, 'data': data, 'unit_conversions': conversions, 'unit': unit,
 #                    'multiple': multiple})
+
+
+class ItemCategoryView(CompanyView):
+    model = ItemCategory
+    form_class = ItemCategoryForm
+    success_url = reverse_lazy('item_category_list')
+
+    def get_form(self, *args, **kwargs):
+        form = super(ItemCategoryView, self).get_form(*args, **kwargs)
+        form.fields['parent'].queryset = form.fields['parent'].queryset.filter(
+                    company=self.request.company)
+        return form
+
+
+class ItemCategoryList(ItemCategoryView, StockistCashierMixin, ListView):
+    pass
+
+
+class ItemCategoryCreate(AjaxableResponseMixin, ItemCategoryView, StockistCashierMixin, CreateView):
+    pass
+
+
+class ItemCategoryUpdate(ItemCategoryView, StockistCashierMixin, UpdateView):
+    pass
+
+
+class ItemCategoryDelete(ItemCategoryView, StockistCashierMixin, DeleteView):
+    pass

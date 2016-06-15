@@ -1,4 +1,5 @@
 from functools import wraps
+from django.db.models import Q
 
 from django.http import JsonResponse
 from django.views.generic.edit import UpdateView as BaseUpdateView, CreateView as BaseCreateView, \
@@ -7,7 +8,7 @@ from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView as BaseListView
 from django.shortcuts import get_object_or_404
 from django.contrib.admin import ModelAdmin
 
@@ -250,3 +251,25 @@ class CompanyAdmin(ModelAdmin):
 
 class TranslationCompanyAdmin(TranslationAdmin):
     list_filter = ['company']
+
+class ListView(BaseListView):
+    def get(self, request, *args, **kwargs):
+        if 'q' in self.request.GET:
+            q = self.request.GET['q']
+            query_filter = Q()
+            if hasattr(self, 'search_fields'):
+                search_fields = self.search_fields
+            else:
+                search_fields = []
+                if hasattr(self.model, 'name'):
+                    search_fields.append('name')
+                if hasattr(self.model, 'title'):
+                    search_fields.append('title')
+            for field in search_fields:
+                kwg = (field + '__icontains', q)
+                if query_filter:
+                    query_filter = query_filter | Q(kwg)
+                else:
+                    query_filter = Q(kwg)
+            self.queryset = self.model.objects.filter(query_filter)
+        return super(ListView, self).get(request, *args, **kwargs)

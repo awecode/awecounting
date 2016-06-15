@@ -17,7 +17,8 @@ web_urls = [
     url(r'^category/edit/(?P<pk>\d+)/$', views.CategoryUpdate.as_view(), name='category_edit'),
     url(r'^category/delete/(?P<pk>\d+)/$', views.CategoryDelete.as_view(), name='category_delete'),
 
-    url(r'^account/$', views.AccountList.as_view(), name='account_list'),
+    url(r'^accounts/$', views.AccountList.as_view(), name='account_list'),
+    url(r'^accounts/tree/$', views.AccountTree.as_view(), name='account_tree'),
     url(r'^account/add/$', views.AccountCreate.as_view(), name='account_add'),
     url(r'^account/edit/(?P<pk>\d+)/$', views.AccountUpdate.as_view(), name='account_edit'),
     url(r'^account/delete/(?P<pk>\d+)/$', views.AccountDelete.as_view(), name='account_delete'),

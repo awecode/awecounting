@@ -80,6 +80,7 @@ var TreeModel = function () {
     self.total_cr = ko.observable();
 
     self.load_data = function (data) {
+        console.log(data);
         self.settings = ko.mapping.fromJS(data.settings);
         self.settings_save_url = data.settings_save_url;
         self.tree_data(new NodeModel(data, self.settings));

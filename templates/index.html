@@ -70,6 +70,7 @@
             <a href="{% url 'list_inventory_accounts' %}">{% trans 'Accounts' %}</a>
             {% endrole %}
             <a href="{% url 'item_list' %}">{% trans 'Items' %}</a>
+            <a href="{% url 'item_category_list' %}">{% trans 'Categories' %}</a>
             <a href="{% url 'unit_list' %}">{% trans 'Units' %}</a>
             <a href="{% url 'unit_conversion_list' %}">{% trans 'Unit Conversions' %}</a>
         </div>
@@ -115,6 +116,7 @@
     </div>
     {% endrole %}
 
+
     <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
         <i class="fa fa-user-secret"></i>
 
@@ -136,9 +138,10 @@
         <div class="flip-body">
             <h2>{% trans 'Ledger' %}</h2>
             {% ifrole "Stockist" %}
-            <a href="{% url 'list_account' %}">{% trans 'Ledgers' %}</a>
+            <a href="{% url 'list_account' %}">{% trans 'Accounts' %}</a>
+            <a href="{% url 'account_tree' %}">{% trans 'Accounts Tree' %}</a>
             {% endrole %}
-            <a href="{% url 'category_list' %}">{% trans 'Ledger Categories' %}</a>
+            <a href="{% url 'category_list' %}">{% trans 'Categories' %}</a>
             <a href="{% url 'party_list' %}">{% trans 'Parties' %}</a>
             <a href="{% url 'tax_scheme_list' %}">{% trans 'Tax Schemes' %}</a>
         </div>

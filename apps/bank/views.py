@@ -15,7 +15,7 @@ from apps.users.serializers import FileSerializer
 from .forms import BankAccountForm, BankCashDepositForm, ChequePaymentForm
 from .serializers import ChequeDepositSerializer
 from ..ledger.models import delete_rows
-from awecounting.utils.helpers import save_model, invalid, write_error
+from awecounting.utils.helpers import save_model, invalid, write_error, mail_exception
 
 
 class BankAccountView(CompanyView):
@@ -152,6 +152,7 @@ def cheque_deposit_save(request):
                 dct['rows'][ind] = submodel.id
     except Exception as e:
         dct = write_error(dct, e)
+        mail_exception(request)
     delete_rows(params.get('table_view').get('deleted_rows'), model)
     delete_rows(params.get('deleted_files'), AttachFile)
     return JsonResponse(dct)

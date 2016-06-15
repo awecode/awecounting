@@ -35,6 +35,7 @@ class Node(object):
         if self.parent:
             self.parent.dr += self.dr
             self.parent.cr += self.cr
+        self.company = str(self.model.company)
 
     def add_child(self, obj):
         self.children.append(obj.get_data())
@@ -48,6 +49,7 @@ class Node(object):
             'nodes': self.children,
             'depth': self.depth,
             'url': self.url,
+            'company': self.company,
         }
         return data
 
@@ -92,6 +94,14 @@ class Account(models.Model):
     opening_dr = models.FloatField(default=0)
     opening_cr = models.FloatField(default=0)
     fy = models.PositiveSmallIntegerField(blank=True, null=True)
+
+    _original_opening_dr = 0
+    _original_opening_cr = 0
+
+    def __init__(self, *args, **kwargs):
+        super(Account, self).__init__(*args, **kwargs)
+        self._original_opening_dr = self.opening_dr
+        self._original_opening_cr = self.opening_cr
 
     def get_absolute_url(self):
         # return '/ledger/' + str(self.id)
@@ -155,11 +165,6 @@ class Account(models.Model):
             return zero_for_none(transactions[0].current_dr) - zero_for_none(transactions[0].current_cr)
         return self.opening_dr - self.opening_cr
 
-    # day_opening_dr = property(get_day_opening_dr)
-    # day_opening_cr = property(get_day_opening_cr)
-    #
-    # day_opening = property(get_day_opening)
-
     def add_category(self, category):
         # all_categories = self.get_all_categories()
         category_instance, created = Category.objects.get_or_create(name=category, company=self.company)
@@ -186,12 +191,16 @@ class Account(models.Model):
         if len(transactions) > 0:
             return transactions[0].current_dr
         return 0
+    
+    def get_voucher_no(self):
+        # Use code as voucher number in ledger view when an account is the source of journal entry for opening balance transactions
+        return self.code
 
     def save(self, *args, **kwargs):
-        queryset = Account.objects.filter(company=self.company)
-        original_name = self.name
-        nxt = 2
         if not self.pk:
+            queryset = Account.objects.filter(company=self.company)
+            original_name = self.name
+            nxt = 2
             while queryset.filter(**{'name': self.name}):
                 self.name = original_name
                 end = '%s%s' % ('-', nxt)
@@ -199,7 +208,24 @@ class Account(models.Model):
                     self.name = self.name[:100 - len(end)]
                 self.name = '%s%s' % (self.name, end)
                 nxt += 1
-        return super(Account, self).save(*args, **kwargs)
+        opening_balance_equity = None
+        super(Account, self).save(*args, **kwargs)
+        if self.opening_dr != self._original_opening_dr:
+            entries = []
+            opening_balance_equity = Account.objects.get(name='Opening Balance Equity', category__name='Equity')
+            entries.append(['cr', opening_balance_equity, self.opening_dr])
+            entries.append(['dr', self, self.opening_dr])
+            self._original_opening_dr = self.opening_dr
+            set_transactions(self, datetime.date.today(), *entries)
+        if self.opening_cr != self._original_opening_cr:
+            entries = []
+            if not opening_balance_equity:
+                opening_balance_equity = Account.objects.get(name='Opening Balance Equity', category__name='Equity')
+            entries.append(['dr', opening_balance_equity, self.opening_cr])
+            entries.append(['cr', self, self.opening_cr])
+            self._original_opening_cr = self.opening_cr
+            set_transactions(opening_balance_equity, datetime.date.today(), *entries)
+            
 
     def __unicode__(self):
         return self.name
@@ -363,7 +389,8 @@ def handle_company_creation(sender, **kwargs):
     equity = Category.objects.create(name='Equity', code='E', company=company)
     Account.objects.create(name='Paid in Capital', category=equity, code='E-PC', company=company)
     Account.objects.create(name='Retained Earnings', category=equity, code='E-RE', company=company)
-    Account.objects.create(name='Profit and Loss Account', category=equity, code='E-PL', company=company)
+    # Account.objects.create(name='Profit and Loss Account', category=equity, code='E-PL', company=company)
+    Account.objects.create(name='Opening Balance Equity', category=equity, code='E-OBE', company=company)
 
     # CREATE DEFAULT CATEGORIES AND LEDGERS FOR ASSETS
 
@@ -437,8 +464,8 @@ def handle_company_creation(sender, **kwargs):
 
     # Opening Balance Difference
 
-    opening_balance_difference = Category.objects.create(name='Opening Balance Difference', code='O', company=company)
-    Account.objects.create(name='Opening Balance Difference', code='O-OBD', category=opening_balance_difference, company=company)
+    # opening_balance_difference = Category.objects.create(name='Opening Balance Difference', code='O', company=company)
+    # Account.objects.create(name='Opening Balance Difference', code='O-OBD', category=opening_balance_difference, company=company)
 
     handle_fy_creation(sender, company=company, fy=company.fy)
 
@@ -451,7 +478,8 @@ def handle_fy_creation(sender, **kwargs):
 
     income = Category.objects.get(name='Income', company=company)
     sales = Category.objects.get(name='Sales', parent=income, company=company)
-    Account.objects.create(name='Discount Income', category=income, code='I-DI', company=company, fy=fy)
+    indirect_income = Category.objects.get(name='Indirect Income', code='I-II', parent=income, company=company)
+    Account.objects.create(name='Discount Income', category=indirect_income, code='I-II-DI', company=company, fy=fy)
     Account.objects.create(name='Non-tax Sales', category=sales, code='I-S-NT', company=company, fy=fy)
     Account.objects.create(name='Sales', category=sales, code='I-S-S', company=company, fy=fy)
     direct_income = Category.objects.get(name='Direct Income', parent=income, company=company)

@@ -1,9 +1,8 @@
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse_lazy
-from django.views.generic import ListView
 
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, AjaxableResponseMixin, CompanyView, \
-    StockistMixin, AccountantMixin, StockistCashierMixin
+    AccountantMixin, StockistCashierMixin, ListView
 from .models import Party, Category, Account, JournalEntry
 from .forms import PartyForm, AccountForm, CategoryForm
 
@@ -87,6 +86,7 @@ class AccountView(CompanyView):
     model = Account
     success_url = reverse_lazy('account_list')
     form_class = AccountForm
+    search_fields = ['name', 'company__name', 'category__name']
 
     def get_initial(self):
         dct = super(AccountView, self).get_initial()
@@ -97,6 +97,14 @@ class AccountView(CompanyView):
             category = Category.objects.filter(name=category_name).first()
             dct['category'] = category
         return dct
+    
+class AccountTree(CategoryView, AccountantMixin, ListView):
+    template_name = 'ledger/account_tree.html'
+    
+    def get_queryset(self):
+        qs = super(AccountTree, self).get_queryset()
+        qs = qs.prefetch_related('accounts')
+        return qs
 
 
 class AccountList(AccountView, AccountantMixin, ListView):

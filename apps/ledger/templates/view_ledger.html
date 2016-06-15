@@ -99,11 +99,7 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if entry.content_type.app_label == 'dayjournal' %}
-                            {% trans 'Day Journal' %}
-                        {% else %}
-                            {{ entry.content_type.name|refine_voucher_type }}
-                        {% endif %}
+                        {{ entry.content_type.name|refine_voucher_type }}
                     </td>
                     <td>
                         <a href="{{ entry.source.get_absolute_url }}">

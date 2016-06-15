@@ -1,11 +1,11 @@
 from django.db import models
-from jsonfield import JSONField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db.models import F
 from django.dispatch import receiver
 from django.core.urlresolvers import reverse_lazy
 
+from jsonfield import JSONField
 from ..ledger.models import Account, Category
 from ..users.models import Company
 from awecounting.utils.helpers import none_for_zero, zero_for_none
@@ -120,11 +120,25 @@ class InventoryAccount(models.Model):
     def get_next_account_no(company):
         from django.db.models import Max
 
-        max_voucher_no = InventoryAccount.objects.filter(company_id=company.id).aggregate(Max('account_no'))['account_no__max']
+        max_voucher_no = InventoryAccount.objects.filter(company_id=company.id).aggregate(Max('account_no'))[
+            'account_no__max']
         if max_voucher_no:
             return max_voucher_no + 1
         else:
             return 1
+
+
+class ItemCategory(MPTTModel):
+    name = models.CharField(max_length=50)
+    description = models.TextField(max_length=254, null=True, blank=True)
+    parent = TreeForeignKey('self', blank=True, null=True, related_name='children')
+    company = models.ForeignKey(Company)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = u'Item Categories'
 
 
 class Item(models.Model):
@@ -141,6 +155,7 @@ class Item(models.Model):
     ledger = models.ForeignKey(Account, null=True)
     purchase_ledger = models.OneToOneField(Account, null=True, related_name='purchase_detail')
     sale_ledger = models.OneToOneField(Account, null=True, related_name='sale_detail')
+    category = models.ForeignKey(ItemCategory, null=True, blank=True)
     company = models.ForeignKey(Company)
 
     def __str__(self):
@@ -161,7 +176,8 @@ class Item(models.Model):
         if not self.purchase_ledger:
             purchase_ledger = Account(name=self.name + ' Purchases', company=self.company)
             try:
-                purchase_ledger.category = Category.objects.get(name='Purchase', company=self.company, parent__name='Expenses')
+                purchase_ledger.category = Category.objects.get(name='Purchase', company=self.company,
+                                                                parent__name='Expenses')
             except Category.DoesNotExist:
                 pass
             purchase_ledger.code = 'P-' + str(self.id)
