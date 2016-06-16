@@ -2,15 +2,34 @@ import re
 import datetime
 
 from django.core.urlresolvers import reverse
+
 from django.http import HttpResponseRedirect
 
 from django.shortcuts import render
 
-from awecounting.utils.helpers import zero_for_none
-from ..ledger.models import Party, Account
+from awecounting.utils.helpers import zero_for_none, empty_to_zero
+from ..ledger.models import Party
 from ..inventory.models import ItemCategory, Unit, InventoryAccount, Item, set_transactions
 from forms import ImportFile
 from openpyxl import load_workbook
+import xlrd
+from openpyxl.workbook import Workbook as openpyxlWorkbook
+
+
+def xls_to_xlsx(content):
+    xlsBook = xlrd.open_workbook(file_contents=content.read())
+    workbook = openpyxlWorkbook()
+
+    for i in xrange(0, xlsBook.nsheets):
+        xlsSheet = xlsBook.sheet_by_index(i)
+        sheet = workbook.active if i == 0 else workbook.create_sheet()
+        sheet.title = xlsSheet.name
+
+        for row in xrange(0, xlsSheet.nrows):
+            for col in xrange(0, xlsSheet.ncols):
+                sheet.cell(row=row + 1, column=col + 1).value = xlsSheet.cell_value(row, col)
+
+    return workbook
 
 
 def xls_debtor_tally(row):
@@ -38,7 +57,10 @@ def import_debtor_tally(request):
         form = ImportFile(request.POST, request.FILES)
         if form.is_valid():
             file = request.FILES['file']
-            wb = load_workbook(file)
+            if file.name.endswith('.xls'):
+                wb = xls_to_xlsx(file)
+            else:
+                wb = load_workbook(file)
             sheet = wb.worksheets[0]
             rows = tuple(sheet.iter_rows())
             for row in rows[5:]:
@@ -63,7 +85,10 @@ def import_stock_tally(request):
         form = ImportFile(request.POST, request.FILES)
         if form.is_valid():
             file = request.FILES['file']
-            wb = load_workbook(file)
+            if file.name.endswith('.xls'):
+                wb = xls_to_xlsx(file)
+            else:
+                wb = load_workbook(file)
             sheets = wb.worksheets
             for sheet in sheets:
                 category, category_created = ItemCategory.objects.get_or_create(name=sheet.title,
@@ -74,17 +99,24 @@ def import_stock_tally(request):
                 for row in rows[5:]:
                     params = xls_stock_tally(row)
                     if params.get('particulars') not in ['Grand Total', 'Total', 'total']:
-                        item = Item(name=params.get('particulars'),
-                                    cost_price=zero_for_none(params.get('rate')), category=category,
+                        rate = params.get('rate')
+                        quantity = params.get('quantity')
+                        if rate == '':
+                            rate = empty_to_zero(rate)
+                        if quantity == '':
+                            quantity = empty_to_zero(quantity)
+
+                        item = Item(name=params.get('particulars'), cost_price=zero_for_none(rate), category=category,
                                     unit=unit, company=request.company)
                         if params.get('oem_number'):
                             item.oem_no = params.get('oem_number')
                         item.save(account_no=account_no)
                         account_no = account_no + 1
-                        item.account.current_balance = zero_for_none(params.get('quantity'))
+                        item.account.current_balance = zero_for_none(quantity)
                         item.account.save()
-                        if params.get('quantity'):
-                            set_transactions(item.account, datetime.date.today(), ['dr', item.account, params.get('quantity')])
+                        if quantity > 0:
+                            set_transactions(item.account, datetime.date.today(),
+                                             ['dr', item.account, quantity])
             return HttpResponseRedirect(reverse('item_list'))
     form = ImportFile()
     return render(request, 'import/import_stock_tally.html', {'form': form})
