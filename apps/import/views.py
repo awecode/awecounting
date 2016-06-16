@@ -99,17 +99,10 @@ def import_stock_tally(request):
                 for row in rows[5:]:
                     params = xls_stock_tally(row)
                     if params.get('particulars') not in ['Grand Total', 'Total', 'total']:
-                        rate = params.get('rate')
-                        quantity = params.get('quantity')
-                        if rate == '':
-                            rate = empty_to_zero(rate)
-                        if quantity == '':
-                            quantity = empty_to_zero(quantity)
-
-                        item = Item(name=params.get('particulars'), cost_price=zero_for_none(rate), category=category,
-                                    unit=unit, company=request.company)
-                        if params.get('oem_number'):
-                            item.oem_no = params.get('oem_number')
+                        rate =empty_to_zero( params.get('rate'))
+                        quantity = empty_to_zero(('quantity'))
+                        item = Item(name=params.get('particulars'), cost_price=rate, category=category,
+                                    unit=unit, company=request.company, oem_no=params.get('oem_number'))
                         item.save(account_no=account_no)
                         account_no = account_no + 1
                         item.account.current_balance = zero_for_none(quantity)
