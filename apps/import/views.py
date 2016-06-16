@@ -1,4 +1,5 @@
 import re
+import datetime
 
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
@@ -6,8 +7,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 from awecounting.utils.helpers import zero_for_none
-from ..ledger.models import Party
-from ..inventory.models import ItemCategory, Unit, InventoryAccount, Item
+from ..ledger.models import Party, Account
+from ..inventory.models import ItemCategory, Unit, InventoryAccount, Item, set_transactions
 from forms import ImportDebtor
 from openpyxl import load_workbook
 
@@ -60,27 +61,34 @@ def import_debtor_tally(request):
 def import_stock_tally(request):
     if request.POST:
         form = ImportDebtor(request.POST, request.FILES)
-        import ipdb
         if form.is_valid():
             file = request.FILES['file']
             wb = load_workbook(file)
             sheets = wb.worksheets
             for sheet in sheets:
-                category, category_created = ItemCategory.objects.get_or_create(name=sheet.title, company=request.company)
+                category, category_created = ItemCategory.objects.get_or_create(name=sheet.title,
+                                                                                company=request.company)
                 rows = tuple(sheet.iter_rows())
                 unit, created = Unit.objects.get_or_create(name="Pieces", company=request.company)
                 account_no = InventoryAccount.get_next_account_no(company=request.company)
                 for row in rows[5:]:
                     params = xls_stock_tally(row)
                     if params.get('particulars') not in ['Grand Total', 'Total', 'total']:
-                        item= Item(name=params.get('particulars'),
-                                                  cost_price=zero_for_none(params.get('rate')), category=category,
-                                                  unit=unit, company=request.company)
+                        item = Item(name=params.get('particulars'),
+                                    cost_price=zero_for_none(params.get('rate')), category=category,
+                                    unit=unit, company=request.company)
                         if params.get('oem_number'):
                             item.oem_no = params.get('oem_number')
                         item.save(account_no=account_no)
                         account_no = account_no + 1
-                        item.purchase_ledger.opening_dr = params.get('value')
-            return HttpResponseRedirect(reverse('item_list'))
+
+                        if params.get('quantity'):
+                            opening_balance_equity = Account.objects.get(name='Opening Balance Equity',
+                                                                         category__name='Equity')
+                            item.account.current_balance = params.get('value')
+                            item.account.save()
+                            set_transactions(opening_balance_equity, datetime.date.today(), ['dr', item.account, params.get('quantity')])
+
+                    return HttpResponseRedirect(reverse('item_list'))
     form = ImportDebtor()
     return render(request, 'import/import_debtor_tally.html', {'form': form})
