@@ -81,14 +81,10 @@ def import_stock_tally(request):
                             item.oem_no = params.get('oem_number')
                         item.save(account_no=account_no)
                         account_no = account_no + 1
-
+                        item.account.current_balance = zero_for_none(params.get('quantity'))
+                        item.account.save()
                         if params.get('quantity'):
-                            opening_balance_equity = Account.objects.get(name='Opening Balance Equity',
-                                                                         category__name='Equity')
-                            item.account.current_balance = params.get('value')
-                            item.account.save()
-                            set_transactions(opening_balance_equity, datetime.date.today(), ['dr', item.account, params.get('quantity')])
-
-                    return HttpResponseRedirect(reverse('item_list'))
+                            set_transactions(item.account, datetime.date.today(), ['dr', item.account, params.get('quantity')])
+            return HttpResponseRedirect(reverse('item_list'))
     form = ImportDebtor()
     return render(request, 'import/import_debtor_tally.html', {'form': form})
