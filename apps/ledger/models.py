@@ -63,7 +63,7 @@ class Category(MPTTModel):
     description = models.CharField(max_length=254, null=True, blank=True)
     code = models.CharField(max_length=20, null=True, blank=True)
     parent = TreeForeignKey('self', blank=True, null=True, related_name='children')
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company, related_name='categories')
 
     def __unicode__(self):
         return self.name

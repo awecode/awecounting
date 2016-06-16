@@ -70,9 +70,10 @@ class Company(models.Model):
     enable_multi_language = models.BooleanField(default=True)
 
     def get_all(self):
-        companies = [branch.branch_company for branch in self.branches.all()]
-        # companies = []
-        companies.append(self)
+        companies = Company.objects.filter(branch_instance__company=self)
+        # To get the result cache
+        len(companies)
+        companies._result_cache.append(self)
         return companies
 
     def has_shareholders(self):
