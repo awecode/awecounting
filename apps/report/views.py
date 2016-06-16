@@ -54,11 +54,17 @@ def get_trial_balance_data(root_company, mode=None, exclude_indirect_accounts=Fa
             'settings_save_url': reverse('report:save_report_settings')}
 
     for company in companies:
-        root_categories = Category.objects.filter(company=company, parent=None)
+        root_categories = Category.objects.filter(company=company, parent=None).prefetch_related('accounts',
+                                                                                                 'children__accounts',
+                                                                                                 'children__children__accounts',
+                                                                                                 'children__children__children__accounts',
+                                                                                                 'children__children__children__children_accounts',
+                                                                                                 ).select_related(
+            'company')
         if mode:
             root_categories = root_categories.filter(name__in=mode)
         for root_category in root_categories:
-            node = Node(root_category)
+            node = Node(root_category, company=str(company))
             root['nodes'] = dict_merge(root['nodes'], node.get_data(), combined)
             root['total_dr'] += node.dr
             root['total_cr'] += node.cr

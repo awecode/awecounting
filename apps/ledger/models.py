@@ -14,7 +14,7 @@ from awecounting.utils.helpers import zero_for_none, none_for_zero
 
 
 class Node(object):
-    def __init__(self, model, parent=None, depth=0):
+    def __init__(self, model, parent=None, depth=0, company=None):
         self.children = []
         self.model = model
         self.name = self.model.name
@@ -24,11 +24,12 @@ class Node(object):
         self.url = None
         self.depth = depth
         self.parent = parent
+        self.company = company or str(self.model.company)
         if self.type == 'Category':
             for child in self.model.children.all():
-                self.add_child(Node(child, parent=self, depth=self.depth + 1))
+                self.add_child(Node(child, parent=self, depth=self.depth + 1, company=self.company))
             for account in self.model.accounts.all():
-                self.add_child(Node(account, parent=self, depth=self.depth + 1))
+                self.add_child(Node(account, parent=self, depth=self.depth + 1, company=self.company))
         if self.type == 'Account':
             self.dr = self.model.current_dr or 0
             self.cr = self.model.current_cr or 0
@@ -36,7 +37,6 @@ class Node(object):
         if self.parent:
             self.parent.dr += self.dr
             self.parent.cr += self.cr
-        self.company = str(self.model.company)
 
     def add_child(self, obj):
         self.children.append(obj.get_data())

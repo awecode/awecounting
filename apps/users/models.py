@@ -71,6 +71,7 @@ class Company(models.Model):
 
     def get_all(self):
         companies = [branch.branch_company for branch in self.branches.all()]
+        # companies = []
         companies.append(self)
         return companies
 
