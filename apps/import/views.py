@@ -9,7 +9,7 @@ from django.shortcuts import render
 from awecounting.utils.helpers import zero_for_none
 from ..ledger.models import Party, Account
 from ..inventory.models import ItemCategory, Unit, InventoryAccount, Item, set_transactions
-from forms import ImportDebtor
+from forms import ImportFile
 from openpyxl import load_workbook
 
 
@@ -35,7 +35,7 @@ def xls_stock_tally(row):
 
 def import_debtor_tally(request):
     if request.POST:
-        form = ImportDebtor(request.POST, request.FILES)
+        form = ImportFile(request.POST, request.FILES)
         if form.is_valid():
             file = request.FILES['file']
             wb = load_workbook(file)
@@ -54,13 +54,13 @@ def import_debtor_tally(request):
                     party.customer_account.save()
                     party.save()
             return HttpResponseRedirect(reverse('party_list'))
-    form = ImportDebtor()
+    form = ImportFile()
     return render(request, 'import/import_debtor_tally.html', {'form': form})
 
 
 def import_stock_tally(request):
     if request.POST:
-        form = ImportDebtor(request.POST, request.FILES)
+        form = ImportFile(request.POST, request.FILES)
         if form.is_valid():
             file = request.FILES['file']
             wb = load_workbook(file)
@@ -86,5 +86,5 @@ def import_stock_tally(request):
                         if params.get('quantity'):
                             set_transactions(item.account, datetime.date.today(), ['dr', item.account, params.get('quantity')])
             return HttpResponseRedirect(reverse('item_list'))
-    form = ImportDebtor()
-    return render(request, 'import/import_debtor_tally.html', {'form': form})
+    form = ImportFile()
+    return render(request, 'import/import_stock_tally.html', {'form': form})

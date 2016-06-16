@@ -1,0 +1,20 @@
+{% extends "_base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+    <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.errors }}
+        <div class="well">
+            <div>
+                <p>
+                    <label for="id_file">{{ form.file.label }}</label>
+                    {{ form.file }}
+                </p>
+            </div>
+        </div>
+        <input type="submit" class="btn btn-raised btn-info" value="{% trans 'Import' %}">
+    </form>
+
+{% endblock %}
