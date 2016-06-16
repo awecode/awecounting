@@ -90,23 +90,21 @@ def import_stock_tally(request):
             else:
                 wb = load_workbook(file)
             sheets = wb.worksheets
+            inventory_account_no = InventoryAccount.get_next_account_no(company=request.company)
             for sheet in sheets:
                 category, category_created = ItemCategory.objects.get_or_create(name=sheet.title,
                                                                                 company=request.company)
                 rows = tuple(sheet.iter_rows())
                 unit, created = Unit.objects.get_or_create(name="Pieces", company=request.company)
-                account_no = InventoryAccount.get_next_account_no(company=request.company)
                 for row in rows[5:]:
                     params = xls_stock_tally(row)
                     if params.get('particulars') not in ['Grand Total', 'Total', 'total']:
-                        rate =empty_to_zero( params.get('rate'))
-                        quantity = empty_to_zero(('quantity'))
+                        rate =empty_to_zero(params.get('rate'))
+                        quantity = empty_to_zero(params.get('quantity'))
                         item = Item(name=params.get('particulars'), cost_price=rate, category=category,
-                                    unit=unit, company=request.company, oem_no=params.get('oem_number'))
-                        item.save(account_no=account_no)
-                        account_no = account_no + 1
-                        item.account.current_balance = zero_for_none(quantity)
-                        item.account.save()
+                                    unit=unit, company=request.company, oem_no=empty_to_zero(params.get('oem_number')))
+                        item.save(account_no=inventory_account_no)
+                        inventory_account_no += 1
                         if quantity > 0:
                             set_transactions(item.account, datetime.date.today(),
                                              ['dr', item.account, quantity])
