@@ -53,7 +53,7 @@ def stock_tally(file, company):
                                 unit=unit, company=company, oem_no=empty_to_zero(params.get('oem_number')))
                     item.save(account_no=inventory_account_no)
                     inventory_account_no += 1
-                    if quantity > 0:
+                    if params.get('quantity'):
                         set_transactions(item.account, datetime.date.today(),
                                          ['dr', item.account, quantity])
 
