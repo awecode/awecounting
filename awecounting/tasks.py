@@ -5,6 +5,7 @@ import datetime
 import xlrd
 from openpyxl.workbook import Workbook as openpyxlWorkbook
 from openpyxl import load_workbook
+from django.db import transaction
 from awecounting.utils.helpers import empty_to_zero, zero_for_none
 from .celery import app
 from apps.inventory.models import ItemCategory, Unit, InventoryAccount, Item, set_transactions
@@ -41,19 +42,20 @@ def stock_tally(file, company):
         category, category_created = ItemCategory.objects.get_or_create(name=sheet.title,
                                                                         company=company)
         rows = tuple(sheet.iter_rows())
-        unit, created = Unit.objects.get_or_create(name="Pieces", company=company)
-        for row in rows[5:]:
-            params = xls_stock_tally(row)
-            if params.get('particulars') not in ['Grand Total', 'Total', 'total']:
-                rate = empty_to_zero(params.get('rate'))
-                quantity = empty_to_zero(params.get('quantity'))
-                item = Item(name=params.get('particulars'), cost_price=rate, category=category,
-                            unit=unit, company=company, oem_no=empty_to_zero(params.get('oem_number')))
-                item.save(account_no=inventory_account_no)
-                inventory_account_no += 1
-                if quantity > 0:
-                    set_transactions(item.account, datetime.date.today(),
-                                     ['dr', item.account, quantity])
+        with transaction.atomic():
+            unit, created = Unit.objects.get_or_create(name="Pieces", company=company)
+            for row in rows[5:]:
+                params = xls_stock_tally(row)
+                if params.get('particulars') not in ['Grand Total', 'Total', 'total']:
+                    rate = empty_to_zero(params.get('rate'))
+                    quantity = empty_to_zero(params.get('quantity'))
+                    item = Item(name=params.get('particulars'), cost_price=rate, category=category,
+                                unit=unit, company=company, oem_no=empty_to_zero(params.get('oem_number')))
+                    item.save(account_no=inventory_account_no)
+                    inventory_account_no += 1
+                    if quantity > 0:
+                        set_transactions(item.account, datetime.date.today(),
+                                         ['dr', item.account, quantity])
 
 
 @app.task
@@ -66,15 +68,16 @@ def debtor_tally(file, company, post):
     sheets = wb.worksheets
     for sheet in sheets:
         rows = tuple(sheet.iter_rows())
-        for row in rows[5:]:
-            params = xls_debtor_tally(row)
-            if type(params.get('debit')) != str and type(params.get('debit')) != str:
-                if 'new_party' in post:
-                    party = Party.objects.create(name=params.get('particulars'), company=company)
-                else:
-                    party, party_created = Party.objects.get_or_create(name=params.get('particulars'),
-                                                                       company=company)
-                party.customer_account.opening_cr = zero_for_none(params.get('credit'))
-                party.customer_account.opening_dr = zero_for_none(params.get('debit'))
-                party.customer_account.save()
-                party.save()
+        with transaction.atomic():
+            for row in rows[5:]:
+                params = xls_debtor_tally(row)
+                if type(params.get('debit')) != str and type(params.get('debit')) != str:
+                    if 'new_party' in post:
+                        party = Party.objects.create(name=params.get('particulars'), company=company)
+                    else:
+                        party, party_created = Party.objects.get_or_create(name=params.get('particulars'),
+                                                                           company=company)
+                    party.customer_account.opening_cr = zero_for_none(params.get('credit'))
+                    party.customer_account.opening_dr = zero_for_none(params.get('debit'))
+                    party.customer_account.save()
+                    party.save()
