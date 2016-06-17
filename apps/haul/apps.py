@@ -4,4 +4,4 @@ from django.apps import AppConfig
 
 
 class ImportConfig(AppConfig):
-    name = 'apps.import'
+    name = 'apps.haul'
