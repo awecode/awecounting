@@ -1,10 +1,11 @@
 from __future__ import absolute_import
 
 import datetime
-
+from django.conf import settings
 import xlrd
 from openpyxl.workbook import Workbook as openpyxlWorkbook
 from openpyxl import load_workbook
+from django.core.mail import send_mail
 from django.db import transaction
 from awecounting.utils.helpers import empty_to_zero, zero_for_none
 from .celery import app
@@ -29,7 +30,7 @@ def xls_to_xlsx(content):
 
 
 @app.task
-def stock_tally(file, company):
+def stock_tally(file, company, user):
     from apps.haul.views import xls_stock_tally
 
     if file.name.endswith('.xls'):
@@ -56,10 +57,11 @@ def stock_tally(file, company):
                     if quantity != 0:
                         set_transactions(item.account, datetime.date.today(),
                                          ['dr', item.account, quantity])
+    send_mail('Import complete', 'Stock records imported.', settings.DEFAULT_FROM_EMAIL, user.email, fail_silently=False)
 
 
 @app.task
-def debtor_tally(file, company, post):
+def debtor_tally(file, company, post, user):
     from apps.haul.views import xls_debtor_tally
     if file.name.endswith('.xls'):
         wb = xls_to_xlsx(file)
@@ -81,3 +83,4 @@ def debtor_tally(file, company, post):
                     party.customer_account.opening_dr = zero_for_none(params.get('debit'))
                     party.customer_account.save()
                     party.save()
+    send_mail('Import complete', 'Debtor records imported.', settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)

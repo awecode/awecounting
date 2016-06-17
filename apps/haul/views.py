@@ -33,7 +33,7 @@ def import_debtor_tally(request):
         form = ImportFile(request.POST, request.FILES)
         if form.is_valid():
             file = request.FILES['file']
-            debtor_tally.delay(file, request.company, request.POST)
+            debtor_tally.delay(file, request.company, request.POST, request.user)
             return HttpResponseRedirect(reverse('party_list'))
     form = ImportFile()
     return render(request, 'haul/import_debtor_tally.html', {'form': form})
@@ -44,7 +44,7 @@ def import_stock_tally(request):
         form = ImportFile(request.POST, request.FILES)
         if form.is_valid():
             file = request.FILES['file']
-            stock_tally.delay(file, request.company)
+            stock_tally.delay(file, request.company, request.user)
             return HttpResponseRedirect(reverse('item_list'))
     form = ImportFile()
     return render(request, 'haul/import_stock_tally.html', {'form': form})
