@@ -29,12 +29,14 @@ INSTALLED_APPS = (
     'apps.tax',
     'apps.payroll',
     'apps.report',
+    'apps.haul',
 
     'njango',
     'rest_framework',
     'rest_framework.authtoken',
     'linaro_django_pagination',
     'webstack_django_sorting',
+    'djcelery',
 )
 
 MIDDLEWARE_CLASSES = (

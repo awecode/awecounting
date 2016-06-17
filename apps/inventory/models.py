@@ -116,6 +116,16 @@ class InventoryAccount(models.Model):
         # return '/inventory_account/' + str(self.id)
         return reverse_lazy('view_inventory_account', kwargs={'pk': self.pk})
 
+    def cost_amount(self):
+        if self.item.cost_price:
+            return self.current_balance * self.item.cost_price
+        return 0
+
+    def sale_amount(self):
+        if self.item.selling_rate:
+            return self.current_balance * self.item.selling_rate
+        return 0
+
     @staticmethod
     def get_next_account_no(company):
         from django.db.models import Max
@@ -151,6 +161,7 @@ class Item(models.Model):
     size = models.CharField(max_length=250, blank=True, null=True)
     unit = models.ForeignKey(Unit, related_name="item_unit", blank=False, null=True, on_delete=models.SET_NULL)
     selling_rate = models.FloatField(blank=True, null=True)
+    cost_price = models.FloatField(blank=True, null=True)
     other_properties = JSONField(blank=True, null=True)
     ledger = models.ForeignKey(Account, null=True)
     purchase_ledger = models.OneToOneField(Account, null=True, related_name='purchase_detail')
