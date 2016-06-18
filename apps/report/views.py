@@ -1,4 +1,5 @@
 import copy
+from django.contrib import messages
 
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.forms import model_to_dict
@@ -101,6 +102,10 @@ class ReportSettingUpdateView(SuperOwnerMixin, UpdateView):
 
     def get_object(self, queryset=None):
         return self.model.objects.get(company=self.request.company)
+
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.SUCCESS, 'Report settings updated.')
+        return super(ReportSettingUpdateView, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super(ReportSettingUpdateView, self).get_context_data(**kwargs)

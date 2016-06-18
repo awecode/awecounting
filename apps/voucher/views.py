@@ -1,5 +1,6 @@
 import datetime
 import json
+from django.contrib import messages
 
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import JsonResponse, HttpResponseRedirect
@@ -1090,6 +1091,10 @@ class VoucherSettingUpdateView(SuperOwnerMixin, UpdateView):
 
     def get_object(self, queryset=None):
         return self.model.objects.get(company=self.request.company)
+
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.SUCCESS, 'Voucher settings updated.')
+        return super(VoucherSettingUpdateView, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super(VoucherSettingUpdateView, self).get_context_data(**kwargs)

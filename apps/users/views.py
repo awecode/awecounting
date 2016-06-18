@@ -240,6 +240,10 @@ class CompanySettingUpdateView(SuperOwnerMixin, UpdateView):
         obj = self.request.company
         return obj
 
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.SUCCESS, 'Company settings updated.')
+        return super(CompanySettingUpdateView, self).form_valid(form)
+
     def get_context_data(self, **kwargs):
         context = super(CompanySettingUpdateView, self).get_context_data(**kwargs)
         context['base_template'] = '_base_settings.html'
