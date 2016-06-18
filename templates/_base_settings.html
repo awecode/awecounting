@@ -1,20 +1,26 @@
 {% extends "_base.html" %}
 {% load i18n %}
 
-{% block page-header %}
-
-<ul class="nav nav-pills">
-  <li class="{% if setting == 'Company' %}active{% endif %}"><a href="{% url 'users:company_setting' %}">{% trans "Company Setting" %}</a></li>
-  <li class="{% if setting == 'VoucherSetting' %}active{% endif %}"><a href="{% url 'voucher_setting' %}">{% trans "Voucher Setting" %}</a></li>
-  <li class="{% if setting == 'ReportSetting' %}active{% endif %}"><a href="{% url 'report:report_setting' %}">{% trans "Report Setting" %}</a></li>
-</ul>
+{% block page %}
+    <div class="col-lg-12 col-md-12 col-sm-12">
+        <h1>
+            <ul class="nav nav-pills">
+                <li class="{% if setting == 'Company' %}active{% endif %}"><a
+                        href="{% url 'users:company_setting' %}">{% trans "Company Setting" %}</a></li>
+                <li class="{% if setting == 'VoucherSetting' %}active{% endif %}"><a
+                        href="{% url 'voucher_setting' %}">{% trans "Voucher Setting" %}</a></li>
+                <li class="{% if setting == 'ReportSetting' %}active{% endif %}"><a
+                        href="{% url 'report:report_setting' %}">{% trans "Report Setting" %}</a></li>
+            </ul>
+        </h1>
+    </div>
 {% endblock %}
 
 
 
 {% block content %}
-<div class="well">
-{% block settings_form %}
-{%endblock%}
-</div>
+    <div class="well">
+        {% block settings_form %}
+        {% endblock %}
+    </div>
 {% endblock %}
