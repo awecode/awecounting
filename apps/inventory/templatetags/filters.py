@@ -78,6 +78,7 @@ class RoleInGroup(template.Node):
         self.nodelist = nodelist
 
     def render(self, context):
+        #  TODO RemovedInDjango110Warning: resolve_variable() is deprecated. Use django.template.Variable(path).resolve(context) instead  request = template.resolve_variable('request', context)
         request = template.resolve_variable('request', context)
         if request.role and request.role.group.name in USURPERS[self.role]:
             return self.nodelist.render(context)
@@ -183,6 +184,7 @@ class GroupCheckNode(template.Node):
         self.nodelist_false = nodelist_false
 
     def render(self, context):
+        #  TODO RemovedInDjango110Warning: resolve_variable() is deprecated. Use django.template.Variable(path).resolve(context) instead  request = template.resolve_variable('request', context)
         user = template.resolve_variable('user', context)
 
         if not user.is_authenticated():
