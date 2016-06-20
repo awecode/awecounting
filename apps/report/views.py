@@ -1,16 +1,19 @@
 import copy
-from django.contrib import messages
 
+from django.contrib import messages
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import render
 
 from apps.ledger.models import Category, Node
-from apps.report.forms import ReportSettingForm
-from apps.report.models import ReportSetting
+from apps.report.forms import TrialBalanceReportSettingForm, TradingAccountReportSettingForm, \
+    ProfitAndLossAccountReportSettingForm
+from apps.report.models import TradingAccountReportSetting, TrialBalanceReportSetting, ProfitAndLossAccountReportSetting, \
+    BalanceSheetReportSetting
 from awecounting.utils.helpers import save_qs_from_ko, get_dict
 from awecounting.utils.mixins import group_required, SuperOwnerMixin, UpdateView
+import json
 
 BALANCE_SHEET = ['Equity', 'Assets', 'Liabilities']
 PL_ACCOUNT = ['Income', 'Expenses']
@@ -41,7 +44,7 @@ def dict_merge(root, node, combined):
     return root
 
 
-def get_trial_balance_data(root_company, mode=None, exclude_indirect_accounts=False):
+def get_trial_balance_data(root_company, model, mode=None, exclude_indirect_accounts=False):
     if root_company.show_combined_reports():
         companies = root_company.get_all()
     else:
@@ -51,7 +54,8 @@ def get_trial_balance_data(root_company, mode=None, exclude_indirect_accounts=Fa
     else:
         combined = False
     root = {'nodes': [], 'total_dr': 0, 'total_cr': 0,
-            'settings': model_to_dict(ReportSetting.objects.get(company=root_company), exclude=['id', 'company']),
+            'settings': model_to_dict(model, exclude=['id', 'company']),
+            'model': model.__class__.__name__,
             'settings_save_url': reverse('report:save_report_settings')}
 
     for company in companies:
@@ -76,12 +80,12 @@ def get_trial_balance_data(root_company, mode=None, exclude_indirect_accounts=Fa
 
 @group_required('Accountant')
 def trial_balance_json(request):
-    return JsonResponse(get_trial_balance_data(request.company))
+    return JsonResponse(get_trial_balance_data(request.company, TrialBalanceReportSetting.objects.get(company=request.company)))
 
 
 @group_required('Accountant')
 def trial_balance(request):
-    data = get_trial_balance_data(request.company)
+    data = get_trial_balance_data(request.company, TrialBalanceReportSetting.objects.get(company=request.company))
     context = {
         'data': data,
     }
@@ -91,12 +95,23 @@ def trial_balance(request):
 @group_required('Accountant')
 def save_report_settings(request):
     filter_kwargs = {'company': request.company}
-    return JsonResponse(save_qs_from_ko(ReportSetting, filter_kwargs, request.body))
+    model_name = json.loads(request.body).get('model')
+    if model_name == 'TrialBalanceReportSetting':
+        model = TrialBalanceReportSetting
+    elif model_name == 'TradingAccountReportSetting':
+        model = TradingAccountReportSetting
+    elif model_name == 'ProfitAndLossAccountReportSetting':
+        model = ProfitAndLossAccountReportSetting
+    elif model_name == 'BalanceSheetReportSetting':
+        model = BalanceSheetReportSetting
+    # import ipdb
+    # ipdb.set_trace()
+    return JsonResponse(save_qs_from_ko(model, filter_kwargs, request.body))
 
 
 class ReportSettingUpdateView(SuperOwnerMixin, UpdateView):
-    model = ReportSetting
-    form_class = ReportSettingForm
+    model = TrialBalanceReportSetting
+    form_class = TrialBalanceReportSettingForm
     success_url = reverse_lazy('home')
     template_name = 'report/report_setting.html'
 
@@ -109,9 +124,43 @@ class ReportSettingUpdateView(SuperOwnerMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(ReportSettingUpdateView, self).get_context_data(**kwargs)
+        context['trading_account_form'] = TradingAccountReportSettingForm(
+            instance=self.request.company.trading_account_settings,
+            prefix='trading_account_form')
+        context['profit_and_loss_account_form'] = ProfitAndLossAccountReportSettingForm(
+            instance=self.request.company.profit_and_loss_account_settings, prefix='profit_and_loss_account_form')
+
+        context['balance_sheet_form'] = TrialBalanceReportSettingForm(
+            instance=self.request.company.balance_sheet_settings, prefix='balance_sheet_form')
+
         context['base_template'] = '_base_settings.html'
         context['setting'] = 'ReportSetting'
         return context
+
+    def post(self, request, **kwargs):
+        self.object = self.get_object()
+        if request.POST:
+            trading_account = TradingAccountReportSettingForm(request.POST or None,
+                                                              instance=self.request.company.trading_account_settings,
+                                                              prefix='trading_account_form')
+            trading_account.company = request.company
+            if trading_account.is_valid():
+                trading_account.save()
+
+            profit_and_loss_account = TradingAccountReportSettingForm(request.POST or None,
+                                                                      instance=self.request.company.profit_and_loss_account_settings,
+                                                                      prefix='profit_and_loss_account_form')
+            profit_and_loss_account.company = request.company
+            if profit_and_loss_account.is_valid():
+                profit_and_loss_account.save()
+
+            balance_sheet = TradingAccountReportSettingForm(request.POST or None,
+                                                                      instance=self.request.company.balance_sheet_settings,
+                                                                          prefix='balance_sheet_form')
+            balance_sheet.company = request.company
+            if balance_sheet.is_valid():
+                balance_sheet.save()
+        return super(ReportSettingUpdateView, self).post(request, **kwargs)
 
 
 def get_subnode(node, name):
@@ -120,7 +169,7 @@ def get_subnode(node, name):
 
 @group_required('Accountant')
 def trading_account(request):
-    data = get_trial_balance_data(request.company, mode=PL_ACCOUNT)
+    data = get_trial_balance_data(request.company, TradingAccountReportSetting.objects.get(company=request.company), mode=PL_ACCOUNT)
     context = {
         'data': data,
     }
@@ -129,7 +178,7 @@ def trading_account(request):
 
 @group_required('Accountant')
 def profit_loss(request):
-    data = get_trial_balance_data(request.company, mode=PL_ACCOUNT)
+    data = get_trial_balance_data(request.company, ProfitAndLossAccountReportSetting.objects.get(company=request.company), mode=PL_ACCOUNT)
     context = {
         'data': data,
     }
@@ -182,7 +231,7 @@ def cr_bal(node):
 
 @group_required('Accountant')
 def balance_sheet(request):
-    data = get_trial_balance_data(request.company, mode=BALANCE_SHEET)
+    data = get_trial_balance_data(request.company, BalanceSheetReportSetting.objects.get(company=request.company), mode=BALANCE_SHEET)
     context = {
         'data': data,
     }
