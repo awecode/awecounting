@@ -30,15 +30,16 @@ def xls_to_xlsx(content):
 
 
 @app.task
-def stock_tally(file, company, user):
+def stock_tally(fl, company, user):
     from apps.haul.views import xls_stock_tally
 
-    if file.name.endswith('.xls'):
-        wb = xls_to_xlsx(file)
+    if fl.name.endswith('.xls'):
+        wb = xls_to_xlsx(fl)
     else:
-        wb = load_workbook(file)
+        wb = load_workbook(fl)
     sheets = wb.worksheets
     inventory_account_no = InventoryAccount.get_next_account_no(company=company)
+    cnt = 0
     for sheet in sheets:
         category, category_created = ItemCategory.objects.get_or_create(name=sheet.title,
                                                                         company=company)
@@ -52,22 +53,26 @@ def stock_tally(file, company, user):
                     quantity = empty_to_zero(params.get('quantity'))
                     item = Item(name=params.get('particulars'), cost_price=rate, category=category,
                                 unit=unit, company=company, oem_no=empty_to_zero(params.get('oem_number')))
+                    cnt += 1
                     item.save(account_no=inventory_account_no)
                     inventory_account_no += 1
                     if quantity != 0:
                         set_transactions(item.account, datetime.date.today(),
                                          ['dr', item.account, quantity])
-    send_mail('Import complete', 'Stock records imported.', settings.DEFAULT_FROM_EMAIL, user.email, fail_silently=False)
+    send_mail('Inventory Stock Import complete', str(cnt) + ' inventory records imported.', settings.DEFAULT_FROM_EMAIL,
+              [user.email], fail_silently=False)
 
 
 @app.task
-def debtor_tally(file, company, post, user):
+def debtor_tally(fl, company, post, user):
     from apps.haul.views import xls_debtor_tally
-    if file.name.endswith('.xls'):
-        wb = xls_to_xlsx(file)
+
+    if fl.name.endswith('.xls'):
+        wb = xls_to_xlsx(fl)
     else:
-        wb = load_workbook(file)
+        wb = load_workbook(fl)
     sheets = wb.worksheets
+    cnt = 0
     for sheet in sheets:
         rows = tuple(sheet.iter_rows())
         with transaction.atomic():
@@ -79,8 +84,9 @@ def debtor_tally(file, company, post, user):
                     else:
                         party, party_created = Party.objects.get_or_create(name=params.get('particulars'),
                                                                            company=company)
+                    cnt += 1
                     party.customer_account.opening_cr = zero_for_none(params.get('credit'))
                     party.customer_account.opening_dr = zero_for_none(params.get('debit'))
                     party.customer_account.save()
                     party.save()
-    send_mail('Import complete', 'Debtor records imported.', settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
+    send_mail('Import complete', str(cnt) + ' debtors imported.', settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)

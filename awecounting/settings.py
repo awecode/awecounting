@@ -136,3 +136,13 @@ try:
     from .local_settings import *  # noqa
 except ImportError:
     pass
+
+BROKER_URL = 'redis://127.0.0.1:6379/0'
+REDIS_CONNECT_RETRY = True
+BROKER_TRANSPORT = 'redis'
+BROKER_BACKEND = 'redis'
+REDIS_HOST = 6379
+REDIS_PORT = 6379
+REDIS_DB = 0
+CELERY_RESULT_BACKEND = 'redis'
+CELERY_TIMEZONE = 'UTC'
