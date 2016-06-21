@@ -64,7 +64,7 @@ def save_fixed_asset(request):
                      'from_account_id': params.get('from_account'),
                      'reference': params.get('reference'), 'description': params.get('description'), 'company': company}
     if params.get('id'):
-        obj = FixedAsset.objects.get(id=params.get('id'), company=request.company)
+        obj = FixedAsset.objects.get(id=params.get('id'), company__in=request.company.get_all())
     else:
         obj = FixedAsset(company=request.company)
     try:
@@ -156,7 +156,7 @@ class CashPaymentDetailView(AccountantMixin, DetailView):
 # @login_required
 # def cash_receipt(request, pk=None):
 #     if pk:
-#         voucher = get_object_or_404(CashReceipt, pk=pk, company=request.company)
+#         voucher = get_object_or_404(CashReceipt, pk=pk, company__in=request.company.get_all())
 #         scenario = 'Update'
 #     else:
 #         voucher = CashReceipt(company=request.company)
@@ -170,7 +170,7 @@ class CashPaymentDetailView(AccountantMixin, DetailView):
 # @login_required
 # def cash_payment(request, pk=None):
 #     if pk:
-#         voucher = get_object_or_404(CashPayment, pk=pk, company=request.company)
+#         voucher = get_object_or_404(CashPayment, pk=pk, company__in=request.company.get_all())
 #         scenario = 'Update'
 #     else:
 #         voucher = CashPayment(company=request.company)
@@ -189,7 +189,7 @@ def save_cash_payment(request):
                      'voucher_no': params.get('voucher_no'),
                      'reference': params.get('reference'), 'company': request.company}
     if params.get('id'):
-        obj = CashPayment.objects.get(id=params.get('id'), company=request.company)
+        obj = CashPayment.objects.get(id=params.get('id'), company__in=request.company.get_all())
     else:
         obj = CashPayment(company=request.company)
     try:
@@ -203,7 +203,7 @@ def save_cash_payment(request):
                 if invalid(row, ['payment']):
                     continue
                 row['payment'] = zero_for_none(empty_to_none(row['payment']))
-                invoice = PurchaseVoucher.objects.get(voucher_no=row.get('voucher_no'), company=request.company)
+                invoice = PurchaseVoucher.objects.get(voucher_no=row.get('voucher_no'), company__in=request.company.get_all())
                 invoice.pending_amount = row.get('pending_amount')
                 invoice.save()
                 values = {'payment': row.get('payment'), 'cash_payment': obj, 'invoice': invoice}
@@ -341,7 +341,7 @@ def save_cash_receipt(request):
                      'voucher_no': params.get('voucher_no'),
                      'reference': params.get('reference'), 'company': request.company}
     if params.get('id'):
-        obj = CashReceipt.objects.get(id=params.get('id'), company=request.company)
+        obj = CashReceipt.objects.get(id=params.get('id'), company__in=request.company.get_all())
     else:
         obj = CashReceipt(company=request.company)
     try:
@@ -355,7 +355,7 @@ def save_cash_receipt(request):
                 if invalid(row, ['payment']):
                     continue
                 row['payment'] = zero_for_none(empty_to_none(row['payment']))
-                invoice = Sale.objects.get(voucher_no=row.get('voucher_no'), company=request.company)
+                invoice = Sale.objects.get(voucher_no=row.get('voucher_no'), company__in=request.company.get_all())
                 invoice.pending_amount = row.get('pending_amount')
                 invoice.save()
                 values = {'receipt': row.get('payment'), 'cash_receipt': obj, 'invoice': invoice}
@@ -406,7 +406,7 @@ def save_purchase(request):
                      'company': request.company}
 
     if params.get('id'):
-        obj = PurchaseVoucher.objects.get(id=params.get('id'), company=request.company)
+        obj = PurchaseVoucher.objects.get(id=params.get('id'), company__in=request.company.get_all())
 
         if request.company.settings.show_lot:
             # For Lot on edit==> delete or subtract item
@@ -548,7 +548,7 @@ def save_purchase(request):
             discount_rate = None
 
         try:
-            discount_income = Account.objects.get(name='Discount Income', company=request.company, fy=request.company.fy,
+            discount_income = Account.objects.get(name='Discount Income', company=obj.company, fy=obj.company.fy,
                                                   category__name='Indirect Income')
         except Account.DoesNotExist:
             discount_income = None
@@ -581,7 +581,7 @@ def save_purchase(request):
             if not discount_income:
                 purchase_price -= discount
 
-            entries = [['dr', submodel.item.purchase_ledger, purchase_price]]
+            entries = [['dr', purchase_row.item.purchase_ledger, purchase_price]]
 
             if tax_scheme:
                 tax_amt = (pure_total - discount) * tax_scheme.percent / 100
@@ -639,7 +639,7 @@ class SaleDelete(SaleView, CashierMixin, DeleteView):
 #         obj = get_object_or_404(Sale, id=id)
 #         scenario = 'Update'
 #     else:
-#         obj = Sale(date=datetime.datetime.now().date(), company=request.company)
+#         obj = Sale(date=datetime.datetime.now().date(), company__in=request.company.get_all())
 #         scenario = 'Create'
 #     data = SaleSerializer(obj).data
 #     return render(request, 'sale_form.html', {'data': data, 'scenario': scenario, 'sale': obj})
@@ -657,7 +657,7 @@ def save_sale(request):
                      'company': request.company}
 
     if params.get('id'):
-        obj = Sale.objects.get(id=params.get('id'), company=request.company)
+        obj = Sale.objects.get(id=params.get('id'), company__in=request.company.get_all())
 
         if request.company.settings.show_locations:
             # SaleFromLocation Logic here for edit
@@ -743,7 +743,7 @@ def save_sale(request):
             discount_rate = None
 
         try:
-            discount_expense = Account.objects.get(name='Discount Expenses', company=request.company, fy=request.company.fy,
+            discount_expense = Account.objects.get(name='Discount Expenses', company=obj.company, fy=obj.company.fy,
                                                    category__name='Indirect Expenses')
         except Account.DoesNotExist:
             discount_expense = None
@@ -776,7 +776,7 @@ def save_sale(request):
             if not discount_expense:
                 sale_price -= discount
 
-            entries = [['cr', submodel.item.sale_ledger, sale_price]]
+            entries = [['cr', sale_row.item.sale_ledger, sale_price]]
 
             if tax_scheme:
                 tax_amt = (pure_total - discount) * tax_scheme.percent / 100
@@ -812,12 +812,12 @@ class SaleList(SaleView, CashierMixin, ListView):
 
 
 # def sale_list(request):
-#     objects = Sale.objects.filter(company=request.company).prefetch_related('rows')
+#     objects = Sale.objects.filter(company__in=request.company.get_all()).prefetch_related('rows')
 #     return render(request, 'sale_list.html', {'objects': objects})
 
 @group_required('Cashier')
 def sale_day(request, voucher_date):
-    objects = Sale.objects.filter(date=voucher_date, company=request.company).prefetch_related('rows')
+    objects = Sale.objects.filter(date=voucher_date, company__in=request.company.get_all()).prefetch_related('rows')
     total_amount = 0
     total_quantity = 0
     total_items = 0
@@ -838,7 +838,7 @@ def sale_day(request, voucher_date):
 
 @group_required('Cashier')
 def sale_date_range(request, from_date, to_date):
-    objects = Sale.objects.filter(date__gte=from_date, date__lte=to_date, company=request.company).prefetch_related(
+    objects = Sale.objects.filter(date__gte=from_date, date__lte=to_date, company__in=request.company.get_all()).prefetch_related(
         'rows')
     total_amount = 0
     total_quantity = 0
@@ -922,7 +922,7 @@ def journal_voucher_save(request):
                      'status': params.get('status'), 'company': company}
 
     if params.get('id'):
-        obj = JournalVoucher.objects.get(id=params.get('id'), company=request.company)
+        obj = JournalVoucher.objects.get(id=params.get('id'), company__in=request.company.get_all())
     else:
         obj = JournalVoucher(company=request.company)
     try:
@@ -966,7 +966,7 @@ class PurchaseOrderDelete(PurchaseOrderView, StockistMixin, DeleteView):
 
 
 # def purchase_list(request):
-#     obj = PurchaseOrder.objects.filter(company=request.company)
+#     obj = PurchaseOrder.objects.filter(company__in=request.company.get_all())
 #     return render(request, 'purchase_list.html', {'objects': obj})
 
 
@@ -994,7 +994,7 @@ def save_purchase_order(request):
                      'company': request.company}
 
     if params.get('id'):
-        obj = PurchaseOrder.objects.get(id=params.get('id'), company=request.company)
+        obj = PurchaseOrder.objects.get(id=params.get('id'), company__in=request.company.get_all())
     else:
         obj = PurchaseOrder(company=request.company)
     try:
@@ -1028,7 +1028,7 @@ def save_purchase_order(request):
                 # else:
                 #     set_ledger_transactions(submodel, obj.date,
                 #                             ['dr', submodel.item.ledger, obj.total],
-                #                             ['cr', Account.objects.get(name='Cash', company=request.company),
+                #                             ['cr', Account.objects.get(name='Cash', company=obj.company),
                 #                              obj.total],
                 #                             # ['cr', sales_tax_account, tax_amount],
                 #                             )
@@ -1141,7 +1141,7 @@ def save_expense(request):
     object_values = {'voucher_no': int(params.get('voucher_no')), 'date': params.get('date'),
                      'company': company}
     if params.get('id'):
-        obj = Expense.objects.get(id=params.get('id'), company=request.company)
+        obj = Expense.objects.get(id=params.get('id'), company__in=request.company.get_all())
     else:
         obj = Expense(company=request.company)
     try:

@@ -197,7 +197,7 @@ class InventoryAccountList(InventoryAccountView, StockistMixin, ListView):
 
 
 # def list_inventory_accounts(request):
-#     objects = InventoryAccount.objects.filter(company=request.company).order_by('-item')
+#     objects = InventoryAccount.objects.filter(company__in=request.company.get_all()).order_by('-item')
 #     return render(request, 'list_inventory_accounts.html', {'objects': objects})
 
 class InventoryAccountDetail(InventoryAccountView, StockistMixin, DetailView):
@@ -233,10 +233,10 @@ class InventoryAccountDetail(InventoryAccountView, StockistMixin, DetailView):
 
 
 # def view_inventory_account(request, pk):
-#     obj = get_object_or_404(InventoryAccount, pk=pk, company=request.company)
+#     obj = get_object_or_404(InventoryAccount, pk=pk, company__in=request.company.get_all())
 #     if hasattr(obj, 'item'):
 #         if request.POST:
-#             unit = Unit.objects.get(pk=request.POST.get('unit_id'), company=request.company)
+#             unit = Unit.objects.get(pk=request.POST.get('unit_id'), company__in=request.company.get_all())
 #         else:
 #             unit = obj.item.unit
 #     else:
@@ -324,10 +324,10 @@ def get_items_in_location(request, loc_id=None):
 
 
 # def view_inventory_account_with_rate(request, pk):
-#     obj= get_object_or_404(InventoryAccount, pk=pk, company=request.company)
+#     obj= get_object_or_404(InventoryAccount, pk=pk, company__in=request.company.get_all())
 #     if hasattr(obj, 'item'):
 #         if request.POST:
-#             unit = Unit.objects.get(pk=request.POST.get('unit_id'), company=request.company)
+#             unit = Unit.objects.get(pk=request.POST.get('unit_id'), company__in=request.company.get_all())
 #         else:
 #             unit = obj.item.unit
 #     else:
