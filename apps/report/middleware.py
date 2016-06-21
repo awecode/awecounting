@@ -11,13 +11,14 @@ import StringIO
 
 from django.conf import settings
 
-words_re = re.compile( r'\s+' )
+words_re = re.compile(r'\s+')
 
 group_prefix_re = [
-    re.compile( "^.*/django/[^/]+" ),
-    re.compile( "^(.*)/[^/]+$" ), # extract module path
-    re.compile( ".*" ),           # catch strange entries
+    re.compile("^.*/django/[^/]+"),
+    re.compile("^(.*)/[^/]+$"),  # extract module path
+    re.compile(".*"),  # catch strange entries
 ]
+
 
 class ProfileMiddleware(object):
     """
@@ -29,8 +30,9 @@ class ProfileMiddleware(object):
     but you really shouldn't add this middleware to any production configuration.
     WARNING: It uses hotshot profiler which is not thread safe.
     """
+
     def process_request(self, request):
-        if (settings.DEBUG or request.user.is_superuser) and 'prof' in request.GET: 
+        if 'prof' in request.GET and (settings.DEBUG or request.user.is_superuser):
             self.tmpfile = tempfile.mktemp()
             self.prof = hotshot.Profile(self.tmpfile)
 
@@ -40,18 +42,18 @@ class ProfileMiddleware(object):
 
     def get_group(self, file):
         for g in group_prefix_re:
-            name = g.findall( file )
+            name = g.findall(file)
             if name:
                 return name[0]
 
     def get_summary(self, results_dict, sum):
-        list = [ (item[1], item[0]) for item in results_dict.items() ]
-        list.sort( reverse = True )
+        list = [(item[1], item[0]) for item in results_dict.items()]
+        list.sort(reverse=True)
         list = list[:40]
 
         res = "      tottime\n"
         for item in list:
-            res += "%4.1f%% %7.3f %s\n" % ( 100*item[0]/sum if sum else 0, item[0], item[1] )
+            res += "%4.1f%% %7.3f %s\n" % (100 * item[0] / sum if sum else 0, item[0], item[1])
 
         return res
 
@@ -76,12 +78,12 @@ class ProfileMiddleware(object):
 
                 group = self.get_group(file)
                 if not group in mygroups:
-                    mygroups[ group ] = 0
-                mygroups[ group ] += time
+                    mygroups[group] = 0
+                mygroups[group] += time
 
         return "<pre>" + \
-               " ---- By file ----\n\n" + self.get_summary(mystats,sum) + "\n" + \
-               " ---- By group ---\n\n" + self.get_summary(mygroups,sum) + \
+               " ---- By file ----\n\n" + self.get_summary(mystats, sum) + "\n" + \
+               " ---- By group ---\n\n" + self.get_summary(mygroups, sum) + \
                "</pre>"
 
     def process_response(self, request, response):
