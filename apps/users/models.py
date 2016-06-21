@@ -74,7 +74,7 @@ class Company(models.Model):
         # To get the result cache
         len(companies)
         companies._result_cache.append(self)
-        return companies
+        return list(companies)
 
     def has_shareholders(self):
         return True if self.organization_type in ['partnership', 'corporation'] else False

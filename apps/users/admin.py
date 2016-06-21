@@ -6,7 +6,8 @@ from django.contrib.admin import ModelAdmin
 from django.contrib.sessions.models import Session
 from django.core.urlresolvers import reverse
 
-from apps.report.admin import ReportSettingStacked
+from apps.report.admin import TrialBalanceReportSettingStacked, TradingAccountReportSettingStacked, \
+    ProfitAndLossAccountReportSettingStacked, BalanceSheetReportSettingStacked
 from awecounting.utils.mixins import CompanyAdmin
 from .models import File, User, GroupProxy, Company, Role, Pin, Subscription, Branch
 
@@ -121,7 +122,12 @@ class _CompanyAdmin(ModelAdmin):
     from ..voucher.admin import VoucherSettingStacked
 
     inlines = [
-        VoucherSettingStacked, ReportSettingStacked, SubscriptionStacked
+        VoucherSettingStacked,
+        TrialBalanceReportSettingStacked,
+        TradingAccountReportSettingStacked,
+        ProfitAndLossAccountReportSettingStacked,
+        BalanceSheetReportSettingStacked,
+        SubscriptionStacked
     ]
 
 

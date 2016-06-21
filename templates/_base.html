@@ -93,6 +93,7 @@
     {% endblock %}
 
     <div class="page-header-bar row">
+        {% block page %}
         <div class="col-lg-7 col-md-7 col-sm-7">
             <h1>{% block page-header %}{% usekwacro page-title %}{% endblock %}</h1>
         </div>
@@ -101,6 +102,7 @@
                 {% block header-buttons %}{% endblock %}
             </div>
         </div>
+        {% endblock %}
     </div>
 
 
