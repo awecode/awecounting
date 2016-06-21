@@ -283,7 +283,8 @@ function SaleViewModel(data, settings) {
                         var item = ko.utils.arrayFirst(self.items(), function (itm) {
                             return itm.id == rate_item.id;
                         });
-                        item.last_sale_price = rate_item.last_sale_price;
+                        if (item)
+                            item.last_sale_price = rate_item.last_sale_price;
                     });
                 }
             });

@@ -1010,24 +1010,7 @@ def save_purchase_order(request):
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
-                # grand_total += submodel.get_total()
                 dct['rows'][ind] = submodel.id
-                # set_transactions(submodel, obj.date,
-                #                  ['dr', submodel.item.account, submodel.quantity],
-                #                  )
-                # if obj.credit:
-                #     set_ledger_transactions(submodel, obj.date,
-                #                             ['cr', obj.party.account, obj.total],
-                #                             ['dr', submodel.item.ledger, obj.total],
-                #                             # ['cr', sales_tax_account, tax_amount],
-                #                             )
-                # else:
-                #     set_ledger_transactions(submodel, obj.date,
-                #                             ['dr', submodel.item.ledger, obj.total],
-                #                             ['cr', Account.objects.get(name='Cash', company=obj.company),
-                #                              obj.total],
-                #                             # ['cr', sales_tax_account, tax_amount],
-                #                             )
         for ind, row in enumerate(params.get('expense_view').get('rows')):
             if invalid(row, ['expense_id', 'amount']):
                 continue
@@ -1041,10 +1024,6 @@ def save_purchase_order(request):
 
         delete_rows(params.get('expense_view').get('deleted_rows'), TradeExpense)
 
-        # obj.total_amount = grand_total
-        # if obj.credit:
-        # obj.pending_amount = grand_total
-        # obj.save()
     except Exception as e:
         dct = write_error(dct, e)
         mail_exception(request)
@@ -1128,7 +1107,6 @@ class ExpenseCreate(ExpenseView, AccountantMixin, TableObjectMixin):
 
 def save_expense(request):
     if request.is_ajax():
-        # params = json.loads(request.body)
         params = json.loads(request.POST.get('expense'))
     company = request.company
     if params.get('voucher_no') == '':
