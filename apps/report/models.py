@@ -59,3 +59,4 @@ def handle_company_creation(sender, **kwargs):
     TrialBalanceReportSetting.objects.create(company=company)
     TradingAccountReportSetting.objects.create(company=company)
     BalanceSheetReportSetting.objects.create(company=company)
+    ProfitAndLossAccountReportSetting.objects.create(company=company)
