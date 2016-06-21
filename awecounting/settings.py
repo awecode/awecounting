@@ -51,6 +51,7 @@ MIDDLEWARE_CLASSES = (
     'webstack_django_sorting.middleware.SortingMiddleware',
     'apps.users.middleware.RoleMiddleware',
     'njango.middleware.CalendarMiddleware',
+    'apps.report.middleware.ProfileMiddleware',
 )
 
 TEMPLATES = [
