@@ -69,10 +69,9 @@ def save_entry(request):
                 if not created:
                     submodel = save_model(submodel, values)
                 dct['rows'][ind] = submodel.id
-                # TODO request.company vs request.company.get_all()
                 set_transactions(submodel, obj.created,
                                  ['dr', submodel.pay_heading, submodel.amount],
-                                 ['cr', Account.objects.get(name='Payroll Tax', company=request.company), submodel.tax],
+                                 ['cr', Account.objects.get(name='Payroll Tax', company=obj.company), submodel.tax],
                                  ['cr', submodel.employee, float(submodel.amount) - float(submodel.tax)]
                                  )
         delete_rows(params.get('table_view').get('deleted_rows'), model)

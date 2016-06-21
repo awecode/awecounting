@@ -196,7 +196,7 @@ def save_cash_payment(request):
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = CashPaymentRow
-        cash_account = get_account(request, 'Cash')
+        cash_account = get_account(obj.company, 'Cash')
         if params.get('table_vm').get('rows'):
             total = 0
             for index, row in enumerate(params.get('table_vm').get('rows')):
@@ -348,7 +348,7 @@ def save_cash_receipt(request):
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = CashReceiptRow
-        cash_account = get_account(request, 'Cash')
+        cash_account = get_account(obj.company, 'Cash')
         if params.get('table_vm').get('rows'):
             total = 0
             for index, row in enumerate(params.get('table_vm').get('rows')):
@@ -538,7 +538,7 @@ def save_purchase(request):
         if obj.credit:
             cr_acc = obj.party.supplier_account
         else:
-            cash_account = get_account(request, 'Cash')
+            cash_account = get_account(obj.company, 'Cash')
             cr_acc = cash_account
 
         # Voucher discount needs to broken into row discounts
@@ -725,15 +725,11 @@ def save_sale(request):
 
                 grand_total += submodel.get_total()
                 dct['rows'][ind] = submodel.id
-                # TODO dr or cr in sale
-                # set_transactions(submodel, obj.date,
-                #                  ['dr', submodel.item.account, submodel.quantity],
-                #                  )
 
         if obj.credit:
             dr_acc = obj.party.customer_account
         else:
-            cash_account = get_account(request, 'Cash')
+            cash_account = get_account(obj.company, 'Cash')
             dr_acc = cash_account
 
         # Voucher discount needs to broken into row discounts
