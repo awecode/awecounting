@@ -1,6 +1,11 @@
 {% extends "_base.html" %}
 {% load i18n %}
 
+{% block page-title %}
+    {% trans 'Import Inventory Stock' %}
+{% endblock %}
+
+
 {% block content %}
 
     <form action="" method="POST" enctype="multipart/form-data">

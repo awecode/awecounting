@@ -1,6 +1,10 @@
 {% extends "_base.html" %}
 {% load i18n %}
 
+{% block page-title %}
+    {% trans 'Import Debtors' %}
+{% endblock %}
+
 {% block content %}
 
     <form action="" method="POST" enctype="multipart/form-data">
@@ -16,10 +20,10 @@
             <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        {{ form.new_party }} {% trans 'New Party' %}
+                        {{ form.new_party }} {% trans 'Create new instances for imported parties' %}
                     </label>
                 </div>
-                <p class="help-block">{% trans 'Always create new party for debtors.' %}</p>
+                <p class="help-block">{% trans 'Leave this unselected to search and update existing parties.' %}</p>
             </div>
         </div>
         <input type="submit" class="btn btn-raised btn-info" value="{% trans 'Import' %}">

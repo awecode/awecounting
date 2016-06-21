@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils.translation import ugettext_lazy as _
 
 from apps.ledger.models import Category, Node
 from apps.report.forms import TrialBalanceReportSettingForm, TradingAccountReportSettingForm, \
@@ -13,7 +14,6 @@ from apps.report.models import TradingAccountReportSetting, TrialBalanceReportSe
     BalanceSheetReportSetting
 from awecounting.utils.helpers import save_qs_from_ko, get_dict
 from awecounting.utils.mixins import group_required, SuperOwnerMixin, UpdateView
-import json
 
 BALANCE_SHEET = ['Equity', 'Assets', 'Liabilities']
 PL_ACCOUNT = ['Income', 'Expenses']
@@ -108,7 +108,7 @@ class ReportSettingUpdateView(SuperOwnerMixin, UpdateView):
         return self.model.objects.get(company=self.request.company)
 
     def form_valid(self, form):
-        messages.add_message(self.request, messages.SUCCESS, 'Report settings updated.')
+        messages.add_message(self.request, messages.SUCCESS, _('Report settings updated.'))
         return super(ReportSettingUpdateView, self).form_valid(form)
 
     def get_context_data(self, **kwargs):

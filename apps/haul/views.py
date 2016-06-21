@@ -1,8 +1,10 @@
 import re
+from django.contrib import messages
 
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.utils.translation import ugettext_lazy as _
 
 from awecounting.tasks import stock_tally, debtor_tally
 from forms import ImportFile
@@ -34,6 +36,7 @@ def import_debtor_tally(request):
         if form.is_valid():
             file = request.FILES['file']
             debtor_tally.delay(file, request.company, request.POST, request.user)
+            messages.success(request, _('File received and queued. You shall receive an email on import completion'))
             return HttpResponseRedirect(reverse('party_list'))
     form = ImportFile()
     return render(request, 'haul/import_debtor_tally.html', {'form': form})
@@ -45,6 +48,7 @@ def import_stock_tally(request):
         if form.is_valid():
             file = request.FILES['file']
             stock_tally.delay(file, request.company, request.user)
+            messages.success(request, _('File received and queued. You shall receive an email on import completion'))
             return HttpResponseRedirect(reverse('item_list'))
     form = ImportFile()
     return render(request, 'haul/import_stock_tally.html', {'form': form})
