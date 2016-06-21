@@ -95,18 +95,7 @@ def trial_balance(request):
 @group_required('Accountant')
 def save_report_settings(request):
     filter_kwargs = {'company': request.company}
-    model_name = json.loads(request.body).get('model')
-    if model_name == 'TrialBalanceReportSetting':
-        model = TrialBalanceReportSetting
-    elif model_name == 'TradingAccountReportSetting':
-        model = TradingAccountReportSetting
-    elif model_name == 'ProfitAndLossAccountReportSetting':
-        model = ProfitAndLossAccountReportSetting
-    elif model_name == 'BalanceSheetReportSetting':
-        model = BalanceSheetReportSetting
-    # import ipdb
-    # ipdb.set_trace()
-    return JsonResponse(save_qs_from_ko(model, filter_kwargs, request.body))
+    return JsonResponse(save_qs_from_ko(filter_kwargs, request.body))
 
 
 class ReportSettingUpdateView(SuperOwnerMixin, UpdateView):

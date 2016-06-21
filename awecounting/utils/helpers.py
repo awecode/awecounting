@@ -1,6 +1,7 @@
 import json
 import sys
 import linecache
+from django.apps import apps
 
 from django.core.mail import mail_admins
 
@@ -149,11 +150,13 @@ def invalid(row, required_fields):
     return invalid_attrs
 
 
-def save_qs_from_ko(model, filter_kwargs, request_body):
-    qs = model.objects.filter(**filter_kwargs)
+def save_qs_from_ko(filter_kwargs, request_body):
     params = json.loads(request_body)
+    model = apps.get_model('report', params.get('model'))
+    qs = model.objects.filter(**filter_kwargs)
     try:
         del params['__ko_mapping__']
+        del params['model']
     except KeyError:
         pass
     try:

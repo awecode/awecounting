@@ -90,7 +90,7 @@ var TreeModel = function () {
     };
 
     self.save_settings = function () {
-        self.settings['model'] = data.model;
+        self.settings['model'] = self.model;
         ajax_save(self.settings_save_url, ko.toJSON(self.settings));
         $('.dropdown.mega-dropdown.open .dropdown-toggle').dropdown('toggle');
     }
