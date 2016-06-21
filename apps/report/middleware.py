@@ -32,7 +32,7 @@ class ProfileMiddleware(object):
     """
 
     def process_request(self, request):
-        if 'prof' in request.GET and (settings.DEBUG or request.user.is_superuser):
+        if hasattr(request, 'user') and 'prof' in request.GET and (settings.DEBUG or request.user.is_superuser):
             self.tmpfile = tempfile.mktemp()
             self.prof = hotshot.Profile(self.tmpfile)
 
