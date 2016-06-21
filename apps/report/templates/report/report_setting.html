@@ -11,7 +11,7 @@
 {% block settings_form %}
     <form method="POST">
         {% csrf_token %}
-
+        <h1> {% trans "Trial Balance" %}</h1>
         <div class="form-group">
             <div class="checkbox">
                 <label>
@@ -40,6 +40,110 @@
             <div class="checkbox">
                 <label>
                     {{ form.show_ledgers_only }} {{ form.show_ledgers_only.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+
+
+        <h1> {% trans "Trading Account" %}</h1>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ trading_account_form.show_root_categories_only }} {{ trading_account_form.show_root_categories_only.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ trading_account_form.show_zero_balance_ledgers }} {{ trading_account_form.show_zero_balance_ledgers.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ trading_account_form.show_zero_balance_categories }} {{ trading_account_form.show_zero_balance_categories.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ trading_account_form.show_ledgers_only }} {{ trading_account_form.show_ledgers_only.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+
+
+        <h1> {% trans "Trading Account" %}</h1>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ profit_and_loss_account_form.show_root_categories_only }} {{ profit_and_loss_account_form.show_root_categories_only.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ profit_and_loss_account_form.show_zero_balance_ledgers }} {{ profit_and_loss_account_form.show_zero_balance_ledgers.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ profit_and_loss_account_form.show_zero_balance_categories }} {{ profit_and_loss_account_form.show_zero_balance_categories.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ profit_and_loss_account_form.show_ledgers_only }} {{ profit_and_loss_account_form.show_ledgers_only.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+
+        <h1> {% trans "Balance Sheet" %}</h1>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ balance_sheet_form.show_root_categories_only }} {{ balance_sheet_form.show_root_categories_only.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ balance_sheet_form.show_zero_balance_ledgers }} {{ balance_sheet_form.show_zero_balance_ledgers.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ balance_sheet_form.show_zero_balance_categories }} {{ balance_sheet_form.show_zero_balance_categories.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ balance_sheet_form.show_ledgers_only }} {{ balance_sheet_form.show_ledgers_only.label }}
                 </label>
             </div>
             {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}

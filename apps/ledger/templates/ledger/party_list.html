@@ -31,10 +31,10 @@
                         <a href="{% url 'party_edit' party.pk %}">{{ party.name }}</a>
                     </td>
                     <td>
-                        {{ party.phone_no|tel }}
+                        {{ party.phone_no|default:''|tel }}
                     </td>
                     <td>
-                        {{ party.pan_no }}
+                        {{ party.pan_no|default:'' }}
                     </td>
                     <td>
                         {% if party.customer_account %}

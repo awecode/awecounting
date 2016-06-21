@@ -4,3 +4,4 @@ pyinotify
 git-pylint-commit-hook
 django-debug-toolbar
 ipdb
+openpyxl

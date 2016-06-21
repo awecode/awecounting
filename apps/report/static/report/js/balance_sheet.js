@@ -93,6 +93,7 @@ var TreeModel = function () {
 
     self.load_data = function (data) {
         self.settings = ko.mapping.fromJS(data.settings);
+        self.model = data.model;
         self.settings_save_url = data.settings_save_url;
         self.tree_data(new NodeModel(data, self.settings));
         self.total_dr(data.total_dr);
@@ -141,6 +142,7 @@ var TreeModel = function () {
     });
 
     self.save_settings = function () {
+        self.settings['model'] = self.model;
         ajax_save(self.settings_save_url, ko.toJSON(self.settings));
         $('.dropdown.mega-dropdown.open .dropdown-toggle').dropdown('toggle');
     }

@@ -1,9 +1,27 @@
 from awecounting.utils.forms import HTML5BootstrapModelForm
-from models import ReportSetting
-from django import forms
+from models import ProfitAndLossAccountReportSetting, TradingAccountReportSetting, \
+    TrialBalanceReportSetting, BalanceSheetReportSetting
 
-class ReportSettingForm(HTML5BootstrapModelForm):
+
+class TrialBalanceReportSettingForm(HTML5BootstrapModelForm):
     class Meta:
-        model = ReportSetting
+        model = TrialBalanceReportSetting
         exclude = ('company',)
 
+
+class TradingAccountReportSettingForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = TradingAccountReportSetting
+        exclude = ('company',)
+
+
+class ProfitAndLossAccountReportSettingForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = ProfitAndLossAccountReportSetting
+        exclude = ('company',)
+
+
+class BalanceSheetReportSettingForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = BalanceSheetReportSetting
+        exclude = ('company',)
