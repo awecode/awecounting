@@ -343,7 +343,10 @@ class BranchView(CompanyView):
             self.object.party = company_party
             self.object.save()
 
-        copy_attribute(self.request.company.report_settings, self.object.branch_company.report_settings, ['id', 'company'])
+        copy_attribute(self.request.company.trial_balance_settings, self.object.branch_company.trial_balance_settings, ['id', 'company'])
+        copy_attribute(self.request.company.trading_account_settings, self.object.branch_company.trading_account_settings, ['id', 'company'])
+        copy_attribute(self.request.company.profit_and_loss_account_settings, self.object.branch_company.profit_and_loss_account_settings, ['id', 'company'])
+        copy_attribute(self.request.company.balance_sheet_settings, self.object.branch_company.balance_sheet_settings, ['id', 'company'])
         copy_attribute(self.request.company.subscription, self.object.branch_company.subscription, ['id', 'company'])
         copy_attribute(self.request.company.settings, self.object.branch_company.settings, ['id', 'company'])
 
