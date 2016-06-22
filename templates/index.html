@@ -162,6 +162,18 @@
     </div>
 
     <div class="tile flip-container">
+        <i class="fa fa-upload"></i>
+
+
+        <div class="flip-body">
+            <h2>{% trans 'Import' %}</h2>
+            <a href="{% url 'import_debtor_tally' %}">{% trans 'Import Debtors' %}</a>
+            <a href="{% url 'import_stock_tally' %}">{% trans 'Import Inventory Stock' %}</a>
+        </div>
+
+    </div>
+
+    <div class="tile flip-container">
         <i class="fa fa-area-chart"></i>
 
 
