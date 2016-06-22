@@ -30,6 +30,11 @@ class CategoryView(CompanyView):
     success_url = reverse_lazy('category_list')
     form_class = CategoryForm
 
+    def get_form(self, form_class=None):
+        kwargs = self.get_form_kwargs()
+        kwargs['request'] = self.request
+        return self.form_class(**kwargs)
+
 
 class CategoryList(CategoryView, AccountantMixin, ListView):
     pass
