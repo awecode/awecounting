@@ -1,3 +1,4 @@
+from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
@@ -28,4 +29,7 @@ class AccountForm(HTML5BootstrapModelForm):
 class CategoryForm(HTML5BootstrapModelForm):
     class Meta:
         model = Category
-        exclude = ('parent', 'company')
+        exclude = ('company',)
+        widgets = {
+            'parent': forms.Select(attrs={'class': 'selectize'}),
+        }
