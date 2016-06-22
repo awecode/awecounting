@@ -491,7 +491,7 @@ class Branch(models.Model):
     is_party = models.BooleanField(default=False, verbose_name="Also create party for a branch")
 
     def __str__(self):
-        return self.name + ' ' + self.company.name
+        return self.name + ' of ' + self.company.name
 
     def save(self, *args, **kwargs):
         if not self.branch_company:

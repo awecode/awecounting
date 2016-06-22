@@ -25,15 +25,18 @@ def dict_merge(root, node, combined):
         existing_node = get_dict(root, 'name', node['name'])
         # For combined report of branches, Accounts have subnodes of accounts of each branch.
         if combined and node.get('type') == 'Account':
-            # Find existing node and make it a subnode
-            old_node = copy.deepcopy(existing_node)
-            old_node['name'] = old_node['name'] + ' [' + str(old_node['company']) + ']'
-            existing_node['nodes'].append(old_node)
-            existing_node['url'] = None
+            # Find existing node and make it a subnode (only if it isn't a combined node already)
+            if not existing_node.get('combined'):
+                old_node = copy.deepcopy(existing_node)
+                old_node['name'] = old_node['name'] + ' [' + str(old_node['company']) + ']'
+                existing_node['combined'] = True
+                existing_node['nodes'].append(old_node)
+                existing_node['url'] = None
             # Create new subnode
             new_node = copy.deepcopy(node)
             new_node['name'] = node['name'] + ' [' + str(node['company']) + ']'
             existing_node['nodes'].append(new_node)
+            # existing_node['name'] += ' [Merged]'
         existing_node['dr'] += node['dr']
         existing_node['cr'] += node['cr']
         if len(node['nodes']):
@@ -144,8 +147,8 @@ class ReportSettingUpdateView(SuperOwnerMixin, UpdateView):
                 profit_and_loss_account.save()
 
             balance_sheet = TradingAccountReportSettingForm(request.POST or None,
-                                                                      instance=self.request.company.balance_sheet_settings,
-                                                                          prefix='balance_sheet_form')
+                                                            instance=self.request.company.balance_sheet_settings,
+                                                            prefix='balance_sheet_form')
             balance_sheet.company = request.company
             if balance_sheet.is_valid():
                 balance_sheet.save()
@@ -158,7 +161,8 @@ def get_subnode(node, name):
 
 @group_required('Accountant')
 def trading_account(request):
-    data = get_trial_balance_data(request.company, TradingAccountReportSetting.objects.get(company=request.company), mode=PL_ACCOUNT)
+    data = get_trial_balance_data(request.company, TradingAccountReportSetting.objects.get(company=request.company),
+                                  mode=PL_ACCOUNT)
     context = {
         'data': data,
     }
@@ -167,7 +171,8 @@ def trading_account(request):
 
 @group_required('Accountant')
 def profit_loss(request):
-    data = get_trial_balance_data(request.company, ProfitAndLossAccountReportSetting.objects.get(company=request.company), mode=PL_ACCOUNT)
+    data = get_trial_balance_data(request.company, ProfitAndLossAccountReportSetting.objects.get(company=request.company),
+                                  mode=PL_ACCOUNT)
     context = {
         'data': data,
     }
@@ -220,7 +225,8 @@ def cr_bal(node):
 
 @group_required('Accountant')
 def balance_sheet(request):
-    data = get_trial_balance_data(request.company, BalanceSheetReportSetting.objects.get(company=request.company), mode=BALANCE_SHEET)
+    data = get_trial_balance_data(request.company, BalanceSheetReportSetting.objects.get(company=request.company),
+                                  mode=BALANCE_SHEET)
     context = {
         'data': data,
     }
