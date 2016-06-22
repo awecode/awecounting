@@ -35,6 +35,9 @@
         </div>
 
         <input type="submit" class='btn btn-info btn-raised' value="{% trans 'Save' %}">
+        {% if form.instance.id %}
+            <a class="btn btn-danger btn-raised" href="{% url 'users:branch_delete' form.instance.id %}">{% trans 'Delete!' %}</a>
+        {% endif %}
 
     </form>
 
