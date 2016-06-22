@@ -62,6 +62,7 @@ class Category(MPTTModel):
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=254, null=True, blank=True)
     code = models.CharField(max_length=20, null=True, blank=True)
+    default = models.BooleanField(default=False)
     parent = TreeForeignKey('self', blank=True, null=True, related_name='children')
     company = models.ForeignKey(Company, related_name='categories')
 
@@ -94,6 +95,7 @@ class Account(models.Model):
     tax_rate = models.FloatField(blank=True, null=True)
     opening_dr = models.FloatField(default=0)
     opening_cr = models.FloatField(default=0)
+    default = models.BooleanField(default=False)
     fy = models.PositiveSmallIntegerField(blank=True, null=True)
 
     _original_opening_dr = 0
