@@ -25,6 +25,7 @@ class ItemForm(HTML5BootstrapModelForm, KOModelForm, TranslationModelForm):
         if self.instance.id:
             self.fields['account_no'].widget = forms.HiddenInput()
         self.fields['unit'].queryset = Unit.objects.filter(company=self.company)
+        self.fields['category'].queryset = ItemCategory.objects.filter(company=self.company)
 
     def clean_account_no(self):
         if not self.cleaned_data['account_no'].isdigit():
@@ -44,8 +45,9 @@ class ItemForm(HTML5BootstrapModelForm, KOModelForm, TranslationModelForm):
         exclude = ['other_properties', 'account', 'ledger', 'company', 'sale_ledger', 'purchase_ledger']
         widgets = {
             'unit': forms.Select(attrs={'data-url': reverse_lazy('unit_add'), 'class': 'selectize'}),
+            'category': forms.Select(attrs={'data-url': reverse_lazy('item_category_add'), 'class': 'selectize'}),
         }
-        company_filters = ['unit']
+        company_filters = ['unit', 'category']
 
 
 class UnitForm(HTML5BootstrapModelForm):
