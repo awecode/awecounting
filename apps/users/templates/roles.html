@@ -1,5 +1,5 @@
 {% extends "_base.html" %}
-{% load i18n %}
+{% load i18n filters %}
 
 {% block page-title %}{% trans 'Company Roles' %}{% endblock %}
 
@@ -25,7 +25,8 @@
             <tbody>
             {% for role in roles %}
                 <tr>
-                    <td><a href="{% url 'users:user_edit' role.user.pk %}">{{ role.user.full_name }}</a></td>
+                    {% issuperuser role.user as is_superuser %}
+                    <td><a {% if is_superuser %}href="{% url 'users:user_edit' role.user.pk %}"{% else %}class="text-color-black"{% endif %}>{{ role.user.full_name }}</a></td>
                     <td><a href="mailto:{{ role.user.email }}">{{ role.user.email }}</a></td>
                     <td>{{ role.group }}</td>
                     <td>
