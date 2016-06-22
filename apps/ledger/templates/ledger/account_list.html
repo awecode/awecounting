@@ -71,7 +71,9 @@
             </td>
             {% ifrole "Stockist" %}
             <td>
+                {% if not account.default %}
                 <a href="{% url 'account_edit' account.pk %}">{% trans "Edit" %}</a>
+                {% endif %}
             </td>
             {% endrole %}
         </tr>

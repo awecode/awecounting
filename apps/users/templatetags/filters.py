@@ -167,6 +167,19 @@ def print_view(context, string):
 
 #
 # @register.simple_tag(takes_context=True)
+# def issuperowner(context, user_id):
+#     request = context['request']
+#     import ipdb
+#     ipdb.set_trace()
+#     _bool = False
+#     if request.session.role:
+#         group = Group.objects.get(pk=request.session.role)
+#         if group.name == 'SuperOwner':
+#             _bool = True
+#     return _bool
+
+#
+# @register.simple_tag(takes_context=True)
 # def colspan(context):
 #     request = context['request']
 #     if context['obj'].__class__.__name__ == 'PurchaseVoucher':

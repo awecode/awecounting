@@ -11,14 +11,15 @@
 {% block content %}
     <form action="" method="POST">
         {% csrf_token %}
+        <div class="well">
 
         <p>{% trans 'User' %}:<br>
             <a href="{% url 'users:user_edit' form.instance.user.id %}">{{ form.instance.user.full_name }}</a>
         </p>
 
         {{ form.as_p }}
-
-        <input type="submit" class='btn btn-default'>
+        </div>
+        <input type="submit" class='btn btn-info btn-raised'>
 
     </form>
 {% endblock %}

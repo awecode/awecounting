@@ -43,6 +43,7 @@ class UserForm(HTML5BootstrapModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         ret = super(UserForm, self).__init__(*args, **kwargs)
+        self.fields['group'].queryset = Group.objects.exclude(name='SuperOwner')
         return ret
 
     def clean_username(self):
@@ -71,11 +72,14 @@ class UserForm(HTML5BootstrapModelForm):
             raise forms.ValidationError("Passwords don't match.")
 
     def save(self):
-        data = self.cleaned_data
-        user = User.objects.create_user(username=data['username'], email=data['email'], password=data['password1'])
-        user.full_name = data['full_name']
-        user.save()
-        Role.objects.create(user=user, group=self.cleaned_data['group'], company=self.request.company)
+        if self.cleaned_data['group'].name != 'SuperOwner':
+            data = self.cleaned_data
+            user = User.objects.create_user(username=data['username'], email=data['email'], password=data['password1'])
+            user.full_name = data['full_name']
+            user.save()
+            Role.objects.create(user=user, group=self.cleaned_data['group'], company=self.request.company)
+        else:
+            raise forms.ValidationError('SuperOwner cannot be created.')
         return user
 
     class Meta:
@@ -103,7 +107,7 @@ class UserUpdateForm(UserForm):
 
 
 class RoleForm(HTML5BootstrapModelForm):
-    group = forms.ModelChoiceField(queryset=Group.objects.all(), empty_label=None)
+    group = forms.ModelChoiceField(queryset=Group.objects.exclude(name='SuperOwner'), empty_label=None)
 
     def clean(self):
         try:

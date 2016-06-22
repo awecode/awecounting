@@ -1,3 +1,4 @@
+from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
@@ -27,6 +28,24 @@ class AccountForm(HTML5BootstrapModelForm):
 
 
 class CategoryForm(HTML5BootstrapModelForm):
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super(CategoryForm, self).__init__(*args, **kwargs)
+
     class Meta:
         model = Category
-        exclude = ('parent', 'company')
+        exclude = ('company', 'default')
+        widgets = {
+            'parent': forms.Select(attrs={'class': 'selectize'}),
+        }
+        company_filters = ('parent',)
+
+    def clean(self):
+        data = super(CategoryForm, self).clean()
+        try:
+            Category.objects.get(name=data['name'], company=self.request.company)
+        except Category.DoesNotExist:
+            pass
+        else:
+            raise ValidationError('Category Name already exists.')
+        return data
