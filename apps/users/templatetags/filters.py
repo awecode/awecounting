@@ -165,6 +165,11 @@ def print_view(context, string):
         return 'hidden-print'
     return ''
 
+
+@register.assignment_tag
+def issuperuser(user):
+    return 'SuperOwner' not in user.roles.all().values_list('group__name', flat=True)
+
 #
 # @register.simple_tag(takes_context=True)
 # def issuperowner(context, user_id):

@@ -27,18 +27,19 @@
                     </thead>
                     <tbody>
                         {% for user in sorted_objects %}
+                        {% issuperuser user as is_superuser %}
                         <tr>
                             <td>
-                                <a href="{% url 'users:user_edit' user.id %}">{{ user.username }}</a>
+                                <a {% if is_superuser %}href="{% url 'users:user_edit' user.pk %}"{% else %}class="text-color-black"{% endif %}>{{ user.username }}</a>
                             </td>
                             <td>
                                 <a href="mailto:{{ user.email }}">{{ user.email }}</a>
                             </td>
                             <td>
-                                <a href="{% url 'users:user_edit' user.id %}">{{ user.full_name }}</a>
+                                <a {% if is_superuser %}href="{% url 'users:user_edit' user.pk %}"{% else %}class="text-color-black"{% endif %}>{{ user.full_name }}</a>
                             </td>
                             <td>
-                                <a href="{% url 'users:user_edit' user.id %}">{{ user.date_joined }}</a>
+                                <a {% if is_superuser %}href="{% url 'users:user_edit' user.pk %}"{% else %}class="text-color-black"{% endif %}>{{ user.date_joined }}</a>
                             </td>
                         </tr>
                         {% endfor %}
