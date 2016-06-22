@@ -43,9 +43,9 @@ class CategoryForm(HTML5BootstrapModelForm):
     def clean(self):
         data = super(CategoryForm, self).clean()
         try:
-            Category.objects.get(name=data['name'], company=self.request.company)
+            existing_cat = Category.objects.get(name=data['name'], company=self.request.company)
+            if not existing_cat.id == self.instance.id:
+                raise ValidationError('Category name already exists.')
         except Category.DoesNotExist:
             pass
-        else:
-            raise ValidationError('Category Name already exists.')
         return data
