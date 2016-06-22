@@ -26,7 +26,9 @@
             {% for category in paginated_objects %}
                 <tr>
                     <td>
-                        <a href="{% url 'category_edit' category.pk %}">{{ category.name }}</a>
+                        <a {% if not category.default %}href="{% url 'category_edit' category.pk %}"{% else %}class="text-color-black"{% endif %}>
+                            {{ category.name }}
+                        </a>
                     </td>
                     <td>
                         {{ category.description|default:'' }}

@@ -29,7 +29,9 @@ class AccountForm(HTML5BootstrapModelForm):
 class CategoryForm(HTML5BootstrapModelForm):
     class Meta:
         model = Category
-        exclude = ('company',)
+        exclude = ('company', 'default')
         widgets = {
             'parent': forms.Select(attrs={'class': 'selectize'}),
         }
+        company_filters = ('parent',)
+

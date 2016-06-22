@@ -15,11 +15,13 @@
         <ul class="list-group">
             {% recursetree object_list %}
                 <li class="list-group-item link">
-                    <i class="fa fa-plus-circle"></i> <a href="{% url 'category_edit' node.id %}">{{ node.name }}</a>
+                    <i class="fa fa-plus-circle"></i> <a {% if not node.default %}href="{% url 'category_edit' node.id %}"{% else %}class="text-color-black"{% endif %}>{{ node.name }}</a>
                     <ul class="accounts children">
                         {% for account in node.accounts.all %}
-                            <li class="list-group-item tb-row"><a
-                                    href="{% url 'view_ledger' account.id %}">{{ account.name }}</a>
+                            <li class="list-group-item tb-row">
+                                <a href="{% url 'view_ledger' account.id %}">
+                                    {{ account.name }}
+                                </a>
                             </li>
                         {% endfor %}
                     </ul>

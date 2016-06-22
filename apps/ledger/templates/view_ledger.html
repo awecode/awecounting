@@ -26,7 +26,7 @@
 {% endblock %}
 
 {% block header-buttons %}
-    <a class="btn btn-success btn-raised" href="{% url 'account_edit' account.pk %}">{% trans "Edit" %}</a>
+    {% if not account.default %}<a class="btn btn-success btn-raised" href="{% url 'account_edit' account.pk %}">{% trans "Edit" %}</a>{% endif %}
 {% endblock %}
 
 {% block content %}

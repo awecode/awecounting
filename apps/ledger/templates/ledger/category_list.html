@@ -15,7 +15,7 @@
         <ul class="list-group">
             {% recursetree object_list %}
                 <li class="list-group-item link">
-                    <a href="{% url 'category_edit' node.id %}">
+                    <a {% if not node.default %}href="{% url 'category_edit' node.id %}"{% else %}class="text-color-black"{% endif %}>
                         {{ node.name }}
                         {% if request.company.has_branches %}
                             [{{ node.company }}]

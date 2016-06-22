@@ -723,3 +723,7 @@ ul.mega-dropdown-menu li {
 .no-margin {
     margin: 0px !important;
 }
+
+a.text-color-black {
+    color: #333333;
+}
