@@ -45,6 +45,7 @@ function PurchaseViewModel(data, settings) {
         dataType: 'json',
         async: false,
         success: function (data) {
+            debugger;
             self.enabled_locations = ko.observableArray(data);
         }
     });
