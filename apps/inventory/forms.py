@@ -58,7 +58,6 @@ class UnitForm(HTML5BootstrapModelForm):
 
 
 class UnitConversionForm(HTML5BootstrapModelForm):
-
     class Meta:
         model = UnitConversion
         exclude = ('company',)
@@ -72,7 +71,7 @@ class UnitConversionForm(HTML5BootstrapModelForm):
 class LocationForm(HTML5BootstrapModelForm):
     class Meta:
         model = Location
-        fields = '__all__'
+        exclude = ('company',)
 
 
 class ItemCategoryForm(HTML5BootstrapModelForm):

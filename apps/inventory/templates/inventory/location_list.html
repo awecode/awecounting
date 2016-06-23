@@ -28,10 +28,10 @@
             <tbody>
             {% for location in paginated_objects %}
                 <tr>
-                    <td>
+                    <td class="link">
                         <a href="{% url 'location_detail' location.pk %}">{{ location.code}}</a>
                     </td>
-                    <td>
+                    <td class="link">
                         <a href="{% url 'location_detail' location.pk %}">{{ location.name }}</a>
                     </td>
                     <td>

@@ -285,35 +285,30 @@ class InventoryAccountWithRate(InventoryAccountView, StockistMixin, DetailView):
         return context
 
 
-class LocationCreate(AjaxableResponseMixin, CreateView):
-    model = Location
-    form_class = LocationForm
-
-
-class LocationList(ListView):
-    model = Location
-
-    # def get_context_data(self, **kwargs):
-    #     context = super(LocationList, self).get_context_data(**kwargs)
-    #     context['object_list'] = [{'loc':obj, 'loc_detail': obj.contains.all()}  for obj in context['object_list']]
-    #     return context
-
-
-class LocationUpdate(UpdateView):
-    queryset = Location.objects.all()
+class LocationView(CompanyView, StockistMixin):
     model = Location
     form_class = LocationForm
     success_url = reverse_lazy('location_list')
-    # fields = ['code', 'name', 'enabled', 'parent']
 
 
-class LocationDelete(DeleteView):
-    model = Location
-    success_url = reverse_lazy('unit_list')
+class LocationCreate(LocationView, AjaxableResponseMixin, CreateView):
+    pass
+
+
+class LocationList(LocationView, ListView):
+    pass
+
+
+class LocationUpdate(LocationView, UpdateView):
+    pass
+
+
+class LocationDelete(LocationView, DeleteView):
+    pass
 
 
 def get_items_in_location(request, loc_id=None):
-    obj = get_object_or_404(Location, pk=loc_id)
+    obj = get_object_or_404(Location, pk=loc_id, company__in=request.company.get_all())
     object_list = obj.contains.all()
     return render(request, 'inventory/items_in_location.html',
                   {
@@ -352,7 +347,7 @@ class ItemCategoryView(CompanyView):
     def get_form(self, *args, **kwargs):
         form = super(ItemCategoryView, self).get_form(*args, **kwargs)
         form.fields['parent'].queryset = form.fields['parent'].queryset.filter(
-                    company=self.request.company)
+            company=self.request.company)
         return form
 
 
