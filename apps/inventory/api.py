@@ -19,7 +19,7 @@ class ItemListAPI(CompanyAPI, generics.ListCreateAPIView):
         if self.kwargs.get('pk'):
             # TODO Security
             return self.serializer_class.Meta.model.objects.filter(company_id=self.kwargs.get('pk'))
-        return super(ItemListAPI, self).get_queryset()
+        return super(ItemListAPI, self).get_queryset().select_related('unit').select_related('ledger').select_related('account')
 
 
 class UnitListAPI(CompanyAPI, generics.ListCreateAPIView):

@@ -26,8 +26,8 @@ class Unit(models.Model):
 
     def get_all_conversions(self, exclude=[]):
 
-        base_conversions = UnitConversion.objects.filter(base_unit=self).exclude(pk__in=exclude)
-        conversions = UnitConversion.objects.filter(unit_to_convert=self).exclude(pk__in=exclude)
+        base_conversions = UnitConversion.objects.filter(base_unit=self).exclude(pk__in=exclude).select_related('base_unit', 'unit_to_convert')
+        conversions = UnitConversion.objects.filter(unit_to_convert=self).exclude(pk__in=exclude).select_related('base_unit', 'unit_to_convert')
         ret = []
         for base_conversion in base_conversions:
             ret.append(base_conversion)
@@ -38,8 +38,8 @@ class Unit(models.Model):
 
         qs = UnitConversion.objects.filter(base_unit=self).extra(
             select={'multiple': '1 / multiple'}) | UnitConversion.objects.filter(
-            unit_to_convert=self)
-        return qs.exclude(pk__in=exclude)
+            unit_to_convert=self).select_related('base_unit', 'unit_to_convert')
+        return qs.exclude(pk__in=exclude).select_related('base_unit', 'unit_to_convert')
 
     def convertibles(self):
         def find_convertibles(data, exclude, mul, base_unit=None):
