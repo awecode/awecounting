@@ -120,7 +120,7 @@ handle_ajax_response = function (obj) {
             $select.refreshItems();
         }
         $select.$wrapper.find('> .appended-link').remove();
-        
+
         if ($select.$input.closest('.reveal-modal').length) {
             $select.$input.closest('.reveal-modal').modal('hide');
         } else {
@@ -1238,9 +1238,9 @@ get_by_name = function (array, name) {
     }
     return $.grep(array, function (e) {
         var obj_name;
-        if (typeof e.name == 'function'){
+        if (typeof e.name == 'function') {
             obj_name = e.name();
-        }else{
+        } else {
             obj_name = e.name;
         }
         return obj_name == name;
@@ -1700,15 +1700,23 @@ ajax_save = function (save_url, data) {
 
 // Client-side error logging
 
-function logError(details) {
+function logError(message, file, line) {
     $.ajax({
         type: 'POST',
         url: '/log_errors/',
-        data: JSON.stringify({context: navigator.userAgent, details: details}),
+        data: JSON.stringify({
+            agent: navigator.userAgent,
+            message: message,
+            referrer: document.referrer,
+            cookies: document.cookie,
+            path: window.location.href,
+            file: file,
+            line: line
+        }),
         contentType: 'application/json; charset=utf-8'
     });
 }
 
 window.onerror = function (message, file, line) {
-    logError(file + ':' + line + '\n\n' + message);
+    logError(message, file, line);
 };

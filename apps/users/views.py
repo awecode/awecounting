@@ -1,3 +1,4 @@
+import json
 from django.core.mail import mail_admins
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render, redirect, render_to_response
@@ -332,21 +333,26 @@ class BranchView(CompanyView):
         Role.objects.get_or_create(user=self.request.user, group_id=1, company=self.object.branch_company)
         Pin.connect_company(self.request.company, self.object.branch_company)
         if self.object.is_party and not self.object.party and self.object.branch_company:
-            company_party, company_party_created = Party.objects.get_or_create(name=self.object.name, company=self.request.company,
-                                         related_company=self.object.branch_company)
+            company_party, company_party_created = Party.objects.get_or_create(name=self.object.name,
+                                                                               company=self.request.company,
+                                                                               related_company=self.object.branch_company)
             company_party.name = self.object.name
             company_party.save()
             branch_party, branch_party_created = Party.objects.get_or_create(company=self.object.branch_company,
-                                 related_company=self.request.company)
+                                                                             related_company=self.request.company)
             branch_party.name = self.request.company.name
             branch_party.save()
             self.object.party = company_party
             self.object.save()
 
-        copy_attribute(self.request.company.trial_balance_settings, self.object.branch_company.trial_balance_settings, ['id', 'company'])
-        copy_attribute(self.request.company.trading_account_settings, self.object.branch_company.trading_account_settings, ['id', 'company'])
-        copy_attribute(self.request.company.profit_and_loss_account_settings, self.object.branch_company.profit_and_loss_account_settings, ['id', 'company'])
-        copy_attribute(self.request.company.balance_sheet_settings, self.object.branch_company.balance_sheet_settings, ['id', 'company'])
+        copy_attribute(self.request.company.trial_balance_settings, self.object.branch_company.trial_balance_settings,
+                       ['id', 'company'])
+        copy_attribute(self.request.company.trading_account_settings, self.object.branch_company.trading_account_settings,
+                       ['id', 'company'])
+        copy_attribute(self.request.company.profit_and_loss_account_settings,
+                       self.object.branch_company.profit_and_loss_account_settings, ['id', 'company'])
+        copy_attribute(self.request.company.balance_sheet_settings, self.object.branch_company.balance_sheet_settings,
+                       ['id', 'company'])
         copy_attribute(self.request.company.subscription, self.object.branch_company.subscription, ['id', 'company'])
         copy_attribute(self.request.company.settings, self.object.branch_company.settings, ['id', 'company'])
 
@@ -360,11 +366,11 @@ class BranchView(CompanyView):
                                                                     used_by=self.object.branch_company).exists():
                     Pin.connect_company(branch.branch_company, self.object.branch_company)
                     new_branch_party, new_branch_party_created = Party.objects.get_or_create(company=branch.branch_company,
-                                         related_company=self.object.branch_company)
+                                                                                             related_company=self.object.branch_company)
                     new_branch_party.name = self.object.branch_company.name
                     new_branch_party.save()
                     old_branch_party, old_branch_party_created = Party.objects.get_or_create(company=self.object.branch_company,
-                                         related_company=branch.branch_company)
+                                                                                             related_company=branch.branch_company)
                     old_branch_party.name = branch.branch_company.name
                     old_branch_party.save()
         return super(BranchView, self).form_valid(form)
@@ -423,5 +429,19 @@ def server_error(request):
 
 
 def log_js_errors(request):
-    mail_admins('JS Error', request.body)
+    body = json.loads(request.body)
+    mail_body = '''
+    {0}
+    
+    File: {1}
+    Line: {2}
+    Page: {3}
+    Referrer: {4}
+    Agent: {5}
+    User: {6}
+    Role: {7}
+    Cookies: {8}
+    '''.format(body.get('message'), body.get('file'), body.get('line'), body.get('path'), body.get('referrer'),
+               body.get('agent'), request.user, request.role, body.get('cookies'))
+    mail_admins('JS Error', mail_body)
     return HttpResponse(status=204)

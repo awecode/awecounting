@@ -66,12 +66,14 @@
 
         <div class="flip-body">
             <h2>{% trans 'Inventory' %}</h2>
+
             {% ifrole "Stockist" %}
-            <a href="{% url 'list_inventory_accounts' %}">{% trans 'Accounts' %}</a>
+            {#            <a href="{% url 'list_inventory_accounts' %}">{% trans 'Accounts' %}</a>#}
             {% endrole %}
             <a href="{% url 'item_list' %}">{% trans 'Items' %}</a>
             <a href="{% url 'item_category_list' %}">{% trans 'Categories' %}</a>
             <a href="{% url 'unit_list' %}">{% trans 'Units' %}</a>
+            <a href="{% url 'location_list' %}">{% trans 'Locations' %}</a>
             <a href="{% url 'unit_conversion_list' %}">{% trans 'Unit Conversions' %}</a>
         </div>
     </div>
