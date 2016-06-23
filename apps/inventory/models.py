@@ -286,9 +286,15 @@ class Location(MPTTModel):
     enabled = models.BooleanField(default=True)
     # contains = models.ManyToManyField(LocationContain, blank=True)
     parent = TreeForeignKey('self', blank=True, null=True, related_name='children')
+    company = models.ForeignKey(Company, related_name='inventory_locations')
 
     def __str__(self):
         return self.name
+
+    def add_items(self, item, quantity):
+        location_contain, created = LocationContain.objects.get_or_create(location=self, item=item, defaults={'qty': 0})
+        location_contain.qty += quantity
+        location_contain.save()
 
     def get_absolute_url(self):
         return reverse_lazy('location_list')

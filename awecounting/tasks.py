@@ -9,7 +9,7 @@ from django.core.mail import send_mail
 from django.db import transaction
 from awecounting.utils.helpers import empty_to_zero, zero_for_none
 from .celery import app
-from apps.inventory.models import ItemCategory, Unit, InventoryAccount, Item, set_transactions
+from apps.inventory.models import ItemCategory, Unit, InventoryAccount, Item, set_transactions, Location
 from apps.ledger.models import Party
 
 
@@ -40,6 +40,8 @@ def stock_tally(fl, company, user):
     sheets = wb.worksheets
     inventory_account_no = InventoryAccount.get_next_account_no(company=company)
     cnt = 0
+    if company.can_manage_locations():
+        default_location, created = Location.objects.get_or_create(company=company, name='Default Location')
     for sheet in sheets:
         category, category_created = ItemCategory.objects.get_or_create(name=sheet.title,
                                                                         company=company)
@@ -57,6 +59,8 @@ def stock_tally(fl, company, user):
                     item.save(account_no=inventory_account_no)
                     inventory_account_no += 1
                     if quantity != 0:
+                        if company.can_manage_locations():
+                            default_location.add_items(item, quantity)
                         set_transactions(item.account, datetime.date.today(),
                                          ['dr', item.account, quantity])
     send_mail('Inventory Stock Import complete', str(cnt) + ' inventory records imported.', settings.DEFAULT_FROM_EMAIL,
