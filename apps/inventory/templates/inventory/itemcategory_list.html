@@ -9,39 +9,27 @@
 {% endblock %}
 
 {% block content %}
+    {% load mptt_tags %}
 
-    {% load pagination_tags %}
-    {% load sorting_tags %}
-    {% load filters %}
+    <div class="well">
 
-    <div class='well'>
-
-        {% autosort object_list as sorted_objects %}
-        {% autopaginate sorted_objects 25 as paginated_objects %}
-
-        <table class="table table-striped">
-            <thead>
-            <th>{% anchor name _('Name') %}</th>
-            <th>{% anchor description _('Description') %}</th>
-            </thead>
-            <tbody>
-            {% for item_category in paginated_objects %}
-                <tr>
-                    <td class="link">
-                        <a href="{% url 'item_category_edit' item_category.pk %}">{{ item_category.name }}</a>
-                    </td>
-                    <td>
-                        {{ item_category.description }}
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-
-        {% paginate %}
-
+        <ul class="list-group">
+            {% recursetree object_list %}
+                <li class="list-group-item link">
+                    <a {% if not node.default %}href="{% url 'category_edit' node.id %}"{% else %}class="text-color-black"{% endif %}>
+                        {{ node.name }}
+                        {% if request.company.has_branches %}
+                            [{{ node.company }}]
+                        {% endif %}
+                    </a>
+                    {% if not node.is_leaf_node %}
+                        <ul class="children">
+                            {{ children }}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endrecursetree %}
+        </ul>
     </div>
-
-
 
 {% endblock %}
