@@ -45,7 +45,7 @@
                     <th>{% trans 'Total' %}</th>
                     {% ifrole "Accountant" %}
                         <th>{% trans "Action" %}</th>
-                    {% endrole %}
+                    {% endifrole %}
                     </thead>
                     <tbody>
                     {% for sale in paginated_objects %}
@@ -63,7 +63,7 @@
                             <td>
                                 <a href="{% url 'sale-edit' sale.id %}">{% trans "Edit" %}</a>
                             </td>
-                            {% endrole %}
+                            {% endifrole %}
                         </tr>
                     {% endfor %}
                     </tbody>
