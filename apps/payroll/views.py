@@ -50,7 +50,7 @@ def save_entry(request):
         params['entry_no'] = None
     object_values = {'entry_no': int(params.get('entry_no')), 'company': company}
     if params.get('id'):
-        obj = Entry.objects.get(id=params.get('id'), company=request.company)
+        obj = Entry.objects.get(id=params.get('id'), company__in=request.company.get_all())
     else:
         obj = Entry(company=request.company)
     model = EntryRow
@@ -71,7 +71,7 @@ def save_entry(request):
                 dct['rows'][ind] = submodel.id
                 set_transactions(submodel, obj.created,
                                  ['dr', submodel.pay_heading, submodel.amount],
-                                 ['cr', Account.objects.get(name='Payroll Tax', company=request.company), submodel.tax],
+                                 ['cr', Account.objects.get(name='Payroll Tax', company=obj.company), submodel.tax],
                                  ['cr', submodel.employee, float(submodel.amount) - float(submodel.tax)]
                                  )
         delete_rows(params.get('table_view').get('deleted_rows'), model)

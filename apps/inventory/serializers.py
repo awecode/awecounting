@@ -5,25 +5,26 @@ from ..voucher.models import PurchaseVoucherRow, SaleRow
 
 
 class UnitSerializer(serializers.ModelSerializer):
-    convertible_units = serializers.SerializerMethodField()
+    # convertible_units = serializers.SerializerMethodField()
 
     def get_convertible_units(self, obj):
         return obj.convertibles()
 
     class Meta:
         model = Unit
+        exclude = ('company',)
 
 
 class ItemSerializer(serializers.ModelSerializer):
     unit = UnitSerializer()
     full_name = serializers.SerializerMethodField()
-    current_balance = serializers.SerializerMethodField()
+    # current_balance = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         super(ItemSerializer, self).__init__(*args, **kwargs)
         if self.context.get('request').company.settings.purchase_suggest_by_item and not self.context.get(
                 'request').company.settings.purchase_suggest_by_party_item and kwargs.get('context').get(
-                'voucher') == 'purchase':
+            'voucher') == 'purchase':
             self.fields['last_purchase_price'] = serializers.SerializerMethodField()
         if self.context.get('request').company.settings.sale_suggest_by_item and not self.context.get(
                 'request').company.settings.sale_suggest_by_party_item and kwargs.get('context').get('voucher') == 'sale':
@@ -51,6 +52,7 @@ class ItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Item
+        exclude = ('category', 'account', 'ledger', 'purchase_ledger', 'sale_ledger')
 
 
 class InventoryAccountRowSerializer(serializers.ModelSerializer):

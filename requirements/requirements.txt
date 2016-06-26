@@ -16,3 +16,6 @@ pyelasticsearch
 django-froala-editor
 -e git+https://github.com/xtranophilist/nepdate.git@master#egg=nepdate
 django-redis
+django-celery
+xlrd
+openpyxl

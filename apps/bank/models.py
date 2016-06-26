@@ -4,7 +4,6 @@ from apps.users.models import Company, File
 from awecounting.utils.helpers import get_next_voucher_no
 from django.utils.translation import ugettext_lazy as _
 from njango.fields import BSDateField, today
-from django.contrib.contenttypes.fields import GenericRelation
 
 
 class BankAccount(models.Model):

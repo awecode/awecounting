@@ -26,8 +26,8 @@ class Unit(models.Model):
 
     def get_all_conversions(self, exclude=[]):
 
-        base_conversions = UnitConversion.objects.filter(base_unit=self).exclude(pk__in=exclude)
-        conversions = UnitConversion.objects.filter(unit_to_convert=self).exclude(pk__in=exclude)
+        base_conversions = UnitConversion.objects.filter(base_unit=self).exclude(pk__in=exclude).select_related('base_unit', 'unit_to_convert')
+        conversions = UnitConversion.objects.filter(unit_to_convert=self).exclude(pk__in=exclude).select_related('base_unit', 'unit_to_convert')
         ret = []
         for base_conversion in base_conversions:
             ret.append(base_conversion)
@@ -38,8 +38,8 @@ class Unit(models.Model):
 
         qs = UnitConversion.objects.filter(base_unit=self).extra(
             select={'multiple': '1 / multiple'}) | UnitConversion.objects.filter(
-            unit_to_convert=self)
-        return qs.exclude(pk__in=exclude)
+            unit_to_convert=self).select_related('base_unit', 'unit_to_convert')
+        return qs.exclude(pk__in=exclude).select_related('base_unit', 'unit_to_convert')
 
     def convertibles(self):
         def find_convertibles(data, exclude, mul, base_unit=None):
@@ -116,6 +116,16 @@ class InventoryAccount(models.Model):
         # return '/inventory_account/' + str(self.id)
         return reverse_lazy('view_inventory_account', kwargs={'pk': self.pk})
 
+    def cost_amount(self):
+        if self.item.cost_price:
+            return self.current_balance * self.item.cost_price
+        return 0
+
+    def sale_amount(self):
+        if self.item.selling_rate:
+            return self.current_balance * self.item.selling_rate
+        return 0
+
     @staticmethod
     def get_next_account_no(company):
         from django.db.models import Max
@@ -151,6 +161,7 @@ class Item(models.Model):
     size = models.CharField(max_length=250, blank=True, null=True)
     unit = models.ForeignKey(Unit, related_name="item_unit", blank=False, null=True, on_delete=models.SET_NULL)
     selling_rate = models.FloatField(blank=True, null=True)
+    cost_price = models.FloatField(blank=True, null=True)
     other_properties = JSONField(blank=True, null=True)
     ledger = models.ForeignKey(Account, null=True)
     purchase_ledger = models.OneToOneField(Account, null=True, related_name='purchase_detail')
@@ -275,9 +286,15 @@ class Location(MPTTModel):
     enabled = models.BooleanField(default=True)
     # contains = models.ManyToManyField(LocationContain, blank=True)
     parent = TreeForeignKey('self', blank=True, null=True, related_name='children')
+    company = models.ForeignKey(Company, related_name='inventory_locations')
 
     def __str__(self):
         return self.name
+
+    def add_items(self, item, quantity):
+        location_contain, created = LocationContain.objects.get_or_create(location=self, item=item, defaults={'qty': 0})
+        location_contain.qty += quantity
+        location_contain.save()
 
     def get_absolute_url(self):
         return reverse_lazy('location_list')
@@ -286,7 +303,7 @@ class Location(MPTTModel):
 class LocationContain(models.Model):
     location = models.ForeignKey(Location, related_name='contains')
     item = models.ForeignKey(Item, related_name='location_contain')
-    qty = models.PositiveIntegerField()
+    qty = models.FloatField()
 
     def __str__(self):
         return str(self.item) + str(self.qty)

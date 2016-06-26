@@ -97,7 +97,7 @@ class ChequeDepositCreate(ChequeDepositView, AccountantMixin, TableObjectMixin):
 
 # def cheque_deposit_create(request, id=None):
 #     if id:
-#         cheque_deposit = get_object_or_404(ChequeDeposit, id=id, company=request.company)
+#         cheque_deposit = get_object_or_404(ChequeDeposit, id=id, company__in=request.company.get_all())
 #         scenario = 'Update'
 #     else:
 #         cheque_deposit = ChequeDeposit(company=request.company)
@@ -120,7 +120,7 @@ def cheque_deposit_save(request):
                      'deposited_by': params.get('deposited_by'),
                      'narration': params.get('narration'), 'status': params.get('status'), 'company': company}
     if params.get('id'):
-        obj = ChequeDeposit.objects.get(id=params.get('id'), company=request.company)
+        obj = ChequeDeposit.objects.get(id=params.get('id'), company__in=request.company.get_all())
     else:
         obj = ChequeDeposit(company=request.company)
     model = ChequeDepositRow

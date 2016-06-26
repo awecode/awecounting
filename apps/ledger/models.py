@@ -216,7 +216,7 @@ class Account(models.Model):
         super(Account, self).save(*args, **kwargs)
         if self.opening_dr != self._original_opening_dr:
             entries = []
-            opening_balance_equity = Account.objects.get(name='Opening Balance Equity', category__name='Equity')
+            opening_balance_equity = Account.objects.get(name='Opening Balance Equity', category__name='Equity', company=self.company)
             entries.append(['cr', opening_balance_equity, self.opening_dr])
             entries.append(['dr', self, self.opening_dr])
             self._original_opening_dr = self.opening_dr
@@ -224,7 +224,7 @@ class Account(models.Model):
         if self.opening_cr != self._original_opening_cr:
             entries = []
             if not opening_balance_equity:
-                opening_balance_equity = Account.objects.get(name='Opening Balance Equity', category__name='Equity')
+                opening_balance_equity = Account.objects.get(name='Opening Balance Equity', category__name='Equity', company=self.company)
             entries.append(['dr', opening_balance_equity, self.opening_cr])
             entries.append(['cr', self, self.opening_cr])
             self._original_opening_cr = self.opening_cr

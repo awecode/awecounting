@@ -108,7 +108,7 @@ class UserUpdateForm(UserForm):
 
 class RoleForm(HTML5BootstrapModelForm):
     group = forms.ModelChoiceField(queryset=Group.objects.exclude(name='SuperOwner'), empty_label=None)
-    
+
     def clean(self):
         try:
             Role.objects.get(group=self.cleaned_data['group'], user=self.instance.user, company=self.instance.company)
@@ -124,7 +124,7 @@ class RoleForm(HTML5BootstrapModelForm):
 class CompanyForm(HTML5BootstrapModelForm):
     class Meta:
         model = Company
-        exclude  = ()
+        exclude = ()
 
 
 class PinForm(HTML5BootstrapModelForm):
@@ -142,4 +142,3 @@ class BranchForm(HTML5BootstrapModelForm):
         #         attrs={'class': 'selectize', 'data-url': reverse_lazy('party_add')}),
         # }
         # company_filters = ('party',)
-

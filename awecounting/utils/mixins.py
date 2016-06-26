@@ -219,7 +219,7 @@ class SuperOwnerMixin(object):
 
 class CompanyAPI(object):
     def get_queryset(self):
-        return self.serializer_class.Meta.model.objects.filter(company=self.request.company)
+        return self.serializer_class.Meta.model.objects.filter(company__in=self.request.company.get_all())
 
 
 class SerializerWithFile(object):

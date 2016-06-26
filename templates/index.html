@@ -66,12 +66,14 @@
 
         <div class="flip-body">
             <h2>{% trans 'Inventory' %}</h2>
+
             {% ifrole "Stockist" %}
-            <a href="{% url 'list_inventory_accounts' %}">{% trans 'Accounts' %}</a>
+            {#            <a href="{% url 'list_inventory_accounts' %}">{% trans 'Accounts' %}</a>#}
             {% endrole %}
             <a href="{% url 'item_list' %}">{% trans 'Items' %}</a>
             <a href="{% url 'item_category_list' %}">{% trans 'Categories' %}</a>
             <a href="{% url 'unit_list' %}">{% trans 'Units' %}</a>
+            <a href="{% url 'location_list' %}">{% trans 'Locations' %}</a>
             <a href="{% url 'unit_conversion_list' %}">{% trans 'Unit Conversions' %}</a>
         </div>
     </div>
@@ -157,6 +159,18 @@
             <a href="{% url 'entry_list' %}">{% trans 'Payroll Entries' %}</a>
             <a href="{% url 'employee_list' %}">{% trans 'Employees' %}</a>
             <a href="{% url 'employee_add' %}">{% trans 'Add New Employee' %}</a>
+        </div>
+
+    </div>
+
+    <div class="tile flip-container">
+        <i class="fa fa-upload"></i>
+
+
+        <div class="flip-body">
+            <h2>{% trans 'Import' %}</h2>
+            <a href="{% url 'import_debtor_tally' %}">{% trans 'Import Debtors' %}</a>
+            <a href="{% url 'import_stock_tally' %}">{% trans 'Import Inventory Stock' %}</a>
         </div>
 
     </div>

@@ -28,7 +28,7 @@ function PurchaseViewModel(data, settings) {
     self.divident_rate_obs = ko.observable(0);
 
     self.items_of_current_company = ko.observable();
-    
+
     for (var k in data) {
         if (k == 'discount') {
             self.voucher_discount(data[k]);

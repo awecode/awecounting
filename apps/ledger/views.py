@@ -30,10 +30,20 @@ class CategoryView(CompanyView):
     success_url = reverse_lazy('category_list')
     form_class = CategoryForm
 
+    def get_queryset(self):
+        return Category.objects.filter(company__in=self.request.company.get_all()).prefetch_related(
+            'children',
+            'children__children',
+            'children__children__children',
+            'children__children__children__children',
+        ).select_related(
+            'company')
+
     def get_form(self, form_class=None):
         kwargs = self.get_form_kwargs()
         kwargs['request'] = self.request
         return self.form_class(**kwargs)
+
 
 
 class CategoryList(CategoryView, AccountantMixin, ListView):
@@ -102,10 +112,11 @@ class AccountView(CompanyView):
             category = Category.objects.filter(name=category_name).first()
             dct['category'] = category
         return dct
-    
+
+
 class AccountTree(CategoryView, AccountantMixin, ListView):
     template_name = 'ledger/account_tree.html'
-    
+
     def get_queryset(self):
         qs = super(AccountTree, self).get_queryset()
         qs = qs.prefetch_related('accounts')

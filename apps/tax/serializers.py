@@ -7,7 +7,7 @@ class TaxSchemeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaxScheme
-        exclude = ('name',)
+        exclude = ('name', 'payable', 'receivable')
 
     def get_name(self, obj):
         return obj.__str__()

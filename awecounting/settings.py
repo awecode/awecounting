@@ -29,12 +29,14 @@ INSTALLED_APPS = (
     'apps.tax',
     'apps.payroll',
     'apps.report',
+    'apps.haul',
 
     'njango',
     'rest_framework',
     'rest_framework.authtoken',
     'linaro_django_pagination',
     'webstack_django_sorting',
+    'djcelery',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -51,6 +53,7 @@ MIDDLEWARE_CLASSES = (
     'webstack_django_sorting.middleware.SortingMiddleware',
     'apps.users.middleware.RoleMiddleware',
     'njango.middleware.CalendarMiddleware',
+    # 'apps.report.middleware.ProfileMiddleware',
 )
 
 TEMPLATES = [
@@ -64,11 +67,11 @@ TEMPLATES = [
             'context_processors': [
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.debug',
-                'django.core.context_processors.i18n',
-                'django.core.context_processors.media',
-                'django.core.context_processors.static',
-                'django.core.context_processors.tz',
-                'django.core.context_processors.request',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
             ],
         },
@@ -133,3 +136,13 @@ try:
     from .local_settings import *  # noqa
 except ImportError:
     pass
+
+BROKER_URL = 'redis://127.0.0.1:6379/0'
+REDIS_CONNECT_RETRY = True
+BROKER_TRANSPORT = 'redis'
+BROKER_BACKEND = 'redis'
+REDIS_HOST = 6379
+REDIS_PORT = 6379
+REDIS_DB = 0
+CELERY_RESULT_BACKEND = 'redis'
+CELERY_TIMEZONE = 'UTC'
