@@ -120,6 +120,7 @@ class RoleForm(HTML5BootstrapModelForm):
         model = Role
         exclude = ('user', 'company')
 
+
 class CompanyForm(HTML5BootstrapModelForm):
     class Meta:
         model = Company
