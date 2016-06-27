@@ -510,7 +510,6 @@ def save_purchase(request):
                             # location_obj.contains.add(loc_contain_obj)
 
                             # End Setting Location Items
-
                 values = {
                     'sn': ind + 1,
                     'item_id': row.get('item')['id'],

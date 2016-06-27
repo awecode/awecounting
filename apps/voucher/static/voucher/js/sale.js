@@ -14,12 +14,10 @@ function SaleRowLocation(data) {
     } else {
         self.selected_qty = ko.observable(0);
     }
-    ;
     self.adjust_selected_qty = ko.computed(function () {
         if (self.selected_qty() > self.qty()) {
             self.selected_qty(self.qty());
         }
-        ;
     });
 
 };
@@ -40,7 +38,7 @@ function SaleViewModel(data, settings) {
             'id': 'no',
             'value': 'No Tax',
         },
-    ]
+    ];
 
     self.tax = ko.observable();
     self.tax_scheme = ko.observable();
@@ -206,25 +204,31 @@ function SaleViewModel(data, settings) {
     });
 
     self.save = function (item, event) {
+        var check_unit = false;
+
+        self.table_view.rows().forEach(function (i) {
+            if (!i.unit_id()) {
+                check_unit = true;
+            }
+        });
+
+        if (check_unit) {
+            bsalert.error("Unit in item is required.");
+            return false;
+        }
+
         if (!self.party() && self.credit()) {
             bsalert.error('Party is required for credit sales!');
             return false;
         }
         if (settings.show_locations) {
-
-            for (var row of
-            vm.table_view.rows()
-        )
-            {
+            for (var row of vm.table_view.rows() ) {
                 if (row.sale_row_location_error()) {
                     bsalert.error(row.item().full_name + '-' + row.sale_row_location_error());
                     return false;
                 }
-                ;
             }
-            ;
         }
-        ;
 
         var check_discount;
         self.table_view.rows().forEach(function (i) {
@@ -392,37 +396,40 @@ function SaleRow(row, sale_vm) {
         return r2z(self.total_without_tax() * sale_vm.divident_rate_obs() / (1 + self.tax_rate()));
     });
 
-    self.unit.subscription_changed(function (new_val, old_val) {
-        if (old_val && old_val != new_val) {
-            var conversion_rate = old_val.convertible_units[new_val.id];
-            if (conversion_rate) {
-                if (self.quantity()) {
-                    self.quantity(self.quantity() * conversion_rate);
-                }
-                if (self.rate()) {
-                    self.rate(self.rate() / conversion_rate);
-                }
-            }
-        }
-    });
+    //Converting old unit value to new value
+    //self.unit.subscription_changed(function (new_val, old_val) {
+    //    if (old_val && old_val != new_val) {
+    //        var conversion_rate = old_val.convertible_units[new_val.id];
+    //        if (conversion_rate) {
+    //            if (self.quantity()) {
+    //                self.quantity(self.quantity() * conversion_rate);
+    //            }
+    //            if (self.rate()) {
+    //                self.rate(self.rate() / conversion_rate);
+    //            }
+    //        }
+    //    }
+    //});
 
     self.render_unit_options = function (data) {
         var obj = get_by_id(sale_vm.units(), data.id);
         var klass = '';
-        if (self.unit_id() && obj.id != self.unit_id()) {
-            if (obj.convertible_units[self.unit_id()])
-                klass = 'green';
-            else
-                klass = 'red';
+        if ('convertible_units' in obj ){
+            if (self.unit_id() && obj.id != self.unit_id()) {
+                if (obj.convertible_units[self.unit_id()])
+                    klass = 'green';
+                else
+                    klass = 'red';
+            }
         }
         return '<div class="' + klass + '">' + obj.name + '</div>';
-    }
+    };
 
     self.render_option = function (data) {
         //sale_vm
         var obj = get_by_id(sale_vm.items(), data.id);
         return '<div>' + obj.full_name + '</div>';
-    }
+    };
 
     if (voucher_settings.show_locations) {
 
@@ -471,9 +478,7 @@ function SaleRow(row, sale_vm) {
                 if (object.selected_qty()) {
                     total += parseInt(object.selected_qty());
                 }
-                ;
             }
-            ;
             if (self.quantity()) {
                 if (total > parseInt(self.quantity())) {
                     self.sale_row_location_error('Quantity in locations exceeds required quantity');
@@ -484,9 +489,7 @@ function SaleRow(row, sale_vm) {
                 } else {
                     self.sale_row_location_error(null);
                 }
-                ;
             }
-            ;
         });
 
         self.suggest_qty_4m_location = ko.computed(function () {
@@ -505,11 +508,8 @@ function SaleRow(row, sale_vm) {
                         obj.selected_qty(remain_qty);
                         remain_qty -= remain_qty;
                     }
-                    ;
                 }
-                ;
             }
-            ;
         });
         // Location logic end
     }
