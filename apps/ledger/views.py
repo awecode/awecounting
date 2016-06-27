@@ -48,6 +48,27 @@ class ViewItemAccount(AccountantMixin, ListView):
         return context
 
 
+class ViewPartyAccount(AccountantMixin, ListView):
+    model = Party
+    template_name = 'view_party_ledger.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ViewPartyAccount, self).get_context_data(**kwargs)
+        base_template = 'dashboard.html'
+        pk = int(self.kwargs.get('pk'))
+        obj = get_object_or_404(self.model, pk=pk, company__in=self.request.company.get_all())
+        journal_entries = JournalEntry.objects.filter(transactions__account_id__in=[obj.customer_account.pk, obj.supplier_account.pk]).order_by('pk',
+                                                                                                'date') \
+            .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
+        context['party'] = obj
+        context['dr_amount'] = empty_to_zero(obj.customer_account.current_dr) + empty_to_zero(obj.supplier_account.current_dr)
+        context['cr_amount'] = empty_to_zero(obj.customer_account.current_cr) + empty_to_zero(obj.supplier_account.current_cr)
+        context['closing_balance'] = context['dr_amount'] - context['cr_amount']
+        context['journal_entries'] = journal_entries
+        context['base_template'] = base_template
+        return context
+
+
 class CategoryView(CompanyView):
     model = Category
     success_url = reverse_lazy('category_list')

@@ -60,7 +60,7 @@
                         {% endif %}
                         {% if item.sale_ledger and item.purchase_ledger %}
                             <a class="btn btn-sm btn-info btn-raised no-margin"
-                               href="{% url 'ledger' item.pk %}">{% trans 'Ledger' %}</a>
+                               href="{% url 'item_ledger' item.pk %}">{% trans 'Ledger' %}</a>
                         {% endif %}
                     </td>
                 </tr>
