@@ -36,16 +36,7 @@ class ProductFilter(filters.FilterSet):
 
 
 class LocationListAPI(generics.ListCreateAPIView):
-    queryset = Location.objects.all()
     serializer_class = LocationSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    # filter_class = ProductFilter
-    filter_fields = {
-        'id': ['exact'],
-        'enabled': ['exact'],
-        # 'contains': ['item_id', 'qty'],
-        'parent': ['exact',]
-    }
 
-    # def get_queryset(self):
-    #     return self.serializer_class.Meta.model.objects.all()
+    def get_queryset(self):
+        return self.serializer_class.Meta.model.objects.filter(company__in=self.request.company.get_all(), enabled=True)
