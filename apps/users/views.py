@@ -252,6 +252,7 @@ class CompanySettingUpdateView(SuperOwnerMixin, UpdateView):
         return context
 
 
+@login_required()
 def set_role(request, pk):
     role = Role.objects.get(pk=pk, user=request.user)
     if role:
