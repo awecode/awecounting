@@ -29,7 +29,7 @@ class AccessibleCompanyAPI(generics.ListAPIView):
     def get_queryset(self):
         qs = []
         if self.request.company:
-            qs =  Pin.accessible_companies(self.request.company)
+            qs = Pin.accessible_companies(self.request.company)
         return qs
 
 
