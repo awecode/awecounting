@@ -440,9 +440,9 @@ function PurchaseRow(row, purchase_vm) {
         if (self.unit_id() && obj.id != self.unit_id()) {
             if ('convertible_units' in obj) {
                 if (obj.convertible_units[self.unit_id()])
-                klass = 'green';
-            else
-                klass = 'red';
+                    klass = 'green';
+                else
+                   klass = 'red';
             }
         }
         return '<div class="' + klass + '">' + obj.name + '</div>';
