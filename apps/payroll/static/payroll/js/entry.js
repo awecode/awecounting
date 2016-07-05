@@ -11,13 +11,22 @@ function EntryViewModel(data) {
     self.entry_no = ko.observable();
     self.status = ko.observable();
 
+    //$.ajax({
+    //    url: '/ledger/api/account.json',
+    //    dataType: 'json',
+    //    data: "categories=bank_account,cash_account",
+    //    async: false,
+    //    success: function (data) {
+    //        self.pay_headings = ko.observableArray(data);
+    //    }
+    //});
+
     $.ajax({
-        url: '/ledger/api/account.json',
+        url: '/ledger/api/bank_cash_account.json',
         dataType: 'json',
-        data: "categories=bank_account,cash_account",
         async: false,
         success: function (data) {
-            self.pay_headings = ko.observableArray(data);
+        self.pay_headings = ko.observableArray(data);
         }
     });
 
