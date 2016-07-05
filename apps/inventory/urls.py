@@ -13,6 +13,7 @@ web_urls = [
     url(r'^item/(?P<pk>[0-9]+)/$', views.item, name='item_edit'),
     url(r'^item/search/$', views.item_search, name='search-item'),
     url(r'^item/delete/(?P<pk>\d+)/$', views.ItemDelete.as_view(), name='item_delete'),
+    url(r'^item/tree/$', views.ItemTree.as_view(), name='item_tree'),
 
     url(r'^unit/add$', views.UnitCreate.as_view(), name='unit_add'),
     url(r'^unit/$', views.UnitList.as_view(), name='unit_list'),

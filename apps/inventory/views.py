@@ -100,6 +100,7 @@ class ItemView(CompanyView):
     search_fields = ['company__name', 'name', 'code', 'size', 'description', 'other_properties', 'unit__name', 'selling_rate']
 
 
+
 # def form_valid(self, form):
 #         self.object = form.save(commit=False)
 #         property_name = self.request.POST.getlist('property_name')
@@ -365,3 +366,10 @@ class ItemCategoryUpdate(ItemCategoryView, StockistCashierMixin, UpdateView):
 
 class ItemCategoryDelete(ItemCategoryView, StockistCashierMixin, DeleteView):
     pass
+
+
+class ItemTree(ItemCategoryView, StockistCashierMixin, ListView):
+    template_name = 'inventory/item_tree.html'
+
+
+
