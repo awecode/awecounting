@@ -400,7 +400,7 @@ class JournalVoucherRow(models.Model):
         return self.journal_voucher.voucher_no
 
 
-class CashReceipt(models.Model):
+class CreditVoucher(models.Model):
     voucher_no = models.IntegerField()
     party = models.ForeignKey(Party, verbose_name=_('Receipt From'))
     date = BSDateField(default=today)
@@ -413,9 +413,9 @@ class CashReceipt(models.Model):
     # status = models.CharField(max_length=10, choices=statuses, default='Unapproved')
 
     def __init__(self, *args, **kwargs):
-        super(CashReceipt, self).__init__(*args, **kwargs)
+        super(CreditVoucher, self).__init__(*args, **kwargs)
         if not self.pk and not self.voucher_no:
-            self.voucher_no = get_next_voucher_no(CashReceipt, self.company_id)
+            self.voucher_no = get_next_voucher_no(CreditVoucher, self.company_id)
 
     @property
     def total(self):
@@ -432,11 +432,11 @@ class CashReceipt(models.Model):
         return reverse_lazy('cash_receipt_edit', kwargs={'pk': self.pk})
 
 
-class CashReceiptRow(models.Model):
+class CreditVoucherRow(models.Model):
     invoice = models.ForeignKey(Sale, related_name='receipts')
     receipt = models.FloatField()
     discount = models.FloatField(blank=True, null=True)
-    cash_receipt = models.ForeignKey(CashReceipt, related_name='rows')
+    cash_receipt = models.ForeignKey(CreditVoucher, related_name='rows')
 
     def get_voucher_no(self):
         return self.cash_receipt.voucher_no
@@ -454,7 +454,7 @@ class CashReceiptRow(models.Model):
         unique_together = ('invoice', 'cash_receipt')
 
 
-class CashPayment(models.Model):
+class DebitVoucher(models.Model):
     voucher_no = models.IntegerField()
     party = models.ForeignKey(Party, verbose_name='Paid To')
     date = BSDateField(default=today)
@@ -467,9 +467,9 @@ class CashPayment(models.Model):
     # status = models.CharField(max_length=10, choices=statuses, default='Unapproved')
 
     def __init__(self, *args, **kwargs):
-        super(CashPayment, self).__init__(*args, **kwargs)
+        super(DebitVoucher, self).__init__(*args, **kwargs)
         if not self.pk and not self.voucher_no:
-            self.voucher_no = get_next_voucher_no(CashPayment, self.company_id)
+            self.voucher_no = get_next_voucher_no(DebitVoucher, self.company_id)
 
     @property
     def total(self):
@@ -486,11 +486,11 @@ class CashPayment(models.Model):
         return reverse_lazy('cash_payment_edit', kwargs={'pk': self.pk})
 
 
-class CashPaymentRow(models.Model):
+class DebitVoucherRow(models.Model):
     invoice = models.ForeignKey(PurchaseVoucher, related_name="receipts")
     payment = models.FloatField()
     discount = models.FloatField(blank=True, null=True)
-    cash_payment = models.ForeignKey(CashPayment, related_name='rows')
+    cash_payment = models.ForeignKey(DebitVoucher, related_name='rows')
 
     def get_voucher_no(self):
         return self.cash_payment.voucher_no

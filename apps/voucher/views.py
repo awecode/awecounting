@@ -15,13 +15,13 @@ from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, g
 from ..inventory.models import set_transactions, Location, LocationContain, Item
 from ..ledger.models import set_transactions as set_ledger_transactions, get_account, Account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error, mail_exception
-from .forms import JournalVoucherForm, VoucherSettingForm, CashPaymentForm, CashReceiptForm
+from .forms import JournalVoucherForm, VoucherSettingForm, DebitVoucherForm, CreditVoucherForm
 from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
     CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer, \
     ExpenseSerializer, ExportPurchaseVoucherRowSerializer
-from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, \
+from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CreditVoucher, PurchaseVoucher, JournalVoucher, \
     JournalVoucherRow, \
-    PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, \
+    PurchaseVoucherRow, Sale, SaleRow, CreditVoucherRow, DebitVoucher, DebitVoucherRow, PurchaseOrder, PurchaseOrderRow, \
     VoucherSetting, Expense, ExpenseRow, TradeExpense, Lot, LotItemDetail, SaleFromLocation
 
 
@@ -102,9 +102,9 @@ def save_fixed_asset(request):
 
 
 class CashReceiptView(CompanyView):
-    model = CashReceipt
+    model = CreditVoucher
     serializer_class = CashReceiptSerializer
-    form_class = CashReceiptForm
+    form_class = CreditVoucherForm
 
 
 class CashReceiptList(CashReceiptView, AccountantMixin, ListView):
@@ -114,7 +114,7 @@ class CashReceiptList(CashReceiptView, AccountantMixin, ListView):
 class CashReceiptDetailView(CashReceiptView, AccountantMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(CashReceiptDetailView, self).get_context_data(**kwargs)
-        context['rows'] = CashReceiptRow.objects.select_related('invoice').filter(cash_receipt=self.object)
+        context['rows'] = CreditVoucherRow.objects.select_related('invoice').filter(cash_receipt=self.object)
         return context
 
 
@@ -127,9 +127,9 @@ class CashReceiptUpdate(CashReceiptView, TableObject, AccountantMixin, UpdateVie
 
 
 class CashPaymentView(CompanyView):
-    model = CashPayment
+    model = DebitVoucher
     serializer_class = CashPaymentSerializer
-    form_class = CashPaymentForm
+    form_class = DebitVoucherForm
 
 
 class CashPaymentList(CashPaymentView, AccountantMixin, ListView):
@@ -145,11 +145,11 @@ class CashPaymentUpdate(CashPaymentView, TableObject, AccountantMixin, UpdateVie
 
 
 class CashPaymentDetailView(AccountantMixin, DetailView):
-    model = CashPayment
+    model = DebitVoucher
 
     def get_context_data(self, **kwargs):
         context = super(CashPaymentDetailView, self).get_context_data(**kwargs)
-        context['rows'] = CashPaymentRow.objects.select_related('invoice').filter(cash_payment=self.object)
+        context['rows'] = DebitVoucherRow.objects.select_related('invoice').filter(cash_payment=self.object)
         return context
 
 
@@ -189,13 +189,13 @@ def save_cash_payment(request):
                      'voucher_no': params.get('voucher_no'),
                      'reference': params.get('reference'), 'company': request.company}
     if params.get('id'):
-        obj = CashPayment.objects.get(id=params.get('id'), company__in=request.company.get_all())
+        obj = DebitVoucher.objects.get(id=params.get('id'), company__in=request.company.get_all())
     else:
-        obj = CashPayment(company=request.company)
+        obj = DebitVoucher(company=request.company)
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
-        model = CashPaymentRow
+        model = DebitVoucherRow
         cash_account = get_account(obj.company, 'Cash')
         if params.get('table_vm').get('rows'):
             total = 0
@@ -209,7 +209,7 @@ def save_cash_payment(request):
                 values = {'payment': row.get('payment'), 'cash_payment': obj, 'invoice': invoice}
                 try:
                     old_value = model.objects.get(invoice_id=row.get('id'), cash_payment_id=obj.id).payment or 0
-                except CashPaymentRow.DoesNotExist:
+                except DebitVoucherRow.DoesNotExist:
                     old_value = 0
                 submodel, created = model.objects.get_or_create(invoice=invoice, cash_payment=obj, defaults=values)
                 if created:
@@ -341,13 +341,13 @@ def save_cash_receipt(request):
                      'voucher_no': params.get('voucher_no'),
                      'reference': params.get('reference'), 'company': request.company}
     if params.get('id'):
-        obj = CashReceipt.objects.get(id=params.get('id'), company__in=request.company.get_all())
+        obj = CreditVoucher.objects.get(id=params.get('id'), company__in=request.company.get_all())
     else:
-        obj = CashReceipt(company=request.company)
+        obj = CreditVoucher(company=request.company)
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
-        model = CashReceiptRow
+        model = CreditVoucherRow
         cash_account = get_account(obj.company, 'Cash')
         if params.get('table_vm').get('rows'):
             total = 0
@@ -361,7 +361,7 @@ def save_cash_receipt(request):
                 values = {'receipt': row.get('payment'), 'cash_receipt': obj, 'invoice': invoice}
                 try:
                     old_value = model.objects.get(invoice_id=row.get('id'), cash_receipt_id=obj.id).receipt or 0
-                except CashReceiptRow.DoesNotExist:
+                except CreditVoucherRow.DoesNotExist:
                     old_value = 0
                 submodel, created = model.objects.get_or_create(invoice=invoice, cash_receipt=obj, defaults=values)
                 if created:

@@ -2,8 +2,8 @@ from rest_framework import serializers
 
 from ..inventory.models import Item
 from ..users.models import User
-from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashPayment, CashPaymentRow, CashReceipt, \
-    CashReceiptRow, \
+from .models import FixedAsset, FixedAssetRow, AdditionalDetail, DebitVoucher, DebitVoucherRow, CreditVoucher, \
+    CreditVoucherRow, \
     PurchaseVoucherRow, PurchaseVoucher, SaleRow, Sale, JournalVoucherRow, JournalVoucher, \
     PurchaseOrder, PurchaseOrderRow, ExpenseRow, Expense, TradeExpense
 
@@ -18,7 +18,7 @@ class TradeExpenseSerializer(serializers.ModelSerializer):
 
 class CashReceiptRowSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CashReceiptRow
+        model = CreditVoucherRow
 
 
 class CashReceiptSerializer(serializers.ModelSerializer):
@@ -26,13 +26,13 @@ class CashReceiptSerializer(serializers.ModelSerializer):
     party_id = serializers.ReadOnlyField()
 
     class Meta:
-        model = CashReceipt
+        model = CreditVoucher
         exclude = ['party']
 
 
 class CashPaymentRowSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CashPaymentRow
+        model = DebitVoucherRow
 
 
 class CashPaymentSerializer(serializers.ModelSerializer):
@@ -40,7 +40,7 @@ class CashPaymentSerializer(serializers.ModelSerializer):
     party_id = serializers.ReadOnlyField()
 
     class Meta:
-        model = CashPayment
+        model = DebitVoucher
         exclude = ['party']
 
 

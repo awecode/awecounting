@@ -1,27 +1,27 @@
-from ..voucher.models import CashReceipt, CashPayment
+from ..voucher.models import CreditVoucher, DebitVoucher
 from awecounting.utils.forms import HTML5BootstrapModelForm, KOModelForm
 from .models import JournalVoucher, VoucherSetting
 from django import forms
 from django.core.urlresolvers import reverse_lazy
 
 
-class CashReceiptForm(HTML5BootstrapModelForm, KOModelForm):
+class CreditVoucherForm(HTML5BootstrapModelForm, KOModelForm):
     def __init__(self, *args, **kwargs):
         self.company = kwargs.pop('company', None)
-        super(CashReceiptForm, self).__init__(*args, **kwargs)
+        super(CreditVoucherForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = CashReceipt
+        model = CreditVoucher
         exclude = ['company']
 
 
-class CashPaymentForm(HTML5BootstrapModelForm, KOModelForm):
+class DebitVoucherForm(HTML5BootstrapModelForm, KOModelForm):
     def __init__(self, *args, **kwargs):
         self.company = kwargs.pop('company', None)
-        super(CashPaymentForm, self).__init__(*args, **kwargs)
+        super(DebitVoucherForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = CashPayment
+        model = DebitVoucher
         exclude = ['company']
 
 
