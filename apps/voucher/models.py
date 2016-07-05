@@ -407,6 +407,7 @@ class CashReceipt(models.Model):
     reference = models.CharField(max_length=50, null=True, blank=True)
     amount = models.FloatField(null=True, blank=True)
     description = models.TextField()
+    receipt = models.ForeignKey(Account, blank=True, null=True, related_name="cash_receipt")
     company = models.ForeignKey(Company)
     # statuses = [('Approved', 'Approved'), ('Unapproved', 'Unapproved')]
     # status = models.CharField(max_length=10, choices=statuses, default='Unapproved')
@@ -460,6 +461,7 @@ class CashPayment(models.Model):
     reference = models.CharField(max_length=50, null=True, blank=True)
     amount = models.FloatField(null=True, blank=True)
     description = models.TextField()
+    payment = models.ForeignKey(Account, blank=True, null=True, related_name="cash_payment")
     company = models.ForeignKey(Company)
     # statuses = [('Approved', 'Approved'), ('Unapproved', 'Unapproved')]
     # status = models.CharField(max_length=10, choices=statuses, default='Unapproved')
