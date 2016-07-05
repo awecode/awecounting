@@ -631,7 +631,7 @@ class SaleCreate(SaleView, CashierMixin, TableObjectMixin):
             context['obj'] = obj
             context['data'] = data
         item = Item.objects.filter(company=self.request.company)
-        data = ItemSerializer(item, many=True, context={'voucher': 'purchase', 'request': self.request}).data
+        data = ItemSerializer(item, many=True, context={'voucher': 'sale', 'request': self.request}).data
         context['data']['items'] = data
         return context
 
