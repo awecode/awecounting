@@ -21,18 +21,20 @@ function PurchaseViewModel(data) {
     
     self.grand_total_obs = ko.observable(0);
 
-    $.ajax({
-        url: '/inventory/api/items.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.items = ko.observableArray(data);
-            if (self.items().length > 0) {
-                self.items_of_current_company(self.items()[0].company);
-                company_items.push({'id': self.items_of_current_company(), 'items': self.items()});
-            }
-        }
-    });
+    self.items = ko.observableArray(data.items)
+
+    //$.ajax({
+    //    url: '/inventory/api/items.json',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //        self.items = ko.observableArray(data);
+    //        if (self.items().length > 0) {
+    //            self.items_of_current_company(self.items()[0].company);
+    //            company_items.push({'id': self.items_of_current_company(), 'items': self.items()});
+    //        }
+    //    }
+    //});
 
     $.ajax({
         url: '/ledger/api/parties_with_balance.json',
@@ -84,7 +86,7 @@ function PurchaseViewModel(data) {
             klass = 'green';
         }
         return '<div class="' + klass + '">' + obj.name + '</div>';
-    }
+    };
 
     $.ajax({
         url: '/inventory/api/units.json',

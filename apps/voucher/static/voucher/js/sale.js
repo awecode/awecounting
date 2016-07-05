@@ -65,14 +65,16 @@ function SaleViewModel(data, settings) {
         }
     });
 
-    $.ajax({
-        url: '/inventory/api/sale/items.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.items = ko.observableArray(data);
-        }
-    });
+    self.items = ko.observableArray(data.items)
+
+    //$.ajax({
+    //    url: '/inventory/api/sale/items.json',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //        self.items = ko.observableArray(data);
+    //    }
+    //});
 
     $.ajax({
         url: '/ledger/api/parties_with_balance.json',
@@ -186,7 +188,7 @@ function SaleViewModel(data, settings) {
     self.grand_total = function () {
         return r2z(self.taxable_amount() + self.tax_amount());
     };
-    
+
     self.grand_total_without_tax = ko.computed(function () {
         var tot = 0;
         ko.utils.arrayForEach(self.table_view.rows(), function (row) {

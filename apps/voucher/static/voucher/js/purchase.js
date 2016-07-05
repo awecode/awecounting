@@ -58,19 +58,25 @@ function PurchaseViewModel(data, settings) {
         }
     });
 
-    var company_items = []
-    $.ajax({
-        url: '/inventory/api/purchase/items.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.items = ko.observableArray(data);
-            if (self.items().length > 0) {
-                self.items_of_current_company(self.items()[0].company);
-                company_items.push({'id': self.items_of_current_company(), 'items': self.items()})
-            }
-        }
-    });
+    var company_items = [];
+    self.items = ko.observableArray(data.items);
+    if (self.items().length > 0) {
+        self.items_of_current_company(self.items()[0].company);
+        company_items.push({'id': self.items_of_current_company(), 'items': self.items()})
+    }
+
+    //$.ajax({
+    //    url: '/inventory/api/purchase/items.json',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //        self.items = ko.observableArray(data);
+    //        if (self.items().length > 0) {
+    //            self.items_of_current_company(self.items()[0].company);
+    //            company_items.push({'id': self.items_of_current_company(), 'items': self.items()})
+    //        }
+    //    }
+    //});
 
     $.ajax({
         url: '/ledger/api/parties_with_balance.json',

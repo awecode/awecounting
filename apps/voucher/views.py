@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView
+from ..inventory.serializers import ItemSerializer
 
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, group_required, TableObjectMixin, UpdateView, \
     CompanyRequiredMixin, CreateView, TableObject, CashierMixin, \
@@ -297,6 +298,9 @@ class PurchaseVoucherCreate(PurchaseVoucherView, AccountantMixin, TableObjectMix
             data = self.serializer_class(obj).data
             context['obj'] = obj
             context['data'] = data
+        item = Item.objects.filter(company=self.request.company)
+        data = ItemSerializer(item, many=True, context={'voucher': 'purchase', 'request': self.request}).data
+        context['data']['items'] = data
         return context
 
 
@@ -626,6 +630,9 @@ class SaleCreate(SaleView, CashierMixin, TableObjectMixin):
             data = self.serializer_class(obj).data
             context['obj'] = obj
             context['data'] = data
+        item = Item.objects.filter(company=self.request.company)
+        data = ItemSerializer(item, many=True, context={'voucher': 'purchase', 'request': self.request}).data
+        context['data']['items'] = data
         return context
 
 
@@ -970,6 +977,13 @@ class PurchaseOrderDelete(PurchaseOrderView, StockistMixin, DeleteView):
 
 class PurchaseOrderCreate(PurchaseOrderView, StockistMixin, TableObjectMixin):
     template_name = 'voucher/purchase_order_form.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(PurchaseOrderCreate, self).get_context_data(**kwargs)
+        item = Item.objects.filter(company=self.request.company)
+        data = ItemSerializer(item, many=True, context={'request': self.request}).data
+        context['data']['items'] = data
+        return context
 
 
 class PurchaseOrderDetailView(PurchaseOrderView, StockistMixin, DetailView):
