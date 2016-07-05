@@ -61,17 +61,9 @@ class Migration(migrations.Migration):
             name='invoice',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='receipts', to='voucher.PurchaseVoucher'),
         ),
-        migrations.RemoveField(
-            model_name='creditvoucherrow',
-            name='cash_payment',
-        ),
         migrations.AlterUniqueTogether(
             name='creditvoucherrow',
             unique_together=set([('invoice', 'cash_receipt')]),
-        ),
-        migrations.RemoveField(
-            model_name='debitvoucherrow',
-            name='cash_receipt',
         ),
         migrations.AlterUniqueTogether(
             name='debitvoucherrow',
