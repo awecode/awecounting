@@ -1,3 +1,4 @@
+from ..ledger.models import Account
 from ..voucher.models import CreditVoucher, DebitVoucher
 from awecounting.utils.forms import HTML5BootstrapModelForm, KOModelForm
 from .models import JournalVoucher, VoucherSetting
@@ -9,20 +10,36 @@ class CreditVoucherForm(HTML5BootstrapModelForm, KOModelForm):
     def __init__(self, *args, **kwargs):
         self.company = kwargs.pop('company', None)
         super(CreditVoucherForm, self).__init__(*args, **kwargs)
+        queryset = Account.objects.filter(company=self.company)
+        categories = ['Cash Equivalent Account', 'Cash Accounts', 'Bank Account']
+        queryset = queryset.filter(category__name__in=categories)
+        self.fields['receipt'].queryset = queryset
 
     class Meta:
         model = CreditVoucher
         exclude = ['company']
-
+        widgets = {
+            'receipt': forms.Select(attrs={'class': 'selectize'}),
+        }
+        company_filters = ('receipt',)
 
 class DebitVoucherForm(HTML5BootstrapModelForm, KOModelForm):
+
     def __init__(self, *args, **kwargs):
         self.company = kwargs.pop('company', None)
         super(DebitVoucherForm, self).__init__(*args, **kwargs)
+        queryset = Account.objects.filter(company=self.company)
+        categories = ['Cash Equivalent Account', 'Cash Accounts', 'Bank Account']
+        queryset = queryset.filter(category__name__in=categories)
+        self.fields['payment'].queryset = queryset
 
     class Meta:
         model = DebitVoucher
         exclude = ['company']
+        widgets = {
+            'payment': forms.Select(attrs={'class': 'selectize'}),
+        }
+        company_filters = ('payment',)
 
 
 class JournalVoucherForm(HTML5BootstrapModelForm):

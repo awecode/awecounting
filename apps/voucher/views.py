@@ -106,6 +106,12 @@ class CreditVoucherView(CompanyView):
     serializer_class = CreditVoucherSerializer
     form_class = CreditVoucherForm
 
+    def get_form(self, form_class=None):
+        kwargs = self.get_form_kwargs()
+        kwargs['company'] = self.request.company
+        return self.form_class(**kwargs)
+
+
 
 class CreditVoucherList(CreditVoucherView, AccountantMixin, ListView):
     pass
@@ -130,6 +136,11 @@ class DebitVoucherView(CompanyView):
     model = DebitVoucher
     serializer_class = DebitVoucherSerializer
     form_class = DebitVoucherForm
+
+    def get_form(self, form_class=None):
+        kwargs = self.get_form_kwargs()
+        kwargs['company'] = self.request.company
+        return self.form_class(**kwargs)
 
 
 class DebitVoucherList(DebitVoucherView, AccountantMixin, ListView):

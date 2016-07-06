@@ -24,9 +24,17 @@
 
         <div class="well">
             <div classs="row">
-                {{ form.voucher_no.label_tag }}
-                {{ form.voucher_no }}
-                {{ form.voucher_no.errors }}
+                <div class="col-md-6 col-xs-12">
+                    {{ form.voucher_no.label_tag }}
+                    {{ form.voucher_no }}
+                    {{ form.voucher_no.errors }}
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    {{ form.payment.label_tag }}
+                    {{ form.payment }}
+                    {{ form.payment.errors }}
+                </div>
             </div>
 
             <div class="row">
