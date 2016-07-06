@@ -191,7 +191,7 @@ class DebitVoucherDetailView(AccountantMixin, DetailView):
 #     return render(request, 'cash_payment.html', {'form': form, 'scenario': scenario, 'data': data})
 
 
-def save_cash_payment(request):
+def save_debit_voucher(request):
     params = json.loads(request.body)
     dct = {'rows': {}}
     if params.get('voucher_no') == '':
@@ -343,7 +343,7 @@ class ExportPurchaseVoucher(TemplateView):
 
 
 @group_required('Accountant')
-def save_cash_receipt(request):
+def save_credit_voucher(request):
     params = json.loads(request.body)
     dct = {'rows': {}}
     if params.get('voucher_no') == '':

@@ -133,7 +133,7 @@ function CashReceiptVM(data) {
             var data = ko.toJSON(self);
             $.ajax({
                 type: "POST",
-                url: '/voucher/cash-receipt/save/',
+                url: '/voucher/cash_voucher/save/',
                 data: data,
                 success: function (msg) {
                     if (typeof (msg.error_message) != 'undefined') {

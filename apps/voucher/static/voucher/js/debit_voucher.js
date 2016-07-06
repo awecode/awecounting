@@ -146,7 +146,7 @@ function CashPaymentVM(data) {
             var data = ko.toJSON(self);
             $.ajax({
                 type: "POST",
-                url: '/voucher/cash_payment/save/',
+                url: '/voucher/debit_voucher/save/',
                 data: data,
                 success: function (msg) {
                     if (typeof (msg.error_message) != 'undefined') {
