@@ -2,12 +2,12 @@
 {% load staticfiles i18n filters %}
 
 {% block page-title %}
-    {% trans 'Detail' %} {% trans 'Cash Receipt' %}
+    {% trans 'Detail' %} {% trans 'Credit Voucher' %}
 {% endblock %}
 
 {% block breadcrumbs %}
-    <li><a href="{% url 'cash_receipt_list' %}">{% trans 'Cash Receipts' %}</a></li>
-    <li>{% trans 'Detail' %} {% trans 'Cash Receipts' %}</li>
+    <li><a href="{% url 'credit_voucher_list' %}">{% trans 'Credit Vouchers' %}</a></li>
+    <li>{% trans 'Detail' %} {% trans 'Credit Vouchers' %}</li>
 {% endblock %}
 
 

@@ -429,7 +429,7 @@ class CreditVoucher(models.Model):
         return self.voucher_no
 
     def get_absolute_url(self):
-        return reverse_lazy('cash_receipt_edit', kwargs={'pk': self.pk})
+        return reverse_lazy('credit_voucher_edit', kwargs={'pk': self.pk})
 
 
 class CreditVoucherRow(models.Model):
@@ -442,7 +442,7 @@ class CreditVoucherRow(models.Model):
         return self.cash_receipt.voucher_no
 
     def get_absolute_url(self):
-        return reverse_lazy('cash_receipt_edit', kwargs={'pk': self.cash_receipt_id})
+        return reverse_lazy('credit_voucher_edit', kwargs={'pk': self.cash_receipt_id})
 
     def overdue_days(self):
         if self.invoice.due_date and self.invoice.due_date < date.today():
@@ -483,7 +483,7 @@ class DebitVoucher(models.Model):
         return self.voucher_no
 
     def get_absolute_url(self):
-        return reverse_lazy('cash_payment_edit', kwargs={'pk': self.pk})
+        return reverse_lazy('debit_voucher_edit', kwargs={'pk': self.pk})
 
 
 class DebitVoucherRow(models.Model):
@@ -496,7 +496,7 @@ class DebitVoucherRow(models.Model):
         return self.cash_payment.voucher_no
 
     def get_absolute_url(self):
-        return reverse_lazy('cash_payment_edit', kwargs={'pk': self.cash_payment_id})
+        return reverse_lazy('debit_voucher_edit', kwargs={'pk': self.cash_payment_id})
 
     def overdue_days(self):
         if self.invoice.due_date and self.invoice.due_date < date.today():

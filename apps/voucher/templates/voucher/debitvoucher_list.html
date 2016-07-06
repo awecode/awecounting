@@ -1,10 +1,10 @@
 {% extends '_base.html' %}
 {% load i18n filters %}
 
-{% block page-title %}{% trans 'Cash Payment' %}{% endblock %}
+{% block page-title %}{% trans 'Debit Voucher' %}{% endblock %}
 
 {% block header-buttons %}
-    <a href="{% url 'cash_payment_add' %}" class="btn btn-success btn-raised">{% trans 'Add' %} {% trans 'Cash Payment' %}</a>
+    <a href="{% url 'debit_voucher_add' %}" class="btn btn-success btn-raised">{% trans 'Add' %} {% trans 'Debit Voucher' %}</a>
 {% endblock %}
 
 {% block content %}
@@ -32,7 +32,7 @@
                 {% for object in sorted_objects %}
                     <tr>
                         <td class="link">
-                            <a href="{% url 'cash_payment_detail' object.pk %}">{{ object.voucher_no }}</a>
+                            <a href="{% url 'debit_voucher_detail' object.pk %}">{{ object.voucher_no }}</a>
                         </td>
                        <td>
                            {{ object.date }}
@@ -45,7 +45,7 @@
                         </td>   
                         {% ifrole "Cashier" %}
                         <td>
-                            <a href="{% url 'cash_payment_edit' object.pk %}">{% trans "Edit" %}</a>
+                            <a href="{% url 'debit_voucher_edit' object.pk %}">{% trans "Edit" %}</a>
                         </td>
                         {% endifrole %}
                     </tr>

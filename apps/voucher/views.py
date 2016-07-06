@@ -119,11 +119,11 @@ class CreditVoucherDetailView(CreditVoucherView, AccountantMixin, DetailView):
 
 
 class CreditVoucherCreate(CreditVoucherView, TableObject, AccountantMixin, CreateView):
-    template_name = 'cash_receipt.html'
+    template_name = 'credit_voucher.html'
 
 
 class CreditVoucherUpdate(CreditVoucherView, TableObject, AccountantMixin, UpdateView):
-    template_name = 'cash_receipt.html'
+    template_name = 'credit_voucher.html'
 
 
 class DebitVoucherView(CompanyView):
@@ -137,11 +137,11 @@ class DebitVoucherList(DebitVoucherView, AccountantMixin, ListView):
 
 
 class DebitVoucherCreate(DebitVoucherView, TableObject, AccountantMixin, CreateView):
-    template_name = 'cash_payment.html'
+    template_name = 'debit_voucher.html'
 
 
 class DebitVoucherUpdate(DebitVoucherView, TableObject, AccountantMixin, UpdateView):
-    template_name = 'cash_payment.html'
+    template_name = 'debit_voucher.html'
 
 
 class DebitVoucherDetailView(AccountantMixin, DetailView):
