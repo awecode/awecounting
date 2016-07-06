@@ -16,8 +16,8 @@ from ..inventory.models import set_transactions, Location, LocationContain, Item
 from ..ledger.models import set_transactions as set_ledger_transactions, get_account, Account
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error, mail_exception
 from .forms import JournalVoucherForm, VoucherSettingForm, DebitVoucherForm, CreditVoucherForm
-from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
-    CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer, \
+from .serializers import FixedAssetSerializer, CreditVoucherSerializer, \
+    DebitVoucherSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer, \
     ExpenseSerializer, ExportPurchaseVoucherRowSerializer
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CreditVoucher, PurchaseVoucher, JournalVoucher, \
     JournalVoucherRow, \
@@ -101,54 +101,54 @@ def save_fixed_asset(request):
     return JsonResponse(dct)
 
 
-class CashReceiptView(CompanyView):
+class CreditVoucherView(CompanyView):
     model = CreditVoucher
-    serializer_class = CashReceiptSerializer
+    serializer_class = CreditVoucherSerializer
     form_class = CreditVoucherForm
 
 
-class CashReceiptList(CashReceiptView, AccountantMixin, ListView):
+class CreditVoucherList(CreditVoucherView, AccountantMixin, ListView):
     pass
 
 
-class CashReceiptDetailView(CashReceiptView, AccountantMixin, DetailView):
+class CreditVoucherDetailView(CreditVoucherView, AccountantMixin, DetailView):
     def get_context_data(self, **kwargs):
-        context = super(CashReceiptDetailView, self).get_context_data(**kwargs)
+        context = super(CreditVoucherDetailView, self).get_context_data(**kwargs)
         context['rows'] = CreditVoucherRow.objects.select_related('invoice').filter(cash_receipt=self.object)
         return context
 
 
-class CashReceiptCreate(CashReceiptView, TableObject, AccountantMixin, CreateView):
+class CreditVoucherCreate(CreditVoucherView, TableObject, AccountantMixin, CreateView):
     template_name = 'cash_receipt.html'
 
 
-class CashReceiptUpdate(CashReceiptView, TableObject, AccountantMixin, UpdateView):
+class CreditVoucherUpdate(CreditVoucherView, TableObject, AccountantMixin, UpdateView):
     template_name = 'cash_receipt.html'
 
 
-class CashPaymentView(CompanyView):
+class DebitVoucherView(CompanyView):
     model = DebitVoucher
-    serializer_class = CashPaymentSerializer
+    serializer_class = DebitVoucherSerializer
     form_class = DebitVoucherForm
 
 
-class CashPaymentList(CashPaymentView, AccountantMixin, ListView):
+class DebitVoucherList(DebitVoucherView, AccountantMixin, ListView):
     pass
 
 
-class CashPaymentCreate(CashPaymentView, TableObject, AccountantMixin, CreateView):
+class DebitVoucherCreate(DebitVoucherView, TableObject, AccountantMixin, CreateView):
     template_name = 'cash_payment.html'
 
 
-class CashPaymentUpdate(CashPaymentView, TableObject, AccountantMixin, UpdateView):
+class DebitVoucherUpdate(DebitVoucherView, TableObject, AccountantMixin, UpdateView):
     template_name = 'cash_payment.html'
 
 
-class CashPaymentDetailView(AccountantMixin, DetailView):
+class DebitVoucherDetailView(AccountantMixin, DetailView):
     model = DebitVoucher
 
     def get_context_data(self, **kwargs):
-        context = super(CashPaymentDetailView, self).get_context_data(**kwargs)
+        context = super(DebitVoucherDetailView, self).get_context_data(**kwargs)
         context['rows'] = DebitVoucherRow.objects.select_related('invoice').filter(cash_payment=self.object)
         return context
 

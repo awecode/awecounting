@@ -100,31 +100,31 @@ class JournalVoucherAdmin(CompanyAdmin):
     ]
 
 
-class CashReceiptRowInline(admin.TabularInline):
+class CreditVoucherRowInline(admin.TabularInline):
     model = CreditVoucherRow
 
 
-class CashReceiptAdmin(CompanyAdmin):
+class CreditVoucherAdmin(CompanyAdmin):
     inlines = [
-        CashReceiptRowInline,
+        CreditVoucherRowInline,
     ]
 
 
-class CashPaymentRowInline(admin.TabularInline):
+class DebitVoucherRowInline(admin.TabularInline):
     model = DebitVoucherRow
 
 
-class CashPaymentAdmin(CompanyAdmin):
+class DebitVoucherAdmin(CompanyAdmin):
     inlines = [
-        CashPaymentRowInline,
+        DebitVoucherRowInline,
     ]
 
 
 admin.site.register(JournalVoucher, JournalVoucherAdmin)
 admin.site.register(JournalVoucherRow)
-admin.site.register(CreditVoucher, CashReceiptAdmin)
+admin.site.register(CreditVoucher, CreditVoucherAdmin)
 admin.site.register(CreditVoucherRow)
-admin.site.register(DebitVoucher, CashPaymentAdmin)
+admin.site.register(DebitVoucher, DebitVoucherAdmin)
 admin.site.register(DebitVoucherRow)
 admin.site.register(Lot)
 admin.site.register(LotItemDetail)

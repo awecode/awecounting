@@ -16,13 +16,13 @@ class TradeExpenseSerializer(serializers.ModelSerializer):
         exclude = ('expense',)
 
 
-class CashReceiptRowSerializer(serializers.ModelSerializer):
+class CreditVoucherRowSerializer(serializers.ModelSerializer):
     class Meta:
         model = CreditVoucherRow
 
 
-class CashReceiptSerializer(serializers.ModelSerializer):
-    rows = CashReceiptRowSerializer(many=True)
+class CreditVoucherSerializer(serializers.ModelSerializer):
+    rows = CreditVoucherRowSerializer(many=True)
     party_id = serializers.ReadOnlyField()
 
     class Meta:
@@ -30,13 +30,13 @@ class CashReceiptSerializer(serializers.ModelSerializer):
         exclude = ['party']
 
 
-class CashPaymentRowSerializer(serializers.ModelSerializer):
+class DebitVoucherRowSerializer(serializers.ModelSerializer):
     class Meta:
         model = DebitVoucherRow
 
 
-class CashPaymentSerializer(serializers.ModelSerializer):
-    rows = CashPaymentRowSerializer(many=True)
+class DebitVoucherSerializer(serializers.ModelSerializer):
+    rows = DebitVoucherRowSerializer(many=True)
     party_id = serializers.ReadOnlyField()
 
     class Meta:
