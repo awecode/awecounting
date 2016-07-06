@@ -14,29 +14,36 @@
 {% block content %}
 <div class="well">
 
-    <div classs="row">
-        <label>{% trans 'Voucher No.' %}</label>
-        <p>
-            {{ object.voucher_no}}
-        </p>
+    <div class="row">
+        <div class="col-md-6 col-xs-12">
+            <label>{% trans 'Voucher No.' %}</label>
+
+            <p>
+                {{ object.voucher_no }}
+            </p>
+        </div>
+        <div class="col-md-6 col-xs-12">
+            <label>{% trans 'Payment' %}</label>
+            <p>
+                {{ object.payment }}
+            </p>
+        </div>
     </div>
 
     <div class="row">
-
         <div class="col-md-6 col-xs-12">
             <label>{% trans "Party" %}</label>
             <p>
                 {{ object.party }}
             </p>
-    </div>
+        </div>
 
-    <div class="col-md-6 col-xs-12">
+        <div class="col-md-6 col-xs-12">
             <label>{% trans "Date" %}</label>
             <p>
                 {{ object.date }}
             </p>
-    </div>
-
+        </div>
     </div>
 
 <div class="row">

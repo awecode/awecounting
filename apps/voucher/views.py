@@ -198,7 +198,7 @@ def save_debit_voucher(request):
         params['voucher_no'] = None
     object_values = {'party_id': params.get('party_id'), 'date': params.get('date'),
                      'voucher_no': params.get('voucher_no'),
-                     'reference': params.get('reference'), 'company': request.company}
+                     'reference': params.get('reference'), 'payment_id':params.get('payment'), 'company': request.company}
     if params.get('id'):
         obj = DebitVoucher.objects.get(id=params.get('id'), company__in=request.company.get_all())
     else:
@@ -350,7 +350,9 @@ def save_credit_voucher(request):
         params['voucher_no'] = None
     object_values = {'party_id': params.get('party_id'), 'date': params.get('date'),
                      'voucher_no': params.get('voucher_no'),
-                     'reference': params.get('reference'), 'company': request.company}
+                     'reference': params.get('reference'), 'receipt_id':params.get('receipt'), 'company': request.company}
+    import ipdb
+    # ipdb.set_trace()
     if params.get('id'):
         obj = CreditVoucher.objects.get(id=params.get('id'), company__in=request.company.get_all())
     else:
