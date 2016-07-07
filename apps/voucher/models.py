@@ -98,11 +98,14 @@ class PurchaseVoucher(models.Model):
             return _('Cash')
 
     def clean(self):
-        if self.company.settings.unique_voucher_number:
+        if self.company.settings.unique_voucher_number_by_fy:
             if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).filter(
                     date__gte=self.company.get_fy_start(self.date),
                     date__lte=self.company.get_fy_end(self.date)).exclude(pk=self.pk):
                 raise ValidationError(_('Voucher no. already exists for the fiscal year!'))
+        if self.company.settings.unique_voucher_number:
+            if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).exclude(pk=self.pk):
+                raise ValidationError(_('Voucher no. already exists!'))
 
     def __init__(self, *args, **kwargs):
         super(PurchaseVoucher, self).__init__(*args, **kwargs)
@@ -556,7 +559,8 @@ class VoucherSetting(models.Model):
     # from ..tax.models import TaxScheme
     tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'), ]
     company = models.OneToOneField(Company, related_name='settings')
-    unique_voucher_number = models.BooleanField(default=True)
+    unique_voucher_number = models.BooleanField(default=False)
+    unique_voucher_number_by_fy = models.BooleanField(default=True)
 
     # Sales voucher settings
     single_discount_on_whole_invoice = models.BooleanField(default=True)
