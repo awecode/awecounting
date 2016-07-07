@@ -583,6 +583,9 @@ class VoucherSetting(models.Model):
     show_sale_voucher_tax_scheme = models.BooleanField(default=True)
     show_sale_print_tax_scheme = models.BooleanField(default=True)
 
+    enable_sale_unique_voucher_no = models.BooleanField(default=False)
+    enable_sale_unique_voucher_no_by_fy = models.BooleanField(default=True)
+
     # show_sale_voucher_lot = models.BooleanField(default=True)
     # show_sale_print_lot = models.BooleanField(default=True)
     #
@@ -615,6 +618,8 @@ class VoucherSetting(models.Model):
     show_purchase_voucher_tax_scheme = models.BooleanField(default=True)
     show_purchase_print_tax_scheme = models.BooleanField(default=True)
 
+    enable_purchase_unique_voucher_no = models.BooleanField(default=False)
+    enable_purchase_unique_voucher_no_by_fy = models.BooleanField(default=True)
     # show_purchase_voucher_lot = models.BooleanField(default=True)
     # show_purchase_print_lot = models.BooleanField(default=True)
     #
