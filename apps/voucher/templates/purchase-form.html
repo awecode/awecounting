@@ -16,13 +16,6 @@
         ko_data = {{data|jsonify}};
         voucher_settings = {{ request.company.settings|jsonify }};
     </script>
-    <script>
-        {% if not request.company.settings.purchase_default_tax_scheme and request.company.settings.discount_on_each_purchase_particular or request.company.settings.purchase_default_tax_scheme and request.company.settings.discount_on_each_purchase_particular %}
-            colspan = 6;
-        {% else %}
-            colspan = 5;
-        {% endif %}
-    </script>
 
 {% endblock %}
 

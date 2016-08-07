@@ -82,7 +82,7 @@ class CustomUserAdmin(UserAdmin):
                               'password',
                               'is_superuser',
                               'last_login',
-                              'groups')}),
+                              )}),
                  )
     add_fieldsets = ((None,
                       {'classes': ('wide',
@@ -94,6 +94,7 @@ class CustomUserAdmin(UserAdmin):
                                   'is_superuser')}),
                      )
     search_fields = ('full_name', 'username', 'email', 'devil_no')
+
 
 
 admin.site.register(User, CustomUserAdmin)

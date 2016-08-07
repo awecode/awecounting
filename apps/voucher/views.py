@@ -761,6 +761,9 @@ def save_sale(request):
 
                 grand_total += submodel.get_total()
                 dct['rows'][ind] = submodel.id
+                set_transactions(submodel, obj.date,
+                                 ['cr', submodel.item.account, submodel.quantity],
+                                 )
 
         if obj.credit:
             dr_acc = obj.party.customer_account

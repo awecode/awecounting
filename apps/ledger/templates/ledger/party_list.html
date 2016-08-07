@@ -43,6 +43,9 @@
                         {% if party.supplier_account %}
                             <a class="btn btn-sm btn-info btn-raised no-margin" href="{% url 'view_ledger' party.supplier_account.pk %}">{% trans 'Supplier Account' %}</a>
                         {% endif %}
+                        {% if party.supplier_account and party.customer_account %}
+                            <a class="btn btn-sm btn-info btn-raised no-margin" href="{% url 'party_ledger' party.pk %}">{% trans 'Ledger Account' %}</a>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}

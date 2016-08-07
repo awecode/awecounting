@@ -1,0 +1,135 @@
+{% extends "_base.html" %}
+{% load i18n filters %}
+
+{% block title %}{{ account.name }} {% trans 'Ledger View' %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url "list_account" %}">{% trans 'Accounts' %}</a></li>
+    <li>{{ party.name }}</li>
+{% endblock %}
+
+{% block page-header %}
+    {{ party.name }}
+    {% if party.company != request.company %} ({{ party.company }}) {% endif %}
+{% endblock %}
+
+{% block extrahead %}
+    <script>
+        $(document).ready(function () {
+            if (window.location.hash) {
+                var hash = window.location.hash.substring(1);
+                $('#row-' + hash).addClass('highlighted');
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block header-buttons %}
+    {% if not party.customer_account.default %}<a class="btn btn-success btn-raised" href="{% url 'account_edit' party.customer_account.pk %}">{% trans "Edit Customer A/C" %}</a>{% endif %}
+    {% if not party.supplier_account.default %}<a class="btn btn-success btn-raised" href="{% url 'account_edit' party.supplier_account.pk %}">{% trans "Edit Sale A/C" %}</a>{% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="well">
+        <div class="row">
+            <div class="col-lg-6 col-sm-12">
+                <table class="table table-striped">
+                    <tr>
+                        <th>{% trans 'Name' %}</th>
+                        <td>{{ party.name|default:'-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>{% trans 'Phone Number' %}</th>
+                        <td>{{ party.phone_no|default:'-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>{% trans 'Address' %}</th>
+                        <td>{{ party.address|default:'-' }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-lg-6 col-sm-12">
+                <table class="table table-striped">
+                    <tr>
+                        <th>{% trans 'Dr Amount' %}</th>
+                        <td>{{ dr_amount|default:'-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>{% trans 'Cr Amount' %}</th>
+                        <td>{{ cr_amount|default:'-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>{% trans 'Closing Balance ' %}</th>
+                        <td>{{ closing_balance|dr_or_cr }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        {#    <a href="{% url "update_account" account.id %}">#}
+        {#        Edit Account Details#}
+        {#    </a>#}
+    </div>
+    <h3>{% trans 'Transactions' %}</h3>
+    <div class="well">
+        <table class="table table-striped table-sortable">
+            <thead>
+            <th>{% trans 'Date' %}</th>
+            <th>{% trans 'Particulars' %}</th>
+            <th>{% trans 'Voucher Type' %}</th>
+            <th>{% trans 'Voucher No.' %}</th>
+            <th>{% trans 'Dr' %}</th>
+            <th>{% trans 'Cr' %}</th>
+            <th>{% trans 'Balance' %}</th>
+            </thead>
+            <tbody>
+            {% for entry in journal_entries %}
+                <tr id="row-{{ entry.id }}">
+                    <td>
+                        {{ entry.date }}
+                    </td>
+                    <td>
+                        {% if entry.content_type.name == 'journal voucher row' %}
+                            {{ entry|get_particulars:account|safe }}
+                        {% else %}
+                            {% for transaction in entry.transactions.all|remove_account:account %}{% if not forloop.first %}
+                                ,
+                            {% endif %}
+                                <a href="{{ transaction.account.get_absolute_url }}#{{ entry.id }}">{{ transaction.account.name }}</a>
+                            {% endfor %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ entry.content_type.name|refine_voucher_type }}
+                    </td>
+                    <td>
+                        <a href="{{ entry.source.get_absolute_url }}">
+                            {% if entry.content_type.app_label == 'dayjournal' %}
+                                {{ entry.source.day_journal.date }}
+                            {% else %}
+                                {{ entry.source.get_voucher_no }}
+                            {% endif %}
+                        </a>
+                    </td>
+
+                    {% for transaction in entry.transactions.all %}
+                        {% if transaction.account.id == party.customer_account.id or transaction.account.id == party.supplier_account.id  %}
+                            <td>
+                                {{ transaction.dr_amount|if_not_none }}
+                            </td>
+                            <td>
+
+                                {{ transaction.cr_amount|if_not_none }}
+                            </td>
+                            <td>
+                                {{ transaction.get_balance|dr_or_cr }}
+                            </td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

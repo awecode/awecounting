@@ -19,14 +19,6 @@
             e.stopPropagation();
         });
     </script>
-    <script>
-        {#    TODO @roshan see #187 https://github.com/awecode/awecounting/issues/187 #}
-        {% if not request.company.settings.invoice_default_tax_scheme and request.company.settings.discount_on_each_invoice_particular or request.company.settings.invoice_default_tax_scheme and request.company.settings.discount_on_each_invoice_particular %}
-            colspan = 6;
-        {% else %}
-            colspan = 5;
-        {% endif %}
-    </script>
 
 {% endblock %}
 
