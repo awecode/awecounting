@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from apps.ledger.models import set_transactions, Account
+from apps.ledger.serializers import AccountSerializer
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, OwnerMixin, AccountantMixin, StaffMixin, \
     group_required, TableObjectMixin, UpdateView, CreateView, AjaxableResponseMixin
 from django.views.generic import ListView
@@ -11,7 +12,8 @@ from django.views.generic.detail import DetailView
 from .models import Entry, EntryRow, Employee
 from .serializers import EntrySerializer
 from .forms import EmployeeForm
-from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error, mail_exception
+from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error, mail_exception, \
+    get_serialize_data
 
 
 class EntryView(CompanyView):
@@ -26,6 +28,21 @@ class EntryList(EntryView, AccountantMixin, ListView):
 
 class EntryCreate(EntryView, AccountantMixin, TableObjectMixin):
     template_name = 'payroll/entry_form.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(EntryCreate, self).get_context_data(**kwargs)
+
+        pay_head_categories = ['Bank Account', 'Cash Account']
+        pay_head_accounts = Account.objects.filter(company=self.request.company, category__name__in=pay_head_categories)
+
+        employees = Account.objects.filter(company=self.request.company, category__name='Employee')
+        context['data']['pay_headings'] = get_serialize_data(AccountSerializer, self.request.company,
+                                                                  pay_head_accounts)
+        context['data']['employees'] = get_serialize_data(AccountSerializer, self.request.company,
+                                                                  employees)
+
+        return context
+
 
 
 class EntryDetailView(EntryView, AccountantMixin, DetailView):
