@@ -188,3 +188,11 @@ def mail_exception(request):
     '''.format(exception_summary, request.user, request.role, filename, lineno, exc_obj)
     print mail_body
     mail_admins('Exception caught!', mail_body)
+
+
+
+def get_serialize_data(serializer, company, query=None):
+    if query != None:
+        return serializer(query, many=True).data
+    obj = serializer.Meta.model.objects.filter(company=company)
+    return serializer(obj, many=True).data

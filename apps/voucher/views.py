@@ -1,7 +1,7 @@
 import datetime
 import json
-from django.contrib import messages
 
+from django.contrib import messages
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
@@ -9,12 +9,16 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView
 
+from ..ledger.serializers import PartyBalanceSerializer, AccountSerializer
+from ..inventory.serializers import ItemSerializer, UnitSerializer, LocationSerializer
+from ..tax.serializers import TaxSchemeSerializer
 from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, group_required, TableObjectMixin, UpdateView, \
     CompanyRequiredMixin, CreateView, TableObject, CashierMixin, \
     StockistMixin, AccountantMixin
 from ..inventory.models import set_transactions, Location, LocationContain, Item
-from ..ledger.models import set_transactions as set_ledger_transactions, get_account, Account
-from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error, mail_exception
+from ..ledger.models import set_transactions as set_ledger_transactions, get_account, Account, Category
+from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error, mail_exception, \
+    get_serialize_data
 from .forms import JournalVoucherForm, VoucherSettingForm, CashPaymentForm, CashReceiptForm
 from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
     CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer, \
@@ -295,8 +299,18 @@ class PurchaseVoucherCreate(PurchaseVoucherView, AccountantMixin, TableObjectMix
             if tax_scheme:
                 obj.tax_scheme = tax_scheme
             data = self.serializer_class(obj).data
+            item_obj = Item.objects.filter(company=self.request.company)
+            item_data = ItemSerializer(item_obj, context={'request': self.request, 'voucher': 'purchase'}, many=True).data
+
             context['obj'] = obj
             context['data'] = data
+            context['data']['tax'] = get_serialize_data(TaxSchemeSerializer, self.request.company)
+            context['data']['items'] = item_data
+            context['data']['units'] = get_serialize_data(UnitSerializer, self.request.company)
+            context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
+            context['data']['enable_locations'] = get_serialize_data(LocationSerializer, self.request.company,
+                                                                     Location.objects.filter(
+                                                                         company=self.request.company, enabled=True))
         return context
 
 
@@ -624,8 +638,16 @@ class SaleCreate(SaleView, CashierMixin, TableObjectMixin):
             if tax_scheme:
                 obj.tax_scheme = tax_scheme
             data = self.serializer_class(obj).data
+            item_obj = Item.objects.filter(company=self.request.company)
+            item_data = ItemSerializer(item_obj, context={'request': self.request, 'voucher': 'sale'}, many=True).data
+
             context['obj'] = obj
             context['data'] = data
+            context['data']['tax'] = get_serialize_data(TaxSchemeSerializer, self.request.company)
+            context['data']['items'] = item_data
+            context['data']['units'] = get_serialize_data(UnitSerializer, self.request.company)
+            context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
+
         return context
 
 
@@ -967,6 +989,22 @@ class PurchaseOrderDelete(PurchaseOrderView, StockistMixin, DeleteView):
 
 class PurchaseOrderCreate(PurchaseOrderView, StockistMixin, TableObjectMixin):
     template_name = 'voucher/purchase_order_form.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(PurchaseOrderCreate, self).get_context_data(**kwargs)
+        item_obj = Item.objects.filter(company=self.request.company)
+        item_data = ItemSerializer(item_obj, context={'request': self.request},
+                                       many=True).data
+        all_ledgers = Account.objects.none()
+        category = Category.objects.get(name='Purchase Expenses', company=self.request.company)
+        ledgers = category.get_descendant_ledgers()
+        all_ledgers = all_ledgers | ledgers
+        print all_ledgers
+        context['data']['items'] = item_data
+        context['data']['units'] = get_serialize_data(UnitSerializer, self.request.company)
+        context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
+        context['data']['expense_accounts'] = get_serialize_data(AccountSerializer, self.request.company, all_ledgers)
+        return context
 
 
 class PurchaseOrderDetailView(PurchaseOrderView, StockistMixin, DetailView):
