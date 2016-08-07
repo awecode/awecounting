@@ -55,6 +55,11 @@ class FixedAssetDetailView(AccountantMixin, DetailView):
 class FixedAssetCreate(FixedAssetView, AccountantMixin, TableObjectMixin):
     template_name = 'fixed_asset_form.html'
 
+    def get_context_data(self, *args, **kwargs):
+        context = super(FixedAssetCreate, self).get_context_data(**kwargs)
+        context['data']['accounts'] = get_serialize_data(AccountSerializer, self.request.company)
+        return context
+
 
 def save_fixed_asset(request):
     if request.is_ajax():
@@ -125,6 +130,11 @@ class CashReceiptDetailView(CashReceiptView, AccountantMixin, DetailView):
 class CashReceiptCreate(CashReceiptView, TableObject, AccountantMixin, CreateView):
     template_name = 'cash_receipt.html'
 
+    def get_context_data(self, *args, **kwargs):
+        context = super(CashReceiptCreate, self).get_context_data(**kwargs)
+        context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
+        return context
+
 
 class CashReceiptUpdate(CashReceiptView, TableObject, AccountantMixin, UpdateView):
     template_name = 'cash_receipt.html'
@@ -142,6 +152,11 @@ class CashPaymentList(CashPaymentView, AccountantMixin, ListView):
 
 class CashPaymentCreate(CashPaymentView, TableObject, AccountantMixin, CreateView):
     template_name = 'cash_payment.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(CashPaymentCreate, self).get_context_data(**kwargs)
+        context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
+        return context
 
 
 class CashPaymentUpdate(CashPaymentView, TableObject, AccountantMixin, UpdateView):
@@ -915,6 +930,11 @@ class JournalVoucherList(JournalVoucherView, AccountantMixin, ListView):
 class JournalVoucherCreate(JournalVoucherView, AccountantMixin, TableObjectMixin):
     template_name = 'voucher/journal_voucher_form.html'
 
+    def get_context_data(self, *args, **kwargs):
+        context = super(JournalVoucherCreate, self).get_context_data(**kwargs)
+        context['data']['accounts'] = get_serialize_data(AccountSerializer, self.request.company)
+        return context
+
 
 # def journal_voucher_create(request, id=None):
 #     if id:
@@ -995,11 +1015,8 @@ class PurchaseOrderCreate(PurchaseOrderView, StockistMixin, TableObjectMixin):
         item_obj = Item.objects.filter(company=self.request.company)
         item_data = ItemSerializer(item_obj, context={'request': self.request},
                                        many=True).data
-        all_ledgers = Account.objects.none()
-        category = Category.objects.get(name='Purchase Expenses', company=self.request.company)
-        ledgers = category.get_descendant_ledgers()
-        all_ledgers = all_ledgers | ledgers
-        print all_ledgers
+        all_ledgers = Account.objects.filter(company=self.request.company, category__name='Purchase Expenses')
+
         context['data']['items'] = item_data
         context['data']['units'] = get_serialize_data(UnitSerializer, self.request.company)
         context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
@@ -1141,6 +1158,23 @@ class ExpenseDetailView(AccountantMixin, DetailView):
 class ExpenseCreate(ExpenseView, AccountantMixin, TableObjectMixin):
     template_name = 'expense_form.html'
 
+    def get_context_data(self, *args, **kwargs):
+        context = super(ExpenseCreate, self).get_context_data(**kwargs)
+        all_ledgers = Account.objects.none()
+        categories = ['Direct Expenses', 'Indirect Expenses']
+        for category_name in categories:
+            try:
+                category = Category.objects.get(name=category_name, company=self.request.company)
+            except Category.MultipleObjectsReturned:
+                continue
+            ledgers = category.get_descendant_ledgers()
+            all_ledgers = all_ledgers | ledgers
+
+        pay_head_categories = ['Bank Account', 'Cash Account']
+        pay_head_accounts = Account.objects.filter(company=self.request.company, category__name__in=pay_head_categories)
+        context['data']['expense_accounts'] = get_serialize_data(AccountSerializer, self.request.company, all_ledgers)
+        context['data']['pay_head_accounts'] = get_serialize_data(AccountSerializer, self.request.company, pay_head_accounts)
+        return context
 
 def save_expense(request):
     if request.is_ajax():
