@@ -21,23 +21,18 @@ function EntryViewModel(data) {
     //    }
     //});
 
-    $.ajax({
-        url: '/ledger/api/bank_cash_account.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-        self.pay_headings = ko.observableArray(data);
-        }
-    });
+    self.pay_headings = ko.observableArray(data.pay_headings);
 
-    $.ajax({
-        url: '/ledger/api/employee/account.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.employees = ko.observableArray(data);
-        }
-    });
+    //$.ajax({
+    //    url: '/ledger/api/employee/account.json',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //        self.employees = ko.observableArray(data);
+    //    }
+    //});
+
+    self.employees = ko.observableArray(data.employees);
 
     self.table_view = new TableViewModel({rows: data.rows}, EntryRowViewModel);
 
