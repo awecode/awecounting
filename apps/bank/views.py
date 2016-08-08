@@ -5,6 +5,7 @@ from django.views.generic import ListView
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.views.generic.detail import DetailView
+from apps.ledger.serializers import AccountSerializer
 
 from awecounting.utils.mixins import DeleteView, UpdateView, CreateView, CompanyView, AjaxableResponseMixin, TableObjectMixin, \
     CashierMixin, \
@@ -14,8 +15,8 @@ from apps.users.models import File as AttachFile
 from apps.users.serializers import FileSerializer
 from .forms import BankAccountForm, BankCashDepositForm, ChequePaymentForm
 from .serializers import ChequeDepositSerializer
-from ..ledger.models import delete_rows
-from awecounting.utils.helpers import save_model, invalid, write_error, mail_exception
+from ..ledger.models import delete_rows, Account
+from awecounting.utils.helpers import save_model, invalid, write_error, mail_exception, get_serialize_data
 
 
 class BankAccountView(CompanyView):
@@ -94,6 +95,12 @@ class ChequeDepositDelete(ChequeDepositView, AccountantMixin, DeleteView):
 class ChequeDepositCreate(ChequeDepositView, AccountantMixin, TableObjectMixin):
     template_name = 'bank/cheque_deposit_form.html'
 
+    def get_context_data(self, *args, **kwargs):
+        context = super(ChequeDepositCreate, self).get_context_data(**kwargs)
+        bank_accounts = Account.objects.filter(company=self.request.company, category__name='Bank Account')
+        context['data']['bank_accounts'] = get_serialize_data(AccountSerializer, self.request.company, bank_accounts)
+        context['data']['benefactor'] = get_serialize_data(AccountSerializer, self.request.company)
+        return context
 
 # def cheque_deposit_create(request, id=None):
 #     if id:
