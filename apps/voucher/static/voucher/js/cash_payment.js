@@ -7,14 +7,16 @@ $(document).ready(function () {
 function CashPaymentVM(data) {
     var self = this;
 
-    $.ajax({
-        url: '/ledger/api/parties_with_balance.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.parties = ko.observableArray(data);
-        }
-    });
+    //$.ajax({
+    //    url: '/ledger/api/parties_with_balance.json',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //        self.parties = ko.observableArray(data);
+    //    }
+    //});
+
+    self.parties = ko.observableArray(data.parties);
 
     self.id = ko.observable('');
     self.message = ko.observable();

@@ -40,23 +40,17 @@ function PurchaseViewModel(data, settings) {
     self.status = ko.observable();
 
     // Get enabled location
-    $.ajax({
-        url: '/inventory/api/locations/?enabled=True',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.enabled_locations = ko.observableArray(data);
-        }
-    });
+    //$.ajax({
+    //    url: '/inventory/api/locations/?enabled=True',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //        self.enabled_locations = ko.observableArray(data);
+    //    }
+    //});
 
-    $.ajax({
-        url: '/tax/api/tax_schemes.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.tax_schemes = ko.observableArray(data);
-        }
-    });
+    self.enabled_locations = ko.observableArray(data.enable_locations);
+
 
     var company_items = [];
     self.items = ko.observableArray(data.items);
@@ -75,17 +69,50 @@ function PurchaseViewModel(data, settings) {
     //            self.items_of_current_company(self.items()[0].company);
     //            company_items.push({'id': self.items_of_current_company(), 'items': self.items()})
     //        }
+
+    //$.ajax({
+    //    url: '/tax/api/tax_schemes.json',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //        self.tax_schemes = ko.observableArray(data);
     //    }
     //});
 
-    $.ajax({
-        url: '/ledger/api/parties_with_balance.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.parties = ko.observableArray(data);
-        }
-    });
+    self.tax_schemes = ko.observableArray(data.tax);
+
+    var company_items = [];
+
+    //$.ajax({
+    //    url: '/inventory/api/purchase/items.json',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //        self.items = ko.observableArray(data);
+    //        if (self.items().length > 0) {
+    //            self.items_of_current_company(self.items()[0].company);
+    //            company_items.push({'id': self.items_of_current_company(), 'items': self.items()})
+    //        }
+    //    }
+    //});
+
+    self.items = ko.observableArray(data.items);
+
+    if (self.items().length > 0) {
+        self.items_of_current_company(self.items()[0].company);
+        company_items.push({'id': self.items_of_current_company(), 'items': self.items()})
+    }
+
+    //$.ajax({
+    //    url: '/ledger/api/parties_with_balance.json',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //        self.parties = ko.observableArray(data);
+    //    }
+    //});
+
+    self.parties = ko.observableArray(data.parties);
 
     self.party_id.subscribe(function (party_id) {
         if (party_id) {
@@ -127,16 +154,18 @@ function PurchaseViewModel(data, settings) {
             klass = 'green';
         }
         return '<div class="' + klass + '">' + obj.name + '</div>';
-    }
+    };
 
-    $.ajax({
-        url: '/inventory/api/units.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.units = ko.observableArray(data);
-        }
-    });
+    //$.ajax({
+    //    url: '/inventory/api/units.json',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //        self.units = ko.observableArray(data);
+    //    }
+    //});
+
+    self.units = ko.observableArray(data.units);
 
     self.party = ko.observable();
 

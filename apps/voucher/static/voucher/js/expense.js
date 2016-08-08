@@ -11,24 +11,29 @@ function ExpenseViewModel(data) {
     self.voucher_no = ko.observable();
     self.date = ko.observable();
     
-    $.ajax({
-        url: '/ledger/api/account.json',
-        dataType: 'json',
-        data: "categories=direct_expenses,indirect_expenses",
-        async: false,
-        success: function (data) {
-            self.expense_accounts = ko.observableArray(data);
-        }
-    });
+    //$.ajax({
+    //    url: '/ledger/api/account.json',
+    //    dataType: 'json',
+    //    data: "categories=direct_expenses,indirect_expenses",
+    //    async: false,
+    //    success: function (data) {
+    //        self.expense_accounts = ko.observableArray(data);
+    //    }
+    //});
 
-    $.ajax({
-        url: '/ledger/api/bank_cash_account.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-        self.pay_head_accounts = ko.observableArray(data);
-        }
-    });
+    self.expense_accounts = ko.observableArray(data.expense_accounts);
+
+
+    //$.ajax({
+    //    url: '/ledger/api/bank_cash_account.json',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //    self.pay_head_accounts = ko.observableArray(data);
+    //    }
+    //});
+
+    self.pay_head_accounts = ko.observableArray(data.pay_head_accounts);
 
     self.table_view = new TableViewModel({rows: data.rows}, ExpenseRowViewModel);
 

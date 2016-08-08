@@ -56,16 +56,16 @@ function SaleViewModel(data, settings) {
 
     self.status = ko.observable();
 
-    $.ajax({
-        url: '/tax/api/tax_schemes.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.tax_schemes = ko.observableArray(data);
-        }
-    });
+    //$.ajax({
+    //    url: '/tax/api/tax_schemes.json',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //        self.tax_schemes = ko.observableArray(data);
+    //    }
+    //});
 
-    self.items = ko.observableArray(data.items)
+    self.tax_schemes = ko.observableArray(data.tax);
 
     //$.ajax({
     //    url: '/inventory/api/sale/items.json',
@@ -76,23 +76,29 @@ function SaleViewModel(data, settings) {
     //    }
     //});
 
-    $.ajax({
-        url: '/ledger/api/parties_with_balance.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.parties = ko.observableArray(data);
-        }
-    });
+    self.items = ko.observableArray(data.items);
 
-    $.ajax({
-        url: '/inventory/api/units.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.units = ko.observableArray(data);
-        }
-    });
+    //$.ajax({
+    //    url: '/ledger/api/parties_with_balance.json',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //        self.parties = ko.observableArray(data);
+    //    }
+    //});
+
+    self.parties = ko.observableArray(data.parties);
+
+    //$.ajax({
+    //    url: '/inventory/api/units.json',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //        self.units = ko.observableArray(data);
+    //    }
+    //});
+
+    self.units = ko.observableArray(data.units);
 
     self.party = ko.observable();
 

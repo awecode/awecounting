@@ -21,7 +21,6 @@ function PurchaseViewModel(data) {
     
     self.grand_total_obs = ko.observable(0);
 
-    self.items = ko.observableArray(data.items)
 
     //$.ajax({
     //    url: '/inventory/api/items.json',
@@ -36,15 +35,22 @@ function PurchaseViewModel(data) {
     //    }
     //});
 
-    $.ajax({
-        url: '/ledger/api/parties_with_balance.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.parties = ko.observableArray(data);
-        }
-    });
+    self.items = ko.observableArray(data.items);
+    if (self.items().length > 0) {
+        self.items_of_current_company(self.items()[0].company);
+        company_items.push({'id': self.items_of_current_company(), 'items': self.items()});
+    }
 
+    //$.ajax({
+    //    url: '/ledger/api/parties_with_balance.json',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //        self.parties = ko.observableArray(data);
+    //    }
+    //});
+
+    self.parties = ko.observableArray(data.parties);
 
     self.party_id.subscribe(function (party_id) {
         if (party_id) {
@@ -88,14 +94,16 @@ function PurchaseViewModel(data) {
         return '<div class="' + klass + '">' + obj.name + '</div>';
     };
 
-    $.ajax({
-        url: '/inventory/api/units.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.units = ko.observableArray(data);
-        }
-    });
+    //$.ajax({
+    //    url: '/inventory/api/units.json',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //        self.units = ko.observableArray(data);
+    //    }
+    //});
+
+    self.units = ko.observableArray(data.units);
 
     self.party = ko.observable();
 
@@ -108,15 +116,17 @@ function PurchaseViewModel(data) {
 
     self.table_view = new TableViewModel({rows: data.rows, argument: self}, PurchaseRow);
 
-    $.ajax({
-        url: '/ledger/api/account.json',
-        dataType: 'json',
-        data: "categories=purchase_expenses",
-        async: false,
-        success: function (data) {
-            self.expense_accounts = ko.observableArray(data);
-        }
-    });
+    //$.ajax({
+    //    url: '/ledger/api/account.json',
+    //    dataType: 'json',
+    //    data: "categories=purchase_expenses",
+    //    async: false,
+    //    success: function (data) {
+    //        self.expense_accounts = ko.observableArray(data);
+    //    }
+    //});
+
+    self.expense_accounts = ko.observableArray(data.expense_accounts);
 
 
     self.id.subscribe(function (id) {
