@@ -57,33 +57,35 @@ USURPERS = {
 @register.tag
 def ifrole(parser, token):
     try:
-        # split_contents() knows not to split quoted strings.
         tag_name, role = token.split_contents()
     except ValueError:
         raise template.TemplateSyntaxError(
             "%r tag requires exactly two arguments" % token.contents.split()[0]
         )
-    if not (role[0] == role[-1] and role[0] in ('"', "'")):
-        raise template.TemplateSyntaxError(
-            "%r tag's argument should be in quotes" % tag_name
-        )
-    nodelist = parser.parse('endrole', )
-    parser.delete_first_token()
-    return RoleInGroup(role[1:-1], nodelist)
+    nodelist_true = parser.parse(('else', 'endifrole'))
+    token = parser.next_token()
+
+    if token.contents == 'else':
+        nodelist_false = parser.parse(('endifrole',))
+        parser.delete_first_token()
+    else:
+        nodelist_false = template.NodeList()
+    return RoleInGroup(role[1:-1], nodelist_true, nodelist_false)
 
 
 class RoleInGroup(template.Node):
-    def __init__(self, role, nodelist):
+    def __init__(self, role, nodelist_true, nodelist_false):
         self.role = role
-        self.nodelist = nodelist
+        self.nodelist_true = nodelist_true
+        self.nodelist_false = nodelist_false
 
     def render(self, context):
         #  TODO RemovedInDjango110Warning: resolve_variable() is deprecated. Use django.template.Variable(path).resolve(context) instead  request = template.resolve_variable('request', context)
         request = template.resolve_variable('request', context)
         if request.role and request.role.group.name in USURPERS[self.role]:
-            return self.nodelist.render(context)
+            return self.nodelist_true.render(context)
         else:
-            return ''
+            return self.nodelist_false.render('')
 
 
 def handler(obj):

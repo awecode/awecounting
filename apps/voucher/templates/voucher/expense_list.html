@@ -23,7 +23,7 @@
                 <th>{% anchor date _('Date') %}</th>
                 {% ifrole "Accountant" %}
                     <th>{% trans "Action" %}</th>
-                {% endrole %}
+                {% endifrole %}
                 </thead>
                 <tbody>
                 {% for object in sorted_objects %}
@@ -38,7 +38,7 @@
                         <td>
                             <a href="{% url 'expense_edit' object.pk %}">{% trans "Edit" %}</a>
                         </td>
-                        {% endrole %}
+                        {% endifrole %}
                     </tr>
                 {% endfor %}
                 </tbody>

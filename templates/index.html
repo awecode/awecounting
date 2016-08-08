@@ -44,7 +44,7 @@
                 <a href="{% url 'purchase_order_create' %}">{% trans 'New Purchase Order' %}</a>
                 <a href="{% url 'purchase_order_list' %}">{% trans 'List Purchase Orders' %}</a>
             {% endif %}
-            {% endrole %}
+            {% endifrole %}
         </div>
     </div>
     {% endif %}
@@ -69,7 +69,7 @@
 
             {% ifrole "Stockist" %}
             {#            <a href="{% url 'list_inventory_accounts' %}">{% trans 'Accounts' %}</a>#}
-            {% endrole %}
+            {% endifrole %}
             <a href="{% url 'item_list' %}">{% trans 'Items' %}</a>
             <a href="{% url 'item_category_list' %}">{% trans 'Categories' %}</a>
             <a href="{% url 'unit_list' %}">{% trans 'Units' %}</a>
@@ -90,7 +90,7 @@
             <a href="{% url 'cash_payment_add' %}">{% trans 'New Cash Payment' %}</a>
         </div>
     </div>
-    {% endrole %}
+    {% endifrole %}
 
     <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
         <i class="fa fa-file-text-o"></i>
@@ -116,7 +116,7 @@
             <a href="{% url 'bank:cheque_payment_list' %}">{% trans 'Cheque Payments' %}</a>
         </div>
     </div>
-    {% endrole %}
+    {% endifrole %}
 
 
     <div class="tile flip-container" ontouchstart="this.classList.toggle('hover');">
@@ -142,7 +142,7 @@
             {% ifrole "Stockist" %}
             <a href="{% url 'list_account' %}">{% trans 'Accounts' %}</a>
             <a href="{% url 'account_tree' %}">{% trans 'Accounts Tree' %}</a>
-            {% endrole %}
+            {% endifrole %}
             <a href="{% url 'category_list' %}">{% trans 'Categories' %}</a>
             <a href="{% url 'party_list' %}">{% trans 'Parties' %}</a>
             <a href="{% url 'tax_scheme_list' %}">{% trans 'Tax Schemes' %}</a>

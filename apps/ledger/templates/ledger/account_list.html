@@ -36,7 +36,7 @@
         <th>{% anchor category _('Category') %}</th>
         {% ifrole "Stockist" %}
         <th>{% trans "Action" %}</th>
-        {% endrole %}
+        {% endifrole %}
 
         </thead>
         <tbody>
@@ -75,7 +75,7 @@
                 <a href="{% url 'account_edit' account.pk %}">{% trans "Edit" %}</a>
                 {% endif %}
             </td>
-            {% endrole %}
+            {% endifrole %}
         </tr>
         {% endfor %}
         </tbody>

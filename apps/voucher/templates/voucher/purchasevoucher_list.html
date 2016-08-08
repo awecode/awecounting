@@ -26,7 +26,7 @@
             <th>{% anchor credit _('Credit/Cash') %}</th>
             {% ifrole "Cashier" %}
                 <th>{% trans "Action" %}</th>
-            {% endrole %}
+            {% endifrole %}
             </thead>
             <tbody>
             {% for purchase in paginated_objects %}
@@ -49,7 +49,7 @@
                     <td>
                         <a href="{% url 'purchase-edit' purchase.id %}">{% trans "Edit" %}</a>
                     </td>
-                    {% endrole %}
+                    {% endifrole %}
                 </tr>
             {% endfor %}
             </tbody>

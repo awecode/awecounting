@@ -261,12 +261,24 @@ function PurchaseViewModel(data, settings) {
     }
 
     self.save = function (item, event) {
+        var check_unit = false;
+        var check_discount = false;
         if (!self.party() && self.credit()) {
             bsalert.error('Party is required for credit purchase!');
             return false;
         }
 
-        var check_discount;
+        self.table_view.rows().forEach(function (i) {
+            if (!i.unit_id()) {
+                check_unit = true;
+            }
+        });
+
+        if (check_unit) {
+            bsalert.error("Unit in item is required.");
+            return false;
+        }
+
         self.table_view.rows().forEach(function (i) {
             var discount_as_string = String(i.discount());
             if (discount_as_string.indexOf('%') !== -1) {
@@ -406,31 +418,35 @@ function PurchaseRow(row, purchase_vm) {
         return r2z(self.total_without_tax() * purchase_vm.divident_rate_obs() / (1 + self.tax_rate()));
     });
 
-    self.unit.subscription_changed(function (new_val, old_val) {
-        if (old_val && old_val != new_val) {
-            var conversion_rate = old_val.convertible_units[new_val.id];
-            if (conversion_rate) {
-                if (self.quantity()) {
-                    self.quantity(self.quantity() * conversion_rate);
-                }
-                if (self.rate()) {
-                    self.rate(self.rate() / conversion_rate);
-                }
-            }
-        }
-    });
+    //Converting old unit value to new value
+    //self.unit.subscription_changed(function (new_val, old_val) {
+    //
+    //    if (old_val && old_val != new_val) {
+    //        var conversion_rate = old_val.convertible_units[new_val.id];
+    //        if (conversion_rate) {
+    //            if (self.quantity()) {
+    //                self.quantity(self.quantity() * conversion_rate);
+    //            }
+    //            if (self.rate()) {
+    //                self.rate(self.rate() / conversion_rate);
+    //            }
+    //        }
+    //    }
+    //});
 
     self.render_unit_options = function (data) {
         var obj = get_by_id(purchase_vm.units(), data.id);
         var klass = '';
         if (self.unit_id() && obj.id != self.unit_id()) {
-            if (obj.convertible_units[self.unit_id()])
+            if ('convertible_units' in obj) {
+                if (obj.convertible_units[self.unit_id()])
                 klass = 'green';
             else
                 klass = 'red';
+            }
         }
         return '<div class="' + klass + '">' + obj.name + '</div>';
-    }
+    };
 
     self.render_option = function (data) {
         var obj = get_by_id(purchase_vm.items(), data.id);

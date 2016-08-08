@@ -276,11 +276,14 @@ def roles(request):
                                    'User ' + user.username + ' (' + user.email + ') is already the ' + request.POST[
                                        'group'] + '.')
                 except Role.DoesNotExist:
-                    role = Role(user=user, company=request.company, group=group)
-                    role.save()
-                    messages.success(request,
-                                     'User ' + user.username + ' (' + user.email + ') added as ' + request.POST[
-                                         'group'] + '.')
+                    if group.name != 'SuperOwner':
+                        role = Role(user=user, company=request.company, group=group)
+                        role.save()
+                        messages.success(request,
+                                         'User ' + user.username + ' (' + user.email + ') added as ' + request.POST[
+                                             'group'] + '.')
+                    else:
+                        messages.error(request,'SuperOwner role cannot be created.')
             except User.DoesNotExist:
                 messages.error(request, 'No users found with the e-mail address ' + request.POST['user'])
         except ValidationError:
@@ -293,11 +296,14 @@ def roles(request):
                                    'User ' + user.username + ' (' + user.email + ') is already the ' + request.POST[
                                        'group'] + '.')
                 except Role.DoesNotExist:
-                    role = Role(user=user, company=request.company, group=group)
-                    role.save()
-                    messages.success(request,
-                                     'User ' + user.username + ' (' + user.email + ') added as ' + request.POST[
-                                         'group'] + '.')
+                    if group.name != 'SuperOwner':
+                        role = Role(user=user, company=request.company, group=group)
+                        role.save()
+                        messages.success(request,
+                                         'User ' + user.username + ' (' + user.email + ') added as ' + request.POST[
+                                             'group'] + '.')
+                    else:
+                        messages.error(request, 'SuperOwner role cannot be created.')
             except User.DoesNotExist:
                 messages.error(request, 'No users found with the username ' + request.POST['user'])
     objs = Role.objects.filter(company=request.company)

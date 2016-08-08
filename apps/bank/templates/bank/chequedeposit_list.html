@@ -30,7 +30,7 @@
                 <th>{% anchor narration _('Narration') %}</th>
                 {% ifrole "Cashier" %}
                     <th>{% trans "Action" %}</th>
-                {% endrole %}
+                {% endifrole %}
                 </thead>
                 <tbody>
                 {% for object in sorted_objects %}
@@ -47,7 +47,7 @@
                         <td>
                             <a href="{% url 'bank:cheque_deposit_edit' object.pk %}">{% trans "Edit" %}</a>
                         </td>
-                        {% endrole %}
+                        {% endifrole %}
                     </tr>
                 {% endfor %}
                 </tbody>
