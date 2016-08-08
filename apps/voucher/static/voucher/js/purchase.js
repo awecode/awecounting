@@ -79,6 +79,11 @@ function PurchaseViewModel(data, settings) {
 
     self.items = ko.observableArray(data.items);
 
+    self.render_item_options = function (data) {
+        var obj = get_by_id(vm.items(), data.id);
+        return '<div>' + obj.name + ' ' + '<b>(' + obj.current_balance + ')</b>' + '</div>';;
+    };
+
     if (self.items().length > 0) {
         self.items_of_current_company(self.items()[0].company);
         company_items.push({'id': self.items_of_current_company(), 'items': self.items()})

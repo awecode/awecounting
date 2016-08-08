@@ -138,7 +138,7 @@
                     {% endif %}
                     <td>
                         <select data-url="{% url 'item_add' %}?source=purchase" data-script="/static/inventory/js/item.js"
-                                data-bind="selectize: $root.items, value: item_id, object: item">
+                                data-bind="selectize: $root.items, value: item_id, object: item, selectize_options:{render: {'option': $root.render_item_options}}">
                         </select>
                     </td>
                     {% if request.company.settings.show_purchase_voucher_code %}

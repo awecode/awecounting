@@ -18,7 +18,7 @@ class UnitSerializer(serializers.ModelSerializer):
 class ItemSerializer(serializers.ModelSerializer):
     unit = UnitSerializer()
     full_name = serializers.SerializerMethodField()
-    # current_balance = serializers.SerializerMethodField()
+    current_balance = serializers.ReadOnlyField(source='account.current_balance')
 
     def __init__(self, *args, **kwargs):
         super(ItemSerializer, self).__init__(*args, **kwargs)

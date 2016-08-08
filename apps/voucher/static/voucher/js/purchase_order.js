@@ -299,7 +299,7 @@ function PurchaseRow(row, purchase_vm) {
     self.render_option = function (data) {
         //purchase_vm
         var obj = get_by_id(purchase_vm.items(), data.id);
-        return '<div>' + obj.full_name + '</div>';
+        return '<div>' + obj.full_name + ' ' + '<b>(' + obj.current_balance + ')</b>' + '</div>';
     }
 
 }

@@ -436,7 +436,7 @@ function SaleRow(row, sale_vm) {
     self.render_option = function (data) {
         //sale_vm
         var obj = get_by_id(sale_vm.items(), data.id);
-        return '<div>' + obj.full_name + '</div>';
+        return '<div>' + obj.full_name + ' ' + '<b>(' + obj.current_balance + ')</b>' + '</div>';
     };
 
     if (voucher_settings.show_locations) {
