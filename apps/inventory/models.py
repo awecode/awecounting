@@ -166,7 +166,7 @@ class Item(models.Model):
     ledger = models.ForeignKey(Account, null=True)
     purchase_ledger = models.OneToOneField(Account, null=True, related_name='purchase_detail')
     sale_ledger = models.OneToOneField(Account, null=True, related_name='sale_detail')
-    category = models.ForeignKey(ItemCategory, null=True, blank=True)
+    category = models.ForeignKey(ItemCategory, null=True, blank=True, related_name='items')
     company = models.ForeignKey(Company)
 
     def __str__(self):

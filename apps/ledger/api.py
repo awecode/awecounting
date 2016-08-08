@@ -35,7 +35,7 @@ class BankAndCashAccountListAPI(generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = Account.objects.filter(company=self.request.company)
-        categories = ['Bank Account', 'Cash Account']
+        categories = ['Cash Equivalent Account', 'Cash Accounts', 'Bank Account']
         queryset = queryset.filter(category__name__in=categories)
         return queryset
 

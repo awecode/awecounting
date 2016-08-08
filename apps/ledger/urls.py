@@ -6,6 +6,8 @@ import api
 web_urls = [
     url(r'^$', views.AccountList.as_view(), name='list_account'),
     url(r'^(?P<pk>[0-9]+)/$', views.ViewAccount.as_view(), name='view_ledger'),
+    url(r'^item/(?P<pk>[0-9]+)/$', views.ViewItemAccount.as_view(), name='item_ledger'),
+    url(r'^party_ledger/(?P<pk>[0-9]+)/$', views.ViewPartyAccount.as_view(), name='party_ledger'),
 
     url(r'^party/$', views.PartyList.as_view(), name='party_list'),
     url(r'^party/add/$', views.PartyCreate.as_view(), name='party_add'),

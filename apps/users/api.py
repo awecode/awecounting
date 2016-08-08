@@ -27,7 +27,10 @@ class AccessibleCompanyAPI(generics.ListAPIView):
     # pagination_class = SetPagination
 
     def get_queryset(self):
-        return Pin.accessible_companies(self.request.company)
+        qs = []
+        if self.request.company:
+            qs = Pin.accessible_companies(self.request.company)
+        return qs
 
 
 

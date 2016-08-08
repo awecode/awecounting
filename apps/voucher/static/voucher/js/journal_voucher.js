@@ -13,14 +13,16 @@ function JournalVoucherViewModel(data) {
     self.narration = ko.observable();
     self.status = ko.observable();
 
-    $.ajax({
-        url: '/ledger/api/account.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.accounts = ko.observableArray(data);
-        }
-    });
+    //$.ajax({
+    //    url: '/ledger/api/account.json',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //        self.accounts = ko.observableArray(data);
+    //    }
+    //});
+
+    self.accounts = ko.observableArray(data.accounts);
 
     self.table_view = new TableViewModel({rows: data.rows}, JournalVoucherRowViewModel);
 

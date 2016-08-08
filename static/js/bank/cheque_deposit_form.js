@@ -26,23 +26,27 @@ function ChequeDepositViewModel(data) {
         self.deleted_files.push(file);
     };
 
-    $.ajax({
-        url: '/ledger/api/bank_account/account.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.bank_account_array = ko.observableArray(data);
-        }
-    });
+    //$.ajax({
+    //    url: '/ledger/api/bank_account/account.json',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //        self.bank_account_array = ko.observableArray(data);
+    //    }
+    //});
 
-    $.ajax({
-        url: '/ledger/api/account.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.benefactor_array = ko.observableArray(data);
-        }
-    });
+    self.bank_account_array = ko.observableArray(data.bank_accounts);
+
+    //$.ajax({
+    //    url: '/ledger/api/account.json',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //        self.benefactor_array = ko.observableArray(data);
+    //    }
+    //});
+
+    self.benefactor_array = ko.observableArray(data.benefactor);
 
     self.table_view = new TableViewModel({rows: data.rows}, ChequeDepositRowViewModel);
 

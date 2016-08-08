@@ -14,14 +14,16 @@ function FixedAssetViewModel(data) {
     self.accounts = ko.observable();
     self.description = ko.observable();
 
-    $.ajax({
-        url: '/ledger/api/account.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.accounts = ko.observableArray(data);
-        }
-    });
+    //$.ajax({
+    //    url: '/ledger/api/account.json',
+    //    dataType: 'json',
+    //    async: false,
+    //    success: function (data) {
+    //        self.accounts = ko.observableArray(data);
+    //    }
+    //});
+
+    self.accounts = ko.observableArray(data.accounts);
 
     self.table_view = new TableViewModel({rows: data.rows}, FixedAssetRowViewModel);
     self.additional_detail = new TableViewModel({rows: data.additional_details}, AdditionalDetailViewModel);
