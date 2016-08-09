@@ -2,23 +2,32 @@
 {% load staticfiles i18n filters %}
 
 {% block page-title %}
-    {% trans 'Detail' %} {% trans 'Cash Receipt' %}
+    {% trans 'Detail' %} {% trans 'Credit Voucher' %}
 {% endblock %}
 
 {% block breadcrumbs %}
-    <li><a href="{% url 'cash_receipt_list' %}">{% trans 'Cash Receipts' %}</a></li>
-    <li>{% trans 'Detail' %} {% trans 'Cash Receipts' %}</li>
+    <li><a href="{% url 'credit_voucher_list' %}">{% trans 'Credit Vouchers' %}</a></li>
+    <li>{% trans 'Detail' %} {% trans 'Credit Vouchers' %}</li>
 {% endblock %}
 
 
 {% block content %}
 <div class="well">
 
-    <div classs="row">
-        <label>{% trans 'Voucher No.' %}</label>
-        <p>
-            {{ object.voucher_no}}
-        </p>
+    <div class="row">
+        <div class="col-md-6 col-xs-12">
+            <label>{% trans 'Voucher No.' %}</label>
+
+            <p>
+                {{ object.voucher_no }}
+            </p>
+        </div>
+        <div class="col-md-6 col-xs-12">
+            <label>{% trans 'Receipt' %}</label>
+            <p>
+                {{ object.receipt }}
+            </p>
+        </div>
     </div>
 
     <div class="row">

@@ -40,6 +40,16 @@ class PurchaseOrder(models.Model):
     trade_expense = GenericRelation(TradeExpense)
     company = models.ForeignKey(Company)
 
+    def clean(self):
+        if self.company.settings.unique_voucher_number_by_fy:
+            if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).filter(
+                    date__gte=self.company.get_fy_start(self.date),
+                    date__lte=self.company.get_fy_end(self.date)).exclude(pk=self.pk):
+                raise ValidationError(_('Voucher no. already exists for the fiscal year!'))
+        if self.company.settings.unique_voucher_number:
+            if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).exclude(pk=self.pk):
+                raise ValidationError(_('Voucher no. already exists!'))
+
     def __init__(self, *args, **kwargs):
         super(PurchaseOrder, self).__init__(*args, **kwargs)
         if not self.pk and not self.voucher_no:
@@ -98,11 +108,14 @@ class PurchaseVoucher(models.Model):
             return _('Cash')
 
     def clean(self):
-        if self.company.settings.unique_voucher_number:
+        if self.company.settings.enable_purchase_unique_voucher_no_by_fy:
             if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).filter(
                     date__gte=self.company.get_fy_start(self.date),
                     date__lte=self.company.get_fy_end(self.date)).exclude(pk=self.pk):
                 raise ValidationError(_('Voucher no. already exists for the fiscal year!'))
+        if self.company.settings.enable_purchase_unique_voucher_no:
+            if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).exclude(pk=self.pk):
+                raise ValidationError(_('Voucher no. already exists!'))
 
     def __init__(self, *args, **kwargs):
         super(PurchaseVoucher, self).__init__(*args, **kwargs)
@@ -247,8 +260,16 @@ class Sale(models.Model):
             self.voucher_no = get_next_voucher_no(Sale, self.company)
 
     def clean(self):
-        if self.company.settings.unique_voucher_number:
-            pass
+        if self.company.settings.enable_sale_unique_voucher_no_by_fy:
+            if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).filter(
+                    date__gte=self.company.get_fy_start(self.date),
+                    date__lte=self.company.get_fy_end(self.date)).exclude(pk=self.pk):
+                raise ValidationError(_('Voucher no. already exists for the fiscal year!'))
+        if self.company.settings.enable_sale_unique_voucher_no:
+            if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).exclude(pk=self.pk):
+                raise ValidationError(_('Voucher no. already exists!'))
+        # if self.company.settings.unique_voucher_number:
+        #     pass
             # if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).filter(
             #       date__gte=self.company.settings.get_fy_start(self.date),
             #       date__lte=self.company.settings.get_fy_end(self.date)).exclude(pk=self.pk):
@@ -371,6 +392,16 @@ class JournalVoucher(models.Model):
         if not self.pk and not self.voucher_no:
             self.voucher_no = get_next_voucher_no(JournalVoucher, self.company_id)
 
+    def clean(self):
+        if self.company.settings.unique_voucher_number_by_fy:
+            if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).filter(
+                    date__gte=self.company.get_fy_start(self.date),
+                    date__lte=self.company.get_fy_end(self.date)).exclude(pk=self.pk):
+                raise ValidationError(_('Voucher no. already exists for the fiscal year!'))
+        if self.company.settings.unique_voucher_number:
+            if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).exclude(pk=self.pk):
+                raise ValidationError(_('Voucher no. already exists!'))
+
     def get_total_dr_amount(self):
         total_dr_amount = 0
         for o in self.rows.all():
@@ -400,21 +431,32 @@ class JournalVoucherRow(models.Model):
         return self.journal_voucher.voucher_no
 
 
-class CashReceipt(models.Model):
+class CreditVoucher(models.Model):
     voucher_no = models.IntegerField()
     party = models.ForeignKey(Party, verbose_name=_('Receipt From'))
     date = BSDateField(default=today)
     reference = models.CharField(max_length=50, null=True, blank=True)
     amount = models.FloatField(null=True, blank=True)
     description = models.TextField()
+    receipt = models.ForeignKey(Account, blank=True, null=True, related_name="cash_receipt")
     company = models.ForeignKey(Company)
     # statuses = [('Approved', 'Approved'), ('Unapproved', 'Unapproved')]
     # status = models.CharField(max_length=10, choices=statuses, default='Unapproved')
 
     def __init__(self, *args, **kwargs):
-        super(CashReceipt, self).__init__(*args, **kwargs)
+        super(CreditVoucher, self).__init__(*args, **kwargs)
         if not self.pk and not self.voucher_no:
-            self.voucher_no = get_next_voucher_no(CashReceipt, self.company_id)
+            self.voucher_no = get_next_voucher_no(CreditVoucher, self.company_id)
+
+    def clean(self):
+        if self.company.settings.unique_voucher_number_by_fy:
+            if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).filter(
+                    date__gte=self.company.get_fy_start(self.date),
+                    date__lte=self.company.get_fy_end(self.date)).exclude(pk=self.pk):
+                raise ValidationError(_('Voucher no. already exists for the fiscal year!'))
+        if self.company.settings.unique_voucher_number:
+            if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).exclude(pk=self.pk):
+                raise ValidationError(_('Voucher no. already exists!'))
 
     @property
     def total(self):
@@ -428,20 +470,20 @@ class CashReceipt(models.Model):
         return self.voucher_no
 
     def get_absolute_url(self):
-        return reverse_lazy('cash_receipt_edit', kwargs={'pk': self.pk})
+        return reverse_lazy('credit_voucher_edit', kwargs={'pk': self.pk})
 
 
-class CashReceiptRow(models.Model):
+class CreditVoucherRow(models.Model):
     invoice = models.ForeignKey(Sale, related_name='receipts')
     receipt = models.FloatField()
     discount = models.FloatField(blank=True, null=True)
-    cash_receipt = models.ForeignKey(CashReceipt, related_name='rows')
+    cash_receipt = models.ForeignKey(CreditVoucher, related_name='rows')
 
     def get_voucher_no(self):
         return self.cash_receipt.voucher_no
 
     def get_absolute_url(self):
-        return reverse_lazy('cash_receipt_edit', kwargs={'pk': self.cash_receipt_id})
+        return reverse_lazy('credit_voucher_edit', kwargs={'pk': self.cash_receipt_id})
 
     def overdue_days(self):
         if self.invoice.due_date and self.invoice.due_date < date.today():
@@ -453,21 +495,32 @@ class CashReceiptRow(models.Model):
         unique_together = ('invoice', 'cash_receipt')
 
 
-class CashPayment(models.Model):
+class DebitVoucher(models.Model):
     voucher_no = models.IntegerField()
     party = models.ForeignKey(Party, verbose_name='Paid To')
     date = BSDateField(default=today)
     reference = models.CharField(max_length=50, null=True, blank=True)
     amount = models.FloatField(null=True, blank=True)
     description = models.TextField()
+    payment = models.ForeignKey(Account, blank=True, null=True, related_name="cash_payment")
     company = models.ForeignKey(Company)
     # statuses = [('Approved', 'Approved'), ('Unapproved', 'Unapproved')]
     # status = models.CharField(max_length=10, choices=statuses, default='Unapproved')
 
     def __init__(self, *args, **kwargs):
-        super(CashPayment, self).__init__(*args, **kwargs)
+        super(DebitVoucher, self).__init__(*args, **kwargs)
         if not self.pk and not self.voucher_no:
-            self.voucher_no = get_next_voucher_no(CashPayment, self.company_id)
+            self.voucher_no = get_next_voucher_no(DebitVoucher, self.company_id)
+
+    def clean(self):
+        if self.company.settings.unique_voucher_number_by_fy:
+            if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).filter(
+                    date__gte=self.company.get_fy_start(self.date),
+                    date__lte=self.company.get_fy_end(self.date)).exclude(pk=self.pk):
+                raise ValidationError(_('Voucher no. already exists for the fiscal year!'))
+        if self.company.settings.unique_voucher_number:
+            if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).exclude(pk=self.pk):
+                raise ValidationError(_('Voucher no. already exists!'))
 
     @property
     def total(self):
@@ -481,20 +534,20 @@ class CashPayment(models.Model):
         return self.voucher_no
 
     def get_absolute_url(self):
-        return reverse_lazy('cash_payment_edit', kwargs={'pk': self.pk})
+        return reverse_lazy('debit_voucher_edit', kwargs={'pk': self.pk})
 
 
-class CashPaymentRow(models.Model):
+class DebitVoucherRow(models.Model):
     invoice = models.ForeignKey(PurchaseVoucher, related_name="receipts")
     payment = models.FloatField()
     discount = models.FloatField(blank=True, null=True)
-    cash_payment = models.ForeignKey(CashPayment, related_name='rows')
+    cash_payment = models.ForeignKey(DebitVoucher, related_name='rows')
 
     def get_voucher_no(self):
         return self.cash_payment.voucher_no
 
     def get_absolute_url(self):
-        return reverse_lazy('cash_payment_edit', kwargs={'pk': self.cash_payment_id})
+        return reverse_lazy('debit_voucher_edit', kwargs={'pk': self.cash_payment_id})
 
     def overdue_days(self):
         if self.invoice.due_date and self.invoice.due_date < date.today():
@@ -520,6 +573,16 @@ class FixedAsset(models.Model):
         super(FixedAsset, self).__init__(*args, **kwargs)
         if not self.pk and not self.voucher_no:
             self.voucher_no = get_next_voucher_no(FixedAsset, self.company_id)
+
+    def clean(self):
+        if self.company.settings.unique_voucher_number_by_fy:
+            if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).filter(
+                    date__gte=self.company.get_fy_start(self.date),
+                    date__lte=self.company.get_fy_end(self.date)).exclude(pk=self.pk):
+                raise ValidationError(_('Voucher no. already exists for the fiscal year!'))
+        if self.company.settings.unique_voucher_number:
+            if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).exclude(pk=self.pk):
+                raise ValidationError(_('Voucher no. already exists!'))
 
     @property
     def total(self):
@@ -554,7 +617,8 @@ class VoucherSetting(models.Model):
     # from ..tax.models import TaxScheme
     tax_choices = [('no', 'No Tax'), ('inclusive', 'Tax Inclusive'), ('exclusive', 'Tax Exclusive'), ]
     company = models.OneToOneField(Company, related_name='settings')
-    unique_voucher_number = models.BooleanField(default=True)
+    unique_voucher_number = models.BooleanField(default=False)
+    unique_voucher_number_by_fy = models.BooleanField(default=True)
 
     # Sales voucher settings
     single_discount_on_whole_invoice = models.BooleanField(default=True)
@@ -580,6 +644,9 @@ class VoucherSetting(models.Model):
 
     show_sale_voucher_tax_scheme = models.BooleanField(default=True)
     show_sale_print_tax_scheme = models.BooleanField(default=True)
+
+    enable_sale_unique_voucher_no = models.BooleanField(default=False)
+    enable_sale_unique_voucher_no_by_fy = models.BooleanField(default=True)
 
     # show_sale_voucher_lot = models.BooleanField(default=True)
     # show_sale_print_lot = models.BooleanField(default=True)
@@ -613,6 +680,8 @@ class VoucherSetting(models.Model):
     show_purchase_voucher_tax_scheme = models.BooleanField(default=True)
     show_purchase_print_tax_scheme = models.BooleanField(default=True)
 
+    enable_purchase_unique_voucher_no = models.BooleanField(default=False)
+    enable_purchase_unique_voucher_no_by_fy = models.BooleanField(default=True)
     # show_purchase_voucher_lot = models.BooleanField(default=True)
     # show_purchase_print_lot = models.BooleanField(default=True)
     #
@@ -675,6 +744,16 @@ class Expense(models.Model):
         super(Expense, self).__init__(*args, **kwargs)
         if not self.pk and not self.voucher_no:
             self.voucher_no = get_next_voucher_no(Expense, self.company_id)
+
+    def clean(self):
+        if self.company.settings.unique_voucher_number_by_fy:
+            if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).filter(
+                    date__gte=self.company.get_fy_start(self.date),
+                    date__lte=self.company.get_fy_end(self.date)).exclude(pk=self.pk):
+                raise ValidationError(_('Voucher no. already exists for the fiscal year!'))
+        if self.company.settings.unique_voucher_number:
+            if self.__class__.objects.filter(voucher_no=self.voucher_no, company=self.company).exclude(pk=self.pk):
+                raise ValidationError(_('Voucher no. already exists!'))
 
     @property
     def total(self):

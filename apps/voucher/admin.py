@@ -3,7 +3,7 @@ from django.contrib import admin
 from awecounting.utils.mixins import CompanyAdmin
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, PurchaseVoucherRow, SaleRow, PurchaseVoucher, Sale, \
     JournalVoucher, \
-    JournalVoucherRow, CashReceipt, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, VoucherSetting, \
+    JournalVoucherRow, CreditVoucher, CreditVoucherRow, DebitVoucher, DebitVoucherRow, PurchaseOrder, PurchaseOrderRow, VoucherSetting, \
     ExpenseRow, Expense, TradeExpense, Lot, LotItemDetail, SaleFromLocation
 
 
@@ -100,32 +100,32 @@ class JournalVoucherAdmin(CompanyAdmin):
     ]
 
 
-class CashReceiptRowInline(admin.TabularInline):
-    model = CashReceiptRow
+class CreditVoucherRowInline(admin.TabularInline):
+    model = CreditVoucherRow
 
 
-class CashReceiptAdmin(CompanyAdmin):
+class CreditVoucherAdmin(CompanyAdmin):
     inlines = [
-        CashReceiptRowInline,
+        CreditVoucherRowInline,
     ]
 
 
-class CashPaymentRowInline(admin.TabularInline):
-    model = CashPaymentRow
+class DebitVoucherRowInline(admin.TabularInline):
+    model = DebitVoucherRow
 
 
-class CashPaymentAdmin(CompanyAdmin):
+class DebitVoucherAdmin(CompanyAdmin):
     inlines = [
-        CashPaymentRowInline,
+        DebitVoucherRowInline,
     ]
 
 
 admin.site.register(JournalVoucher, JournalVoucherAdmin)
 admin.site.register(JournalVoucherRow)
-admin.site.register(CashReceipt, CashReceiptAdmin)
-admin.site.register(CashReceiptRow)
-admin.site.register(CashPayment, CashPaymentAdmin)
-admin.site.register(CashPaymentRow)
+admin.site.register(CreditVoucher, CreditVoucherAdmin)
+admin.site.register(CreditVoucherRow)
+admin.site.register(DebitVoucher, DebitVoucherAdmin)
+admin.site.register(DebitVoucherRow)
 admin.site.register(Lot)
 admin.site.register(LotItemDetail)
 admin.site.register(SaleFromLocation)
