@@ -20,10 +20,11 @@ from ..inventory.models import set_transactions, Location, LocationContain, Item
 from ..ledger.models import set_transactions as set_ledger_transactions, get_account, Account, Category
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error, mail_exception, \
     get_serialize_data
-from .forms import JournalVoucherForm, VoucherSettingForm, CashPaymentForm, CashReceiptForm
-from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
-    CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer, \
-    ExpenseSerializer, ExportPurchaseVoucherRowSerializer
+from .forms import JournalVoucherForm, VoucherSettingForm, CreditVoucherForm, \
+    DebitVoucherForm
+from .serializers import FixedAssetSerializer,\
+    JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer, \
+    ExpenseSerializer, ExportPurchaseVoucherRowSerializer, CreditVoucherSerializer, DebitVoucherSerializer
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CreditVoucher, PurchaseVoucher, JournalVoucher, \
     JournalVoucherRow, \
     PurchaseVoucherRow, Sale, SaleRow, CreditVoucherRow, DebitVoucher, DebitVoucherRow, PurchaseOrder, PurchaseOrderRow, \
@@ -143,7 +144,7 @@ class CreditVoucherUpdate(CreditVoucherView, TableObject, AccountantMixin, Updat
     template_name = 'credit_voucher.html'
 
     def get_context_data(self, *args, **kwargs):
-        context = super(CashReceiptCreate, self).get_context_data(**kwargs)
+        context = super(CreditVoucherUpdate, self).get_context_data(**kwargs)
         context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
         return context
 
@@ -167,7 +168,7 @@ class DebitVoucherCreate(DebitVoucherView, TableObject, AccountantMixin, CreateV
     template_name = 'debit_voucher.html'
 
     def get_context_data(self, *args, **kwargs):
-        context = super(CashPaymentCreate, self).get_context_data(**kwargs)
+        context = super(DebitVoucherCreate, self).get_context_data(**kwargs)
         context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
         return context
 
