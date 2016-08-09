@@ -194,7 +194,7 @@ function SaleViewModel(data, settings) {
     self.grand_total = function () {
         return r2z(self.taxable_amount() + self.tax_amount());
     };
-    
+
     self.grand_total_without_tax = ko.computed(function () {
         var tot = 0;
         ko.utils.arrayForEach(self.table_view.rows(), function (row) {

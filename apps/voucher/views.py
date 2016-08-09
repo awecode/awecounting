@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView
+from ..inventory.serializers import ItemSerializer
 
 from ..ledger.serializers import PartyBalanceSerializer, AccountSerializer
 from ..inventory.serializers import ItemSerializer, UnitSerializer, LocationSerializer
@@ -331,6 +332,11 @@ class PurchaseVoucherCreate(PurchaseVoucherView, AccountantMixin, TableObjectMix
 
             context['obj'] = obj
             context['data'] = data
+<<<<<<< HEAD
+        item = Item.objects.filter(company=self.request.company)
+        data = ItemSerializer(item, many=True, context={'voucher': 'purchase', 'request': self.request}).data
+        context['data']['items'] = data
+=======
             context['data']['tax'] = get_serialize_data(TaxSchemeSerializer, self.request.company)
             context['data']['items'] = item_data
             context['data']['units'] = get_serialize_data(UnitSerializer, self.request.company)
@@ -338,6 +344,7 @@ class PurchaseVoucherCreate(PurchaseVoucherView, AccountantMixin, TableObjectMix
             context['data']['enable_locations'] = get_serialize_data(LocationSerializer, self.request.company,
                                                                      Location.objects.filter(
                                                                          company=self.request.company, enabled=True))
+>>>>>>> master
         return context
 
 
@@ -670,11 +677,17 @@ class SaleCreate(SaleView, CashierMixin, TableObjectMixin):
 
             context['obj'] = obj
             context['data'] = data
+<<<<<<< HEAD
+        item = Item.objects.filter(company=self.request.company)
+        data = ItemSerializer(item, many=True, context={'voucher': 'sale', 'request': self.request}).data
+        context['data']['items'] = data
+=======
             context['data']['tax'] = get_serialize_data(TaxSchemeSerializer, self.request.company)
             context['data']['items'] = item_data
             context['data']['units'] = get_serialize_data(UnitSerializer, self.request.company)
             context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
 
+>>>>>>> master
         return context
 
 
@@ -1027,6 +1040,11 @@ class PurchaseOrderCreate(PurchaseOrderView, StockistMixin, TableObjectMixin):
 
     def get_context_data(self, *args, **kwargs):
         context = super(PurchaseOrderCreate, self).get_context_data(**kwargs)
+<<<<<<< HEAD
+        item = Item.objects.filter(company=self.request.company)
+        data = ItemSerializer(item, many=True, context={'request': self.request}).data
+        context['data']['items'] = data
+=======
         item_obj = Item.objects.filter(company=self.request.company)
         item_data = ItemSerializer(item_obj, context={'request': self.request},
                                        many=True).data
@@ -1036,6 +1054,7 @@ class PurchaseOrderCreate(PurchaseOrderView, StockistMixin, TableObjectMixin):
         context['data']['units'] = get_serialize_data(UnitSerializer, self.request.company)
         context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
         context['data']['expense_accounts'] = get_serialize_data(AccountSerializer, self.request.company, all_ledgers)
+>>>>>>> master
         return context
 
 
