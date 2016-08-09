@@ -314,7 +314,7 @@ class PurchaseVoucherCreate(PurchaseVoucherView, AccountantMixin, TableObjectMix
             if tax_scheme:
                 obj.tax_scheme = tax_scheme
             data = self.serializer_class(obj).data
-            item_obj = Item.objects.filter(company=self.request.company)
+            item_obj = Item.objects.filter(company=self.request.company).select_related('account').select_related('unit')
             item_data = ItemSerializer(item_obj, context={'request': self.request, 'voucher': 'purchase'}, many=True).data
 
             context['obj'] = obj
@@ -653,7 +653,7 @@ class SaleCreate(SaleView, CashierMixin, TableObjectMixin):
             if tax_scheme:
                 obj.tax_scheme = tax_scheme
             data = self.serializer_class(obj).data
-            item_obj = Item.objects.filter(company=self.request.company)
+            item_obj = Item.objects.filter(company=self.request.company).select_related('account').select_related('unit')
             item_data = ItemSerializer(item_obj, context={'request': self.request, 'voucher': 'sale'}, many=True).data
 
             context['obj'] = obj
@@ -1015,7 +1015,7 @@ class PurchaseOrderCreate(PurchaseOrderView, StockistMixin, TableObjectMixin):
 
     def get_context_data(self, *args, **kwargs):
         context = super(PurchaseOrderCreate, self).get_context_data(**kwargs)
-        item_obj = Item.objects.filter(company=self.request.company)
+        item_obj = Item.objects.filter(company=self.request.company).select_related('account').select_related('unit')
         item_data = ItemSerializer(item_obj, context={'request': self.request},
                                        many=True).data
         all_ledgers = Account.objects.filter(company=self.request.company, category__name='Purchase Expenses')
