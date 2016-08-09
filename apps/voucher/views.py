@@ -20,10 +20,11 @@ from ..inventory.models import set_transactions, Location, LocationContain, Item
 from ..ledger.models import set_transactions as set_ledger_transactions, get_account, Account, Category
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error, mail_exception, \
     get_serialize_data
-from .forms import JournalVoucherForm, VoucherSettingForm, CashPaymentForm, CashReceiptForm
-from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
-    CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer, \
-    ExpenseSerializer, ExportPurchaseVoucherRowSerializer
+from .forms import JournalVoucherForm, VoucherSettingForm, CreditVoucherForm, \
+    DebitVoucherForm
+from .serializers import FixedAssetSerializer,\
+    JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer, \
+    ExpenseSerializer, ExportPurchaseVoucherRowSerializer, CreditVoucherSerializer, DebitVoucherSerializer
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CreditVoucher, PurchaseVoucher, JournalVoucher, \
     JournalVoucherRow, \
     PurchaseVoucherRow, Sale, SaleRow, CreditVoucherRow, DebitVoucher, DebitVoucherRow, PurchaseOrder, PurchaseOrderRow, \
@@ -143,7 +144,7 @@ class CreditVoucherUpdate(CreditVoucherView, TableObject, AccountantMixin, Updat
     template_name = 'credit_voucher.html'
 
     def get_context_data(self, *args, **kwargs):
-        context = super(CashReceiptCreate, self).get_context_data(**kwargs)
+        context = super(CreditVoucherUpdate, self).get_context_data(**kwargs)
         context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
         return context
 
@@ -167,7 +168,7 @@ class DebitVoucherCreate(DebitVoucherView, TableObject, AccountantMixin, CreateV
     template_name = 'debit_voucher.html'
 
     def get_context_data(self, *args, **kwargs):
-        context = super(CashPaymentCreate, self).get_context_data(**kwargs)
+        context = super(DebitVoucherCreate, self).get_context_data(**kwargs)
         context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
         return context
 
@@ -327,16 +328,12 @@ class PurchaseVoucherCreate(PurchaseVoucherView, AccountantMixin, TableObjectMix
             if tax_scheme:
                 obj.tax_scheme = tax_scheme
             data = self.serializer_class(obj).data
-            item_obj = Item.objects.filter(company=self.request.company)
+            item_obj = Item.objects.filter(company=self.request.company).select_related('account').select_related('unit')
             item_data = ItemSerializer(item_obj, context={'request': self.request, 'voucher': 'purchase'}, many=True).data
 
             context['obj'] = obj
             context['data'] = data
-<<<<<<< HEAD
-        item = Item.objects.filter(company=self.request.company)
-        data = ItemSerializer(item, many=True, context={'voucher': 'purchase', 'request': self.request}).data
-        context['data']['items'] = data
-=======
+            context['data']['items'] = data
             context['data']['tax'] = get_serialize_data(TaxSchemeSerializer, self.request.company)
             context['data']['items'] = item_data
             context['data']['units'] = get_serialize_data(UnitSerializer, self.request.company)
@@ -344,7 +341,6 @@ class PurchaseVoucherCreate(PurchaseVoucherView, AccountantMixin, TableObjectMix
             context['data']['enable_locations'] = get_serialize_data(LocationSerializer, self.request.company,
                                                                      Location.objects.filter(
                                                                          company=self.request.company, enabled=True))
->>>>>>> master
         return context
 
 
@@ -672,22 +668,15 @@ class SaleCreate(SaleView, CashierMixin, TableObjectMixin):
             if tax_scheme:
                 obj.tax_scheme = tax_scheme
             data = self.serializer_class(obj).data
-            item_obj = Item.objects.filter(company=self.request.company)
+            item_obj = Item.objects.filter(company=self.request.company).select_related('account').select_related('unit')
             item_data = ItemSerializer(item_obj, context={'request': self.request, 'voucher': 'sale'}, many=True).data
 
             context['obj'] = obj
             context['data'] = data
-<<<<<<< HEAD
-        item = Item.objects.filter(company=self.request.company)
-        data = ItemSerializer(item, many=True, context={'voucher': 'sale', 'request': self.request}).data
-        context['data']['items'] = data
-=======
             context['data']['tax'] = get_serialize_data(TaxSchemeSerializer, self.request.company)
             context['data']['items'] = item_data
             context['data']['units'] = get_serialize_data(UnitSerializer, self.request.company)
             context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
-
->>>>>>> master
         return context
 
 
@@ -1040,12 +1029,7 @@ class PurchaseOrderCreate(PurchaseOrderView, StockistMixin, TableObjectMixin):
 
     def get_context_data(self, *args, **kwargs):
         context = super(PurchaseOrderCreate, self).get_context_data(**kwargs)
-<<<<<<< HEAD
-        item = Item.objects.filter(company=self.request.company)
-        data = ItemSerializer(item, many=True, context={'request': self.request}).data
-        context['data']['items'] = data
-=======
-        item_obj = Item.objects.filter(company=self.request.company)
+        item_obj = Item.objects.filter(company=self.request.company).select_related('account').select_related('unit')
         item_data = ItemSerializer(item_obj, context={'request': self.request},
                                        many=True).data
         all_ledgers = Account.objects.filter(company=self.request.company, category__name='Purchase Expenses')
@@ -1054,7 +1038,6 @@ class PurchaseOrderCreate(PurchaseOrderView, StockistMixin, TableObjectMixin):
         context['data']['units'] = get_serialize_data(UnitSerializer, self.request.company)
         context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
         context['data']['expense_accounts'] = get_serialize_data(AccountSerializer, self.request.company, all_ledgers)
->>>>>>> master
         return context
 
 
