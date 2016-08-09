@@ -21,6 +21,7 @@ function PurchaseViewModel(data) {
     
     self.grand_total_obs = ko.observable(0);
 
+
     //$.ajax({
     //    url: '/inventory/api/items.json',
     //    dataType: 'json',
@@ -91,7 +92,7 @@ function PurchaseViewModel(data) {
             klass = 'green';
         }
         return '<div class="' + klass + '">' + obj.name + '</div>';
-    }
+    };
 
     //$.ajax({
     //    url: '/inventory/api/units.json',

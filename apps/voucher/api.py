@@ -1,6 +1,6 @@
 from rest_framework import generics
 
-from .serializers import SaleSerializer, PurchaseVoucherSerializer, CashPaymentSerializer, CashReceiptSerializer, \
+from .serializers import SaleSerializer, PurchaseVoucherSerializer, DebitVoucherSerializer, CreditVoucherSerializer, \
     FixedAssetSerializer, PurchaseOrderSerializer, \
     PartyRateSerializer
 from .models import Sale, PurchaseVoucher
@@ -39,20 +39,20 @@ class PendingPurchaseListAPI(generics.ListCreateAPIView):
         return queryset
 
 
-class CashPaymentListAPI(CompanyAPI, generics.ListCreateAPIView):
-    serializer_class = CashPaymentSerializer
+class DebitVoucherListAPI(CompanyAPI, generics.ListCreateAPIView):
+    serializer_class = DebitVoucherSerializer
 
 
-class CashPaymentDetailAPI(CompanyAPI, generics.RetrieveAPIView):
-    serializer_class = CashPaymentSerializer
+class DebitVoucherDetailAPI(CompanyAPI, generics.RetrieveAPIView):
+    serializer_class = DebitVoucherSerializer
 
 
-class CashReceiptListAPI(CompanyAPI, generics.ListCreateAPIView):
-    serializer_class = CashReceiptSerializer
+class CreditVoucherListAPI(CompanyAPI, generics.ListCreateAPIView):
+    serializer_class = CreditVoucherSerializer
 
 
-class CashReceiptDetailAPI(CompanyAPI, generics.RetrieveAPIView):
-    serializer_class = CashReceiptSerializer
+class CreditVoucherDetailAPI(CompanyAPI, generics.RetrieveAPIView):
+    serializer_class = CreditVoucherSerializer
 
 
 class FixedAssetListAPI(CompanyAPI, generics.ListCreateAPIView):

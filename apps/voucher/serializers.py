@@ -2,8 +2,8 @@ from rest_framework import serializers
 
 from ..inventory.models import Item
 from ..users.models import User
-from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashPayment, CashPaymentRow, CashReceipt, \
-    CashReceiptRow, \
+from .models import FixedAsset, FixedAssetRow, AdditionalDetail, DebitVoucher, DebitVoucherRow, CreditVoucher, \
+    CreditVoucherRow, \
     PurchaseVoucherRow, PurchaseVoucher, SaleRow, Sale, JournalVoucherRow, JournalVoucher, \
     PurchaseOrder, PurchaseOrderRow, ExpenseRow, Expense, TradeExpense
 
@@ -16,31 +16,31 @@ class TradeExpenseSerializer(serializers.ModelSerializer):
         exclude = ('expense',)
 
 
-class CashReceiptRowSerializer(serializers.ModelSerializer):
+class CreditVoucherRowSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CashReceiptRow
+        model = CreditVoucherRow
 
 
-class CashReceiptSerializer(serializers.ModelSerializer):
-    rows = CashReceiptRowSerializer(many=True)
+class CreditVoucherSerializer(serializers.ModelSerializer):
+    rows = CreditVoucherRowSerializer(many=True)
     party_id = serializers.ReadOnlyField()
 
     class Meta:
-        model = CashReceipt
+        model = CreditVoucher
         exclude = ['party']
 
 
-class CashPaymentRowSerializer(serializers.ModelSerializer):
+class DebitVoucherRowSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CashPaymentRow
+        model = DebitVoucherRow
 
 
-class CashPaymentSerializer(serializers.ModelSerializer):
-    rows = CashPaymentRowSerializer(many=True)
+class DebitVoucherSerializer(serializers.ModelSerializer):
+    rows = DebitVoucherRowSerializer(many=True)
     party_id = serializers.ReadOnlyField()
 
     class Meta:
-        model = CashPayment
+        model = DebitVoucher
         exclude = ['party']
 
 
