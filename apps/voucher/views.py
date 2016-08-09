@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView
+from ..inventory.serializers import ItemSerializer
 
 from ..ledger.serializers import PartyBalanceSerializer, AccountSerializer
 from ..inventory.serializers import ItemSerializer, UnitSerializer, LocationSerializer
@@ -23,9 +24,9 @@ from .forms import JournalVoucherForm, VoucherSettingForm, CashPaymentForm, Cash
 from .serializers import FixedAssetSerializer, CashReceiptSerializer, \
     CashPaymentSerializer, JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer, \
     ExpenseSerializer, ExportPurchaseVoucherRowSerializer
-from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CashReceipt, PurchaseVoucher, JournalVoucher, \
+from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CreditVoucher, PurchaseVoucher, JournalVoucher, \
     JournalVoucherRow, \
-    PurchaseVoucherRow, Sale, SaleRow, CashReceiptRow, CashPayment, CashPaymentRow, PurchaseOrder, PurchaseOrderRow, \
+    PurchaseVoucherRow, Sale, SaleRow, CreditVoucherRow, DebitVoucher, DebitVoucherRow, PurchaseOrder, PurchaseOrderRow, \
     VoucherSetting, Expense, ExpenseRow, TradeExpense, Lot, LotItemDetail, SaleFromLocation
 
 
@@ -110,25 +111,36 @@ def save_fixed_asset(request):
     return JsonResponse(dct)
 
 
-class CashReceiptView(CompanyView):
-    model = CashReceipt
-    serializer_class = CashReceiptSerializer
-    form_class = CashReceiptForm
+class CreditVoucherView(CompanyView):
+    model = CreditVoucher
+    serializer_class = CreditVoucherSerializer
+    form_class = CreditVoucherForm
+
+    def get_form(self, form_class=None):
+        kwargs = self.get_form_kwargs()
+        kwargs['company'] = self.request.company
+        return self.form_class(**kwargs)
 
 
-class CashReceiptList(CashReceiptView, AccountantMixin, ListView):
+
+class CreditVoucherList(CreditVoucherView, AccountantMixin, ListView):
     pass
 
 
-class CashReceiptDetailView(CashReceiptView, AccountantMixin, DetailView):
+class CreditVoucherDetailView(CreditVoucherView, AccountantMixin, DetailView):
     def get_context_data(self, **kwargs):
-        context = super(CashReceiptDetailView, self).get_context_data(**kwargs)
-        context['rows'] = CashReceiptRow.objects.select_related('invoice').filter(cash_receipt=self.object)
+        context = super(CreditVoucherDetailView, self).get_context_data(**kwargs)
+        context['rows'] = CreditVoucherRow.objects.select_related('invoice').filter(cash_receipt=self.object)
         return context
 
 
-class CashReceiptCreate(CashReceiptView, TableObject, AccountantMixin, CreateView):
-    template_name = 'cash_receipt.html'
+class CreditVoucherCreate(CreditVoucherView, TableObject, AccountantMixin, CreateView):
+    template_name = 'credit_voucher.html'
+
+
+
+class CreditVoucherUpdate(CreditVoucherView, TableObject, AccountantMixin, UpdateView):
+    template_name = 'credit_voucher.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super(CashReceiptCreate, self).get_context_data(**kwargs)
@@ -136,22 +148,23 @@ class CashReceiptCreate(CashReceiptView, TableObject, AccountantMixin, CreateVie
         return context
 
 
-class CashReceiptUpdate(CashReceiptView, TableObject, AccountantMixin, UpdateView):
-    template_name = 'cash_receipt.html'
+class DebitVoucherView(CompanyView):
+    model = DebitVoucher
+    serializer_class = DebitVoucherSerializer
+    form_class = DebitVoucherForm
+
+    def get_form(self, form_class=None):
+        kwargs = self.get_form_kwargs()
+        kwargs['company'] = self.request.company
+        return self.form_class(**kwargs)
 
 
-class CashPaymentView(CompanyView):
-    model = CashPayment
-    serializer_class = CashPaymentSerializer
-    form_class = CashPaymentForm
-
-
-class CashPaymentList(CashPaymentView, AccountantMixin, ListView):
+class DebitVoucherList(DebitVoucherView, AccountantMixin, ListView):
     pass
 
 
-class CashPaymentCreate(CashPaymentView, TableObject, AccountantMixin, CreateView):
-    template_name = 'cash_payment.html'
+class DebitVoucherCreate(DebitVoucherView, TableObject, AccountantMixin, CreateView):
+    template_name = 'debit_voucher.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super(CashPaymentCreate, self).get_context_data(**kwargs)
@@ -159,16 +172,16 @@ class CashPaymentCreate(CashPaymentView, TableObject, AccountantMixin, CreateVie
         return context
 
 
-class CashPaymentUpdate(CashPaymentView, TableObject, AccountantMixin, UpdateView):
-    template_name = 'cash_payment.html'
+class DebitVoucherUpdate(DebitVoucherView, TableObject, AccountantMixin, UpdateView):
+    template_name = 'debit_voucher.html'
 
 
-class CashPaymentDetailView(AccountantMixin, DetailView):
-    model = CashPayment
+class DebitVoucherDetailView(AccountantMixin, DetailView):
+    model = DebitVoucher
 
     def get_context_data(self, **kwargs):
-        context = super(CashPaymentDetailView, self).get_context_data(**kwargs)
-        context['rows'] = CashPaymentRow.objects.select_related('invoice').filter(cash_payment=self.object)
+        context = super(DebitVoucherDetailView, self).get_context_data(**kwargs)
+        context['rows'] = DebitVoucherRow.objects.select_related('invoice').filter(cash_payment=self.object)
         return context
 
 
@@ -199,22 +212,22 @@ class CashPaymentDetailView(AccountantMixin, DetailView):
 #     return render(request, 'cash_payment.html', {'form': form, 'scenario': scenario, 'data': data})
 
 
-def save_cash_payment(request):
+def save_debit_voucher(request):
     params = json.loads(request.body)
     dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
     object_values = {'party_id': params.get('party_id'), 'date': params.get('date'),
                      'voucher_no': params.get('voucher_no'),
-                     'reference': params.get('reference'), 'company': request.company}
+                     'reference': params.get('reference'), 'payment_id':params.get('payment'), 'company': request.company}
     if params.get('id'):
-        obj = CashPayment.objects.get(id=params.get('id'), company__in=request.company.get_all())
+        obj = DebitVoucher.objects.get(id=params.get('id'), company__in=request.company.get_all())
     else:
-        obj = CashPayment(company=request.company)
+        obj = DebitVoucher(company=request.company)
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
-        model = CashPaymentRow
+        model = DebitVoucherRow
         cash_account = get_account(obj.company, 'Cash')
         if params.get('table_vm').get('rows'):
             total = 0
@@ -228,7 +241,7 @@ def save_cash_payment(request):
                 values = {'payment': row.get('payment'), 'cash_payment': obj, 'invoice': invoice}
                 try:
                     old_value = model.objects.get(invoice_id=row.get('id'), cash_payment_id=obj.id).payment or 0
-                except CashPaymentRow.DoesNotExist:
+                except DebitVoucherRow.DoesNotExist:
                     old_value = 0
                 submodel, created = model.objects.get_or_create(invoice=invoice, cash_payment=obj, defaults=values)
                 if created:
@@ -319,6 +332,11 @@ class PurchaseVoucherCreate(PurchaseVoucherView, AccountantMixin, TableObjectMix
 
             context['obj'] = obj
             context['data'] = data
+<<<<<<< HEAD
+        item = Item.objects.filter(company=self.request.company)
+        data = ItemSerializer(item, many=True, context={'voucher': 'purchase', 'request': self.request}).data
+        context['data']['items'] = data
+=======
             context['data']['tax'] = get_serialize_data(TaxSchemeSerializer, self.request.company)
             context['data']['items'] = item_data
             context['data']['units'] = get_serialize_data(UnitSerializer, self.request.company)
@@ -326,6 +344,7 @@ class PurchaseVoucherCreate(PurchaseVoucherView, AccountantMixin, TableObjectMix
             context['data']['enable_locations'] = get_serialize_data(LocationSerializer, self.request.company,
                                                                      Location.objects.filter(
                                                                          company=self.request.company, enabled=True))
+>>>>>>> master
         return context
 
 
@@ -361,22 +380,22 @@ class ExportPurchaseVoucher(TemplateView):
 
 
 @group_required('Accountant')
-def save_cash_receipt(request):
+def save_credit_voucher(request):
     params = json.loads(request.body)
     dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
     object_values = {'party_id': params.get('party_id'), 'date': params.get('date'),
                      'voucher_no': params.get('voucher_no'),
-                     'reference': params.get('reference'), 'company': request.company}
+                     'reference': params.get('reference'), 'receipt_id':params.get('receipt'), 'company': request.company}
     if params.get('id'):
-        obj = CashReceipt.objects.get(id=params.get('id'), company__in=request.company.get_all())
+        obj = CreditVoucher.objects.get(id=params.get('id'), company__in=request.company.get_all())
     else:
-        obj = CashReceipt(company=request.company)
+        obj = CreditVoucher(company=request.company)
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
-        model = CashReceiptRow
+        model = CreditVoucherRow
         cash_account = get_account(obj.company, 'Cash')
         if params.get('table_vm').get('rows'):
             total = 0
@@ -390,7 +409,7 @@ def save_cash_receipt(request):
                 values = {'receipt': row.get('payment'), 'cash_receipt': obj, 'invoice': invoice}
                 try:
                     old_value = model.objects.get(invoice_id=row.get('id'), cash_receipt_id=obj.id).receipt or 0
-                except CashReceiptRow.DoesNotExist:
+                except CreditVoucherRow.DoesNotExist:
                     old_value = 0
                 submodel, created = model.objects.get_or_create(invoice=invoice, cash_receipt=obj, defaults=values)
                 if created:
@@ -658,11 +677,17 @@ class SaleCreate(SaleView, CashierMixin, TableObjectMixin):
 
             context['obj'] = obj
             context['data'] = data
+<<<<<<< HEAD
+        item = Item.objects.filter(company=self.request.company)
+        data = ItemSerializer(item, many=True, context={'voucher': 'sale', 'request': self.request}).data
+        context['data']['items'] = data
+=======
             context['data']['tax'] = get_serialize_data(TaxSchemeSerializer, self.request.company)
             context['data']['items'] = item_data
             context['data']['units'] = get_serialize_data(UnitSerializer, self.request.company)
             context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
 
+>>>>>>> master
         return context
 
 
@@ -1015,6 +1040,11 @@ class PurchaseOrderCreate(PurchaseOrderView, StockistMixin, TableObjectMixin):
 
     def get_context_data(self, *args, **kwargs):
         context = super(PurchaseOrderCreate, self).get_context_data(**kwargs)
+<<<<<<< HEAD
+        item = Item.objects.filter(company=self.request.company)
+        data = ItemSerializer(item, many=True, context={'request': self.request}).data
+        context['data']['items'] = data
+=======
         item_obj = Item.objects.filter(company=self.request.company)
         item_data = ItemSerializer(item_obj, context={'request': self.request},
                                        many=True).data
@@ -1024,6 +1054,7 @@ class PurchaseOrderCreate(PurchaseOrderView, StockistMixin, TableObjectMixin):
         context['data']['units'] = get_serialize_data(UnitSerializer, self.request.company)
         context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
         context['data']['expense_accounts'] = get_serialize_data(AccountSerializer, self.request.company, all_ledgers)
+>>>>>>> master
         return context
 
 

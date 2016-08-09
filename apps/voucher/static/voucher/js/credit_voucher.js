@@ -1,10 +1,10 @@
 $(document).ready(function () {
-    vm = new CashPaymentVM(ko_data);
+    vm = new CashReceiptVM(ko_data);
     ko.applyBindings(vm);
 });
 
 
-function CashPaymentVM(data) {
+function CashReceiptVM(data) {
     var self = this;
 
     //$.ajax({
@@ -40,6 +40,56 @@ function CashPaymentVM(data) {
         self[k] = ko.observable(data[k]);
     }
 
+    self.party.subscribe(function (party) {
+        self.party_address(party.address);
+        self.current_balance(party.balance);
+    });
+
+    self.load_related_invoices = function () {
+        if (self.party()) {
+            var receipt_id = self.id() || 0;
+            $.ajax({
+
+                url: '/voucher/api/sale/' + self.party_id() + '/' + receipt_id + '.json',
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    if (data.length) {
+                        self.invoices = data;
+                        for (k in self.rows()) {
+                            var row = self.rows()[k];
+                            $.each(self.invoices, function (i, o) {
+                                if (o.id == row.invoice) {
+                                    o.payment = row.receipt;
+                                    //o.discount = row.discount;
+                                }
+                            });
+                        }
+                        var options = {
+                            rows: self.invoices
+                        };
+                        self.table_vm(new TableViewModel(options, CashReceiptRowVM));
+                        bsalert.success('Invoices loaded!');
+                        self.state('success');
+                    }
+                    else {
+                        bsalert.info('No pending invoices found for the customer!');
+                        self.state('error');
+                    }
+                }
+            });
+        }
+    }
+
+
+    self.total_payment = ko.computed(function () {
+        return self.table_vm().get_total('payment');
+    }, self);
+
+    self.total_discount = ko.computed(function () {
+        return self.table_vm().get_total('discount');
+    }, self);
+
     self.row_total_amount = function () {
         var sum = 0;
         if (typeof(self.table_vm().rows()) != 'undefined') {
@@ -49,8 +99,8 @@ function CashPaymentVM(data) {
                 }
             });
             return round2(sum);
-            
-        };
+
+        }
     }
 
     self.row_pending_amount = function () {
@@ -62,72 +112,9 @@ function CashPaymentVM(data) {
                 }
             });
             return round2(sum);
-        };
-    }
 
-    self.party.subscribe(function (party) {
-        self.party_address(party.address);
-        self.current_balance(-1 * party.balance);
-    });
-
-
-//    self.party_changed = function (vm) {
-//        var selected_obj = $.grep(self.parties, function (i) {
-//            return i.id == self.party();
-//        })[0];
-//        self.party_address(selected_obj.address);
-//        self.current_balance(selected_obj.customer_balance);
-////        if (self.table_vm()){
-////            self.table_vm().rows(null);
-////        }
-//    }
-
-    //self.party.subscribe(self.party_changed);
-
-    self.load_related_invoices = function () {
-        if (self.party()) {
-            var payment_id = self.id() || 0;
-            $.ajax({
-                url: '/voucher/api/purchase/' + self.party_id() + '/' + payment_id + '.json',
-                dataType: 'json',
-                async: false,
-                success: function (data) {
-                    if (data.length) {
-                        self.invoices = data;
-                        for (k in self.rows()) {
-                            var row = self.rows()[k];
-                            $.each(self.invoices, function (i, o) {
-                                if (o.id == row.invoice) {
-                                    o.payment = row.payment;
-                                    // o.discount = row.discount;
-                                }
-                            });
-                        }
-                        var options = {
-                            rows: self.invoices
-                        };
-                        self.table_vm(new TableViewModel(options, CashPaymentRowVM));
-                        bsalert.success('Invoices loaded!');
-                        self.state('success');
-                    }
-                    else {
-                        bsalert.info('No pending invoices found for the customer!');
-                        self.state('error');
-                    }
-                }
-            });
         }
-
     }
-
-
-    self.total_payment = ko.computed(function () {
-        return self.table_vm().get_total('payment');
-    }, self);
-
-    self.total_discount = ko.computed(function () {
-        return self.table_vm().get_total('discount');
-    }, self);
 
     self.validate = function () {
         if (!self.party()) {
@@ -148,7 +135,7 @@ function CashPaymentVM(data) {
             var data = ko.toJSON(self);
             $.ajax({
                 type: "POST",
-                url: '/voucher/cash_payment/save/',
+                url: '/voucher/cash_voucher/save/',
                 data: data,
                 success: function (msg) {
                     if (typeof (msg.error_message) != 'undefined') {
@@ -173,40 +160,40 @@ function CashPaymentVM(data) {
     }
 
 
-    // self.approve = function (item, event) {
-    //     if (!self.validate())
-    //         return false;
-    //     if (get_form(event).checkValidity()) {
-    //         $.ajax({
-    //             type: "POST",
-    //             url: '/voucher/cash_payment/approve/',
-    //             data: ko.toJSON(self),
-    //             success: function (msg) {
-    //                 if (typeof (msg.error_message) != 'undefined') {
-    //                     bs_alert.error(msg.error_message);
-    //                     self.state('error');
-    //                 }
-    //                 else {
-    //                     bsalert.success('Approved!');
-    //                     self.status('Approved');
-    //                     self.state('success');
-    //                     if (msg.id)
-    //                         self.id(msg.id);
-    //                 }
-    //             }
-    //         });
-    //     }
-    //     else
-    //         return true;
-    // }
+    self.approve = function (item, event) {
+        if (!self.validate())
+            return false;
+        if (get_form(event).checkValidity()) {
+            $.ajax({
+                type: "POST",
+                url: '/voucher/cash-receipt/approve/',
+                data: ko.toJSON(self),
+                success: function (msg) {
+                    if (typeof (msg.error_message) != 'undefined') {
+                        bs_alert.error(msg.error_message);
+                        self.state('error');
+                    }
+                    else {
+                        bsalert.success('Approved!');
+                        self.status('Approved');
+                        self.state('success');
+                        if (msg.id)
+                            self.id(msg.id);
+                    }
+                }
+            });
+        }
+        else
+            return true;
+    }
 
-    if (typeof self.rows=='function' && self.rows().length) {
+    if (self.rows().length) {
         setTimeout(self.load_related_invoices, 500);
     }
 }
 
 
-function CashPaymentRowVM(row) {
+function CashReceiptRowVM(row) {
     var self = this;
 
     self.payment = ko.observable();
@@ -216,17 +203,16 @@ function CashPaymentRowVM(row) {
         self[k] = ko.observable(row[k]);
     }
 
-    self.actual_pending_amount = self.pending_amount();
+    self.actual_pending_amount = self.pending_amount()
 
-    self.payment.subscribe( function() {
+    self.payment.subscribe(function () {
         if (typeof(self.payment()) == 'undefined' || self.payment() == '') {
             self.pending_amount(self.actual_pending_amount);
         } else {
-            self.pending_amount(self.actual_pending_amount - self.payment());
+            self.pending_amount(self.actual_pending_amount - self.payment())
         }
+        ;
     });
-
-  
 
     self.overdue_days = function () {
         if (self.due_date()) {

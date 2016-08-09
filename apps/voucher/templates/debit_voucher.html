@@ -1,16 +1,16 @@
 {% extends "_base.html" %}
 {% load i18n static %}
 
-{% block page-title %}{{ scenario }} {% trans 'Cash Receipt' %}{% endblock %}
+{% block page-title %}{{ scenario }} {% trans 'Debit Voucher' %}{% endblock %}
 
 {% block breadcrumbs %}
-    <li><a href="{% url "cash_receipt_list" %}">{% trans 'Cash Receipts' %}</a></li>
-    <li>{{ scenario }} {% trans 'Cash Receipt' %}</li>
+    <li><a href="{% url "debit_voucher_list" %}">{% trans 'Debit Voucher' %}</a></li>
+    <li>{{ scenario }} {% trans 'Debit Voucher' %}</li>
 {% endblock %}
 
 {% load filters %}
 {% block extrahead %}
-    <script src={% static "voucher/js/cash_receipt.js" %}></script>
+    <script src={% static "voucher/js/debit_voucher.js" %}></script>
     <script>
         ko_data =
         {{ data|jsonify }}
@@ -23,19 +23,24 @@
         {% csrf_token %}
 
         <div class="well">
+            <div class="row">
+                <div class="col-md-6 col-xs-12">
+                    {{ form.voucher_no.label_tag }}
+                    {{ form.voucher_no }}
+                    {{ form.voucher_no.errors }}
+                </div>
+                <div class="col-md-6 col-xs-12">
+                    {{ form.payment.label_tag }}
+                    {{ form.payment }}
+                    {{ form.payment.errors }}
 
-            <div classs="row">
-                {{ form.voucher_no.label_tag }}
-                {{ form.voucher_no }}
-                {{ form.voucher_no.errors }}
-
+                </div>
             </div>
-
             <div class="row">
 
                 <div class="col-md-6 col-xs-12">
                     {{ form.party.label_tag }}
-                    <select class="form-control" data-name="Party" id="id_party"
+                    <select class="form-control" data-name="Party"
                             data-url="{% url 'party_add' %}?type=Customer"
                             data-bind="selectize: $root.parties, value: party_id, object:party">
                     </select>
@@ -92,7 +97,7 @@
 
                 <a href="#" class="btn btn-raised btn-default"
                    data-bind="click: $parent.load_related_invoices, visible: !rows()">
-                    {% trans 'Load Invoices' %}</a>
+                    {% trans 'Load Purchase Vouchers' %}</a>
 
                 <table class="table table-striped" id="voucher_table"
                        data-bind="visible: $parent.table_vm().rows()">
@@ -123,7 +128,6 @@
                         <!-- /ko -->
                     </div>
                     <tr class="total">
-                    <tr class="total">
                         <td colspan="2">{% trans 'TOTAL' %}</td>
                         <td data-bind="text: $root.row_total_amount()"></td>
                         <td data-bind="text: $root.row_pending_amount()"></td>
@@ -139,8 +143,8 @@
             <div>
                 <input class="btn btn-raised btn-info" type="submit" value="Save" data-bind="click: $root.save">
                 {% if scenario == 'Update' %}
-                    {#                    <a class="btn btn-raised btn-danger"#}
-                    {#                       href="{% url 'delete_invoice' form.instance.invoice_no %}">{% trans 'Delete' %}</a>#}
+{#                    <a class="btn btn-raised btn-danger"#}
+{#                       href="{% url 'delete_invoice' form.instance.invoice_no %}">{% trans 'Delete' %}</a>#}
                 {% endif %}
             </div>
         </div>

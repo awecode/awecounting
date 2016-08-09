@@ -21,6 +21,15 @@
             {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
         </div>
 
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ form.unique_voucher_number_by_fy }} {{ form.unique_voucher_number_by_fy.label }}
+                </label>
+                </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+
         <h1> {% trans "Invoice Settings" %}</h1>
 
         <div class="form-group">
@@ -43,6 +52,24 @@
             <div class="checkbox">
                 <label>
                     {{ form.sale_suggest_by_party_item }} {{ form.sale_suggest_by_party_item.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ form.enable_sale_unique_voucher_no }} {{ form.enable_sale_unique_voucher_no.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ form.enable_sale_unique_voucher_no_by_fy }} {{ form.enable_sale_unique_voucher_no_by_fy.label }}
                 </label>
             </div>
             {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
@@ -258,6 +285,24 @@
             <div class="checkbox">
                 <label>
                     {{ form.add_expense_cost_to_purchase }} {{ form.add_expense_cost_to_purchase.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ form.enable_sale_unique_voucher_no }} {{ form.enable_sale_unique_voucher_no.label }}
+                </label>
+            </div>
+            {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
+        </div>
+
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {{ form.enable_sale_unique_voucher_no_by_fy }} {{ form.enable_sale_unique_voucher_no_by_fy.label }}
                 </label>
             </div>
             {# <p class="help-block">{% trans 'Check if this is a recoverable.' %}</p> #}
