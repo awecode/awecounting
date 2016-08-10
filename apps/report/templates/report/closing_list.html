@@ -13,7 +13,7 @@
         <form method="POST">
             {% csrf_token %}
             <div class="form-group form-inline">
-                <input name="fiscal_year" type="text" data-bind="value: fiscal_year, valueUpdate: 'afterkeydown'" class="form-control" placeholder="Fiscal Year"/>/ <span data-bind="text: next_fiscal_year"></span>
+                <input name="fiscal_year" type="number" data-bind="value: fiscal_year, valueUpdate: 'afterkeydown'" class="form-control" placeholder="Fiscal Year"/>/ <span data-bind="text: next_fiscal_year"></span>
                 <input type="submit" class="btn btn-success btn-raised" value="Close Account"/>
             </div>
         </form>

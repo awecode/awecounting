@@ -243,5 +243,5 @@ class ClosingList(CompanyView, ListView):
             closing_account = self.model(company=self.request.company, fy=int(request.POST.get('fiscal_year')))
             closing_account.save()
         except IntegrityError:
-            messages.error(request, _('Closing Account with this %d fiscal year already exist.'% int(request.POST.get('fiscal_year'))))
+            messages.error(request, _('%d fiscal year already exist.'% int(request.POST.get('fiscal_year'))))
         return HttpResponseRedirect(reverse('report:closing_account'))

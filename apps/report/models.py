@@ -51,7 +51,7 @@ class BalanceSheetReportSetting(models.Model):
 class Closing(models.Model):
     company = models.ForeignKey(Company)
     fy = models.PositiveSmallIntegerField(blank=True, null=True)
-    inventory_balance = models.FloatField()
+    inventory_balance = models.FloatField(default=0)
 
     def __str__(self):
         return str(self.company) + " : " + str(self.inventory_balance) + " (" + str(self.fy) + ")"

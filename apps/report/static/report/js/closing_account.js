@@ -14,5 +14,4 @@ function ClosingAccountVM() {
             return parseInt(self.fiscal_year()) + 1;
         }
     });
-
 }
