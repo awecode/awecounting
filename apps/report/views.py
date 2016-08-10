@@ -2,8 +2,9 @@ import copy
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse, reverse_lazy
+from django.db import IntegrityError
 from django.forms import model_to_dict
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import ListView
@@ -236,3 +237,11 @@ def balance_sheet(request):
 
 class ClosingList(CompanyView, ListView):
     model = Closing
+
+    def post(self, request, *args, **kwargs):
+        try:
+            closing_account = self.model(company=self.request.company, fy=int(request.POST.get('fiscal_year')))
+            closing_account.save()
+        except IntegrityError:
+            messages.error(request, _('Closing Account with this %d fiscal year already exist.'% int(request.POST.get('fiscal_year'))))
+        return HttpResponseRedirect(reverse('report:closing_account'))
