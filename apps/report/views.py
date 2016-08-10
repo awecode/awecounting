@@ -16,6 +16,9 @@ from apps.report.models import TradingAccountReportSetting, TrialBalanceReportSe
     BalanceSheetReportSetting, Closing
 from awecounting.utils.helpers import save_qs_from_ko, get_dict
 from awecounting.utils.mixins import group_required, SuperOwnerMixin, UpdateView, CompanyView
+from ..inventory.models import Transaction as InventoryTransaction, InventoryAccount
+from django.db.models import F
+from njango.nepdate import string_from_tuple
 
 BALANCE_SHEET = ['Equity', 'Assets', 'Liabilities']
 PL_ACCOUNT = ['Income', 'Expenses']
@@ -241,7 +244,19 @@ class ClosingList(CompanyView, ListView):
     def post(self, request, *args, **kwargs):
         try:
             fiscal_year = int(request.POST.get('fiscal_year'))
-            closing_account = self.model(company=self.request.company, fy=fiscal_year)
+            company = self.request.company
+            closing_account = self.model(company=company, fy=fiscal_year)
+            import ipdb
+            inventory_account = InventoryAccount.objects.filter(company=self.request.company)
+            sum = 0
+            for inv in inventory_account:
+                value = 0
+                if inv.account_transaction.last() != None:
+                    date = inv.account_transaction.last().journal_entry.date
+                    test = InventoryTransaction.objects.filter(account=inv, journal_entry__date__lte=string_from_tuple(company.get_fy_end(date))).last()
+                    value = test.current_balance
+                sum += value
+            ipdb.set_trace()
             closing_account.save()
         except IntegrityError:
             messages.error(request, _('%d fiscal year already exist.'% int(request.POST.get('fiscal_year'))))
