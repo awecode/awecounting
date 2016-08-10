@@ -731,3 +731,11 @@ a.text-color-black {
 #closing_account {
     margin-top: -15px;
 }
+
+#closing_account span {
+    width: 35px;
+}
+
+.inline-block {
+    display: inline-block;
+}
