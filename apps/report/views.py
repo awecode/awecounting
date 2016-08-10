@@ -246,17 +246,17 @@ class ClosingList(CompanyView, ListView):
             fiscal_year = int(request.POST.get('fiscal_year'))
             company = self.request.company
             closing_account = self.model(company=company, fy=fiscal_year)
-            import ipdb
-            inventory_account = InventoryAccount.objects.filter(company=self.request.company)
+            closing_account.save()
+            inventory_account = InventoryAccount.objects.filter(company=self.request.company).prefetch_related('account_transaction')
             sum = 0
             for inv in inventory_account:
                 value = 0
-                if inv.account_transaction.last() != None:
+                if inv.account_transaction.last() is not None:
                     date = inv.account_transaction.last().journal_entry.date
-                    test = InventoryTransaction.objects.filter(account=inv, journal_entry__date__lte=string_from_tuple(company.get_fy_end(date))).last()
-                    value = test.current_balance
+                    transaction_obj = inv.account_transaction.filter(journal_entry__date__lte=string_from_tuple(company.get_fy_start(date))).last()
+                    value = transaction_obj.current_balance
                 sum += value
-            ipdb.set_trace()
+            closing_account.inventory_balance = sum
             closing_account.save()
         except IntegrityError:
             messages.error(request, _('%d fiscal year already exist.'% int(request.POST.get('fiscal_year'))))
