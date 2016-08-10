@@ -56,6 +56,8 @@ class Closing(models.Model):
     def __str__(self):
         return str(self.company) + " : " + str(self.inventory_balance) + " (" + str(self.fy) + ")"
 
+    class Meta:
+        unique_together = (('company', 'fy'),)
 
 @receiver(company_creation)
 def handle_company_creation(sender, **kwargs):

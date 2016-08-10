@@ -3,8 +3,18 @@
 
 {% block page-title %}{% trans 'Closing Account' %}{% endblock %}
 
-{% block content %}
+{% block header-buttons %}
+    <div class="" id="closing_account">
+        <form action="">
+            <div class="form-group form-inline">
+                <input type="text" class="form-control" placeholder="Fiscal Year"/><span></span>
+                <input type="submit" class="btn btn-success btn-raised" value="Close Account"/>
+            </div>
+        </form>
+    </div>
+{% endblock %}
 
+{% block content %}
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
             {% load pagination_tags %}
