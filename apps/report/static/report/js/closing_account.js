@@ -14,4 +14,10 @@ function ClosingAccountVM() {
             return parseInt(self.fiscal_year()) + 1;
         }
     });
+
+    self.fiscal_year.subscribe(function() {
+        if (parseInt(self.fiscal_year()) >= 9999){
+            self.fiscal_year(self.fiscal_year().slice(0, 4));
+        }
+    });
 }

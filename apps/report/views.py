@@ -240,7 +240,8 @@ class ClosingList(CompanyView, ListView):
 
     def post(self, request, *args, **kwargs):
         try:
-            closing_account = self.model(company=self.request.company, fy=int(request.POST.get('fiscal_year')))
+            fiscal_year = int(request.POST.get('fiscal_year'))
+            closing_account = self.model(company=self.request.company, fy=fiscal_year)
             closing_account.save()
         except IntegrityError:
             messages.error(request, _('%d fiscal year already exist.'% int(request.POST.get('fiscal_year'))))
