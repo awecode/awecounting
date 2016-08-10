@@ -1,0 +1,40 @@
+{% extends '_base.html' %}
+{% load i18n filters %}
+
+{% block page-title %}{% trans 'Closing Account' %}{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            {% load pagination_tags %}
+            {% load sorting_tags %}
+
+            {% autosort object_list as sorted_objects %}
+            {% autopaginate sorted_objects 25 as paginated_objects %}
+            <div class="well">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>{% anchor fy _('Fiscal Year') %}</th>
+                    <th>{% anchor inventory_balance _('Inventory Balance') %}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for object in sorted_objects %}
+                    <tr>
+                        <td>
+                            {{ object.fy }}
+                        </td>   
+                        <td>
+                            {{ object.inventory_balance }}
+                        </td>   
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            {% paginate %}
+        </div>
+    </div>
+{% endblock %}

@@ -6,14 +6,15 @@ from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic import ListView
 
 from apps.ledger.models import Category, Node
 from apps.report.forms import TrialBalanceReportSettingForm, TradingAccountReportSettingForm, \
     ProfitAndLossAccountReportSettingForm
 from apps.report.models import TradingAccountReportSetting, TrialBalanceReportSetting, ProfitAndLossAccountReportSetting, \
-    BalanceSheetReportSetting
+    BalanceSheetReportSetting, Closing
 from awecounting.utils.helpers import save_qs_from_ko, get_dict
-from awecounting.utils.mixins import group_required, SuperOwnerMixin, UpdateView
+from awecounting.utils.mixins import group_required, SuperOwnerMixin, UpdateView, CompanyView
 
 BALANCE_SHEET = ['Equity', 'Assets', 'Liabilities']
 PL_ACCOUNT = ['Income', 'Expenses']
@@ -231,3 +232,7 @@ def balance_sheet(request):
         'data': data,
     }
     return render(request, 'balance_sheet.html', context)
+
+
+class ClosingList(CompanyView, ListView):
+    model = Closing

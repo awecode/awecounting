@@ -54,7 +54,7 @@ class Closing(models.Model):
     inventory_balance = models.FloatField()
 
     def __str__(self):
-        return str(self.company) + ":" + str(self.inventory_balance) + "(" + self.fy + ")"
+        return str(self.company) + " : " + str(self.inventory_balance) + " (" + str(self.fy) + ")"
 
 
 @receiver(company_creation)
