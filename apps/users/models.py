@@ -7,11 +7,12 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Group
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+
 from django.dispatch import receiver
+
 from njango.fields import BSDateField, today
 from njango.middleware import get_calendar
 from njango.nepdate import tuple_from_string, string_from_tuple, bs2ad, bs, ad2bs, date_from_tuple, tuple_from_date
-
 from signals import company_creation
 
 
@@ -191,6 +192,12 @@ class Company(models.Model):
             if calendar == 'bs':
                 tuple_value = ad2bs(tuple_value)
         return tuple_value
+
+    def get_closing(self, year, attr):
+        try:
+            return getattr(self.closing_account.get(fy=year), attr)
+        except:
+            return 0
 
     def save(self, *args, **kwargs):
         new = False

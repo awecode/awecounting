@@ -49,7 +49,7 @@ class BalanceSheetReportSetting(models.Model):
         return 'Balance Sheet Settings for ' + str(self.company)
 
 class Closing(models.Model):
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company, related_name='closing_account')
     fy = models.PositiveSmallIntegerField(blank=True, null=True)
     inventory_balance = models.FloatField(default=0)
 
