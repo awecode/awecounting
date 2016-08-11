@@ -158,9 +158,9 @@ class Company(models.Model):
                 return dt.year
         return year
 
-    def get_fy_start(self, dt=None):
+    def get_fy_start(self, dt=None, year=None):
         calendar = get_calendar()
-        year = self.get_fy(dt)
+        year = year or self.get_fy(dt)
         if self.use_nepali_fy_system:
             # get fy start in bs
             fiscal_year_start = str(year) + '-04-01'
@@ -175,9 +175,9 @@ class Company(models.Model):
                 tuple_value = ad2bs(tuple_value)
         return tuple_value
 
-    def get_fy_end(self, dt=None):
+    def get_fy_end(self, dt=None, year=None):
         calendar = get_calendar()
-        year = self.get_fy(dt)
+        year = year or self.get_fy(dt)
         if self.use_nepali_fy_system:
             # get fy end in bs
             fiscal_year_end = str(int(year) + 1) + '-03-' + str(bs[int(year) + 1][2])

@@ -248,13 +248,8 @@ class ClosingList(CompanyView, ListView):
     def post(self, request, *args, **kwargs):
         try:
             fiscal_year = int(request.POST.get('fiscal_year'))
-            next_fiscal_year = str(fiscal_year + 1)
-            str_fiscal_year = next_fiscal_year + '-04-01'
-            tuple_value = tuple_from_string(str_fiscal_year)
-            if get_calendar() == 'ad':
-                tuple_value = bs2ad(tuple_value)
-                str_fiscal_year = string_from_tuple(tuple_value)
             company = self.request.company
+            str_fiscal_year = string_from_tuple(request.company.get_fy_end(year=request.POST.get('fiscal_year')))
             closing_account = self.model(company=company, fy=fiscal_year)
             closing_account.save()
             # queryset = InventoryTransaction.objects.filter(journal_entry__date__lte=request.company.get_fy_start(str_fiscal_year))
