@@ -20,4 +20,10 @@ function ClosingAccountVM() {
             self.fiscal_year(self.fiscal_year().slice(0, 4));
         }
     });
+
+    self.has_fiscal_year = ko.computed(function () {
+        if (self.fiscal_year() > 0)
+            return true
+        return false
+    });
 }
