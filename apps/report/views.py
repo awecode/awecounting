@@ -19,6 +19,8 @@ from apps.report.models import TradingAccountReportSetting, TrialBalanceReportSe
 from awecounting.utils.helpers import save_qs_from_ko, get_dict
 from awecounting.utils.mixins import group_required, SuperOwnerMixin, UpdateView, CompanyView
 from ..inventory.models import Transaction as InventoryTransaction, InventoryAccount
+from njango.middleware import get_calendar
+from njango.nepdate import tuple_from_string, string_from_tuple, bs2ad, bs, ad2bs, date_from_tuple, tuple_from_date
 
 BALANCE_SHEET = ['Equity', 'Assets', 'Liabilities']
 PL_ACCOUNT = ['Income', 'Expenses']
@@ -247,6 +249,10 @@ class ClosingList(CompanyView, ListView):
         try:
             fiscal_year = int(request.POST.get('fiscal_year'))
             str_fiscal_year = request.POST.get('fiscal_year') + '-04-01'
+            tuple_value = tuple_from_string(str_fiscal_year)
+            if get_calendar() == 'bs':
+                tuple_value = bs2ad(tuple_value)
+                str_fiscal_year = string_from_tuple(tuple_value)
             company = self.request.company
             closing_account = self.model(company=company, fy=fiscal_year)
             # queryset = InventoryTransaction.objects.filter(journal_entry__date__lte=request.company.get_fy_start(str_fiscal_year))
