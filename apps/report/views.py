@@ -255,6 +255,7 @@ class ClosingList(CompanyView, ListView):
                 str_fiscal_year = string_from_tuple(tuple_value)
             company = self.request.company
             closing_account = self.model(company=company, fy=fiscal_year)
+            closing_account.save()
             # queryset = InventoryTransaction.objects.filter(journal_entry__date__lte=request.company.get_fy_start(str_fiscal_year))
             queryset = InventoryTransaction.objects.filter(journal_entry__date__lte=str_fiscal_year)
             inventory_account = InventoryAccount.objects.filter(company=self.request.company).prefetch_related(
@@ -270,7 +271,6 @@ class ClosingList(CompanyView, ListView):
                     value = inv.last_transaction[0].current_balance
                 sum += value
             # from django.db import connection
-            #
             # print len(connection.queries)
             closing_account.inventory_balance = sum
             closing_account.save()
