@@ -12,8 +12,15 @@
     <div class="" id="closing_account">
         <form method="POST">
             {% csrf_token %}
-            <div class="form-group form-inline">
-                <input name="fiscal_year" type="number" data-bind="value: fiscal_year, valueUpdate: 'afterkeydown'" class="form-control" placeholder="Fiscal Year"/>
+            <div class="form-group label-static form-inline">
+                <label for="fiscal_year" class="control-label">
+                    {% if request.company.use_nepali_fy_system %}
+                        <b>{% trans "Enter year in BS" %}</b>
+                    {% else %}
+                        <b>{% trans "Enter year in AD" %}</b>
+                    {% endif %}
+                </label>
+                <input name="fiscal_year" id="fiscal_year" type="number" data-bind="value: fiscal_year, valueUpdate: 'afterkeydown'" class="form-control" placeholder="Fiscal Year"/>
                 /
                 <span class="inline-block" data-bind="text: next_fiscal_year"></span>
                 <input type="submit" data-bind="enable: has_fiscal_year" class="btn btn-success btn-raised" value="Close Account"/>
