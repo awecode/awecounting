@@ -251,7 +251,6 @@ class ClosingList(CompanyView, ListView):
             company = self.request.company
             str_fiscal_year = string_from_tuple(request.company.get_fy_end(year=request.POST.get('fiscal_year')))
             closing_account = self.model(company=company, fy=fiscal_year)
-            closing_account.save()
             # queryset = InventoryTransaction.objects.filter(journal_entry__date__lte=request.company.get_fy_start(str_fiscal_year))
             queryset = InventoryTransaction.objects.filter(journal_entry__date__lte=str_fiscal_year)
             inventory_account = InventoryAccount.objects.filter(company=self.request.company).prefetch_related(
@@ -272,4 +271,6 @@ class ClosingList(CompanyView, ListView):
             closing_account.save()
         except IntegrityError:
             messages.error(request, _('%d fiscal year already exist.' % int(request.POST.get('fiscal_year'))))
+        except Exception as e:
+            messages.error(request, _('Enter year correctly.'))
         return HttpResponseRedirect(reverse('report:closing_account'))
