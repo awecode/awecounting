@@ -248,7 +248,8 @@ class ClosingList(CompanyView, ListView):
     def post(self, request, *args, **kwargs):
         try:
             fiscal_year = int(request.POST.get('fiscal_year'))
-            str_fiscal_year = request.POST.get('fiscal_year') + '-04-01'
+            next_fiscal_year = str(fiscal_year + 1)
+            str_fiscal_year = next_fiscal_year + '-04-01'
             tuple_value = tuple_from_string(str_fiscal_year)
             if get_calendar() == 'ad':
                 tuple_value = bs2ad(tuple_value)
