@@ -54,7 +54,7 @@ class Closing(models.Model):
     inventory_balance = models.FloatField(default=0)
 
     def __str__(self):
-        return str(self.company) + " : " + str(self.inventory_balance) + " (" + str(self.fy) + ")"
+        return str(self.fy) + " : " + str(self.inventory_balance) + " (" + str(self.company) + ")"
 
     class Meta:
         unique_together = (('company', 'fy'),)
