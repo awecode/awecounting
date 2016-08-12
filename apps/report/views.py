@@ -8,7 +8,7 @@ from django.forms import model_to_dict
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 
 from apps.ledger.models import Category, Node
 from apps.report.forms import TrialBalanceReportSettingForm, TradingAccountReportSettingForm, \
@@ -270,7 +270,11 @@ class ClosingList(CompanyView, ListView):
             closing_account.inventory_balance = sum
             closing_account.save()
         except IntegrityError:
-            messages.error(request, _('%d fiscal year already exist.' % int(request.POST.get('fiscal_year'))))
+            messages.error(request, _('%d fiscal year account have already been closed.' % int(request.POST.get('fiscal_year'))))
         except Exception as e:
             messages.error(request, _('Enter year correctly.'))
         return HttpResponseRedirect(reverse('report:closing_account'))
+
+
+class ClosingDetailView(DetailView):
+    model = Closing

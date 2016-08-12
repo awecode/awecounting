@@ -48,8 +48,8 @@
                 <tbody>
                 {% for object in sorted_objects %}
                     <tr>
-                        <td>
-                            {{ object.fy }}
+                        <td class="link">
+                            <a href="{% url 'report:closing_account_detail' object.id %}">{{ object.fy }}</a>
                         </td>   
                         <td>
                             {{ object.inventory_balance }}
