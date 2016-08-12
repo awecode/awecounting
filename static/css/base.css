@@ -727,3 +727,15 @@ ul.mega-dropdown-menu li {
 a.text-color-black {
     color: #333333;
 }
+
+#closing_account {
+    margin-top: -15px;
+}
+
+#closing_account span {
+    width: 35px;
+}
+
+.inline-block {
+    display: inline-block;
+}

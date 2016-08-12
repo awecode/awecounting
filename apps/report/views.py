@@ -2,18 +2,25 @@ import copy
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse, reverse_lazy
+from django.db import IntegrityError
+from django.db.models import Prefetch
 from django.forms import model_to_dict
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic import ListView
 
 from apps.ledger.models import Category, Node
 from apps.report.forms import TrialBalanceReportSettingForm, TradingAccountReportSettingForm, \
     ProfitAndLossAccountReportSettingForm
-from apps.report.models import TradingAccountReportSetting, TrialBalanceReportSetting, ProfitAndLossAccountReportSetting, \
-    BalanceSheetReportSetting
+from apps.report.models import TradingAccountReportSetting, TrialBalanceReportSetting, \
+    ProfitAndLossAccountReportSetting, \
+    BalanceSheetReportSetting, Closing
 from awecounting.utils.helpers import save_qs_from_ko, get_dict
-from awecounting.utils.mixins import group_required, SuperOwnerMixin, UpdateView
+from awecounting.utils.mixins import group_required, SuperOwnerMixin, UpdateView, CompanyView
+from ..inventory.models import Transaction as InventoryTransaction, InventoryAccount
+from njango.middleware import get_calendar
+from njango.nepdate import tuple_from_string, string_from_tuple, bs2ad, bs, ad2bs, date_from_tuple, tuple_from_date
 
 BALANCE_SHEET = ['Equity', 'Assets', 'Liabilities']
 PL_ACCOUNT = ['Income', 'Expenses']
@@ -83,7 +90,8 @@ def get_trial_balance_data(root_company, model, mode=None, exclude_indirect_acco
 
 @group_required('Accountant')
 def trial_balance_json(request):
-    return JsonResponse(get_trial_balance_data(request.company, TrialBalanceReportSetting.objects.get(company=request.company)))
+    return JsonResponse(
+        get_trial_balance_data(request.company, TrialBalanceReportSetting.objects.get(company=request.company)))
 
 
 @group_required('Accountant')
@@ -171,7 +179,8 @@ def trading_account(request):
 
 @group_required('Accountant')
 def profit_loss(request):
-    data = get_trial_balance_data(request.company, ProfitAndLossAccountReportSetting.objects.get(company=request.company),
+    data = get_trial_balance_data(request.company,
+                                  ProfitAndLossAccountReportSetting.objects.get(company=request.company),
                                   mode=PL_ACCOUNT)
     context = {
         'data': data,
@@ -231,3 +240,37 @@ def balance_sheet(request):
         'data': data,
     }
     return render(request, 'balance_sheet.html', context)
+
+
+class ClosingList(CompanyView, ListView):
+    model = Closing
+
+    def post(self, request, *args, **kwargs):
+        try:
+            fiscal_year = int(request.POST.get('fiscal_year'))
+            company = self.request.company
+            str_fiscal_year = string_from_tuple(request.company.get_fy_end(year=request.POST.get('fiscal_year')))
+            closing_account = self.model(company=company, fy=fiscal_year)
+            # queryset = InventoryTransaction.objects.filter(journal_entry__date__lte=request.company.get_fy_start(str_fiscal_year))
+            queryset = InventoryTransaction.objects.filter(journal_entry__date__lte=str_fiscal_year)
+            inventory_account = InventoryAccount.objects.filter(company=self.request.company).prefetch_related(
+                Prefetch(
+                    'account_transaction',
+                    queryset=queryset.order_by('-pk'),
+                    to_attr='last_transaction'),
+            )
+            sum = 0
+            for inv in inventory_account:
+                value = 0
+                if len(inv.last_transaction) > 0:
+                    value = inv.last_transaction[0].current_balance
+                sum += value
+            # from django.db import connection
+            # print len(connection.queries)
+            closing_account.inventory_balance = sum
+            closing_account.save()
+        except IntegrityError:
+            messages.error(request, _('%d fiscal year already exist.' % int(request.POST.get('fiscal_year'))))
+        except Exception as e:
+            messages.error(request, _('Enter year correctly.'))
+        return HttpResponseRedirect(reverse('report:closing_account'))
