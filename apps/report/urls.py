@@ -10,6 +10,7 @@ web_urls = [
     url(r'^trading_account/$', views.trading_account, name='trading_account'),
     url(r'^profit_loss/$', views.profit_loss, name='profit_loss'),
     url(r'^balance_sheet/$', views.balance_sheet, name='balance_sheet'),
+    url(r'^closing_account/$', views.ClosingList.as_view(), name='closing_account'),
 ]
 
 urlpatterns = web_urls

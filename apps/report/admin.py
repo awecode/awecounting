@@ -1,12 +1,13 @@
 from django.contrib import admin
 
 from .models import TrialBalanceReportSetting, TradingAccountReportSetting, \
-    ProfitAndLossAccountReportSetting, BalanceSheetReportSetting
+    ProfitAndLossAccountReportSetting, BalanceSheetReportSetting, Closing
 
 admin.site.register(TrialBalanceReportSetting)
 admin.site.register(TradingAccountReportSetting)
 admin.site.register(ProfitAndLossAccountReportSetting)
 admin.site.register(BalanceSheetReportSetting)
+admin.site.register(Closing)
 
 
 class TrialBalanceReportSettingStacked(admin.StackedInline):

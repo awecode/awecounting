@@ -48,6 +48,16 @@ class BalanceSheetReportSetting(models.Model):
     def __str__(self):
         return 'Balance Sheet Settings for ' + str(self.company)
 
+class Closing(models.Model):
+    company = models.ForeignKey(Company, related_name='closing_account')
+    fy = models.PositiveSmallIntegerField(blank=True, null=True)
+    inventory_balance = models.FloatField(default=0)
+
+    def __str__(self):
+        return str(self.company) + " : " + str(self.inventory_balance) + " (" + str(self.fy) + ")"
+
+    class Meta:
+        unique_together = (('company', 'fy'),)
 
 @receiver(company_creation)
 def handle_company_creation(sender, **kwargs):

@@ -1,0 +1,65 @@
+{% extends '_base.html' %}
+{% load i18n filters staticfiles %}
+
+{% block page-title %}{% trans 'Closing Account' %}{% endblock %}
+
+{% block extrahead %}
+    <script src="{% static 'report/js/closing_account.js' %}"></script>
+{% endblock %}
+
+
+{% block header-buttons %}
+    <div class="" id="closing_account">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group label-static form-inline">
+                <label for="fiscal_year" class="control-label">
+                    {% if request.company.use_nepali_fy_system %}
+                        <b>{% trans "Enter year in BS" %}</b>
+                    {% else %}
+                        <b>{% trans "Enter year in AD" %}</b>
+                    {% endif %}
+                </label>
+                <input name="fiscal_year" id="fiscal_year" type="number" data-bind="value: fiscal_year, valueUpdate: 'afterkeydown'" class="form-control" placeholder="Fiscal Year"/>
+                /
+                <span class="inline-block" data-bind="text: next_fiscal_year"></span>
+                <input type="submit" data-bind="enable: has_fiscal_year" class="btn btn-success btn-raised" value="Close Account"/>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            {% load pagination_tags %}
+            {% load sorting_tags %}
+
+            {% autosort object_list as sorted_objects %}
+            {% autopaginate sorted_objects 25 as paginated_objects %}
+            <div class="well">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>{% anchor fy _('Fiscal Year') %}</th>
+                    <th>{% anchor inventory_balance _('Inventory Balance') %}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for object in sorted_objects %}
+                    <tr>
+                        <td>
+                            {{ object.fy }}
+                        </td>   
+                        <td>
+                            {{ object.inventory_balance }}
+                        </td>   
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            {% paginate %}
+        </div>
+    </div>
+{% endblock %}
