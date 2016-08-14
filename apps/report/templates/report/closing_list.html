@@ -43,6 +43,7 @@
                 <tr>
                     <th>{% anchor fy _('Fiscal Year') %}</th>
                     <th>{% anchor inventory_balance _('Inventory Balance') %}</th>
+                    <th>{% anchor total_cost _('Total Cost') %}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -53,7 +54,10 @@
                         </td>   
                         <td>
                             {{ object.inventory_balance }}
-                        </td>   
+                        </td>
+                        <td>
+                            {{ object.total_cost }}
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>

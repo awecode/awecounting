@@ -107,6 +107,7 @@ class InventoryAccount(models.Model):
     name = models.CharField(max_length=100)
     account_no = models.PositiveIntegerField()
     current_balance = models.FloatField(default=0)
+    # total_cost = models.FloatField(default=0, blank=True)
     company = models.ForeignKey(Company)
 
     def __str__(self):
@@ -173,7 +174,10 @@ class Item(models.Model):
         return str(self.name) + ' ' + str(self.code)
 
     def save(self, *args, **kwargs):
-        account_no = kwargs.pop('account_no')
+        try:
+            account_no = kwargs.pop('account_no')
+        except KeyError as e:
+            account_no = InventoryAccount.objects.none()
         if account_no:
             if self.account:
                 account = self.account

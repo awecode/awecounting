@@ -82,7 +82,7 @@
                 <div>
                     <div class="col-md-6 col-sm-12" data-bind="visible: tax()!='no'">
                         <label for="tax_scheme">{% trans 'Tax Scheme' %}</label>
-                        <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_schemepurc_id, object: tax_scheme"
+                        <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme_id, object: tax_scheme"
                                 data-url="{% url 'tax_scheme_add' %}"></select>
                     </div>
                 </div>

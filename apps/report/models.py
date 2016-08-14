@@ -52,6 +52,7 @@ class Closing(models.Model):
     company = models.ForeignKey(Company, related_name='closing_account')
     fy = models.PositiveSmallIntegerField(blank=True, null=True)
     inventory_balance = models.FloatField(default=0)
+    total_cost = models.FloatField(default=0)
 
     def __str__(self):
         return str(self.fy) + " : " + str(self.inventory_balance) + " (" + str(self.company) + ")"

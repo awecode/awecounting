@@ -258,16 +258,23 @@ class ClosingList(CompanyView, ListView):
                     'account_transaction',
                     queryset=queryset.order_by('-pk'),
                     to_attr='last_transaction'),
+                'item',
             )
             sum = 0
+            total_cost = 0
             for inv in inventory_account:
                 value = 0
+                cost = 0
                 if len(inv.last_transaction) > 0:
                     value = inv.last_transaction[0].current_balance
+                    if inv.item.cost_price:
+                        cost = value * inv.item.cost_price
                 sum += value
+                total_cost += cost
             # from django.db import connection
             # print len(connection.queries)
             closing_account.inventory_balance = sum
+            closing_account.total_cost = total_cost
             closing_account.save()
         except IntegrityError:
             messages.error(request, _('%d fiscal year account have already been closed.' % int(request.POST.get('fiscal_year'))))
