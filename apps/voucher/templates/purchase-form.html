@@ -75,14 +75,14 @@
             </div>
             <div class="row">
                 <div class="col-md-6 col-sm-12">
-                    <label for="party">{% trans 'Tax' %}</label>
+                    <label for="tax">{% trans 'Tax' %}</label>
                     <select name="tax" class="form-control" id="tax"
                             data-bind="selectize: tax_types, optionsText: 'value', value: tax"></select>
                 </div>
                 <div>
                     <div class="col-md-6 col-sm-12" data-bind="visible: tax()!='no'">
-                        <label for="due_date">{% trans 'Tax Scheme' %}</label>
-                        <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_scheme_id, object: tax_scheme"
+                        <label for="tax_scheme">{% trans 'Tax Scheme' %}</label>
+                        <select id="tax_scheme" data-bind="selectize: $root.tax_schemes, value: tax_schemepurc_id, object: tax_scheme"
                                 data-url="{% url 'tax_scheme_add' %}"></select>
                     </div>
                 </div>

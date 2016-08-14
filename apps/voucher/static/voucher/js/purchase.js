@@ -80,7 +80,7 @@ function PurchaseViewModel(data, settings) {
     //    }
     //});
 
-    self.tax_schemes = ko.observableArray(data.tax);
+    self.tax_schemes = ko.observableArray(data.tax_schemes);
 
 
     self.render_item_options = function (data) {

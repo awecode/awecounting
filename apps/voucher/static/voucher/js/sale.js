@@ -65,7 +65,7 @@ function SaleViewModel(data, settings) {
     //    }
     //});
 
-    self.tax_schemes = ko.observableArray(data.tax);
+    self.tax_schemes = ko.observableArray(data.tax_schemes);
 
     //$.ajax({
     //    url: '/inventory/api/sale/items.json',

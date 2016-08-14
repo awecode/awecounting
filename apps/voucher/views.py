@@ -328,19 +328,18 @@ class PurchaseVoucherCreate(PurchaseVoucherView, AccountantMixin, TableObjectMix
             if tax_scheme:
                 obj.tax_scheme = tax_scheme
             data = self.serializer_class(obj).data
-            item_obj = Item.objects.filter(company=self.request.company).select_related('account').select_related('unit')
-            item_data = ItemSerializer(item_obj, context={'request': self.request, 'voucher': 'purchase'}, many=True).data
-
             context['obj'] = obj
             context['data'] = data
-            context['data']['items'] = data
-            context['data']['tax'] = get_serialize_data(TaxSchemeSerializer, self.request.company)
-            context['data']['items'] = item_data
-            context['data']['units'] = get_serialize_data(UnitSerializer, self.request.company)
-            context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
-            context['data']['enable_locations'] = get_serialize_data(LocationSerializer, self.request.company,
-                                                                     Location.objects.filter(
-                                                                         company=self.request.company, enabled=True))
+        item_obj = Item.objects.filter(company=self.request.company).select_related('account').select_related('unit')
+        item_data = ItemSerializer(item_obj, context={'request': self.request, 'voucher': 'purchase'}, many=True).data
+
+        context['data']['tax_schemes'] = get_serialize_data(TaxSchemeSerializer, self.request.company)
+        context['data']['items'] = item_data
+        context['data']['units'] = get_serialize_data(UnitSerializer, self.request.company)
+        context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
+        context['data']['enable_locations'] = get_serialize_data(LocationSerializer, self.request.company,
+                                                                 Location.objects.filter(
+                                                                     company=self.request.company, enabled=True))
         return context
 
 
@@ -668,15 +667,16 @@ class SaleCreate(SaleView, CashierMixin, TableObjectMixin):
             if tax_scheme:
                 obj.tax_scheme = tax_scheme
             data = self.serializer_class(obj).data
-            item_obj = Item.objects.filter(company=self.request.company).select_related('account').select_related('unit')
-            item_data = ItemSerializer(item_obj, context={'request': self.request, 'voucher': 'sale'}, many=True).data
-
             context['obj'] = obj
             context['data'] = data
-            context['data']['tax'] = get_serialize_data(TaxSchemeSerializer, self.request.company)
-            context['data']['items'] = item_data
-            context['data']['units'] = get_serialize_data(UnitSerializer, self.request.company)
-            context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
+
+        item_obj = Item.objects.filter(company=self.request.company).select_related('account').select_related('unit')
+        item_data = ItemSerializer(item_obj, context={'request': self.request, 'voucher': 'sale'}, many=True).data
+
+        context['data']['tax_schemes'] = get_serialize_data(TaxSchemeSerializer, self.request.company)
+        context['data']['items'] = item_data
+        context['data']['units'] = get_serialize_data(UnitSerializer, self.request.company)
+        context['data']['parties'] = get_serialize_data(PartyBalanceSerializer, self.request.company)
         return context
 
 

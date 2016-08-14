@@ -117,6 +117,7 @@ class SaleRowSerializer(serializers.ModelSerializer):
 class SaleSerializer(serializers.ModelSerializer):
     rows = SaleRowSerializer(many=True)
     date = serializers.DateField(format=None)
+    tax_scheme_id = serializers.ReadOnlyField()
     party_id = serializers.ReadOnlyField()
 
     class Meta:
