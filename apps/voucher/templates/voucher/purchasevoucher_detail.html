@@ -129,7 +129,7 @@
                     {% endif %}
                     <td>{{ row.item }}</td>
                     {% if request.company.settings.show_purchase_voucher_code %}
-                        <td class="{% print_view 'show_purchase_print_code' %}">{{ row.item.code }}</td>
+                        <td class="{% print_view 'show_purchase_print_code' %}">{{ row.item.code | default:'' }}</td>
                     {% endif %}
                     {% if request.company.settings.show_purchase_voucher_oem_number %}
                         <td class="{% print_view 'show_purchase_print_oem_number' %}">{{ row.item.oem_no }}</td>
