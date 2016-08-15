@@ -5,6 +5,7 @@ import random
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Group
+from django.db.models import Prefetch
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
@@ -13,6 +14,7 @@ from django.dispatch import receiver
 from njango.fields import BSDateField, today
 from njango.middleware import get_calendar
 from njango.nepdate import tuple_from_string, string_from_tuple, bs2ad, bs, ad2bs, date_from_tuple, tuple_from_date
+
 from signals import company_creation
 
 
@@ -198,6 +200,26 @@ class Company(models.Model):
             return getattr(self.closing_account.get(fy=year), attr)
         except:
             return 0
+
+    def get_total_cost(self):
+        from apps.inventory.models import InventoryAccount, Transaction as InventoryTransaction
+
+        inventory_account = InventoryAccount.objects.filter(company=self).prefetch_related(
+            Prefetch(
+                'account_transaction',
+                queryset=InventoryTransaction.objects.all().order_by('-pk'),
+                to_attr='last_transaction'),
+            'item',
+        )
+        total_cost = 0
+        for inv in inventory_account:
+            cost = 0
+            if len(inv.last_transaction) > 0:
+                value = inv.last_transaction[0].current_balance or 0
+                if inv.item.cost_price:
+                    cost = value * inv.item.cost_price
+            total_cost += cost
+        return total_cost
 
     def save(self, *args, **kwargs):
         new = False
