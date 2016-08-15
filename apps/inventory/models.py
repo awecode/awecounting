@@ -122,6 +122,12 @@ class InventoryAccount(models.Model):
             return self.current_balance * self.item.cost_price
         return 0
 
+    def get_total_cost(self):
+        value = 0
+        if self.item.cost_price > 0:
+            value = self.current_balance * self.item.cost_price
+        return value
+
     def sale_amount(self):
         if self.item.selling_rate:
             return self.current_balance * self.item.selling_rate
