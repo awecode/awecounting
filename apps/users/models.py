@@ -216,7 +216,7 @@ class Company(models.Model):
             cost = 0
             if len(inv.last_transaction) > 0:
                 value = inv.last_transaction[0].current_balance or 0
-                if inv.item.cost_price:
+                if hasattr(inv, 'item') and inv.item.cost_price > 0:
                     cost = value * inv.item.cost_price
             total_cost += cost
         return total_cost

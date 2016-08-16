@@ -267,7 +267,7 @@ class ClosingList(CompanyView, ListView):
                 cost = 0
                 if len(inv.last_transaction) > 0:
                     value = inv.last_transaction[0].current_balance
-                    if inv.item.cost_price:
+                    if hasattr(inv, 'item') and inv.item.cost_price > 0:
                         cost = value * inv.item.cost_price
                 sum += value
                 total_cost += cost
