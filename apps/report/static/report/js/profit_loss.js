@@ -87,6 +87,8 @@ var TreeModel = function () {
     self.tree_data = ko.observable();
     self.total_dr = ko.observable();
     self.total_cr = ko.observable();
+    self.closing_balance = ko.observable();
+    self.opening_balance = ko.observable();
     self.income_node = ko.observable({'nodes': ko.observableArray([])});
     self.indirect_income_node = ko.observable({'nodes': ko.observableArray([])});
     self.expense_node = ko.observable({'nodes': ko.observableArray([])});
@@ -99,6 +101,8 @@ var TreeModel = function () {
         self.tree_data(new NodeModel(data, self.settings));
         self.total_dr(data.total_dr);
         self.total_cr(data.total_cr);
+        self.closing_balance(data.closing_balance);
+        self.opening_balance(data.opening_balance);
 
         var income = get_by_name(self.tree_data().nodes(), 'Income');
         if (income) {
@@ -133,7 +137,7 @@ var TreeModel = function () {
                 gross -= node.net_dr();
             });
         }
-        return r2z(gross);
+        return r2z(gross + self.closing_balance() - self.opening_balance());
     });
 
     self.net_profit = ko.computed(function () {

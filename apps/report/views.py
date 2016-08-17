@@ -21,7 +21,7 @@ from awecounting.utils.mixins import group_required, SuperOwnerMixin, UpdateView
 from ..inventory.models import Transaction as InventoryTransaction, InventoryAccount
 from njango.middleware import get_calendar
 from njango.nepdate import tuple_from_string, string_from_tuple, bs2ad, bs, ad2bs, date_from_tuple, tuple_from_date
-
+from django.db.models import prefetch_related_objects
 BALANCE_SHEET = ['Equity', 'Assets', 'Liabilities']
 PL_ACCOUNT = ['Income', 'Expenses']
 
@@ -68,7 +68,15 @@ def get_trial_balance_data(root_company, model, mode=None, exclude_indirect_acco
             'model': model.__class__.__name__,
             'settings_save_url': reverse('report:save_report_settings')}
 
+    closing_balance = 0
+    opening_balance = 0
+    current_fiscal_year = root_company.get_fy()
+    previous_fiscal_year = current_fiscal_year - 1
     for company in companies:
+        if company.closing_account.filter(fy=current_fiscal_year):
+            closing_balance += company.closing_account.filter(fy=current_fiscal_year)[0].total_cost
+        if company.closing_account.filter(fy=previous_fiscal_year):
+            opening_balance += company.closing_account.filter(fy=previous_fiscal_year)[0].total_cost
         root_categories = Category.objects.filter(company=company, parent=None).prefetch_related('accounts',
                                                                                                  'children__accounts',
                                                                                                  'children__children__accounts',
@@ -85,6 +93,8 @@ def get_trial_balance_data(root_company, model, mode=None, exclude_indirect_acco
             root['total_cr'] += node.cr
     root['total_dr'] = round(root['total_dr'], 2)
     root['total_cr'] = round(root['total_cr'], 2)
+    root['closing_balance'] = round(closing_balance, 2)
+    root['opening_balance'] = round(opening_balance, 2)
     return root
 
 
