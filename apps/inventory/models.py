@@ -11,6 +11,7 @@ from ..users.models import Company
 from awecounting.utils.helpers import none_for_zero, zero_for_none
 from ..users.signals import company_creation
 from mptt.models import MPTTModel, TreeForeignKey
+from njango.fields import BSDateField
 
 
 class Unit(models.Model):
@@ -217,7 +218,7 @@ class Item(models.Model):
 
 
 class JournalEntry(models.Model):
-    date = models.DateField()
+    date = BSDateField()
     content_type = models.ForeignKey(ContentType, related_name='inventory_journal_entries')
     model_id = models.PositiveIntegerField()
     creator = GenericForeignKey('content_type', 'model_id')
