@@ -1,9 +1,8 @@
 Django
 psycopg2
 #django-modeltranslation # django 1.9.2
--e git+https://github.com/maparent/django-modeltranslation.git@master-dj110-integration#egg=django-modeltranslation
-#django-mptt # < django 1.9.2
--e git+https://github.com/ataylor32/django-mptt.git@django110#egg=django-mptt # django1.10
+git+https://github.com/deschler/django-modeltranslation.git
+django-mptt
 #-e git+https://github.com/areski/django-pagination.git@fix-xrange-slice#egg=linaro-django-pagination # < django1.10
 -e git+https://github.com/roshanshrestha01/django-pagination.git@django110#egg=linaro_django_pagination
 webstack-django-sorting
