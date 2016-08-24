@@ -739,3 +739,7 @@ a.text-color-black {
 .inline-block {
     display: inline-block;
 }
+
+div.selectize-dropdown.single[style] {
+   width: 300px !important;
+}
