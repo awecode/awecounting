@@ -67,7 +67,20 @@
         </div>
         {% endif %}
    </div>
-
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <label for="party">{% trans 'Tax' %}</label>
+            <p> {{ object.get_tax_display }}</p>
+        </div>
+        {% if object.tax_scheme and object.tax != 'no' %}
+        <div>
+            <div class="col-md-6 col-sm-12">
+                <label for="due_date">{% trans 'Tax Scheme' %}</label>
+                <p> {{ object.tax_scheme }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
 </div>
 <div class="well">
     <table class="table table-striped">
