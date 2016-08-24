@@ -11,6 +11,7 @@ from ..users.models import Company
 from awecounting.utils.helpers import none_for_zero, zero_for_none
 from ..users.signals import company_creation
 from mptt.models import MPTTModel, TreeForeignKey
+from njango.fields import BSDateField
 
 
 class Unit(models.Model):
@@ -107,6 +108,7 @@ class InventoryAccount(models.Model):
     name = models.CharField(max_length=100)
     account_no = models.PositiveIntegerField()
     current_balance = models.FloatField(default=0)
+    # total_cost = models.FloatField(default=0, blank=True)
     company = models.ForeignKey(Company)
 
     def __str__(self):
@@ -120,6 +122,12 @@ class InventoryAccount(models.Model):
         if self.item.cost_price:
             return self.current_balance * self.item.cost_price
         return 0
+
+    def get_total_cost(self):
+        value = 0
+        if self.item.cost_price > 0:
+            value = self.current_balance * self.item.cost_price
+        return value
 
     def sale_amount(self):
         if self.item.selling_rate:
@@ -173,7 +181,10 @@ class Item(models.Model):
         return str(self.name) + ' ' + str(self.code)
 
     def save(self, *args, **kwargs):
-        account_no = kwargs.pop('account_no')
+        try:
+            account_no = kwargs.pop('account_no')
+        except KeyError as e:
+            account_no = InventoryAccount.objects.none()
         if account_no:
             if self.account:
                 account = self.account
@@ -207,7 +218,7 @@ class Item(models.Model):
 
 
 class JournalEntry(models.Model):
-    date = models.DateField()
+    date = BSDateField()
     content_type = models.ForeignKey(ContentType, related_name='inventory_journal_entries')
     model_id = models.PositiveIntegerField()
     creator = GenericForeignKey('content_type', 'model_id')

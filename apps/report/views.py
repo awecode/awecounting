@@ -8,7 +8,7 @@ from django.forms import model_to_dict
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 
 from apps.ledger.models import Category, Node
 from apps.report.forms import TrialBalanceReportSettingForm, TradingAccountReportSettingForm, \
@@ -21,7 +21,7 @@ from awecounting.utils.mixins import group_required, SuperOwnerMixin, UpdateView
 from ..inventory.models import Transaction as InventoryTransaction, InventoryAccount
 from njango.middleware import get_calendar
 from njango.nepdate import tuple_from_string, string_from_tuple, bs2ad, bs, ad2bs, date_from_tuple, tuple_from_date
-
+from django.db.models import prefetch_related_objects
 BALANCE_SHEET = ['Equity', 'Assets', 'Liabilities']
 PL_ACCOUNT = ['Income', 'Expenses']
 
@@ -68,7 +68,15 @@ def get_trial_balance_data(root_company, model, mode=None, exclude_indirect_acco
             'model': model.__class__.__name__,
             'settings_save_url': reverse('report:save_report_settings')}
 
+    closing_balance = 0
+    opening_balance = 0
+    current_fiscal_year = root_company.get_fy()
+    previous_fiscal_year = current_fiscal_year - 1
     for company in companies:
+        if company.closing_account.filter(fy=current_fiscal_year):
+            closing_balance += company.closing_account.filter(fy=current_fiscal_year)[0].total_cost
+        if company.closing_account.filter(fy=previous_fiscal_year):
+            opening_balance += company.closing_account.filter(fy=previous_fiscal_year)[0].total_cost
         root_categories = Category.objects.filter(company=company, parent=None).prefetch_related('accounts',
                                                                                                  'children__accounts',
                                                                                                  'children__children__accounts',
@@ -85,6 +93,8 @@ def get_trial_balance_data(root_company, model, mode=None, exclude_indirect_acco
             root['total_cr'] += node.cr
     root['total_dr'] = round(root['total_dr'], 2)
     root['total_cr'] = round(root['total_cr'], 2)
+    root['closing_balance'] = round(closing_balance, 2)
+    root['opening_balance'] = round(opening_balance, 2)
     return root
 
 
@@ -258,19 +268,30 @@ class ClosingList(CompanyView, ListView):
                     'account_transaction',
                     queryset=queryset.order_by('-pk'),
                     to_attr='last_transaction'),
+                'item',
             )
             sum = 0
+            total_cost = 0
             for inv in inventory_account:
                 value = 0
+                cost = 0
                 if len(inv.last_transaction) > 0:
                     value = inv.last_transaction[0].current_balance
+                    if hasattr(inv, 'item') and inv.item.cost_price > 0:
+                        cost = value * inv.item.cost_price
                 sum += value
+                total_cost += cost
             # from django.db import connection
             # print len(connection.queries)
             closing_account.inventory_balance = sum
+            closing_account.total_cost = total_cost
             closing_account.save()
         except IntegrityError:
-            messages.error(request, _('%d fiscal year already exist.' % int(request.POST.get('fiscal_year'))))
+            messages.error(request, _('%d fiscal year account have already been closed.' % int(request.POST.get('fiscal_year'))))
         except Exception as e:
             messages.error(request, _('Enter year correctly.'))
         return HttpResponseRedirect(reverse('report:closing_account'))
+
+
+class ClosingDetailView(DetailView):
+    model = Closing
