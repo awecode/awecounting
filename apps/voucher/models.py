@@ -188,7 +188,6 @@ class LotItemDetail(models.Model):
     qty = models.PositiveIntegerField()
     # po_receive_lot = models.ForeignKey(PoReceiveLot)
 
-
     def __unicode__(self):
         return '%s-QTY#%d' % (self.item, self.qty)
 
@@ -209,6 +208,11 @@ class PurchaseVoucherRow(models.Model):
                                  blank=True,
                                  related_name='location_puchase_vouchers'
                                  )
+
+    def save(self, *args, **kwargs):
+        self.item.cost_price = self.rate
+        self.item.save()
+        super(PurchaseVoucherRow, self).save(*args, **kwargs)
 
     def get_total(self):
         rate = float(self.rate)

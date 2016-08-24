@@ -11,6 +11,7 @@ web_urls = [
     url(r'^profit_loss/$', views.profit_loss, name='profit_loss'),
     url(r'^balance_sheet/$', views.balance_sheet, name='balance_sheet'),
     url(r'^closing_account/$', views.ClosingList.as_view(), name='closing_account'),
+    url(r'^closing_account/(?P<pk>\d+)/$', views.ClosingDetailView.as_view(), name='closing_account_detail'),
 ]
 
 urlpatterns = web_urls
