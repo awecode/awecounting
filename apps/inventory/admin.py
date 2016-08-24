@@ -6,7 +6,7 @@ from .models import Unit, Item, InventoryAccount, Transaction, JournalEntry, Uni
     ItemCategory
 
 admin.site.register(Unit, TranslationCompanyAdmin)
-admin.site.register(Item)
+admin.site.register(Item, CompanyAdmin)
 admin.site.register(InventoryAccount, CompanyAdmin)
 admin.site.register(Transaction)
 admin.site.register(JournalEntry)

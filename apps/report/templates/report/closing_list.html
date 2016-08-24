@@ -41,6 +41,7 @@
             <table class="table table-striped">
                 <thead>
                 <tr>
+                    <th>{% anchor company _('Company') %}</th>
                     <th>{% anchor fy _('Fiscal Year') %}</th>
                     <th>{% anchor inventory_balance _('Inventory Balance') %}</th>
                     <th>{% anchor total_cost _('Total Cost') %}</th>
@@ -49,6 +50,9 @@
                 <tbody>
                 {% for object in sorted_objects %}
                     <tr>
+                        <td class="link">
+                            <a href="{% url 'report:closing_account_detail' object.id %}">{{ object.company }}</a>
+                        </td>
                         <td class="link">
                             <a href="{% url 'report:closing_account_detail' object.id %}">{{ object.fy }}</a>
                         </td>   

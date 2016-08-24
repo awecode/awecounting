@@ -42,17 +42,17 @@
                     </td>
                     <td>
                         <a href="{{ purchase.party.get_absolute_url }}">
-                            {{ sale.party }}
+                            {{ sale.party |default:'' }}
                         </a>
                     </td>
                     <td>
                         {{ sale.type }}
                     </td>
                     <td>
-                        {{ sale.pending_amount }}
+                        {{ sale.pending_amount |default:'' }}
                     </td>
                     <td>
-                        {{ sale.total_amount }}
+                        {{ sale.total_amount |default:'' }}
                     </td>
                     {% ifrole "Accountant" %}
                     <td>

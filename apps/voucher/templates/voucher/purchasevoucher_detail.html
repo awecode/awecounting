@@ -158,7 +158,7 @@
                         <td>{{ row.location.name }}</td>
                     {% endif %}
 
-                    <td>{{ row.get_total }}</td>
+                    <td>{{ row.get_total |floatformat:2 }}</td>
             </tr>
             {% endfor %}
             <tr class="sub-total total">
@@ -172,7 +172,7 @@
                 <td colspan="{{ request.company.settings.purchase_colspan }}">
                     {% trans 'Tax Amount' %}
                 </td>
-                <td colspan="2">{{ object.tax_amount }}</td>
+                <td colspan="2">{{ object.tax_amount |floatformat:2 }}</td>
 
             </tr>
             {% if request.company.settings.discount_on_each_purchase_particular %}
