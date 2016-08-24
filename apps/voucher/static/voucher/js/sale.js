@@ -295,20 +295,22 @@ function SaleViewModel(data, settings) {
 
     if (settings.sale_suggest_by_party_item) {
         self.party.subscribe(function (party) {
-            $.ajax({
-                url: '/voucher/api/sale/party/' + party.id + '/rates.json',
-                dataType: 'json',
-                async: false,
-                success: function (data) {
-                    ko.utils.arrayForEach(data, function (rate_item) {
-                        var item = ko.utils.arrayFirst(self.items(), function (itm) {
-                            return itm.id == rate_item.id;
+            if (typeof(party) != 'undefined') {
+                $.ajax({
+                    url: '/voucher/api/sale/party/' + party.id + '/rates.json',
+                    dataType: 'json',
+                    async: false,
+                    success: function (data) {
+                        ko.utils.arrayForEach(data, function (rate_item) {
+                            var item = ko.utils.arrayFirst(self.items(), function (itm) {
+                                return itm.id == rate_item.id;
+                            });
+                            if (item)
+                                item.last_sale_price = rate_item.last_sale_price;
                         });
-                        if (item)
-                            item.last_sale_price = rate_item.last_sale_price;
-                    });
-                }
-            });
+                    }
+                });
+            }
         })
     }
 }
