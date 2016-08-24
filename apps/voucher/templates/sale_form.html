@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block header-buttons %}
-    <!-- ko if: id -->
+    <!-- ko if: id && has_party_email -->
     <a class="btn btn-success btn-raised" data-bind="attr: { href: mail_invoice('{% url 'mail_invoice' %}')}">{% trans 'Email Invoice' %}</a>
     <!-- /ko -->
 {% endblock %}

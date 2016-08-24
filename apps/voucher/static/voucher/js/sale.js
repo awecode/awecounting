@@ -110,12 +110,17 @@ function SaleViewModel(data, settings) {
     self.units = ko.observableArray(data.units);
 
     self.party = ko.observable();
-
+    self.has_party_email = ko.observable();
     self.party_id.subscribe(function (id) {
         var selected_party = ko.utils.arrayFirst(self.parties(), function (p) {
             return p.id == id;
         });
         if (selected_party) {
+            if(selected_party.email) {
+                self.has_party_email(true);
+            } else {
+                self.has_party_email(false);
+            }
             if (selected_party.tax_preference != null) {
                 self.tax_vm.tax_scheme(selected_party.tax_preference.tax_scheme);
                 if (selected_party.tax_preference.default_tax_application_type != 'no-preference' && selected_party.tax_preference.default_tax_application_type != null) {
