@@ -5,6 +5,12 @@
     {{ scenario }} {% trans 'Sale Voucher' %}
 {% endblock %}
 
+{% block header-buttons %}
+    <!-- ko if: id -->
+    <a class="btn btn-success btn-raised" data-bind="attr: { href: mail_invoice('{% url 'mail_invoice' %}')}">{% trans 'Email Invoice' %}</a>
+    <!-- /ko -->
+{% endblock %}
+
 {% block breadcrumbs %}
     <li><a href="{% url 'sale-list' %}">{% trans 'Sale Vouchers' %}</a></li>
     <li>{{ scenario }} {% trans 'Sale Voucher' %}</li>

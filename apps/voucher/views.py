@@ -1282,3 +1282,13 @@ def sale_row_onedit_location_item_details(request, sale_row_id=None, item_id=Non
             )
     response_data = sorted(response_data, key=lambda dic: dic['location_id'])
     return JsonResponse({'data': response_data})
+
+
+def mail_invoice(request):
+    invoice_pk = request.GET.get('invoice_pk')
+    invoice = Sale.objects.get(pk=invoice_pk)
+    if invoice.party.email:
+        pass
+    else:
+        messages.error(request, 'Party does not have email address.')
+    return HttpResponseRedirect(reverse_lazy('sale-edit', kwargs={'pk': invoice_pk}))

@@ -65,6 +65,15 @@ function SaleViewModel(data, settings) {
     //    }
     //});
 
+    self.mail_invoice = function (url) {
+        var _url = '#'
+        if (self.id()){
+            _url = url + '?invoice_pk='+self.id();
+        }
+        return _url
+
+    };
+
     self.tax_schemes = ko.observableArray(data.tax_schemes);
 
     //$.ajax({
