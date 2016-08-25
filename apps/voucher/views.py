@@ -1310,9 +1310,9 @@ def mail_invoice(request):
                                                                          CSS(find_static('css/base.css')),
                                                                          CSS(find_static('css/_pdf.css')),
                                                                         ])
-            http_response = HttpResponse(pdf_file, content_type='application/pdf')
-            http_response['Content-Disposition'] = 'filename=asdf'
-            return http_response
+            # http_response = HttpResponse(pdf_file, content_type='application/pdf')
+            # http_response['Content-Disposition'] = 'filename=asdf'
+            # return http_response
             subject, from_email, to = 'Sale invoice', request.user.email, invoice.party.email
             text_content = 'Invoice from %s.' % request.company
             msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
