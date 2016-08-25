@@ -35,7 +35,7 @@ from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CreditVoucher, 
     PurchaseVoucherRow, Sale, SaleRow, CreditVoucherRow, DebitVoucher, DebitVoucherRow, PurchaseOrder, PurchaseOrderRow, \
     VoucherSetting, Expense, ExpenseRow, TradeExpense, Lot, LotItemDetail, SaleFromLocation
 from weasyprint import HTML, CSS
-
+from django.core.mail import EmailMultiAlternatives
 
 class FixedAssetView(CompanyView):
     model = FixedAsset
@@ -1312,20 +1312,26 @@ def find_static(path):
 
 def mail_invoice(request):
     invoice_pk = request.GET.get('invoice_pk')
-    invoice = Sale.objects.get(pk=invoice_pk)
-    if invoice.party.email:
-        html_template = get_template('voucher/sale_ledger.html')
-        invoice_rows = SaleRow.objects.select_related('item', 'unit').filter(sale=invoice)
-        context = {'request': request, 'company': request.company, 'object': invoice, 'pagesize': 'A4', 'rows': invoice_rows, 'company': request.company}
-        rendered_html = html_template.render(RequestContext(request, context)).encode(encoding="UTF-8")
-        pdf_file = HTML(string=rendered_html).write_pdf(stylesheets=[CSS(find_static('css/normalize.css')),
-                                                                     CSS(find_static('css/bootstrap.min.css')),
-                                                                     CSS(find_static('css/base.css')),
-                                                                     ])
-        http_response = HttpResponse(pdf_file, content_type='application/pdf')
-        http_response['Content-Disposition'] = 'filename="report.pdf"'
-
-        return http_response
-    else:
-        messages.error(request, 'Party does not have email address.')
-    return HttpResponseRedirect(reverse_lazy('sale-edit', kwargs={'pk': invoice_pk}))
+    try:
+        invoice = Sale.objects.get(pk=invoice_pk)
+        if invoice.party.email:
+            html_template = get_template('voucher/sale_pdf.html')
+            invoice_rows = SaleRow.objects.select_related('item', 'unit').filter(sale=invoice)
+            context = {'request': request, 'company': request.company, 'object': invoice, 'pagesize': 'A4', 'rows': invoice_rows, 'company': request.company}
+            rendered_html = html_template.render(RequestContext(request, context)).encode(encoding="UTF-8")
+            pdf_file = HTML(string=rendered_html).write_pdf(stylesheets=[CSS(find_static('css/normalize.css')),
+                                                                         CSS(find_static('css/bootstrap.min.css')),
+                                                                         CSS(find_static('css/base.css')),
+                                                                        ])
+            subject, from_email, to = 'Sale invoice', request.user.email, invoice.party.email
+            text_content = 'Invoice from %s.' % request.company
+            msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+            msg.attach('Sale-Invoice.pdf', pdf_file, 'application/pdf')
+            msg.send()
+            messages.success(request, 'Email send to %s.' % invoice.party)
+        else:
+            messages.error(request, 'Party does not have email address.')
+        return HttpResponseRedirect(reverse_lazy('sale-edit', kwargs={'pk': invoice_pk}))
+    except Sale.DoesNotExist:
+        messages.error(request, 'Invoice cannot be found.')
+        return HttpResponseRedirect(reverse_lazy('sale-edit', kwargs={'pk': invoice_pk}))
