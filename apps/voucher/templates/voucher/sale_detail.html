@@ -10,6 +10,11 @@
     <li>{% trans 'Detail' %} {% trans 'Sale' %}</li>
 {% endblock %}
 
+{% block header-buttons %}
+    {% if object.party.email %}
+        <a class="btn btn-success btn-raised" href={% url 'mail_invoice' %}?invoice_pk={{ object.id }}>{% trans 'Email Invoice' %}</a>
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="well">

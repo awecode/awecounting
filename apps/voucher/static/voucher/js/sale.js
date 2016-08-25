@@ -66,7 +66,7 @@ function SaleViewModel(data, settings) {
     //});
 
     self.mail_invoice = function (url) {
-        var _url = '#'
+        var _url = '#';
         if (self.id()){
             _url = url + '?invoice_pk='+self.id();
         }
@@ -116,7 +116,7 @@ function SaleViewModel(data, settings) {
             return p.id == id;
         });
         if (selected_party) {
-            if(selected_party.email) {
+            if(selected_party.email && data.party_id == id) {
                 self.has_party_email(true);
             } else {
                 self.has_party_email(false);
