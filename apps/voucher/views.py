@@ -24,7 +24,7 @@ from ..inventory.models import set_transactions, Location, LocationContain, Item
 from ..ledger.models import set_transactions as set_ledger_transactions, get_account, Account, Category
 from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error, \
     mail_exception, \
-    get_serialize_data
+    get_serialize_data, find_static
 from .forms import JournalVoucherForm, VoucherSettingForm, CreditVoucherForm, \
     DebitVoucherForm
 from .serializers import FixedAssetSerializer, \
@@ -1295,21 +1295,6 @@ def sale_row_onedit_location_item_details(request, sale_row_id=None, item_id=Non
             )
     response_data = sorted(response_data, key=lambda dic: dic['location_id'])
     return JsonResponse({'data': response_data})
-
-
-def find_static(path):
-    from django.contrib.staticfiles import finders
-    from django.utils.encoding import smart_unicode
-
-    result = finders.find(path, all=True)
-    path = smart_unicode(path)
-    if result:
-        if not isinstance(result, (list, tuple)):
-            result = [result]
-        output = u'\n  '.join(
-            (smart_unicode(os.path.realpath(path)) for path in result))
-        return output
-
 
 def mail_invoice(request):
     invoice_pk = request.GET.get('invoice_pk')
