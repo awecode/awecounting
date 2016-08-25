@@ -743,3 +743,8 @@ a.text-color-black {
 div.selectize-dropdown.single[style] {
    width: 300px !important;
 }
+
+.form-group input[type=file] {
+    opacity: 1 !important;
+    position: relative !important;
+}

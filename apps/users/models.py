@@ -57,6 +57,8 @@ class UserManager(BaseUserManager):
 class Company(models.Model):
     name = models.CharField(max_length=254)
     location = models.TextField()
+    logo = models.ImageField(blank=True, null=True)
+    contact_no = models.CharField(max_length=25, blank=True, null=True)
     ORGANIZATION_TYPES = (
         ('sole_proprietorship', 'Sole Proprietorship'), ('partnership', 'Partnership'), ('corporation', 'Corporation'),
         ('non_profit', 'Non-profit'))
