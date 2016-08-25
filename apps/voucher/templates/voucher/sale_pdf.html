@@ -136,37 +136,42 @@
                 <td>{{ row.get_total |floatformat:2 }}</td>
             </tr>
         {% endfor %}
-        <tr class="sub-total total">
+        <tr class="sub-total">
             <td colspan="{{ company.settings.sale_colspan }}">
                 {% trans 'Sub Total' %}
             </td>
             <td colspan="2">{{ object.sub_total }}</td>
 
         </tr>
-        <tr class="tax-total total">
+        {% if object.tax_amount > 0 %}
+        <tr class="tax-total">
             <td colspan="{{ company.settings.sale_colspan }}">
                 {% trans 'Tax Amount' %}
             </td>
             <td colspan="2">{{ object.tax_amount |floatformat:2 }}</td>
 
         </tr>
-        {% if company.settings.discount_on_each_purchase_particular %}
-            <tr class="discount total">
-                <td colspan="{{ company.settings.sale_colspan }}">
-                    {% trans 'Discount Amount' %}
-                </td>
-                <td colspan="2">{{ object.row_discount_total }}</td>
-
-            </tr>
         {% endif %}
-        {% if company.settings.single_discount_on_whole_purchase %}
-            <tr class="discount-voucher total">
-                <td colspan="{{ company.settings.sale_colspan }}">
-                    {% trans 'Discount on voucher' %}
-                </td>
-                <td colspan="2">{{ object.discount |default:'0' }}</td>
+        {% if object.row_discount_total > 0 %}
+            {% if company.settings.discount_on_each_purchase_particular %}
+                <tr class="discount">
+                    <td colspan="{{ company.settings.sale_colspan }}">
+                        {% trans 'Discount Amount' %}
+                    </td>
+                    <td colspan="2">{{ object.row_discount_total }}</td>
 
-            </tr>
+                </tr>
+            {% endif %}
+        {% endif %}
+        {% if object.discount %}
+            {% if company.settings.single_discount_on_whole_purchase %}
+                <tr class="discount-voucher">
+                    <td colspan="{{ company.settings.sale_colspan }}">
+                        {% trans 'Discount on voucher' %}
+                    </td>
+                    <td colspan="2">{{ object.discount |default:'0' }}</td>
+                </tr>
+            {% endif %}
         {% endif %}
         <tr class="total">
             <td colspan="{{ company.settings.sale_colspan }}">
