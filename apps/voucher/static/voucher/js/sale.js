@@ -111,12 +111,13 @@ function SaleViewModel(data, settings) {
 
     self.party = ko.observable();
     self.has_party_email = ko.observable();
+    self.data_party_id = ko.observable(data.party_id);
     self.party_id.subscribe(function (id) {
         var selected_party = ko.utils.arrayFirst(self.parties(), function (p) {
             return p.id == id;
         });
         if (selected_party) {
-            if(selected_party.email && data.party_id == id) {
+            if(selected_party.email && self.data_party_id() == id) {
                 self.has_party_email(true);
             } else {
                 self.has_party_email(false);
@@ -286,6 +287,8 @@ function SaleViewModel(data, settings) {
                     self.table_view.deleted_rows([]);
                     if (msg.id)
                         self.id(msg.id);
+                    self.data_party_id(msg.party_id);
+                    self.party_id(msg.party_id);
                     $("tbody > tr").each(function (i) {
                         $($("tbody > tr:not(.total)")[i]).addClass('invalid-row');
                     });

@@ -740,6 +740,7 @@ def save_sale(request):
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
+        dct['party_id'] = obj.party.id
         model = SaleRow
         grand_total = 0
 
