@@ -13,6 +13,7 @@ p {
 tr td{
     padding-right: 5px !important;
     padding-left: 3px !important;
+    border-left: none;
 }
 
 .margin-top {
