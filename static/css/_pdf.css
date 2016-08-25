@@ -1,0 +1,20 @@
+.no-bottom-margin {
+    margin-bottom: 0px;
+}
+
+p {
+    font-size: 12px;
+}
+
+.margin-left {
+    margin-left: 20px;
+}
+
+tr td{
+    padding-right: 5px !important;
+    padding-left: 3px !important;
+}
+
+.margin-top {
+    margin-top: 20px;
+}

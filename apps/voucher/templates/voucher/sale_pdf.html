@@ -2,102 +2,108 @@
 {% load staticfiles i18n filters %}
 
 {% block content %}
-    <h3>{% trans "Sale Invoice for" %} {{ object.party }}</h3>
+    <div class="row">
+        <div class="col-xs-10">
+            <h3 class="no-bottom-margin">{{ company.name }}</h3>
+            {% if company.location %}
+                <p class="no-bottom-margin">{{ company.location }}</p>
+            {% endif %}
+            {% if company.contact_no %}
+                <p class="no-bottom-margin">{% trans "Contact" %}: {{ company.contact_no }}</p>
+            {% endif %}
+        </div>
+        <div class="col-xs-2">
+            <div class="pull-right">
+                <h3>{% trans "INVOICE" %}</h3>
+            </div>
+        </div>
+    </div>
+    <br/>
     <div class="row">
         <div class="col-xs-6 col-sm-12">
-            <div>
-            <label for="voucher-no">{% trans 'Voucher' %} {% trans 'No.' %}</label>
-            <p>
-                {{ object.voucher_no }}
-            </p>
+            <h4 class="no-bottom-margin">{% trans "Bill To:" %}</h4>
+
+            <div class="margin-left">
+                <p class="no-bottom-margin">{{ object.party.name }}</p>
+
+                <p class="no-bottom-margin">{{ object.party.address }}</p>
+                {% if object.party.phone_no %}
+                    <p class="no-bottom-margin">{% trans "Contact" %}: {{ object.party.phone_no }}</p>
+                {% endif %}
+                {% if object.party.pan_no %}
+                    <p class="no-bottom-margin">{% trans "Tax Reg. No." %}: {{ object.party.pan_no }}</p>
+                {% endif %}
             </div>
         </div>
         <div class="col-xs-6 col-sm-12">
-            <label for="date">{% trans 'Date' %}</label>
-            <p>
-                {{ object.date }}
-            </p>
-        </div>
-    </div>
-
-{#    <div class="row">#}
-{#        <div class="col-xs-6 col-sm-12">#}
-{#            <label for="party">{% trans 'Party' %}</label>#}
-{#            <p>#}
-{#                {{ object.party.name }}#}
-{#            </p>#}
-{#        </div>#}
-{#        <div class="col-xs-6 col-sm-12">#}
-{#            <label>{% trans 'Due' %}</label>#}
-{#            <p>#}
-{#                {% multiply object.party.account.balance -1 %}#}
-{#            </p>#}
-{#        </div>#}
-{#    </div>#}
-
-    <div class="row">
-        <div class="col-xs-6 col-sm-12">
-            <label>{% trans 'Type' %}</label>
-            <p>
-                {{ object.type }}
-            </p>
-        </div>
-        {% if object.due_date %}
-        <div class="col-xs-6 col-sm-12">
-            <label>{% trans 'Due Date' %}</label>
-            <p>
-                {{ object.due_date }}
-            </p>
-        </div>
-        {% endif %}
-   </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-12">
-            <label for="party">{% trans 'Tax' %}</label>
-            <p> {{ object.get_tax_display }}</p>
-        </div>
-        {% if object.tax_scheme and object.tax != 'no' %}
-        <div>
-            <div class="col-xs-6 col-sm-12">
-                <label for="due_date">{% trans 'Tax Scheme' %}</label>
-                <p> {{ object.tax_scheme }}</p>
+            <div class="pull-right margin-top">
+                <table>
+                    <tr>
+                        <td>{% trans "Invoice no." %}</td>
+                        <td>{{ object.voucher_no }}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans 'Date' %}</td>
+                        <td>{{ object.date }}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans 'Type' %}</td>
+                        <td>{{ object.type }}</td>
+                    </tr>
+                    {% if object.due_date %}
+                    <tr>
+                        <td>{% trans "Due Date" %}</td>
+                        <td>{{ object.due_date }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <td>{% trans "TAX" %}</td>
+                        <td>{{ object.get_tax_display }}</td>
+                    </tr>
+                    {% if object.tax_scheme and object.tax != 'no' %}
+                    <tr>
+                        <td>{% trans 'Tax Scheme' %}</td>
+                        <td> {{ object.tax_scheme }}</td>
+                    </tr>
+                    {% endif %}
+                </table>
             </div>
         </div>
-        {% endif %}
     </div>
+    <br/>
     <table class="table table-striped">
         <thead>
-            <tr>
-                {% if company.settings.show_sale_voucher_sn %}
-                    <th class="{% print_view 'show_sale_print_sn' %}">{% trans "S.N." %}</th>
-                {% endif %}
-                <th>{% trans "Item" %}</th>
-                {% if company.settings.show_sale_voucher_code %}
-                    <th class="{% print_view 'show_sale_print_code' %}">{% trans "Code" %}</th>
-                {% endif %}
-                {% if company.settings.show_sale_voucher_oem_number %}
-                    <th class="{% print_view 'show_sale_print_oem_number' %}">{% trans "OEM Number" %}</th>
-                {% endif %}
-                <th>{% trans "Quantity" %}</th>
-                <th>{% trans "Rate" %}</th>
-                <th>{% trans "Unit" %}</th>
-                {% if company.settings.show_sale_voucher_discount %}
-                    <th class="{% print_view 'show_sale_print_discount' %}">{% trans 'Discount' %}</th>
-                {% endif %}
+        <tr>
+            {% if company.settings.show_sale_voucher_sn %}
+                <th class="{% print_view 'show_sale_print_sn' %}">{% trans "S.N." %}</th>
+            {% endif %}
+            <th>{% trans "Item" %}</th>
+            {% if company.settings.show_sale_voucher_code %}
+                <th class="{% print_view 'show_sale_print_code' %}">{% trans "Code" %}</th>
+            {% endif %}
+            {% if company.settings.show_sale_voucher_oem_number %}
+                <th class="{% print_view 'show_sale_print_oem_number' %}">{% trans "OEM Number" %}</th>
+            {% endif %}
+            <th>{% trans "Quantity" %}</th>
+            <th>{% trans "Rate" %}</th>
+            <th>{% trans "Unit" %}</th>
+            {% if company.settings.show_sale_voucher_discount %}
+                <th class="{% print_view 'show_sale_print_discount' %}">{% trans 'Discount' %}</th>
+            {% endif %}
 
-                {% if company.settings.show_sale_voucher_tax_scheme %}
-                    <th class="{% print_view 'show_sale_print_tax_scheme' %}">{% trans "Tax Scheme" %}</th>
-                {% endif %}
+            {% if company.settings.show_sale_voucher_tax_scheme %}
+                <th class="{% print_view 'show_sale_print_tax_scheme' %}">{% trans "Tax Scheme" %}</th>
+            {% endif %}
 
-                {% if company.settings.show_locations %}
+            {% if company.settings.show_locations %}
                 <th>{% trans 'Location' %}</th>
-                {% endif %}
-                <th>{% trans 'Total' %}</th>
-            </tr>
+            {% endif %}
+            <th>{% trans 'Total' %}</th>
+        </tr>
         </thead>
 
         <tbody>
-            {% for row in rows %}
+        {% for row in rows %}
             <tr>
                 {% if company.settings.show_sale_voucher_sn %}
                     <td class="{% print_view 'show_sale_print_sn' %}">{{ row.sn }}</td>
@@ -114,13 +120,13 @@
                 <td>{{ row.unit }}</td>
                 {% if company.settings.show_sale_voucher_discount %}
                     <td class="{% print_view 'show_sale_print_discount' %}">
-                        {{ row.discount | default:''}}
+                        {{ row.discount | default:'' }}
                     </td>
                 {% endif %}
 
                 {% if company.settings.show_sale_voucher_tax_scheme %}
                     <td class="{% print_view 'show_sale_print_tax_scheme' %}">
-                        {{ row.tax_scheme | default:''}}
+                        {{ row.tax_scheme | default:'' }}
                     </td>
                 {% endif %}
                 {% if company.settings.show_locations %}
@@ -129,22 +135,22 @@
 
                 <td>{{ row.get_total |floatformat:2 }}</td>
             </tr>
-            {% endfor %}
-            <tr class="sub-total total">
-                <td colspan="{{ company.settings.sale_colspan }}">
-                    {% trans 'Sub Total' %}
-                </td>
-                <td colspan="2">{{ object.sub_total }}</td>
+        {% endfor %}
+        <tr class="sub-total total">
+            <td colspan="{{ company.settings.sale_colspan }}">
+                {% trans 'Sub Total' %}
+            </td>
+            <td colspan="2">{{ object.sub_total }}</td>
 
-            </tr>
-            <tr class="tax-total total">
-                <td colspan="{{ company.settings.sale_colspan }}">
-                    {% trans 'Tax Amount' %}
-                </td>
-                <td colspan="2">{{ object.tax_amount |floatformat:2 }}</td>
+        </tr>
+        <tr class="tax-total total">
+            <td colspan="{{ company.settings.sale_colspan }}">
+                {% trans 'Tax Amount' %}
+            </td>
+            <td colspan="2">{{ object.tax_amount |floatformat:2 }}</td>
 
-            </tr>
-            {% if company.settings.discount_on_each_purchase_particular %}
+        </tr>
+        {% if company.settings.discount_on_each_purchase_particular %}
             <tr class="discount total">
                 <td colspan="{{ company.settings.sale_colspan }}">
                     {% trans 'Discount Amount' %}
@@ -152,23 +158,23 @@
                 <td colspan="2">{{ object.row_discount_total }}</td>
 
             </tr>
-            {% endif %}
-            {% if company.settings.single_discount_on_whole_purchase %}
+        {% endif %}
+        {% if company.settings.single_discount_on_whole_purchase %}
             <tr class="discount-voucher total">
                 <td colspan="{{ company.settings.sale_colspan }}">
                     {% trans 'Discount on voucher' %}
                 </td>
-                <td colspan="2">{{ object.discount |default:'0'}}</td>
+                <td colspan="2">{{ object.discount |default:'0' }}</td>
 
             </tr>
-            {% endif %}
-            <tr class="total">
-                <td colspan="{{ company.settings.sale_colspan }}">
-                    {% trans 'Grand Total' %}
-                </td>
-                <td colspan="2">{{ object.total }}</td>
-            </tr>
-            </tbody>
+        {% endif %}
+        <tr class="total">
+            <td colspan="{{ company.settings.sale_colspan }}">
+                {% trans 'Grand Total' %}
+            </td>
+            <td colspan="2">{{ object.total }}</td>
+        </tr>
+        </tbody>
 
     </table>
 
