@@ -13,9 +13,26 @@ p {
 tr td{
     padding-right: 5px !important;
     padding-left: 3px !important;
-    border-left: none;
+    border-left: none !important;
 }
 
 .margin-top {
     margin-top: 20px;
+}
+
+.inline {
+    display: inline;
+}
+
+img {
+    height: 36px;
+    width: 40px;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+h3 {
+    display: inline;
+    vertical-align: middle;
+    font-size: 33px;
 }

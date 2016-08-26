@@ -4,6 +4,9 @@
 {% block content %}
     <div class="row">
         <div class="col-xs-10">
+            {% if company.logo %}
+                <img src="{{ company.logo.url }}">
+            {% endif %}
             <h3 class="no-bottom-margin">{{ company.name }}</h3>
             {% if company.location %}
                 <p class="no-bottom-margin">{{ company.location }}</p>
@@ -51,20 +54,20 @@
                         <td>{{ object.type }}</td>
                     </tr>
                     {% if object.due_date %}
-                    <tr>
-                        <td>{% trans "Due Date" %}</td>
-                        <td>{{ object.due_date }}</td>
-                    </tr>
+                        <tr>
+                            <td>{% trans "Due Date" %}</td>
+                            <td>{{ object.due_date }}</td>
+                        </tr>
                     {% endif %}
                     <tr>
                         <td>{% trans "TAX" %}</td>
                         <td>{{ object.get_tax_display }}</td>
                     </tr>
                     {% if object.tax_scheme and object.tax != 'no' %}
-                    <tr>
-                        <td>{% trans 'Tax Scheme' %}</td>
-                        <td> {{ object.tax_scheme }}</td>
-                    </tr>
+                        <tr>
+                            <td>{% trans 'Tax Scheme' %}</td>
+                            <td> {{ object.tax_scheme }}</td>
+                        </tr>
                     {% endif %}
                 </table>
             </div>
@@ -144,13 +147,13 @@
 
         </tr>
         {% if object.tax_amount > 0 %}
-        <tr class="tax-total">
-            <td colspan="{{ company.settings.sale_colspan }}">
-                {% trans 'Tax Amount' %}
-            </td>
-            <td colspan="2">{{ object.tax_amount |floatformat:2 }}</td>
+            <tr class="tax-total">
+                <td colspan="{{ company.settings.sale_colspan }}">
+                    {% trans 'Tax Amount' %}
+                </td>
+                <td colspan="2">{{ object.tax_amount |floatformat:2 }}</td>
 
-        </tr>
+            </tr>
         {% endif %}
         {% if object.row_discount_total > 0 %}
             {% if company.settings.discount_on_each_purchase_particular %}

@@ -1305,7 +1305,7 @@ def mail_invoice(request):
             invoice_rows = SaleRow.objects.select_related('item', 'unit').filter(sale=invoice)
             context = {'request': request, 'company': request.company, 'object': invoice, 'pagesize': 'A4', 'rows': invoice_rows, 'company': request.company}
             rendered_html = html_template.render(RequestContext(request, context)).encode(encoding="UTF-8")
-            pdf_file = HTML(string=rendered_html).write_pdf(stylesheets=[CSS(find_static('css/normalize.css')),
+            pdf_file = HTML(string=rendered_html, base_url=request.build_absolute_uri()).write_pdf(stylesheets=[CSS(find_static('css/normalize.css')),
                                                                          CSS(find_static('css/bootstrap.min.css')),
                                                                          CSS(find_static('css/base.css')),
                                                                          CSS(find_static('css/_pdf.css')),
