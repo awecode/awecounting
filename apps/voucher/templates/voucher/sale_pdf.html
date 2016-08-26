@@ -141,7 +141,7 @@
         {% endfor %}
         <tr class="sub-total">
             <td colspan="{{ company.settings.sale_colspan }}">
-                {% trans 'Sub Total' %}
+                <span class="pull-right">{% trans 'Sub Total' %}</span>
             </td>
             <td colspan="2">{{ object.sub_total }}</td>
 
@@ -149,7 +149,7 @@
         {% if object.tax_amount > 0 %}
             <tr class="tax-total">
                 <td colspan="{{ company.settings.sale_colspan }}">
-                    {% trans 'Tax Amount' %}
+                    <span class="pull-right">{% trans 'Tax Amount' %}</span>
                 </td>
                 <td colspan="2">{{ object.tax_amount |floatformat:2 }}</td>
 
@@ -159,7 +159,7 @@
             {% if company.settings.discount_on_each_purchase_particular %}
                 <tr class="discount">
                     <td colspan="{{ company.settings.sale_colspan }}">
-                        {% trans 'Discount Amount' %}
+                        <span class="pull-right">{% trans 'Discount Amount' %}</span>
                     </td>
                     <td colspan="2">{{ object.row_discount_total }}</td>
 
@@ -170,7 +170,7 @@
             {% if company.settings.single_discount_on_whole_purchase %}
                 <tr class="discount-voucher">
                     <td colspan="{{ company.settings.sale_colspan }}">
-                        {% trans 'Discount on voucher' %}
+                        <span class="pull-right">{% trans 'Discount on voucher' %}</span>
                     </td>
                     <td colspan="2">{{ object.discount |default:'0' }}</td>
                 </tr>
@@ -178,7 +178,7 @@
         {% endif %}
         <tr class="total">
             <td colspan="{{ company.settings.sale_colspan }}">
-                {% trans 'Grand Total' %}
+                <span class="pull-right">{% trans 'Grand Total' %}</span>
             </td>
             <td colspan="2">{{ object.total }}</td>
         </tr>
