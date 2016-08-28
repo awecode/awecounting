@@ -49,20 +49,18 @@
                         <td>{% trans 'Date' %}</td>
                         <td>{{ object.date }}</td>
                     </tr>
-                    <tr>
-                        <td>{% trans 'Type' %}</td>
-                        <td>{{ object.type }}</td>
-                    </tr>
                     {% if object.due_date %}
                         <tr>
                             <td>{% trans "Due Date" %}</td>
                             <td>{{ object.due_date }}</td>
                         </tr>
                     {% endif %}
-                    <tr>
+                    {% if object.tax != 'no' %}
+                        <tr>
                         <td>{% trans "TAX" %}</td>
                         <td>{{ object.get_tax_display }}</td>
                     </tr>
+                    {% endif %}
                     {% if object.tax_scheme and object.tax != 'no' %}
                         <tr>
                             <td>{% trans 'Tax Scheme' %}</td>

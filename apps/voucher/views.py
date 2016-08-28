@@ -1310,15 +1310,12 @@ def mail_invoice(request):
                                                                          CSS(find_static('css/base.css')),
                                                                          CSS(find_static('css/_pdf.css')),
                                                                         ])
-            http_response = HttpResponse(pdf_file, content_type='application/pdf')
-            http_response['Content-Disposition'] = 'filename=asdf'
-            return http_response
             subject, from_email, to = 'Sale invoice', request.user.email, invoice.party.email
             text_content = 'Invoice from %s.' % request.company
             msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
             msg.attach('Sale-Invoice.pdf', pdf_file, 'application/pdf')
             msg.send()
-            messages.success(request, 'Email send to %s.' % invoice.party)
+            messages.success(request, 'Email sent to %s.' % invoice.party)
         else:
             messages.error(request, 'Party does not have email address.')
         return HttpResponseRedirect(reverse_lazy('sale-edit', kwargs={'pk': invoice_pk}))
