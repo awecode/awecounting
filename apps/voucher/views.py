@@ -1,35 +1,41 @@
 import datetime
 import json
+import os
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template import RequestContext
+from django.template.loader import get_template
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
+
 from django.views.generic import TemplateView
-from ..inventory.serializers import ItemSerializer
 
 from ..ledger.serializers import PartyBalanceSerializer, AccountSerializer
 from ..inventory.serializers import ItemSerializer, UnitSerializer, LocationSerializer
 from ..tax.serializers import TaxSchemeSerializer
-from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, group_required, TableObjectMixin, UpdateView, \
+from awecounting.utils.mixins import CompanyView, DeleteView, SuperOwnerMixin, group_required, TableObjectMixin, \
+    UpdateView, \
     CompanyRequiredMixin, CreateView, TableObject, CashierMixin, \
     StockistMixin, AccountantMixin
 from ..inventory.models import set_transactions, Location, LocationContain, Item
 from ..ledger.models import set_transactions as set_ledger_transactions, get_account, Account, Category
-from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error, mail_exception, \
-    get_serialize_data
+from awecounting.utils.helpers import save_model, invalid, empty_to_none, delete_rows, zero_for_none, write_error, \
+    mail_exception, \
+    get_serialize_data, find_static
 from .forms import JournalVoucherForm, VoucherSettingForm, CreditVoucherForm, \
     DebitVoucherForm
-from .serializers import FixedAssetSerializer,\
+from .serializers import FixedAssetSerializer, \
     JournalVoucherSerializer, PurchaseVoucherSerializer, SaleSerializer, PurchaseOrderSerializer, \
     ExpenseSerializer, ExportPurchaseVoucherRowSerializer, CreditVoucherSerializer, DebitVoucherSerializer
 from .models import FixedAsset, FixedAssetRow, AdditionalDetail, CreditVoucher, PurchaseVoucher, JournalVoucher, \
     JournalVoucherRow, \
     PurchaseVoucherRow, Sale, SaleRow, CreditVoucherRow, DebitVoucher, DebitVoucherRow, PurchaseOrder, PurchaseOrderRow, \
     VoucherSetting, Expense, ExpenseRow, TradeExpense, Lot, LotItemDetail, SaleFromLocation
-
+from weasyprint import HTML, CSS
+from django.core.mail import EmailMultiAlternatives
 
 class FixedAssetView(CompanyView):
     model = FixedAsset
@@ -123,7 +129,6 @@ class CreditVoucherView(CompanyView):
         return self.form_class(**kwargs)
 
 
-
 class CreditVoucherList(CreditVoucherView, AccountantMixin, ListView):
     pass
 
@@ -137,7 +142,6 @@ class CreditVoucherDetailView(CreditVoucherView, AccountantMixin, DetailView):
 
 class CreditVoucherCreate(CreditVoucherView, TableObject, AccountantMixin, CreateView):
     template_name = 'credit_voucher.html'
-
 
 
 class CreditVoucherUpdate(CreditVoucherView, TableObject, AccountantMixin, UpdateView):
@@ -220,7 +224,8 @@ def save_debit_voucher(request):
         params['voucher_no'] = None
     object_values = {'party_id': params.get('party_id'), 'date': params.get('date'),
                      'voucher_no': params.get('voucher_no'),
-                     'reference': params.get('reference'), 'payment_id':params.get('payment'), 'company': request.company}
+                     'reference': params.get('reference'), 'payment_id': params.get('payment'),
+                     'company': request.company}
     if params.get('id'):
         obj = DebitVoucher.objects.get(id=params.get('id'), company__in=request.company.get_all())
     else:
@@ -236,7 +241,8 @@ def save_debit_voucher(request):
                 if invalid(row, ['payment']):
                     continue
                 row['payment'] = zero_for_none(empty_to_none(row['payment']))
-                invoice = PurchaseVoucher.objects.get(voucher_no=row.get('voucher_no'), company__in=request.company.get_all())
+                invoice = PurchaseVoucher.objects.get(voucher_no=row.get('voucher_no'),
+                                                      company__in=request.company.get_all())
                 invoice.pending_amount = row.get('pending_amount')
                 invoice.save()
                 values = {'payment': row.get('payment'), 'cash_payment': obj, 'invoice': invoice}
@@ -382,7 +388,8 @@ def save_credit_voucher(request):
         params['voucher_no'] = None
     object_values = {'party_id': params.get('party_id'), 'date': params.get('date'),
                      'voucher_no': params.get('voucher_no'),
-                     'reference': params.get('reference'), 'receipt_id':params.get('receipt'), 'company': request.company}
+                     'reference': params.get('reference'), 'receipt_id': params.get('receipt'),
+                     'company': request.company}
     if params.get('id'):
         obj = CreditVoucher.objects.get(id=params.get('id'), company__in=request.company.get_all())
     else:
@@ -733,6 +740,7 @@ def save_sale(request):
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
+        dct['party_id'] = obj.party.id
         model = SaleRow
         grand_total = 0
 
@@ -887,7 +895,8 @@ def sale_day(request, voucher_date):
 
 @group_required('Cashier')
 def sale_date_range(request, from_date, to_date):
-    objects = Sale.objects.filter(date__gte=from_date, date__lte=to_date, company__in=request.company.get_all()).prefetch_related(
+    objects = Sale.objects.filter(date__gte=from_date, date__lte=to_date,
+                                  company__in=request.company.get_all()).prefetch_related(
         'rows')
     total_amount = 0
     total_quantity = 0
@@ -1031,7 +1040,7 @@ class PurchaseOrderCreate(PurchaseOrderView, StockistMixin, TableObjectMixin):
         context = super(PurchaseOrderCreate, self).get_context_data(**kwargs)
         item_obj = Item.objects.filter(company=self.request.company).select_related('account').select_related('unit')
         item_data = ItemSerializer(item_obj, context={'request': self.request},
-                                       many=True).data
+                                   many=True).data
         all_ledgers = Account.objects.filter(company=self.request.company, category__name='Purchase Expenses')
 
         context['data']['items'] = item_data
@@ -1190,8 +1199,10 @@ class ExpenseCreate(ExpenseView, AccountantMixin, TableObjectMixin):
         pay_head_categories = ['Bank Account', 'Cash Account']
         pay_head_accounts = Account.objects.filter(company=self.request.company, category__name__in=pay_head_categories)
         context['data']['expense_accounts'] = get_serialize_data(AccountSerializer, self.request.company, all_ledgers)
-        context['data']['pay_head_accounts'] = get_serialize_data(AccountSerializer, self.request.company, pay_head_accounts)
+        context['data']['pay_head_accounts'] = get_serialize_data(AccountSerializer, self.request.company,
+                                                                  pay_head_accounts)
         return context
+
 
 def save_expense(request):
     if request.is_ajax():
@@ -1239,9 +1250,11 @@ def sale_row_onedit_location_item_details(request, sale_row_id=None, item_id=Non
     item = get_object_or_404(Item, pk=item_id)
     sale_row = get_object_or_404(SaleRow, pk=sale_row_id)
 
-    item_present_locations = [{'location_id': loc.location_id, 'location_name': loc.location.name, 'qty': loc.qty} for loc in
+    item_present_locations = [{'location_id': loc.location_id, 'location_name': loc.location.name, 'qty': loc.qty} for
+                              loc in
                               item.location_contain.all()]
-    sale_from_locations = [{'location_id': itm.location_id, 'location_name': itm.location.name, 'selected_qty': itm.qty} for itm
+    sale_from_locations = [{'location_id': itm.location_id, 'location_name': itm.location.name, 'selected_qty': itm.qty}
+                           for itm
                            in sale_row.from_locations.all()]
 
     response_data = []
@@ -1282,3 +1295,33 @@ def sale_row_onedit_location_item_details(request, sale_row_id=None, item_id=Non
             )
     response_data = sorted(response_data, key=lambda dic: dic['location_id'])
     return JsonResponse({'data': response_data})
+
+def mail_invoice(request):
+    invoice_pk = request.GET.get('invoice_pk')
+    try:
+        invoice = Sale.objects.get(pk=invoice_pk)
+        if invoice.party.email:
+            html_template = get_template('voucher/sale_pdf.html')
+            invoice_rows = SaleRow.objects.select_related('item', 'unit').filter(sale=invoice)
+            context = {'request': request, 'company': request.company, 'object': invoice, 'pagesize': 'A4', 'rows': invoice_rows, 'company': request.company}
+            rendered_html = html_template.render(RequestContext(request, context)).encode(encoding="UTF-8")
+            pdf_file = HTML(string=rendered_html, base_url=request.build_absolute_uri()).write_pdf(stylesheets=[CSS(find_static('css/normalize.css')),
+                                                                         CSS(find_static('css/bootstrap.min.css')),
+                                                                         CSS(find_static('css/base.css')),
+                                                                         CSS(find_static('css/_pdf.css')),
+                                                                        ])
+            http_response = HttpResponse(pdf_file, content_type='application/pdf')
+            http_response['Content-Disposition'] = 'filename=asdf'
+            return http_response
+            subject, from_email, to = 'Sale invoice', request.user.email, invoice.party.email
+            text_content = 'Invoice from %s.' % request.company
+            msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+            msg.attach('Sale-Invoice.pdf', pdf_file, 'application/pdf')
+            msg.send()
+            messages.success(request, 'Email send to %s.' % invoice.party)
+        else:
+            messages.error(request, 'Party does not have email address.')
+        return HttpResponseRedirect(reverse_lazy('sale-edit', kwargs={'pk': invoice_pk}))
+    except Sale.DoesNotExist:
+        messages.error(request, 'Invoice cannot be found.')
+        return HttpResponseRedirect(reverse_lazy('sale-edit', kwargs={'pk': invoice_pk}))

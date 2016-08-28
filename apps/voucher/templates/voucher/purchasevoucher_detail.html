@@ -72,7 +72,7 @@
             <label for="party">{% trans 'Tax' %}</label>
             <p> {{ object.get_tax_display }}</p>
         </div>
-        {% if object.tax_scheme %}
+        {% if object.tax_scheme and object.tax != 'no' %}
         <div>
             <div class="col-md-6 col-sm-12">
                 <label for="due_date">{% trans 'Tax Scheme' %}</label>

@@ -1,0 +1,189 @@
+{% extends "pdf_base.html" %}
+{% load staticfiles i18n filters %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-xs-10">
+            {% if company.logo %}
+                <img src="{{ company.logo.url }}">
+            {% endif %}
+            <h3 class="no-bottom-margin">{{ company.name }}</h3>
+            {% if company.location %}
+                <p class="no-bottom-margin">{{ company.location }}</p>
+            {% endif %}
+            {% if company.contact_no %}
+                <p class="no-bottom-margin">{% trans "Contact" %}: {{ company.contact_no }}</p>
+            {% endif %}
+        </div>
+        <div class="col-xs-2">
+            <div class="pull-right">
+                <h3>{% trans "INVOICE" %}</h3>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col-xs-6 col-sm-12">
+            <h4 class="no-bottom-margin">{% trans "Bill To:" %}</h4>
+
+            <div class="margin-left">
+                <p class="no-bottom-margin">{{ object.party.name }}</p>
+
+                <p class="no-bottom-margin">{{ object.party.address }}</p>
+                {% if object.party.phone_no %}
+                    <p class="no-bottom-margin">{% trans "Contact" %}: {{ object.party.phone_no }}</p>
+                {% endif %}
+                {% if object.party.pan_no %}
+                    <p class="no-bottom-margin">{% trans "Tax Reg. No." %}: {{ object.party.pan_no }}</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-12">
+            <div class="pull-right margin-top">
+                <table>
+                    <tr>
+                        <td>{% trans "Invoice no." %}</td>
+                        <td>{{ object.voucher_no }}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans 'Date' %}</td>
+                        <td>{{ object.date }}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans 'Type' %}</td>
+                        <td>{{ object.type }}</td>
+                    </tr>
+                    {% if object.due_date %}
+                        <tr>
+                            <td>{% trans "Due Date" %}</td>
+                            <td>{{ object.due_date }}</td>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        <td>{% trans "TAX" %}</td>
+                        <td>{{ object.get_tax_display }}</td>
+                    </tr>
+                    {% if object.tax_scheme and object.tax != 'no' %}
+                        <tr>
+                            <td>{% trans 'Tax Scheme' %}</td>
+                            <td> {{ object.tax_scheme }}</td>
+                        </tr>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            {% if company.settings.show_sale_voucher_sn %}
+                <th class="{% print_view 'show_sale_print_sn' %}">{% trans "S.N." %}</th>
+            {% endif %}
+            <th>{% trans "Item" %}</th>
+            {% if company.settings.show_sale_voucher_code %}
+                <th class="{% print_view 'show_sale_print_code' %}">{% trans "Code" %}</th>
+            {% endif %}
+            {% if company.settings.show_sale_voucher_oem_number %}
+                <th class="{% print_view 'show_sale_print_oem_number' %}">{% trans "OEM Number" %}</th>
+            {% endif %}
+            <th>{% trans "Quantity" %}</th>
+            <th>{% trans "Rate" %}</th>
+            <th>{% trans "Unit" %}</th>
+            {% if company.settings.show_sale_voucher_discount %}
+                <th class="{% print_view 'show_sale_print_discount' %}">{% trans 'Discount' %}</th>
+            {% endif %}
+
+            {% if company.settings.show_sale_voucher_tax_scheme %}
+                <th class="{% print_view 'show_sale_print_tax_scheme' %}">{% trans "Tax Scheme" %}</th>
+            {% endif %}
+
+            {% if company.settings.show_locations %}
+                <th>{% trans 'Location' %}</th>
+            {% endif %}
+            <th>{% trans 'Total' %}</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for row in rows %}
+            <tr>
+                {% if company.settings.show_sale_voucher_sn %}
+                    <td class="{% print_view 'show_sale_print_sn' %}">{{ row.sn }}</td>
+                {% endif %}
+                <td>{{ row.item }}</td>
+                {% if company.settings.show_sale_voucher_code %}
+                    <td class="{% print_view 'show_sale_print_code' %}">{{ row.item.code | default:'' }}</td>
+                {% endif %}
+                {% if company.settings.show_sale_voucher_oem_number %}
+                    <td class="{% print_view 'show_sale_print_oem_number' %}">{{ row.item.oem_no }}</td>
+                {% endif %}
+                <td>{{ row.quantity }}</td>
+                <td>{{ row.rate }}</td>
+                <td>{{ row.unit }}</td>
+                {% if company.settings.show_sale_voucher_discount %}
+                    <td class="{% print_view 'show_sale_print_discount' %}">
+                        {{ row.discount | default:'' }}
+                    </td>
+                {% endif %}
+
+                {% if company.settings.show_sale_voucher_tax_scheme %}
+                    <td class="{% print_view 'show_sale_print_tax_scheme' %}">
+                        {{ row.tax_scheme | default:'' }}
+                    </td>
+                {% endif %}
+                {% if company.settings.show_locations %}
+                    <td>{{ row.location.name }}</td>
+                {% endif %}
+
+                <td>{{ row.get_total |floatformat:2 }}</td>
+            </tr>
+        {% endfor %}
+        <tr class="sub-total">
+            <td colspan="{{ company.settings.sale_colspan }}">
+                <span class="pull-right">{% trans 'Sub Total' %}</span>
+            </td>
+            <td colspan="2">{{ object.sub_total }}</td>
+
+        </tr>
+        {% if object.tax_amount > 0 %}
+            <tr class="tax-total">
+                <td colspan="{{ company.settings.sale_colspan }}">
+                    <span class="pull-right">{% trans 'Tax Amount' %}</span>
+                </td>
+                <td colspan="2">{{ object.tax_amount |floatformat:2 }}</td>
+
+            </tr>
+        {% endif %}
+        {% if object.row_discount_total > 0 %}
+            {% if company.settings.discount_on_each_purchase_particular %}
+                <tr class="discount">
+                    <td colspan="{{ company.settings.sale_colspan }}">
+                        <span class="pull-right">{% trans 'Discount Amount' %}</span>
+                    </td>
+                    <td colspan="2">{{ object.row_discount_total }}</td>
+
+                </tr>
+            {% endif %}
+        {% endif %}
+        {% if object.discount %}
+            {% if company.settings.single_discount_on_whole_purchase %}
+                <tr class="discount-voucher">
+                    <td colspan="{{ company.settings.sale_colspan }}">
+                        <span class="pull-right">{% trans 'Discount on voucher' %}</span>
+                    </td>
+                    <td colspan="2">{{ object.discount |default:'0' }}</td>
+                </tr>
+            {% endif %}
+        {% endif %}
+        <tr class="total">
+            <td colspan="{{ company.settings.sale_colspan }}">
+                <span class="pull-right">{% trans 'Grand Total' %}</span>
+            </td>
+            <td colspan="2">{{ object.total }}</td>
+        </tr>
+        </tbody>
+
+    </table>
+
+{% endblock %}

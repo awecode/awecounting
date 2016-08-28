@@ -557,6 +557,7 @@ class Party(models.Model):
     customer_account = models.OneToOneField(Account, null=True, related_name='customer_detail')
     company = models.ForeignKey(Company, related_name='parties')
     related_company = models.ForeignKey(Company, blank=True, null=True, related_name='related_party')
+    email = models.EmailField(verbose_name='email address', blank=True, null=True, max_length=254, unique=True, db_index=True)
 
     def get_absolute_url(self):
         return reverse_lazy('party_edit', kwargs={'pk': self.pk})

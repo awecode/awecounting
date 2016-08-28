@@ -1,0 +1,20 @@
+{% load i18n %}
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    {% block extrahead %}
+    {% endblock %}
+    <link href="{% static 'css/base.css' %}" rel="stylesheet">
+</head>
+<body>
+
+<div>
+    {% block content %}
+    {% endblock %}
+</div>
+
+</body>
+</html>

@@ -1,6 +1,8 @@
 from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework.authtoken import views as rest_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 from apps.inventory import views as inventory_views
 from apps.users import views as users_views
@@ -26,7 +28,7 @@ urlpatterns = [
     url(r'^njango/', include('njango.urls')),
     url(r'^api-token-auth/', rest_views.obtain_auth_token),
     url(r'^log_errors/', users_views.log_js_errors),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler400 = 'apps.users.views.bad_request'
 handler403 = 'apps.users.views.permission_denied'

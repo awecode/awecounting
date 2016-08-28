@@ -9,7 +9,7 @@
 
 {% block content %}
 
-    <form method="POST">
+    <form enctype="multipart/form-data" method="POST">
         <div class="well">
             {% csrf_token %}
             {{ form.non_field_errors }}

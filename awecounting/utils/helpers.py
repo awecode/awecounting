@@ -1,5 +1,6 @@
 import json
 import sys
+import os
 import linecache
 from django.apps import apps
 
@@ -196,3 +197,17 @@ def get_serialize_data(serializer, company, query=None):
         return serializer(query, many=True).data
     obj = serializer.Meta.model.objects.filter(company=company)
     return serializer(obj, many=True).data
+
+
+def find_static(path):
+    from django.contrib.staticfiles import finders
+    from django.utils.encoding import smart_unicode
+
+    result = finders.find(path, all=True)
+    path = smart_unicode(path)
+    if result:
+        if not isinstance(result, (list, tuple)):
+            result = [result]
+        output = u'\n  '.join(
+            (smart_unicode(os.path.realpath(path)) for path in result))
+        return output

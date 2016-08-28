@@ -65,6 +65,15 @@ function SaleViewModel(data, settings) {
     //    }
     //});
 
+    self.mail_invoice = function (url) {
+        var _url = '#';
+        if (self.id()){
+            _url = url + '?invoice_pk='+self.id();
+        }
+        return _url
+
+    };
+
     self.tax_schemes = ko.observableArray(data.tax_schemes);
 
     //$.ajax({
@@ -101,12 +110,18 @@ function SaleViewModel(data, settings) {
     self.units = ko.observableArray(data.units);
 
     self.party = ko.observable();
-
+    self.has_party_email = ko.observable();
+    self.data_party_id = ko.observable(data.party_id);
     self.party_id.subscribe(function (id) {
         var selected_party = ko.utils.arrayFirst(self.parties(), function (p) {
             return p.id == id;
         });
         if (selected_party) {
+            if(selected_party.email && self.data_party_id() == id) {
+                self.has_party_email(true);
+            } else {
+                self.has_party_email(false);
+            }
             if (selected_party.tax_preference != null) {
                 self.tax_vm.tax_scheme(selected_party.tax_preference.tax_scheme);
                 if (selected_party.tax_preference.default_tax_application_type != 'no-preference' && selected_party.tax_preference.default_tax_application_type != null) {
@@ -272,6 +287,8 @@ function SaleViewModel(data, settings) {
                     self.table_view.deleted_rows([]);
                     if (msg.id)
                         self.id(msg.id);
+                    self.data_party_id(msg.party_id);
+                    self.party_id(msg.party_id);
                     $("tbody > tr").each(function (i) {
                         $($("tbody > tr:not(.total)")[i]).addClass('invalid-row');
                     });
@@ -286,20 +303,22 @@ function SaleViewModel(data, settings) {
 
     if (settings.sale_suggest_by_party_item) {
         self.party.subscribe(function (party) {
-            $.ajax({
-                url: '/voucher/api/sale/party/' + party.id + '/rates.json',
-                dataType: 'json',
-                async: false,
-                success: function (data) {
-                    ko.utils.arrayForEach(data, function (rate_item) {
-                        var item = ko.utils.arrayFirst(self.items(), function (itm) {
-                            return itm.id == rate_item.id;
+            if (typeof(party) != 'undefined') {
+                $.ajax({
+                    url: '/voucher/api/sale/party/' + party.id + '/rates.json',
+                    dataType: 'json',
+                    async: false,
+                    success: function (data) {
+                        ko.utils.arrayForEach(data, function (rate_item) {
+                            var item = ko.utils.arrayFirst(self.items(), function (itm) {
+                                return itm.id == rate_item.id;
+                            });
+                            if (item)
+                                item.last_sale_price = rate_item.last_sale_price;
                         });
-                        if (item)
-                            item.last_sale_price = rate_item.last_sale_price;
-                    });
-                }
-            });
+                    }
+                });
+            }
         })
     }
 }
