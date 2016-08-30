@@ -4,7 +4,7 @@
 {% block page-title %}{% trans 'Categories' %}{% endblock %}
 
 {% block header-buttons %}
-    <a class="btn btn-success btn-raised" href="{% url 'category_add' %}">{% trans 'New' %} {% trans 'Category' %}</a>
+    <a class="btn btn-success btn-raised" href="{% url 'item_category_add' %}">{% trans 'New' %} {% trans 'Category' %}</a>
 {% endblock %}
 
 {% block content %}
@@ -15,7 +15,7 @@
         <ul class="list-group">
             {% recursetree object_list %}
                 <li class="list-group-item link">
-                    <a {% if not node.default %}href="{% url 'category_edit' node.id %}"{% else %}class="text-color-black"{% endif %}>
+                    <a {% if not node.default %}href="{% url 'item_category_edit' node.id %}"{% else %}class="text-color-black"{% endif %}>
                         {{ node.name }}
                         {% if request.company.has_branches %}
                             [{{ node.company }}]

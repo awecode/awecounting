@@ -79,5 +79,5 @@ class ItemCategoryForm(HTML5BootstrapModelForm):
         model = ItemCategory
         exclude = ('company',)
         widgets = {
-            'parent': forms.Select(attrs={'class': 'selectize'}),
+            'parent': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('item_category_add')}),
         }
