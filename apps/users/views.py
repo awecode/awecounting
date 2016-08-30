@@ -400,40 +400,40 @@ class BranchDelete(BranchView, SuperOwnerMixin, DeleteView):
 
 
 def bad_request(request):
-    response = render_to_response(
-        'errors/400.html',
-        context_instance=RequestContext(request)
-    )
-    response.status_code = 400
-    return response
-
+    # response = render_to_response(
+    #     'errors/400.html',
+        # context=RequestContext(request)
+    # )
+    # response.status_code = 400
+    # return response
+    return render(request, 'errors/400.html', status=400)
 
 def permission_denied(request):
-    response = render_to_response(
-        'errors/403.html',
-        context_instance=RequestContext(request)
-    )
-    response.status_code = 403
-    return response
+    # response = render_to_response(
+    #     'errors/403.html',
+        # context_instance=RequestContext(request)
+    # )
+    # response.status_code = 403
+    return render(request, 'errors/403.html', status=403)
 
 
 def page_not_found(request):
-    response = render_to_response(
-        'errors/404.html',
-        context_instance=RequestContext(request)
-    )
-    response.status_code = 404
-    return response
-
+    # response = render_to_response(
+    #     'errors/404.html',
+    #     # context=RequestContext(request)
+    # )
+    # response.status_code = 404
+    # return response
+    return render(request, 'errors/403.html', status=403)
 
 def server_error(request):
-    response = render_to_response(
-        'errors/500.html',
-        context_instance=RequestContext(request)
-    )
-    response.status_code = 500
-    return response
-
+    # response = render_to_response(
+    #     'errors/500.html',
+        # context_instance=RequestContext(request)
+    # )
+    # response.status_code = 500
+    # return response
+    return render(request, 'errors/500.html', status=500)
 
 def log_js_errors(request):
     body = json.loads(request.body)
