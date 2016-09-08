@@ -226,6 +226,16 @@ function SaleViewModel(data, settings) {
         }
     });
 
+    self.voucher_discount.subscribe(function(){
+        if (typeof(self.voucher_discount())=='string') {
+            if (self.voucher_discount().slice(-1) == '%') {
+                var percent = parseInt(self.voucher_discount().replace('%', ''));
+                var value = (percent / 100) * self.sub_total();
+                self.voucher_discount(value);
+            }
+        }
+    });
+
     self.save = function (item, event) {
         var check_unit = false;
 
@@ -377,6 +387,16 @@ function SaleRow(row, sale_vm) {
         return self.tax_percent() / 100;
     });
 
+    self.discount.subscribe(function() {
+        if (typeof(self.discount())=='string') {
+            if (self.discount().slice(-1) == '%') {
+                var percent = parseInt(self.discount().replace('%', ''));
+                var value = (percent / 100) * self.rate() * self.quantity();
+                self.discount(value);
+            }
+        }
+    });
+
     self.total = ko.computed(function () {
         if (sale_vm.tax() == 'no' || sale_vm.tax_scheme()) {
             return r2z(parseFloat(self.quantity()) * parseFloat(self.rate()) - parseFloat(empty_to_zero(self.discount())));
@@ -491,10 +511,7 @@ function SaleRow(row, sale_vm) {
                         }
                     });
                 }
-                ;
             }
-            ;
-
         });
         self.total_out4mloc = ko.computed(function () {
             var total = 0;
