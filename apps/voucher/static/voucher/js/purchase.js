@@ -439,7 +439,7 @@ function PurchaseRow(row, purchase_vm) {
             }
         }
     });
-    
+
     self.total_without_tax = ko.computed(function () {
         if (purchase_vm.tax() == 'no' || purchase_vm.tax() == 'exclusive') {
             return r2z(parseFloat(self.quantity()) * parseFloat(self.rate()) - parseFloat(empty_to_zero(self.discount())));

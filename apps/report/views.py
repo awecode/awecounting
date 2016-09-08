@@ -21,7 +21,6 @@ from awecounting.utils.mixins import group_required, SuperOwnerMixin, UpdateView
 from ..inventory.models import Transaction as InventoryTransaction, InventoryAccount
 from njango.middleware import get_calendar
 from njango.nepdate import tuple_from_string, string_from_tuple, bs2ad, bs, ad2bs, date_from_tuple, tuple_from_date
-from django.db.models import prefetch_related_objects
 BALANCE_SHEET = ['Equity', 'Assets', 'Liabilities']
 PL_ACCOUNT = ['Income', 'Expenses']
 
