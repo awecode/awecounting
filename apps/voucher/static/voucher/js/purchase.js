@@ -236,7 +236,7 @@ function PurchaseViewModel(data, settings) {
             if (self.voucher_discount().slice(-1) == '%') {
                 var percent = parseInt(self.voucher_discount().replace('%', ''));
                 var value = (percent / 100) * self.sub_total();
-                self.voucher_discount(value);
+                self.voucher_discount(round2(value));
             }
         }
     });
@@ -435,7 +435,7 @@ function PurchaseRow(row, purchase_vm) {
             if (self.discount().slice(-1) == '%') {
                 var percent = parseInt(self.discount().replace('%', ''));
                 var value = (percent / 100) * self.rate() * self.quantity();
-                self.discount(value);
+                self.discount(round2(value));
             }
         }
     });
