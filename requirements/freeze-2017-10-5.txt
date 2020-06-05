@@ -12,7 +12,7 @@ cffi==1.7.0
 configparser==3.5.0
 cssselect==0.9.2
 decorator==4.0.10
-Django==1.10
+Django==1.11.29
 django-celery==3.1.17
 -e git+https://github.com/helber/django-dbsettings.git@5bcd8bbabd71a5550cf6815473691d033991284d#egg=django_dbsettings-master
 django-debug-toolbar==1.5
