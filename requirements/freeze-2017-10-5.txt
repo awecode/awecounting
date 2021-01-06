@@ -5,7 +5,7 @@ backports.functools-lru-cache==1.2.1
 backports.shutil-get-terminal-size==1.0.0
 billiard==3.3.0.23
 cairocffi==0.7.2
-CairoSVG==1.0.22
+CairoSVG==2.5.1
 celery==3.1.23
 certifi==2016.8.8
 cffi==1.7.0
