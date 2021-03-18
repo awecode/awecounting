@@ -9,7 +9,7 @@ ipython==4.0.0
 jsonfield==1.0.3
 -e git+https://github.com/zyga/django-pagination.git@986c8f62e9caf19bd007e4e6ce167a1dde749e89#egg=linaro_django_pagination-master
 -e git+https://github.com/awecode/njango.git@8ce9e3654c2cb789b5ef1acb7d00daf18d896a5f#egg=njango-master
-Pillow==2.9.0
+Pillow==8.1.1
 psycopg2==2.6.1
 sorl-thumbnail==12.3
 webstack-django-sorting==0.4.2
