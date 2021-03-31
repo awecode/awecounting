@@ -38,7 +38,7 @@ jsonfield==1.0.3
 kombu==3.0.35
 lazy-object-proxy==1.2.2
 -e git+https://github.com/roshanshrestha01/django-pagination.git@1ca05f814bb12d3a61be20482336c50b008f661c#egg=linaro_django_pagination-origin_django110
-lxml==3.6.4
+lxml==4.6.3
 mccabe==0.5.2
 -e git+https://github.com/xtranophilist/nepdate.git@130cd4c56195da22be87be52d5d6619e5d6db616#egg=nepdate-master
 -e git+https://github.com/awecode/njango.git@8bba58caceea3f4abf127406ca43a5d7ca2947c9#egg=njango-master
