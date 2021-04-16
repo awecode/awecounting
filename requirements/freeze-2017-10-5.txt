@@ -15,7 +15,7 @@ decorator==4.0.10
 Django==1.10
 django-celery==3.1.17
 -e git+https://github.com/helber/django-dbsettings.git@5bcd8bbabd71a5550cf6815473691d033991284d#egg=django_dbsettings-master
-django-debug-toolbar==1.5
+django-debug-toolbar==1.11.1
 django-easy-pdf==0.1.0
 django-filter==0.14.0
 django-froala-editor==2.0.1
